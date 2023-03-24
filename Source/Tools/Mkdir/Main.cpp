@@ -1,10 +1,78 @@
+#if defined(_WIN32)
 #include <Windows.h>
+#elif defined(__linux__)
+#else
+#error "Unknown platform"
+#endif
 #include <iostream>
 
 void PrintUsage()
 {
 	std::cout << "mkdir [path]" << std::endl;
 }
+
+#if defined(_WIN32)
+void CreateDirectory(std::string_view directory)
+{
+	if (!CreateDirectoryA(directory.data(), nullptr))
+	{
+		auto errorCode =  GetLastError();
+		if (errorCode == ERROR_ALREADY_EXISTS)
+		{
+			std::cout << "Directory already exists" << std::endl;
+
+			// Get the current system time
+			SYSTEMTIME systemTime;
+			GetSystemTime(&systemTime);
+			
+			// Convert time file time
+			FILETIME fileTime;
+			if (!SystemTimeToFileTime(&systemTime, &fileTime))
+			{
+				throw std::runtime_error("Failed to convert from system time to file time");
+			}
+
+			// Open the directory handle to write
+			auto directoryHandle = CreateFileA(
+				directory.data(),
+				GENERIC_WRITE,
+				FILE_SHARE_WRITE | FILE_SHARE_READ,
+				nullptr,
+				OPEN_EXISTING,
+				FILE_FLAG_BACKUP_SEMANTICS,
+				0);
+			if (directoryHandle == INVALID_HANDLE_VALUE)
+			{
+				auto createErrorCode =  GetLastError();
+				std::cout << createErrorCode << std::endl;
+				throw std::runtime_error("Failed to open directory handle to write");
+			}
+
+			// Mark the directory as updated
+			if (!SetFileTime(directoryHandle, nullptr, nullptr, &fileTime))
+			{
+				throw std::runtime_error("Set directory time failed");
+			}
+
+			CloseHandle(directoryHandle);
+		}
+		else
+		{
+			throw std::runtime_error("Create directory failed");
+		}
+	}
+	else
+	{
+		std::cout << "Directory created" << std::endl;
+	}
+}
+#elif defined(__linux__)
+void CreateDirectory(std::string_view directory)
+{
+}
+#else
+#error "Unknown platform"
+#endif
 
 int main(int argc, char** argv)
 {
@@ -17,57 +85,8 @@ int main(int argc, char** argv)
 	try
 	{
 		auto directory = std::string_view(argv[1]);
-		if (!CreateDirectoryA(directory.data(), nullptr))
-		{
-			auto errorCode =  GetLastError();
-			if (errorCode == ERROR_ALREADY_EXISTS)
-			{
-				std::cout << "Directory already exists" << std::endl;
-
-				// Get the current system time
-				SYSTEMTIME systemTime;
-				GetSystemTime(&systemTime);
-				
-				// Convert time file time
-				FILETIME fileTime;
-				if (!SystemTimeToFileTime(&systemTime, &fileTime))
-				{
-					throw std::runtime_error("Failed to convert from system time to file time");
-				}
-
-				// Open the directory handle to write
-				auto directoryHandle = CreateFileA(
-					directory.data(),
-					GENERIC_WRITE,
-					FILE_SHARE_WRITE | FILE_SHARE_READ,
-					nullptr,
-					OPEN_EXISTING,
-					FILE_FLAG_BACKUP_SEMANTICS,
-					0);
-				if (directoryHandle == INVALID_HANDLE_VALUE)
-				{
-					auto createErrorCode =  GetLastError();
-					std::cout << createErrorCode << std::endl;
-					throw std::runtime_error("Failed to open directory handle to write");
-				}
-
-				// Mark the directory as updated
-				if (!SetFileTime(directoryHandle, nullptr, nullptr, &fileTime))
-				{
-					throw std::runtime_error("Set directory time failed");
-				}
-
-				CloseHandle(directoryHandle);
-			}
-			else
-			{
-				throw std::runtime_error("Create directory failed");
-			}
-		}
-		else
-		{
-			std::cout << "Directory created" << std::endl;
-		}
+		CreateDirectory(directory);
+		
 	}
 	catch(const std::exception& e)
 	{
