@@ -103,7 +103,7 @@ namespace Soup::Client
 
 			// Load the input macro definition
 			auto macros = std::map<std::string, std::string>();
-			for (auto& [key, value] : generateInputTable.at("Macros").AsTable())
+			for (auto& [key, value] : generateInputTable.at("EvaluateMacros").AsTable())
 				macros.emplace(key, value.AsString());
 
 			// Setup a macro manager to resolve macros
