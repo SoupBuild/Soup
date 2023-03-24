@@ -12,21 +12,29 @@ set -e
 
 echo Setup BuildIn Copy
 COPY_DIR=$SOURCE_DIR/Tools/Copy
-COPY_OUT_DIR=$BUILTIN_DIR/copy/1.0.0
-mkdir -p $COPY_OUT_DIR
+COPY_OUT_DIR=$OUT_DIR/Copy
+COPY_BUILTIN_DIR=$BUILTIN_DIR/copy/1.0.0
+mkdir -p $COPY_BUILTIN_DIR
+mkdir -p $COPY_BUILTIN_DIR/out/bin
 echo Recipe.sml
-cp $COPY_DIR/Recipe.sml $COPY_OUT_DIR/Recipe.sml
+cp $COPY_DIR/Recipe.sml $COPY_BUILTIN_DIR/Recipe.sml
+echo copy.exe
+cp $COPY_OUT_DIR/copy.exe $COPY_BUILTIN_DIR/out/bin/copy.exe
 
 echo Setup BuildIn MkDir
 MKDIR_DIR=$SOURCE_DIR/Tools/Mkdir
-MKDIR_OUT_DIR=$BUILTIN_DIR/mkdir/1.0.0
-mkdir -p $MKDIR_OUT_DIR
+MKDIR_OUT_DIR=$OUT_DIR/Mkdir
+MKDIR_BUILTIN_DIR=$BUILTIN_DIR/mkdir/1.0.0
+mkdir -p $MKDIR_BUILTIN_DIR
+mkdir -p $MKDIR_BUILTIN_DIR/out/bin
 echo Recipe.sml
-cp $MKDIR_DIR/Recipe.sml $MKDIR_OUT_DIR/Recipe.sml
+cp $MKDIR_DIR/Recipe.sml $MKDIR_BUILTIN_DIR/Recipe.sml
+echo mkdir.exe
+cp $MKDIR_OUT_DIR/mkdir.exe $MKDIR_BUILTIN_DIR/out/bin/mkdir.exe
 
 echo Setup BuildIn Soup.Cpp
 SOUP_CPP_DIR=~/.soup/packages/Wren/Soup.Cpp/0.7.0
-SOUP_CPP_OUT_DIR=$BUILTIN_DIR/Soup.Cpp/0.7.0
-mkdir -p $SOUP_CPP_OUT_DIR
+SOUP_CPP_BUILTIN_DIR=$BUILTIN_DIR/Soup.Cpp/0.7.0
+mkdir -p $SOUP_CPP_BUILTIN_DIR
 echo Recipe.sml
-cp $SOUP_CPP_DIR/Recipe.sml $SOUP_CPP_OUT_DIR/Recipe.sml
+cp $SOUP_CPP_DIR/Recipe.sml $SOUP_CPP_BUILTIN_DIR/Recipe.sml
