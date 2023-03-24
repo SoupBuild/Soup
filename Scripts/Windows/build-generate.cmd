@@ -2,7 +2,8 @@
 SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
-SET SourceDir=%ScriptsDir%..\..\Source
+SET RootDir=%ScriptsDir%..\..
+SET SourceDir=%RootDir%\Source
 SET GenerateDir=%SourceDir%\GenerateSharp\Generate
 
 REM - Build Generate

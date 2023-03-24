@@ -2,8 +2,9 @@
 SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
-SET SourceDir=%ScriptsDir%..\Source
-SET OutputDir=%ScriptsDir%..\out
+SET RootDir=%ScriptsDir%..\..
+SET SourceDir=%RootDir%\Source
+SET OutputDir=%RootDir%\out
 SET ClientCLIDir=%SourceDir%\Client\CLI
 SET MonitorClientDir=%SourceDir%\Monitor\Client
 if %Flavor% == release (SET OutputX64DirectorPath=txTMowfPh1V3rPmbvNBmBW9Z8Jg) else (SET OutputX64DirectorPath=J3mu4cpISw6nDaCPED8gkqZ-q84)
