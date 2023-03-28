@@ -177,7 +177,7 @@ namespace Soup::Core::Generate
 			"	static createOperation(title, executable, arguments, workingDirectory, declaredInput, declaredOutput) {\n"
 			"		if (!(title is String)) Fiber.abort(\"Title must be a string.\")\n"
 			"		if (!(executable is String)) Fiber.abort(\"Executable must be a string.\")\n"
-			"		if (!(arguments is String)) Fiber.abort(\"Arguments must be a string.\")\n"
+			"		if (!(arguments is List)) Fiber.abort(\"Arguments must be a list.\")\n"
 			"		if (!(workingDirectory is String)) Fiber.abort(\"WorkingDirectory must be a string.\")\n"
 			"		if (!(declaredInput is List)) Fiber.abort(\"DeclaredInput must be a list.\")\n"
 			"		if (!(declaredOutput is List)) Fiber.abort(\"DeclaredOutput must be a list.\")\n"

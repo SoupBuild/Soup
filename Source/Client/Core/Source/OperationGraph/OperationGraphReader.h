@@ -17,7 +17,7 @@ namespace Soup::Core
 	{
 	private:
 		// Binary Operation Graph file format
-		static constexpr uint32_t FileVersion = 5;
+		static constexpr uint32_t FileVersion = 6;
 
 	public:
 		static OperationGraph Deserialize(std::istream& stream, FileSystemState& fileSystemState)
@@ -131,7 +131,7 @@ namespace Soup::Core
 			auto executable = ReadString(content);
 
 			// Write the command arguments
-			auto arguments = ReadString(content);
+			auto arguments = ReadStringList(content);
 
 			// Write out the declared input files
 			auto declaredInput = ReadFileIdList(content, activeFileIdMap);
@@ -179,6 +179,18 @@ namespace Soup::Core
 			auto size = ReadUInt32(content);
 			auto result = std::string(size, '\0');
 			Read(content, result.data(), size);
+
+			return result;
+		}
+
+		static std::vector<std::string> ReadStringList(char*& content)
+		{
+			auto size = ReadUInt32(content);
+			auto result = std::vector<std::string>(size);
+			for (auto i = 0u; i < size; i++)
+			{
+				result[i] = ReadString(content);
+			}
 
 			return result;
 		}
