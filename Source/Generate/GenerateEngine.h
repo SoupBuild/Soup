@@ -329,13 +329,22 @@ namespace Soup::Core::Generate
 		{
 			for (auto& [operationId, operation] : operationGraph.GetOperations())
 			{
-				operation.Command.Arguments = macroManager.ResolveMacros(std::move(operation.Command.Arguments));
+				ResolveMacros(macroManager, operation.Command.Arguments);
 				operation.Command.WorkingDirectory = macroManager.ResolveMacros(std::move(operation.Command.WorkingDirectory));
 				operation.Command.Executable = macroManager.ResolveMacros(std::move(operation.Command.Executable));
 				ResolveMacros(macroManager, operation.DeclaredInput);
 				ResolveMacros(macroManager, operation.DeclaredOutput);
 				ResolveMacros(macroManager, operation.ReadAccess);
 				ResolveMacros(macroManager, operation.WriteAccess);
+			}
+		}
+
+		void ResolveMacros(MacroManager& macroManager, std::vector<std::string>& value)
+		{
+			for(size_t i = 0; i < value.size(); i++)
+			{
+				auto resolvedValue = macroManager.ResolveMacros(value[i]);
+				value[i] = std::move(resolvedValue);
 			}
 		}
 

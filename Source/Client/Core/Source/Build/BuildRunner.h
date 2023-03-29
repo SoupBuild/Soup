@@ -428,15 +428,15 @@ namespace Soup::Core
 			#endif
 
 			OperationId generateOperationId = 1;
-			auto generateArguments = std::stringstream();
-			generateArguments << soupTargetDirectory.ToString();
+			auto generateArguments = std::vector<std::string>();
+			generateArguments.push_back(soupTargetDirectory.ToString());
 			auto generateOperation = OperationInfo(
 				generateOperationId,
 				"Generate: " + packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name,
 				CommandInfo(
 					packageInfo.PackageRoot,
 					generateExecutable,
-					generateArguments.str()),
+					std::move(generateArguments)),
 				{},
 				{},
 				{},

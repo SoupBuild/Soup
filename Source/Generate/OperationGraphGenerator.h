@@ -47,7 +47,7 @@ namespace Soup::Core::Generate
 		void CreateOperation(
 			std::string title,
 			Path executable,
-			std::string arguments,
+			std::vector<std::string> arguments,
 			Path workingDirectory,
 			std::vector<Path> declaredInput,
 			std::vector<Path> declaredOutput)

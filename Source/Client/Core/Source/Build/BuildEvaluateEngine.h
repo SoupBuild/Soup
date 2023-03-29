@@ -286,7 +286,9 @@ namespace Soup::Core
 				auto messageBuilder = std::stringstream();
 				messageBuilder << "Execute: [" << operationInfo.Command.WorkingDirectory.ToString() << "] ";
 				messageBuilder << operationInfo.Command.Executable.ToString();
-				messageBuilder << " " << operationInfo.Command.Arguments;
+				for (auto& argument : operationInfo.Command.Arguments)
+					messageBuilder << " " << argument;
+
 				Log::Diag(messageBuilder.str());
 
 				auto operationResult = OperationResult();
@@ -333,20 +335,17 @@ namespace Soup::Core
 			Log::Info("Execute InProcess WriteFile");
 
 			// Pull out the file path argument
-			auto findSecondQuote = operationInfo.Command.Arguments.find('\"', 1);
-			if (findSecondQuote == std::string::npos)
+			if (operationInfo.Command.Arguments.size() != 2)
 			{
 				Log::Error("WriteFile path argument malformed");
 				throw BuildFailedException();
 			}
 
-			auto fileName = Path(std::string_view(operationInfo.Command.Arguments).substr(1, findSecondQuote - 1));
+			auto fileName = Path(operationInfo.Command.Arguments[0]);
 			Log::Info("WritFile: " + fileName.ToString());
 
 			auto filePath = fileName.HasRoot() ? fileName : operationInfo.Command.WorkingDirectory + fileName;
-			auto content = std::string_view(operationInfo.Command.Arguments).substr(
-				findSecondQuote + 3,
-				operationInfo.Command.Arguments.size() - findSecondQuote - 4);
+			auto& content = operationInfo.Command.Arguments[1];
 
 			// Open the file to write to
 			auto file = System::IFileSystem::Current().OpenWrite(filePath, false);
@@ -397,20 +396,10 @@ namespace Soup::Core
 			for (auto& file : allowedWriteAccess)
 				Log::Diag(file.ToString());
 
-			// Split the arguments into a vector
-			// TODO: The operation info may want to store this as an array, this id quick and dirty
-			auto arguments = std::vector<std::string>();
-			std::istringstream readArguments(operationInfo.Command.Arguments);
-			std::string argumentValue;
-			while (std::getline(readArguments, argumentValue, ' '))
-			{
-				arguments.push_back(argumentValue);
-			}
-
 			bool enableAccessChecks = true;
 			auto process = Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
 				operationInfo.Command.Executable,
-				std::move(arguments),
+				operationInfo.Command.Arguments,
 				operationInfo.Command.WorkingDirectory,
 				environment,
 				callback,

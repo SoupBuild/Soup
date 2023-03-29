@@ -18,7 +18,7 @@ namespace Soup::Core
 	public:
 		Path WorkingDirectory;
 		Path Executable;
-		std::string Arguments;
+		std::vector<std::string> Arguments;
 
 	public:
 		CommandInfo() :
@@ -31,7 +31,7 @@ namespace Soup::Core
 		CommandInfo(
 			Path workingDirectory,
 			Path executable,
-			std::string arguments) :
+			std::vector<std::string> arguments) :
 			WorkingDirectory(std::move(workingDirectory)),
 			Executable(std::move(executable)),
 			Arguments(std::move(arguments))
@@ -55,7 +55,7 @@ namespace std
 		{
 			std::size_t hashWorkingDirectory = std::hash<std::string>{}(value.WorkingDirectory.ToString());
 			std::size_t hashExecutable = std::hash<std::string>{}(value.Executable.ToString());
-			std::size_t hashArguments = std::hash<std::string>{}(value.Arguments);
+			std::size_t hashArguments = value.Arguments.size();
 			return hashWorkingDirectory ^ (hashExecutable << 1) ^ (hashArguments << 2);
 		}
 	};
