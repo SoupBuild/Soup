@@ -130,7 +130,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ 1, },
 						{ 2, },
 						{ },
@@ -259,7 +259,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ },
 						{ },
 						{ },
@@ -392,7 +392,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ },
 						{ 1, },
 						{ },
@@ -524,7 +524,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ 1, },
 						{ 2, },
 						{ },
@@ -669,7 +669,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ 1, },
 						{ 2, },
 						{ },
@@ -813,7 +813,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ 1, },
 						{ 2, },
 						{ },
@@ -957,7 +957,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ 1, },
 						{ 2, },
 						{ },
@@ -1097,7 +1097,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ 1, },
 						{ 2, },
 						{ },
@@ -1209,7 +1209,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command1.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ },
 						{ },
 						{ },
@@ -1222,7 +1222,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command2.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ },
 						{ 1, },
 						{ },
@@ -1345,7 +1345,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command1.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ },
 						{ },
 						{ },
@@ -1358,7 +1358,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command2.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ 1, },
 						{ },
 						{ },
@@ -1481,7 +1481,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command1.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ },
 						{ },
 						{ },
@@ -1494,7 +1494,7 @@ namespace Soup::Core::UnitTests
 						CommandInfo(
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command2.exe"),
-							"Arguments"),
+							{ "Arguments" }),
 						{ },
 						{ 1, },
 						{ },

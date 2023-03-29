@@ -13,7 +13,7 @@ namespace Soup::Core
 	{
 	private:
 		// Binary Operation graph file format
-		static constexpr uint32_t FileVersion = 5;
+		static constexpr uint32_t FileVersion = 6;
 
 	public:
 		static void Serialize(
@@ -66,7 +66,7 @@ namespace Soup::Core
 			WriteValue(stream, operation.Command.Executable.ToString());
 
 			// Write the command arguments
-			WriteValue(stream, operation.Command.Arguments);
+			WriteValues(stream, operation.Command.Arguments);
 
 			// Write out the declared input files
 			WriteValues(stream, operation.DeclaredInput);
@@ -107,6 +107,15 @@ namespace Soup::Core
 		{
 			WriteValue(stream, static_cast<uint32_t>(value.size()));
 			stream.write(value.data(), value.size());
+		}
+
+		static void WriteValues(std::ostream& stream, const std::vector<std::string>& values)
+		{
+			WriteValue(stream, static_cast<uint32_t>(values.size()));
+			for (auto& value : values)
+			{
+				WriteValue(stream, value);
+			}
 		}
 
 		static void WriteValues(std::ostream& stream, const std::vector<uint32_t>& values)

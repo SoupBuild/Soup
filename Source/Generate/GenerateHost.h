@@ -299,10 +299,10 @@ namespace Soup::Core::Generate
 				auto executable = std::string(wrenGetSlotString(_vm, 2));
 
 				auto parameter3 = wrenGetSlotType(_vm, 3);
-				if (parameter3 != WREN_TYPE_STRING) {
-					throw std::runtime_error("SoupCreateOperation parameter 3 must be of type string");
+				if (parameter3 != WREN_TYPE_LIST) {
+					throw std::runtime_error("SoupCreateOperation parameter 3 must be of type list");
 				}
-				auto arguments = std::string(wrenGetSlotString(_vm, 3));
+				auto arguments = WrenHelpers::GetSlotStringList(_vm, 3, 7);
 				
 				auto parameter4 = wrenGetSlotType(_vm, 4);
 				if (parameter4 != WREN_TYPE_STRING) {
@@ -434,7 +434,7 @@ namespace Soup::Core::Generate
 			"	static createOperation(title, executable, arguments, workingDirectory, declaredInput, declaredOutput) {\n"
 			"		if (!(title is String)) Fiber.abort(\"Title must be a string.\")\n"
 			"		if (!(executable is String)) Fiber.abort(\"Executable must be a string.\")\n"
-			"		if (!(arguments is String)) Fiber.abort(\"Arguments must be a string.\")\n"
+			"		if (!(arguments is List)) Fiber.abort(\"Arguments must be a list.\")\n"
 			"		if (!(workingDirectory is String)) Fiber.abort(\"WorkingDirectory must be a string.\")\n"
 			"		if (!(declaredInput is List)) Fiber.abort(\"DeclaredInput must be a list.\")\n"
 			"		if (!(declaredOutput is List)) Fiber.abort(\"DeclaredOutput must be a list.\")\n"

@@ -7,7 +7,7 @@ SET RunDir=%OutDir%\run
 
 REM - Use a copy of the final binary in case we are re-buiding itself
 robocopy %ScriptsDir%\Install\ %RunDir%\ /MIR /NJH /NJS /NDL > NUL
-robocopy %OutDir%\Cpp\Soup\0.31.3\J3mu4cpISw6nDaCPED8gkqZ-q84\bin\ %RunDir%\Soup\ /MIR /NJH /NJS /NDL > NUL
+robocopy %OutDir%\Cpp\Soup\0.32.0\J3mu4cpISw6nDaCPED8gkqZ-q84\bin\ %RunDir%\Soup\ /MIR /NJH /NJS /NDL > NUL
 
 robocopy C:\Users\mwasp\Dev\Repos\Soup\Source\Tools\Copy\ %RunDir%\Soup\BuiltIn\copy\1.0.0\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy C:\Users\mwasp\Dev\Repos\Soup\out\Cpp\copy\1.0.0\J3mu4cpISw6nDaCPED8gkqZ-q84\ %RunDir%\Soup\BuiltIn\copy\1.0.0\out\ /MIR /NJH /NJS /NDL > NUL
