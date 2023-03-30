@@ -55,18 +55,24 @@ namespace Soup::Client
 			arguments.SkipEvaluate = _options.SkipEvaluate;
 
 			auto flavor = std::string("debug");
+			auto architecture = std::string("x64");
+
+			#if defined(_WIN32)
+				auto system = std::string("win32");
+				auto compiler = std::string("MSVC");
+			#elif defined(__linux__)
+				auto system = std::string("win32");
+				auto compiler = std::string("GCC");
+			#else
+			#error "Unknown Platform"
+			#endif
+
 			if (!_options.Flavor.empty())
 				flavor = _options.Flavor;
-
-			auto system = std::string("win32");
-			if (!_options.System.empty())
-				system = _options.System;
-
-			auto architecture = std::string("x64");
 			if (!_options.Architecture.empty())
 				architecture = _options.Architecture;
-
-			auto compiler = std::string("MSVC");
+			if (!_options.System.empty())
+				system = _options.System;
 
 			arguments.GlobalParameters.emplace("Architecture", Core::Value(std::string(architecture)));
 			arguments.GlobalParameters.emplace("Compiler", Core::Value(std::string(compiler)));

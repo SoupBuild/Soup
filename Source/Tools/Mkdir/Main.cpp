@@ -81,7 +81,8 @@ void PrintUsage()
 					throw std::runtime_error("Create directory failed: Permission Denied");
 				case EEXIST:
 					// The named file exists.
-					throw std::runtime_error("Create directory failed: Already Exists");
+					std::cout << "Directory already exists" << std::endl;
+					break;
 				case ELOOP:
 					// A loop exists in symbolic links encountered during resolution of the path argument.
 					throw std::runtime_error("Create directory failed: Loop Exists");
