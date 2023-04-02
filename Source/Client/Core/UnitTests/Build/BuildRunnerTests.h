@@ -62,6 +62,7 @@ namespace Soup::Core::UnitTests
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			auto arguments = RecipeBuildArguments();
+			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto sdkParameters = ValueList();
 			auto sdkReadAccess = std::vector<Path>({
@@ -240,6 +241,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
@@ -319,6 +321,7 @@ namespace Soup::Core::UnitTests
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			auto arguments = RecipeBuildArguments();
+			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto sdkParameters = ValueList();
 			auto sdkReadAccess = std::vector<Path>({
@@ -589,6 +592,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_TestBuild)/") },
 									{ "TargetDirectory", std::string("/(TARGET_TestBuild)/") },
 								})
@@ -700,6 +704,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
@@ -812,6 +817,7 @@ namespace Soup::Core::UnitTests
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			auto arguments = RecipeBuildArguments();
+			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto sdkParameters = ValueList();
 			auto sdkReadAccess = std::vector<Path>({
@@ -1168,6 +1174,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_PackageA)/") },
 									{ "TargetDirectory", std::string("/(TARGET_PackageA)/") },
 								})
@@ -1283,6 +1290,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_PackageB)/") },
 									{ "TargetDirectory", std::string("/(TARGET_PackageB)/") },
 								})
@@ -1403,6 +1411,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
@@ -1549,6 +1558,7 @@ namespace Soup::Core::UnitTests
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			auto arguments = RecipeBuildArguments();
+			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto sdkParameters = ValueList();
 			auto sdkReadAccess = std::vector<Path>({
@@ -1815,6 +1825,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_TestBuild)/") },
 									{ "TargetDirectory", std::string("/(TARGET_TestBuild)/") },
 								})
@@ -1926,6 +1937,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})

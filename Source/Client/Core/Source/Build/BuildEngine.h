@@ -62,7 +62,7 @@ namespace Soup::Core
 					{
 						{
 							"Soup.Cpp",
-							SemanticVersion(0, 7, 0)
+							SemanticVersion(0, 8, 0)
 						},
 						{
 							"Soup.CSharp",
@@ -101,7 +101,7 @@ namespace Soup::Core
 			// Load the system specific state
 			auto hostBuildGlobalParameters = ValueTable();
 			auto systemReadAccess = std::vector<Path>();
-			LoadSystemState(hostBuildGlobalParameters, systemReadAccess);
+			LoadHostSystemState(hostBuildGlobalParameters, systemReadAccess);
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
@@ -210,23 +210,14 @@ namespace Soup::Core
 			}
 		}
 
-		static void LoadSystemState(
+		static void LoadHostSystemState(
 			ValueTable& hostBuildGlobalParameters,
 			std::vector<Path>& systemReadAccess)
 		{
-			// TODO: Default parameters need to come from the build extension
-			auto flavor = std::string("release");
-			auto system = std::string("win32");
-			auto architecture = std::string("x64");
-			auto compiler = std::string("MSVC");
-
-			hostBuildGlobalParameters.emplace("Architecture", Value(std::string(architecture)));
-			hostBuildGlobalParameters.emplace("Compiler", Value(std::string(compiler)));
-			hostBuildGlobalParameters.emplace("Flavor", Value(std::string(flavor)));
+			auto system = std::string("Windows");
 			hostBuildGlobalParameters.emplace("System", Value(std::string(system)));
 
 			// Allow read access from system directories
-			// TODO: Windows specific
 			systemReadAccess.push_back(
 				Path("C:/Windows/"));
 		}

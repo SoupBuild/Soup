@@ -62,25 +62,15 @@ namespace Soup::Client
 			}
 
 			// Setup the build parameters
-			auto flavor = std::string("debug");
-			if (!_options.Flavor.empty())
-				flavor = _options.Flavor;
-
-			auto system = std::string("win32");
-			if (!_options.System.empty())
-				system = _options.System;
-
-			auto architecture = std::string("x64");
-			if (!_options.Architecture.empty())
-				architecture = _options.Architecture;
-
-			auto compiler = std::string("MSVC");
-
 			auto globalParameters = Core::ValueTable();
-			globalParameters.emplace("Architecture", Core::Value(std::string(architecture)));
-			globalParameters.emplace("Compiler", Core::Value(std::string(compiler)));
-			globalParameters.emplace("Flavor", Core::Value(std::string(flavor)));
-			globalParameters.emplace("System", Core::Value(std::string(system)));
+
+			// Process well known parameters
+			if (!_options.Flavor.empty())
+				globalParameters.emplace("Flavor", Core::Value(_options.Flavor));
+			if (!_options.Architecture.empty())
+				globalParameters.emplace("Architecture", Core::Value(_options.Architecture));
+
+			// TODO: Generic parameters
 
 			// Load the value table to get the exe path
 			auto knownLanguages = Core::BuildEngine::GetKnownLanguages();
@@ -103,7 +93,7 @@ namespace Soup::Client
 
 			// Load the input macro definition
 			auto macros = std::map<std::string, std::string>();
-			for (auto& [key, value] : generateInputTable.at("Macros").AsTable())
+			for (auto& [key, value] : generateInputTable.at("EvaluateMacros").AsTable())
 				macros.emplace(key, value.AsString());
 
 			// Setup a macro manager to resolve macros

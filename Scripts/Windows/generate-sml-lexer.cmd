@@ -2,7 +2,7 @@
 SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
-SET RootDir=%ScriptsDir%..\
+SET RootDir=%ScriptsDir%..\..\
 SET ClientCoreSourceDir=Source\Client\Core\Source
 SET REFLEX=C:\Users\mwasp\source\repos\RE-flex\bin\win64\reflex.exe
 

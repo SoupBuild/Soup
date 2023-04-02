@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "ValueTable/Value.h"
 
 #ifdef SOUP_BUILD
 export

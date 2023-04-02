@@ -54,24 +54,22 @@ namespace Soup::Client
 			arguments.SkipGenerate = _options.SkipGenerate;
 			arguments.SkipEvaluate = _options.SkipEvaluate;
 
-			auto flavor = std::string("debug");
+			// Platform specific defaults
+			#if defined(_WIN32)
+			arguments.HostPlatform = "Windows";
+			#elif defined(__linux__)
+			arguments.HostPlatform = "Linux";
+			#else
+			#error "Unknown Platform"
+			#endif
+
+			// Process well known parameters
 			if (!_options.Flavor.empty())
-				flavor = _options.Flavor;
-
-			auto system = std::string("win32");
-			if (!_options.System.empty())
-				system = _options.System;
-
-			auto architecture = std::string("x64");
+				arguments.GlobalParameters.emplace("Flavor", Core::Value(_options.Flavor));
 			if (!_options.Architecture.empty())
-				architecture = _options.Architecture;
+				arguments.GlobalParameters.emplace("Architecture", Core::Value(_options.Architecture));
 
-			auto compiler = std::string("MSVC");
-
-			arguments.GlobalParameters.emplace("Architecture", Core::Value(std::string(architecture)));
-			arguments.GlobalParameters.emplace("Compiler", Core::Value(std::string(compiler)));
-			arguments.GlobalParameters.emplace("Flavor", Core::Value(std::string(flavor)));
-			arguments.GlobalParameters.emplace("System", Core::Value(std::string(system)));
+			// TODO: Generic parameters
 
 			// Now build the current project
 			Log::Info("Begin Build:");

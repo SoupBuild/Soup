@@ -63,12 +63,6 @@ namespace Soup::Client
 					options->Flavor = std::move(flavorValue);
 				}
 
-				auto systemValue = std::string();
-				if (TryGetValueArgument("system", unusedArgs, systemValue))
-				{
-					options->System = std::move(systemValue);
-				}
-
 				auto architectureValue = std::string();
 				if (TryGetValueArgument("architecture", unusedArgs, architectureValue))
 				{
@@ -178,12 +172,6 @@ namespace Soup::Client
 					options->Flavor = std::move(flavorValue);
 				}
 
-				auto systemValue = std::string();
-				if (TryGetValueArgument("system", unusedArgs, systemValue))
-				{
-					options->System = std::move(systemValue);
-				}
-
 				auto architectureValue = std::string();
 				if (TryGetValueArgument("architecture", unusedArgs, architectureValue))
 				{
@@ -214,12 +202,6 @@ namespace Soup::Client
 				if (TryGetValueArgument("flavor", unusedArgs, flavorValue))
 				{
 					options->Flavor = std::move(flavorValue);
-				}
-
-				auto systemValue = std::string();
-				if (TryGetValueArgument("system", unusedArgs, systemValue))
-				{
-					options->System = std::move(systemValue);
 				}
 
 				auto architectureValue = std::string();

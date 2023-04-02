@@ -5,8 +5,11 @@ CXX=g++-12
 CXX_FLAGS="-std=c++20 -fpermissive"
 CXX_COMPILE_FLAGS="$CXX_FLAGS -g -march=native -msha -mpclmul -msse2"
 
+C=gcc-12
+C_COMPILE_FLAGS="-g -march=native -msha -mpclmul -msse2"
+
 SCRIPTS_DIR=$(dirname "$0")
-ROOT_DIR=$SCRIPTS_DIR/..
+ROOT_DIR=$SCRIPTS_DIR/../..
 SOURCE_DIR=$ROOT_DIR/Source
 OUT_DIR=$ROOT_DIR/out
 
@@ -14,7 +17,7 @@ OUT_DIR=$ROOT_DIR/out
 set -e
 
 echo Build Opal
-OPAL_DIR=~/.soup/packages/Cpp/Opal/0.9.0
+OPAL_DIR=~/.soup/packages/Cpp/Opal/0.9.2
 OPAL_OUT_DIR=$OUT_DIR/Opal/obj
 mkdir -p $OPAL_OUT_DIR
 echo Module.cpp
@@ -189,31 +192,31 @@ WREN_DIR=~/.soup/packages/Cpp/wren/1.0.0
 WREN_OUT_DIR=$OUT_DIR/wren/obj
 mkdir -p $WREN_OUT_DIR
 echo optional/wren_opt_meta.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/optional/wren_opt_meta.c -o $WREN_OUT_DIR/wren_opt_meta.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/optional/wren_opt_meta.c -o $WREN_OUT_DIR/wren_opt_meta.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_opt_meta.o"
 echo optional/wren_opt_random.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/optional/wren_opt_random.c -o $WREN_OUT_DIR/wren_opt_random.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/optional/wren_opt_random.c -o $WREN_OUT_DIR/wren_opt_random.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_opt_random.o"
 echo vm/wren_compiler.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_compiler.c -o $WREN_OUT_DIR/wren_compiler.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_compiler.c -o $WREN_OUT_DIR/wren_compiler.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_compiler.o"
 echo vm/wren_core.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_core.c -o $WREN_OUT_DIR/wren_core.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_core.c -o $WREN_OUT_DIR/wren_core.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_core.o"
 echo vm/wren_debug.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_debug.c -o $WREN_OUT_DIR/wren_debug.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_debug.c -o $WREN_OUT_DIR/wren_debug.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_debug.o"
 echo vm/wren_primitive.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_primitive.c -o $WREN_OUT_DIR/wren_primitive.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_primitive.c -o $WREN_OUT_DIR/wren_primitive.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_primitive.o"
 echo vm/wren_utils.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_utils.c -o $WREN_OUT_DIR/wren_utils.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_utils.c -o $WREN_OUT_DIR/wren_utils.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_utils.o"
 echo vm/wren_value.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_value.c -o $WREN_OUT_DIR/wren_value.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_value.c -o $WREN_OUT_DIR/wren_value.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_value.o"
 echo vm/wren_vm.c
-eval $CXX $CXX_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_vm.c -o $WREN_OUT_DIR/wren_vm.o
+eval $C $C_COMPILE_FLAGS -I$WREN_DIR/include -I$WREN_DIR/optional -I$WREN_DIR/vm -c $WREN_DIR/vm/wren_vm.c -o $WREN_OUT_DIR/wren_vm.o
 LinkObjects="$LinkObjects $WREN_OUT_DIR/wren_vm.o"
 
 INCLUDE_EXTERNAL_DEPS="-I$OPAL_DIR -I$CRYPTOPP_DIR -I$REFLEX_DIR/include -I$WREN_DIR/include"
@@ -257,24 +260,32 @@ SOUP_CLIENT_CLI_OUT_DIR=$OUT_DIR/Soup.Client.CLI/obj
 mkdir -p $SOUP_CLIENT_CLI_OUT_DIR
 echo Main.cpp
 eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -I$MONITOR_HOST_DIR -I$SOUP_CLIENT_CORE_DIR/Source -I$SOUP_CLIENT_CLI_DIR/Source/Commands/ -I$SOUP_CLIENT_CLI_DIR/Source/Options/ -c $SOUP_CLIENT_CLI_DIR/Source/Main.cpp -o $SOUP_CLIENT_CLI_OUT_DIR/Main.o
-LinkObjects="$LinkObjects $SOUP_CLIENT_CLI_OUT_DIR/Main.o"
 echo Link Soup.Client.CLI
-eval $CXX -o $OUT_DIR/soup $LinkObjects
+eval $CXX -o $OUT_DIR/soup $LinkObjects $SOUP_CLIENT_CLI_OUT_DIR/Main.o
+
+echo Build Soup.Generate
+SOUP_GENERATE_DIR=$SOURCE_DIR/Generate
+SOUP_GENERATE_OUT_DIR=$OUT_DIR/Soup.Client.CLI/obj
+mkdir -p $SOUP_GENERATE_OUT_DIR
+echo Main.cpp
+eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -I$MONITOR_HOST_DIR -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_GENERATE_DIR/Main.cpp -o $SOUP_GENERATE_OUT_DIR/Main.o
+echo Link Soup.Generate
+eval $CXX -o $OUT_DIR/generate $LinkObjects $SOUP_GENERATE_OUT_DIR/Main.o
 
 echo Build Copy
 COPY_DIR=$SOURCE_DIR/Tools/Copy
-COPY_OUT_DIR=$OUT_DIR/Copy/obj
+COPY_OUT_DIR=$OUT_DIR/Copy
 mkdir -p $COPY_OUT_DIR
 echo Main.cpp
 eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -c $COPY_DIR/Main.cpp -o $COPY_OUT_DIR/Main.o
 echo Link Copy
-eval $CXX -o $OUT_DIR/bin/Copy.exe $COPY_OUT_DIR/Main.o
+eval $CXX -o $COPY_OUT_DIR/copy.exe $COPY_OUT_DIR/Main.o
 
 echo Build Mkdir
 MKDIR_DIR=$SOURCE_DIR/Tools/Mkdir
-MKDIR_OUT_DIR=$OUT_DIR/Mkdir/obj
+MKDIR_OUT_DIR=$OUT_DIR/Mkdir
 mkdir -p $MKDIR_OUT_DIR
 echo Main.cpp
 eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -c $MKDIR_DIR/Main.cpp -o $MKDIR_OUT_DIR/Main.o
 echo Link Mkdir
-eval $CXX -o $OUT_DIR/bin/Mkdir.exe $MKDIR_OUT_DIR/Main.o
+eval $CXX -o $MKDIR_OUT_DIR/mkdir.exe $MKDIR_OUT_DIR/Main.o

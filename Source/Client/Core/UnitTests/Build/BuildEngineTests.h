@@ -30,11 +30,11 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "MyPackage"
-					Language: "C++|0.7.0"
+					Language: "C++|0.8.0"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/Recipe.sml"),
+				Path("C:/testlocation/BuiltIn/Soup.Cpp/0.8.0/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
@@ -60,6 +60,7 @@ namespace Soup::Core::UnitTests
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			auto arguments = RecipeBuildArguments();
+			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			BuildEngine::Execute(std::move(arguments));
 
@@ -72,7 +73,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/Recipe.sml",
+					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/0.8.0/Recipe.sml",
 					"DIAG: 0>Package was prebuilt: Soup.Cpp",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
@@ -99,7 +100,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
-					"DIAG: 1>C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/out/",
+					"DIAG: 1>C:/testlocation/BuiltIn/Soup.Cpp/0.8.0/out/",
 					"DIAG: 1>Allowed Write Access:",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"DIAG: 1>Build evaluation end",
@@ -129,8 +130,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/Recipe.sml",
+					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/0.8.0/Recipe.sml",
+					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/0.8.0/Recipe.sml",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
@@ -189,7 +190,7 @@ namespace Soup::Core::UnitTests
 										"Soup.Cpp",
 										ValueTable(
 										{
-											{ "SoupTargetDirectory", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/out/.soup/") },
+											{ "SoupTargetDirectory", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.8.0/out/.soup/") },
 										})
 									},
 								})
@@ -223,7 +224,7 @@ namespace Soup::Core::UnitTests
 						"GenerateMacros",
 						ValueTable(
 						{
-							{ "/(BUILD_TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/out/") },
+							{ "/(BUILD_TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.8.0/out/") },
 						})
 					},
 					{
@@ -241,6 +242,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
@@ -261,7 +263,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("Wren|Soup.Cpp@0.7.0") },
+															{ "Reference", std::string("Wren|Soup.Cpp@0.8.0") },
 															{ "TargetDirectory", std::string("/(TARGET_Soup.Cpp)/") },
 														})
 													},
