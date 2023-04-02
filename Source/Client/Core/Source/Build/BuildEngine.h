@@ -62,7 +62,7 @@ namespace Soup::Core
 					{
 						{
 							"Soup.Cpp",
-							SemanticVersion(0, 7, 0)
+							SemanticVersion(0, 8, 0)
 						},
 						{
 							"Soup.CSharp",
