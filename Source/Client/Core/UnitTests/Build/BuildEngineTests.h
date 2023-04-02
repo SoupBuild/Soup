@@ -60,6 +60,7 @@ namespace Soup::Core::UnitTests
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			auto arguments = RecipeBuildArguments();
+			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			BuildEngine::Execute(std::move(arguments));
 
@@ -241,6 +242,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
+									{ "HostPlatform", std::string("TestPlatform") },
 									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})

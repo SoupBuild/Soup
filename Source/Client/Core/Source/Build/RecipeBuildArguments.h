@@ -16,6 +16,11 @@ namespace Soup::Core
 	struct RecipeBuildArguments
 	{
 		/// <summary>
+		/// Gets or sets set of host platform name
+		/// </summary>
+		std::string HostPlatform;
+
+		/// <summary>
 		/// Gets or sets set of global arguments
 		/// </summary>
 		ValueTable GlobalParameters;

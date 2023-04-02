@@ -349,6 +349,7 @@ namespace Soup::Core
 			auto context = ValueTable();
 			context.emplace("PackageDirectory", macroPackageDirectory.ToString());
 			context.emplace("TargetDirectory", macroTargetDirectory.ToString());
+			context.emplace("HostPlatform", _arguments.HostPlatform);
 			globalState.emplace("Context", std::move(context));
 
 			// Pass along the parameters

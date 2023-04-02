@@ -27,12 +27,6 @@ namespace Soup::Client
 		std::string Flavor;
 
 		/// <summary>
-		/// Gets or sets a value indicating what target system
-		/// </summary>
-		// [[Args::Option('s', "system", Default = false, HelpText = "System.")]]
-		std::string System;
-
-		/// <summary>
 		/// Gets or sets a value indicating what target architecture
 		/// </summary>
 		// [[Args::Option('a', "architecture", Default = false, HelpText = "Architecture.")]]
