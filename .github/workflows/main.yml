@@ -102,8 +102,8 @@ jobs:
     # Build Soup
     - name: Soup Restore
       run: soup restore ./Soup/Source/Client/CLI/ -v:d
-    - name: Build Linux
-      run: ./Soup/Scripts/Linux/build
+    - name: Build Soup
+      run: ./Soup/Scripts/Linux/build-client
 
     # Test
     - name: Soup Run Version
