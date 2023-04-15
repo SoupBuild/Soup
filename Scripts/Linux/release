@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Stop on first error
+set -e
+
+SCRIPTS_DIR=$(dirname "$0")
+ROOT_DIR=$SCRIPTS_DIR/../..
+OUT_DIR=$ROOT_DIR/out
+RUN_DIR=$OUT_DIR/run
+
+# Cleanup previous runs
+tar -czvf $OUT_DIR/soup-build-0.33.1-linux-x64.tar.gz $RUN_DIR
