@@ -12,6 +12,8 @@ Create a PR with this change.
 ./Scripts/Windows/release.cmd
 ```
 
+Manually build ./Source/Installer/Installer.sln
+
 ## Build Linux Release
 ```
 ./Scripts/Linux/build
