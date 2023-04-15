@@ -11,7 +11,10 @@ export namespace Samples::Cpp::DynamicLibrary::Library
 	class Helper
 	{
 	public:
-		__declspec(dllexport) static std::string GetName()
+	#ifdef _WIN32
+		__declspec(dllexport)
+	#endif
+		static std::string GetName()
 		{
 			return "Soup";
 		}

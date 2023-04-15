@@ -89,7 +89,7 @@ namespace Soup::Core
 			#if defined(_WIN32)
 			auto executable = packageManagerFolder + Path("Soup.Build.PackageManager.exe");
 			#elif defined(__linux__)
-			auto executable = Path("/home/mwasplund/dev/repos/Soup/Source/out/msbuild/bin/Soup.Build.PackageManager/Debug/net6.0/linux-x64/publish/") + Path("Soup.Build.PackageManager");
+			auto executable = packageManagerFolder + Path("Soup.Build.PackageManager");
 			#else
 			#error "Unknown platform"
 			#endif
