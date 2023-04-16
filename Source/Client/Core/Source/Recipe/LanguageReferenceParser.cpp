@@ -44,6 +44,7 @@ module;
 
 #include <iostream>
 #include <string>
+#include <chrono>
 
 #ifdef SOUP_BUILD
 

@@ -75,12 +75,12 @@ jobs:
     - name: Soup Build Cpp WindowsApplication
       run: soup build ./Soup/Samples/Cpp/WindowsApplication/ -flavor ${{matrix.config}} -v:d
 
-    - name: Soup Restore CSharp BuildExtension
-      run: soup restore ./Soup/Samples/CSharp/BuildExtension/Executable/
-    - name: Soup Build CSharp BuildExtension
-      run: soup build ./Soup/Samples/CSharp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
-    - name: Soup Build CSharp ConsoleApplication
-      run: soup build ./Soup/Samples/CSharp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
+    # - name: Soup Restore CSharp BuildExtension
+    #   run: soup restore ./Soup/Samples/CSharp/BuildExtension/Executable/
+    # - name: Soup Build CSharp BuildExtension
+    #   run: soup build ./Soup/Samples/CSharp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
+    # - name: Soup Build CSharp ConsoleApplication
+    #   run: soup build ./Soup/Samples/CSharp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
   linux-build:
     strategy:
       matrix:

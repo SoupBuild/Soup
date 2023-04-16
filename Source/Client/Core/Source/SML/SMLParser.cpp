@@ -47,6 +47,7 @@ module;
 # include <optional>
 # include <string>
 # include <sstream>
+# include <chrono>
 
 #ifdef SOUP_BUILD
 

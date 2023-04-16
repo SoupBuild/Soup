@@ -1,9 +1,9 @@
 # Visual Studio
 .vs/
-*.user
 packages/
 bin/
 obj/
+*.user
 
 # VSCode
 .vscode/settings.json
@@ -12,7 +12,6 @@ obj/
 /out/
 
 # Wix
-msi/
 wix/
 
 # Antlr

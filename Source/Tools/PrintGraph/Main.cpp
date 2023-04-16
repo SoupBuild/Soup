@@ -12,6 +12,26 @@ void PrintUsage()
 	std::cout << "printgraph [path]" << std::endl;
 }
 
+std::string ToString(const std::vector<std::string>& valueList)
+{
+	auto builder = std::stringstream();
+	builder << "[";
+	bool isFirst = true;
+	for (auto value : valueList)
+	{
+		if (!isFirst)
+		{
+			builder << ", ";
+		}
+
+		builder << value;
+		isFirst = false;
+	}
+
+	builder << "]";
+	return builder.str();
+}
+
 std::string ToString(const std::vector<uint32_t>& valueList)
 {
 	auto builder = std::stringstream();
@@ -49,7 +69,7 @@ void PrintOperations(Soup::Core::OperationGraph& graph)
 		std::cout << "  Title: " << operationInfo.Title << std::endl;
 		std::cout << "  Command-WorkingDirectory: " << operationInfo.Command.WorkingDirectory.ToString() << std::endl;
 		std::cout << "  Command-Executable: " << operationInfo.Command.Executable.ToString() << std::endl;
-		std::cout << "  Command-Arguments: " << operationInfo.Command.Arguments << std::endl;
+		std::cout << "  Command-Arguments: " << ToString(operationInfo.Command.Arguments) << std::endl;
 		std::cout << "  DeclaredInput: " << ToString(operationInfo.DeclaredInput) << std::endl;
 		std::cout << "  DeclaredOutput: " << ToString(operationInfo.DeclaredOutput) << std::endl;
 		std::cout << "  ReadAccess: " << ToString(operationInfo.ReadAccess) << std::endl;
