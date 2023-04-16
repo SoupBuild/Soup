@@ -6,7 +6,7 @@ Closures: {
 			{ Name: "Detours", Version: "4.0.9", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0", Tool: "Tool0" }
-			{ Name: "Opal", Version: "0.9.2", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Opal", Version: "0.9.4", Build: "Build0", Tool: "Tool0" }
 			{ Name: "printgraph", Version: "../PrintGraph", Build: "Build0", Tool: "Tool0" }
 			{ Name: "reflex", Version: "1.0.2", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup.Core", Version: "../../Client/Core/", Build: "Build0", Tool: "Tool0" }

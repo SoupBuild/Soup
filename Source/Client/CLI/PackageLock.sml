@@ -8,7 +8,7 @@ Closures: {
 			{ Name: "mkdir", Version: "../../Tools/Mkdir/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0", Tool: "Tool0" }
-			{ Name: "Opal", Version: "0.9.3", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Opal", Version: "0.9.4", Build: "Build0", Tool: "Tool0" }
 			{ Name: "reflex", Version: "1.0.2", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup", Version: "../CLI", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup.Core", Version: "../Core/", Build: "Build1", Tool: "Tool0" }
