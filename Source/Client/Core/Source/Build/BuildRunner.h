@@ -423,7 +423,7 @@ namespace Soup::Core
 			#if defined(_WIN32)
 			auto generateExecutable = generateFolder + Path("Soup.Generate.exe");
 			#elif defined(__linux__)
-			auto generateExecutable = Path("/home/mwasplund/dev/repos/Soup/out/") + Path("generate");
+			auto generateExecutable = generateFolder + Path("generate");
 			#else
 			#error "Unknown platform"
 			#endif

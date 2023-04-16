@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Stop on first error
+set -e
+
+SCRIPTS_DIR=$(dirname "$0")
+ROOT_DIR=$SCRIPTS_DIR/../..
+OUT_DIR=$ROOT_DIR/out
+RUN_DIR=$OUT_DIR/run
+
+# Cleanup previous runs
+rm -rf $RUN_DIR
+mkdir -p $RUN_DIR
+
+cp $OUT_DIR/soup $RUN_DIR/soup
+cp $OUT_DIR/generate $RUN_DIR/generate
+
+cp -R $OUT_DIR/BuiltIn $RUN_DIR/BuiltIn
+cp -R $ROOT_DIR/Source/out/msbuild/bin/Soup.Build.PackageManager/Debug/net6.0/linux-x64/publish/ $RUN_DIR/PackageManager
+
+eval $RUN_DIR/soup "$@"

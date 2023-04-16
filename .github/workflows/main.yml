@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         os: [ windows-2022 ]
-        config: [ debug, release ]
+        config: [ Debug, Release ]
     name: PR Build ${{matrix.os}} ${{matrix.config}}
     runs-on: ${{ matrix.os }}
     steps:
@@ -85,7 +85,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-22.04 ]
-        config: [ debug ]
+        config: [ Debug ]
     name: PR Build ${{matrix.os}} ${{matrix.config}}
     runs-on: ${{ matrix.os }}
     steps:
@@ -94,8 +94,21 @@ jobs:
       with:
         path: "Soup"
         submodules: true
-    # Build
-    - name: Build Linux
-      run: ./Soup/Scripts/linux-build
+    - name: Setup Soup Build
+      uses: soupbuild/setup-soup@v1
+      with:
+        version: latest
+
+    # Build Soup
+    - name: Soup Restore
+      run: soup restore ./Soup/Source/Client/CLI/ -v:d
+    - name: Build Soup
+      run: ./Soup/Scripts/Linux/build-client
+
+    # Test
     - name: Soup Run Version
       run: ./Soup/out/soup version
+
+    # Build Samples
+    - name: Soup Build Cpp ConsoleApplication
+      run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
