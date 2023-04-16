@@ -7,4 +7,4 @@ SET RunDir=%OutDir%\run
 
 SET SOUP_VERSION=0.33.1
 
-tar -a -c -f %OutDir%\soup-build-%SOUP_VERSION%-windows-x64.zip %RunDir%
+tar -a -cf %OutDir%\soup-build-%SOUP_VERSION%-windows-x64.zip -C %RunDir% *
