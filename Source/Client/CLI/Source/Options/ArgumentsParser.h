@@ -262,7 +262,8 @@ namespace Soup::Client
 		template<typename T>
 		bool IsA()
 		{
-			return typeid(*_result) == typeid(T);
+			auto& reference = *_result;
+			return typeid(reference) == typeid(T);
 		}
 
 		template<typename T>

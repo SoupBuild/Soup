@@ -62,8 +62,9 @@ using namespace Opal;
 
 #endif
 
-// TODO import 
-#include "include/wren.hpp"
+// TODO import
+// TODO: Treat wren as C code
+#include "include/wren.h"
 
 #include "GenerateTestHost.h"
 

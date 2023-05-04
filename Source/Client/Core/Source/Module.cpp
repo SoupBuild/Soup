@@ -46,7 +46,8 @@ module;
 #ifdef SOUP_BUILD
 
 // TODO module
-#include "include/wren.hpp"
+// TODO: Treat wren as C code
+#include "include/wren.h"
 
 export module Soup.Core;
 
