@@ -36,12 +36,17 @@ module;
 #undef GetCurrentTime
 #undef GetClassName
 
+#elif defined(__linux__)
+
+#include <spawn.h>
+#include <sys/wait.h>
+
 #endif
 
 #ifdef SOUP_BUILD
 
 // TODO module
-#include "include/Wren.hpp"
+#include "include/wren.hpp"
 
 export module Soup.Core;
 
@@ -69,9 +74,6 @@ using namespace Opal;
 #include <queue>
 #include <sstream>
 #include <string>
-
-#include <spawn.h>
-#include <sys/wait.h>
 
 #include "Utilities/Path.h"
 #include "Utilities/SemanticVersion.h"

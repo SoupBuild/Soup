@@ -48,10 +48,13 @@ module;
 # include <string>
 # include <sstream>
 # include <chrono>
+# include <unordered_map>
+# include <vector>
 
 #ifdef SOUP_BUILD
 
 module Soup.Core;
+import reflex;
 
 #else
 
