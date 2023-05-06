@@ -8,7 +8,7 @@ Closures: {
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Opal", Version: "0.9.5", Build: "Build0", Tool: "Tool0" }
 			{ Name: "printvaluetable", Version: "./", Build: "Build0", Tool: "Tool0" }
-			{ Name: "reflex", Version: "1.0.2", Build: "Build0", Tool: "Tool0" }
+			{ Name: "reflex", Version: "1.0.3", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup.Core", Version: "../../Client/Core/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup.Test.Assert", Version: "0.3.1", Build: "Build0", Tool: "Tool0" }
 			{ Name: "wren", Version: "1.0.0", Build: "Build0", Tool: "Tool0" }
