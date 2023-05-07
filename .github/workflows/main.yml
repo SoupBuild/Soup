@@ -102,12 +102,10 @@ jobs:
     # Build Soup
     - name: Soup Restore
       run: soup restore ./Soup/Source/Client/CLI/ -v:d
-    - name: Build Soup
-      run: ./Soup/Scripts/Linux/build-client
-
-    # Test
+    - name: Soup Build
+      run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
     - name: Soup Run Version
-      run: ./Soup/out/soup version
+      run: soup run ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}} -args version
 
     # Build Samples
     - name: Soup Build Cpp ConsoleApplication
