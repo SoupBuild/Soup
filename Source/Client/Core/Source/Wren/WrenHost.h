@@ -245,7 +245,7 @@ namespace Soup::Core
 			return rawString;
 		}
 
-		static void FreeSourceOnLoaded(WrenVM* vm, const char* name, struct WrenLoadModuleResult result)
+		static void FreeSourceOnLoaded(WrenVM* /*vm*/, const char* /*name*/, struct WrenLoadModuleResult result)
 		{
 			if (result.source != nullptr)
 				free((void*)result.source);
