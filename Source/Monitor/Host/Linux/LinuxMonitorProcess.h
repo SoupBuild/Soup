@@ -4,9 +4,6 @@
 
 #pragma once
 
-// The existing environment for this process
-extern char **environ;
-
 namespace Monitor::Linux
 {
 	/// <summary>

@@ -7,13 +7,14 @@ SCRIPTS_DIR=$(dirname "$0")
 ROOT_DIR=$SCRIPTS_DIR/../..
 OUT_DIR=$ROOT_DIR/out
 RUN_DIR=$OUT_DIR/run
+SOUP_DIR=$OUT_DIR/Cpp/Soup/0.33.1/J_HqSstV55vlb-x6RWC_hLRFRDU
 
 # Cleanup previous runs
 rm -rf $RUN_DIR
 mkdir -p $RUN_DIR
 
-cp $OUT_DIR/soup $RUN_DIR/soup
-cp $OUT_DIR/generate $RUN_DIR/generate
+cp $SOUP_DIR/bin/Soup.exe $RUN_DIR/soup
+cp $SOUP_DIR/bin/Soup.Generate.exe $RUN_DIR/generate
 
 cp -R $OUT_DIR/BuiltIn $RUN_DIR/BuiltIn
 cp -R $ROOT_DIR/Source/out/msbuild/bin/Soup.Build.PackageManager/Debug/net6.0/linux-x64/publish/ $RUN_DIR/PackageManager

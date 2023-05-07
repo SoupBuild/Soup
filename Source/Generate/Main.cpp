@@ -16,7 +16,8 @@
 #ifdef SOUP_BUILD
 
 // TODO import
-#include "include/wren.hpp"
+// TODO: Treat wren as C code
+#include "include/wren.h"
 
 import Opal;
 import Soup.Core;
@@ -62,7 +63,8 @@ using namespace Opal;
 // #include "Linux/LinuxMonitorProcessManager.h"
 
 // import Wren
-#include "wren.hpp"
+// TODO: Treat wren as C code
+#include "wren.h"
 
 // import Soup.Core
 #include <cstring>

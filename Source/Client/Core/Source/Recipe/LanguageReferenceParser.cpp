@@ -42,6 +42,7 @@ module;
 #pragma warning(disable:4189)
 #pragma warning(disable:4702)
 
+#include <optional>
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -49,6 +50,8 @@ module;
 #ifdef SOUP_BUILD
 
 module Soup.Core;
+import reflex;
+import Opal;
 
 #else
 
