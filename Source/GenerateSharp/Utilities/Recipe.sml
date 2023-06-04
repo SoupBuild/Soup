@@ -50,7 +50,18 @@ Source: [
 	"HandledException.cs"
 ]
 
+Nuget: {
+	Dependencies: {
+		"Runtime": [
+			{ Name: "Antlr4.Runtime.Standard", Version: "4.11.1" }
+		]
+	}
+}
+
 Dependencies: {
+	Build: [
+		"C:/Users/mwasp/Dev/Repos/SoupCSharp/Source/NugetExtension/"
+	]
 	Runtime: [
 		"../Opal/"
 	]
