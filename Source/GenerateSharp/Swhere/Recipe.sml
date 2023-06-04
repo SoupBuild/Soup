@@ -8,5 +8,7 @@ Source: [
 Dependencies: {
 	Runtime: [
 		"../Swhere.Core/"
+		"../Utilities/"
+		"../Opal/"
 	]
 }

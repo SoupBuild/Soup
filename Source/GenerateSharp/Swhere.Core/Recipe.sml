@@ -11,5 +11,6 @@ Source: [
 Dependencies: {
 	Runtime: [
 		"../Utilities/"
+		"../Opal/"
 	]
 }
