@@ -3,14 +3,20 @@ Closures: {
 	Root: {
 		"C#": [
 			{ Name: "Opal", Version: "../Opal/", Build: "Build0", Tool: "Tool0" }
-			{ Name: "Soup.Build.Utilities", Version: "../Utilities/", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Soup.Build.Utilities", Version: "../Utilities/", Build: "Build1", Tool: "Tool0" }
 			{ Name: "Swhere", Version: "../Swhere", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Swhere.Core", Version: "../Swhere.Core/", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
 		Wren: [
-			{ Name: "Soup.CSharp", Version: "C:/Users/mwasp/Dev/Repos/SoupCSharp/Source/Extension/" }
+			{ Name: "Soup.CSharp", Version: "0.10.0" }
+		]
+	}
+	Build1: {
+		Wren: [
+			{ Name: "Soup.CSharp", Version: "0.10.0" }
+			{ Name: "Soup.CSharp.Nuget", Version: "0.1.0" }
 		]
 	}
 	Tool0: {

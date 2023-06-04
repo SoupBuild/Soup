@@ -60,7 +60,7 @@ Nuget: {
 
 Dependencies: {
 	Build: [
-		"C:/Users/mwasp/Dev/Repos/SoupCSharp/Source/NugetExtension/"
+		"Soup.CSharp.Nuget@0.1"
 	]
 	Runtime: [
 		"../Opal/"

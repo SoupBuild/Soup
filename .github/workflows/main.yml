@@ -56,6 +56,10 @@ jobs:
       run: soup restore ./Soup/Source/Tools/PrintValueTable/
     - name: Soup Build PrintValueTable
       run: soup build ./Soup/Source/Tools/PrintValueTable/ -flavor ${{matrix.config}} -v:d
+    # - name: Soup Restore SWhere
+    #   run: soup restore ./Soup/Source/Tools/Swhere/
+    # - name: Soup Build SWhere
+    #   run: soup build ./Soup/Source/Tools/Swhere/ -flavor ${{matrix.config}} -v:d
 
     # Build Samples
     - name: Soup Restore Cpp BuildExtension
