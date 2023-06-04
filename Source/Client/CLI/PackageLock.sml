@@ -14,7 +14,7 @@ Closures: {
 			{ Name: "Soup.Core", Version: "../Core/", Build: "Build1", Tool: "Tool0" }
 			{ Name: "Soup.Generate", Version: "../../Generate/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup.Test.Assert", Version: "0.3.1", Build: "Build0", Tool: "Tool0" }
-			{ Name: "wren", Version: "1.0.1", Build: "Build0", Tool: "Tool0" }
+			{ Name: "wren", Version: "1.0.3", Build: "Build0", Tool: "Tool0" }
 		]
 		Wren: [
 			{ Name: "Soup.Build.Utils", Version: "0.4.0", Build: "Build2", Tool: "Tool0" }
@@ -36,7 +36,7 @@ Closures: {
 	Build1: {
 		Wren: [
 			{ Name: "Soup.Cpp", Version: "0.9.0" }
-			{ Name: "Soup.Test.Cpp", Version: "0.8.0" }
+			{ Name: "Soup.Test.Cpp", Version: "0.9.0" }
 		]
 	}
 	Build2: {

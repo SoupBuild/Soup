@@ -44,6 +44,10 @@ jobs:
       run: soup run ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}} -args version
 
     # Build Tools
+    - name: Soup Restore GenerateTest
+      run: soup restore ./Soup/Source/Tools/GenerateTest/
+    - name: Soup Build GenerateTest
+      run: soup build ./Soup/Source/Tools/GenerateTest/ -flavor ${{matrix.config}} -v:d
     - name: Soup Restore PrintGraph
       run: soup restore ./Soup/Source/Tools/PrintGraph/
     - name: Soup Build PrintGraph

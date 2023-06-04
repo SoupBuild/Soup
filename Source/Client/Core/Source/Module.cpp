@@ -94,7 +94,7 @@ using namespace Opal;
 #include "Linux/LinuxMonitorProcessManager.h"
 
 // import Wren
-#include "wren.hpp"
+#include "wren.h"
 
 #endif
 
