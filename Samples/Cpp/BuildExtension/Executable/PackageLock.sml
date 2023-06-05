@@ -2,13 +2,13 @@ Version: 4
 Closures: {
 	Root: {
 		"C++": [
-			{ Name: "Samples.SimpleBuildExtension.Executable", Version: "../Executable", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Samples.SimpleBuildExtension.Executable", Version: "./", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
 		Wren: [
 			{ Name: "Samples.Cpp.BuildExtension.Extension", Version: "../Extension/" }
-			{ Name: "Soup.Cpp", Version: "0.8.2" }
+			{ Name: "Soup.Cpp", Version: "0.9.0" }
 		]
 	}
 	Tool0: {

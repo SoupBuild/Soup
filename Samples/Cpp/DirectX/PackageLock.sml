@@ -2,12 +2,12 @@ Version: 4
 Closures: {
 	Root: {
 		"C++": [
-			{ Name: "Samples.Cpp.DirectX", Version: "../DirectX", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Samples.Cpp.DirectX", Version: "./", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
 		Wren: [
-			{ Name: "Soup.Cpp", Version: "0.8.2" }
+			{ Name: "Soup.Cpp", Version: "0.9.0" }
 		]
 	}
 	Tool0: {

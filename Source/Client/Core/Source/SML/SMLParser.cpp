@@ -45,6 +45,11 @@ module;
 
 # include <iostream>
 # include <chrono>
+#ifndef _WIN32 // TODO: MSVC BUG
+# include <optional>
+# include <unordered_map>
+# include <vector>
+#endif
 
 #ifdef SOUP_BUILD
 
@@ -53,7 +58,6 @@ import reflex;
 
 #else
 
-#include <unordered_map>
 #include <variant>
 #include <vector>
 #include "SML.h"
