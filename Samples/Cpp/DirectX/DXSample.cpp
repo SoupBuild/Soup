@@ -78,14 +78,20 @@ protected:
 		ComPtr<IDXGIAdapter1> adapter;
 
 		ComPtr<IDXGIFactory6> factory6;
-		if (SUCCEEDED(pFactory->QueryInterface(IID_PPV_ARGS(&factory6))))
+		// TODO: MSVC BUG if (SUCCEEDED(pFactory->QueryInterface(IID_PPV_ARGS(&factory6))))
+		if (SUCCEEDED(pFactory->QueryInterface(IID_IDXGIFactory6, (void**)&factory6)))
 		{
 			for (
 				UINT adapterIndex = 0;
+				// TODO: MSVC BUG SUCCEEDED(factory6->EnumAdapterByGpuPreference(
+				// 	adapterIndex,
+				// 	requestHighPerformanceAdapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED,
+				// 	IID_PPV_ARGS(&adapter)));
 				SUCCEEDED(factory6->EnumAdapterByGpuPreference(
 					adapterIndex,
 					requestHighPerformanceAdapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED,
-					IID_PPV_ARGS(&adapter)));
+					IID_IDXGIAdapter1,
+					(void**)&adapter));
 				++adapterIndex)
 			{
 				DXGI_ADAPTER_DESC1 desc;

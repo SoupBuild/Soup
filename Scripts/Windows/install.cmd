@@ -1,9 +1,8 @@
 SETLOCAL
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\..
-SET SourceDir=%RootDir%\Source
-SET InstallerDir=%SourceDir%\Installer\SoupInstaller\msi
+SET OutDir=%RootDir%\out
 
-pushd %InstallerDir%
-start msiexec /package SoupBuild.msi /passive
+pushd %OutDir%
+start msiexec /package soup-build-0.34.0-windows-x64.msi /passive
 popd
