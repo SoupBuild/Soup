@@ -42,12 +42,20 @@ jobs:
       run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
     - name: Soup Run Version
       run: soup run ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}} -args version
+    - name: Soup Restore GenerateTest
+      run: soup restore ./Soup/Source/GenerateTest/
+    - name: Soup Build GenerateTest
+      run: soup build ./Soup/Source/GenerateTest/ -flavor ${{matrix.config}} -v:d
+    # - name: Soup Restore SWhere
+    #   run: soup restore ./Soup/Source/GenerateSharp/Swhere/
+    # - name: Soup Build SWhere
+    #   run: soup build ./Soup/Source/GenerateSharp/Swhere/ -flavor ${{matrix.config}} -v:d
+    # - name: Soup Restore PackageManager
+    #   run: soup restore ./Soup/Source/GenerateSharp/PackageManager/
+    # - name: Soup Build PackageManager
+    #   run: soup build ./Soup/Source/GenerateSharp/PackageManager/ -flavor ${{matrix.config}} -v:d
 
     # Build Tools
-    - name: Soup Restore GenerateTest
-      run: soup restore ./Soup/Source/Tools/GenerateTest/
-    - name: Soup Build GenerateTest
-      run: soup build ./Soup/Source/Tools/GenerateTest/ -flavor ${{matrix.config}} -v:d
     - name: Soup Restore PrintGraph
       run: soup restore ./Soup/Source/Tools/PrintGraph/
     - name: Soup Build PrintGraph
@@ -56,14 +64,6 @@ jobs:
       run: soup restore ./Soup/Source/Tools/PrintValueTable/
     - name: Soup Build PrintValueTable
       run: soup build ./Soup/Source/Tools/PrintValueTable/ -flavor ${{matrix.config}} -v:d
-    # - name: Soup Restore SWhere
-    #   run: soup restore ./Soup/Source/Tools/Swhere/
-    # - name: Soup Build SWhere
-    #   run: soup build ./Soup/Source/Tools/Swhere/ -flavor ${{matrix.config}} -v:d
-    # - name: Soup Restore PackageManager
-    #   run: soup restore ./Soup/Source/Tools/PackageManager/
-    # - name: Soup Build PackageManager
-    #   run: soup build ./Soup/Source/Tools/PackageManager/ -flavor ${{matrix.config}} -v:d
 
     # Build Samples
     - name: Soup Restore Cpp BuildExtension
