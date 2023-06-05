@@ -39,7 +39,7 @@ namespace Soup.Build.PackageManager
 
 			TokenCache.Bind(publicClientApp.UserTokenCache);
 
-			AuthenticationResult authResult = null;
+			AuthenticationResult authResult;
 			var scopes = new string[] { Scope };
 
 			try
