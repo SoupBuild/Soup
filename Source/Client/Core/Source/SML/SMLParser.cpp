@@ -45,6 +45,9 @@ module;
 
 # include <iostream>
 # include <chrono>
+# include <optional>
+# include <unordered_map>
+# include <vector>
 
 #ifdef SOUP_BUILD
 
@@ -53,7 +56,6 @@ import reflex;
 
 #else
 
-#include <unordered_map>
 #include <variant>
 #include <vector>
 #include "SML.h"

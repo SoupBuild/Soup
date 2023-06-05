@@ -7,7 +7,7 @@ SCRIPTS_DIR=$(dirname "$0")
 ROOT_DIR=$SCRIPTS_DIR/../..
 OUT_DIR=$ROOT_DIR/out
 RUN_DIR=$OUT_DIR/run
-SOUP_DIR=$OUT_DIR/Cpp/Soup/0.33.1/J_HqSstV55vlb-x6RWC_hLRFRDU
+SOUP_DIR=$OUT_DIR/Cpp/Soup/0.34.0/J_HqSstV55vlb-x6RWC_hLRFRDU
 
 # Cleanup previous runs
 rm -rf $RUN_DIR
