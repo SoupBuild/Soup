@@ -45,9 +45,11 @@ module;
 
 # include <iostream>
 # include <chrono>
+#ifndef _WIN32 // TODO: MSVC BUG
 # include <optional>
 # include <unordered_map>
 # include <vector>
+#endif
 
 #ifdef SOUP_BUILD
 
