@@ -1,6 +1,8 @@
 # Recipe
 
-The Recipe file is the definition for a code package and will always be located at the root of the package directory structure. It is written in the SML (Simple Markup Language) declarative language. (Note: Adopted as a variation on TOML, still iterating on design).
+The Recipe file is the definition for a code package and will always be located at the root of the package directory structure. It is written in the [Simple Markup Language (SML)](../SML.md) declarative language.
+
+> Note: Adopted as a simplification of the TOML design.
 
 ## Shared Properties
 
