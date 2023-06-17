@@ -1,6 +1,6 @@
 # Active State Table
 
-The root table that provides input and output state from individual build tasks during the Generate phase.
+The root table that provides input and output state from individual build tasks during the Generate phase. Used for inter-task communication within the same package generate phase.
 
 ## Known Keys
 

@@ -7,7 +7,7 @@ soup build <path> [-flavor <name>|-force]
 
 `path` - An optional parameter that directly follows the build command. If present this specifies the directory to look for a Recipe file to build. If not present then the command will use the current active directory.
 
-`-flavor <name>` - An optional parameter to specify the build flavor. Common values include `debug` or `release`. If not present the build will default to `release`.
+`-flavor <name>` - An optional parameter to specify the build flavor. Common values include `Debug` or `Release`.
 
 `-force` - An optional parameter that forces the build to ignore incremental state and rebuild the world.
 

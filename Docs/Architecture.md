@@ -11,7 +11,7 @@ There are four ways to declare the state for an invocation of a build. Through t
 The [Command Line Interface (CLI)](CLI.md) is the first thing a user will see when they interact with the Soup build system. The CLI is primarily there to take user input through a set of parameters and flags to pass temporary configuration values into the build execution. The command parameters will be used to generate a unique output folder for the given build to allow for individual builds to coexist for the same package (i.e. Release vs Debug). The argument properties will be combined with a set of generated properties from the application that are passed into the next phase of the build through a [Parameters Table](Architecture/Parameters-Table.md).
 
 ### Recipe
-The build definition will use a declarative **Recipe** configuration file is how the user will configure their project. The Recipe file will utilize the SML (Simple Markup Language) language (and possibly a custom config language in the future) as a clean, human readable, configuration definition that supports a core set of data types. The file can be thought of as a simple property bag for setting shared parameters into the build system for an individual package.
+The build definition will use a declarative **Recipe** configuration file is how the user will configure their project. The Recipe file will utilize the [Simple Markup Language (SML)](./SML.md) language as a clean, human readable, definition that supports a core set of data types. The file can be thought of as a simple property bag for setting shared parameters into the build system for an individual package.
 
 There are a few "known" property values that will be used within the build engine itself; however, the entire contents will be provided as initial input to the build engine.
 
@@ -24,7 +24,7 @@ The [Local User Config](Architecture/Local-User-Config.md) allows the user to sp
 ## Generate
 The Generate Phase takes the combined input Declaration along with the [Shared State](Architecture/Shared-State-Table.md) Generated from the dependencies and generates the [Operation](Architecture/.assets/Build-Operation.md) Graph that will be passed to the Evaluate phase, along with the output Shared State that downstream dependencies will consume.
 
-All build logic is injected into the Generate phase through the [Build Extension](Architecture/Build-Extension.md) framework. Each build extension is simply a C# library package that contains one or more public implementations of the `IBuildTask` interface. When referenced from another Recipe as a **Build** dependency the Generate Engine will discover and instantiate all instances of the build tasks. Each build task contains of a set of run before and after lists that instruct the Generate Engine in what order to run the tasks to ensure shared state is setup in the correct order. The tasks then invoke their single Run method that will allow them to read and write from the active and shared state and generate build Operations.
+All build logic is injected into the Generate phase through the [Build Extension](Architecture/Build-Extension.md) framework. Each build extension is simply a C# library package that contains one or more public implementations of the `SoupTask` interface. When referenced from another Recipe as a **Build** dependency the Generate Engine will discover and instantiate all instances of the build tasks. Each build task contains of a set of run before and after lists that instruct the Generate Engine in what order to run the tasks to ensure shared state is setup in the correct order. The tasks then invoke their single Run method that will allow them to read and write from the active and shared state and generate build Operations.
 
 Along with the list of explicit Build dependencies that inject build extensions, the **Language** property also instructs Soup to add the default tasks for that language.
 
@@ -53,7 +53,7 @@ This work can be broken down into five phases:
 1. **Build Generate**
     * Write Parameters Table file to disk.
     * Perform incremental Generate check to see if input has changed and requires re-generating the build. Leverage same incremental build logic as Evaluate to monitor input/output files. Will include Extension DLLS, Parameters Table file, Recipe file, Shared State files from Dependencies.
-    * Discover all Build Extension Tasks using scanning the explicit "Build" dependency libraries and the implicit "Language" default build extension for public implementations of the `IBuildTask` interface.
+    * Discover all Build Extension Tasks using scanning the explicit "Build" dependency libraries and the implicit "Language" default build extension for public implementations of the `SoupTask` interface.
     * Instantiate each class using dependency injection to pass in extra functionality (i.e. Logger, etc)
     * Using the Before/After lists invoke each build Task in their requested order.
     * Save Shared State and Operation Graph to disk.
