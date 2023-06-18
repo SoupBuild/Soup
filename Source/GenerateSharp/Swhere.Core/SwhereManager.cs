@@ -89,7 +89,51 @@ namespace Soup.Build.Discover
 						{ "ToolsRoot", netFXToolsPath.ToString() },
 				});
 
-			await NugetSDKUtilities.FindNugetPackagesAsync();
+			var (hasNuget, nugetPackagesPath, nugetPackages) = await NugetSDKUtilities.FindNugetPackagesAsync();
+			if (hasNuget)
+			{
+				var nugetSDK = userConfig.EnsureSDK("Nuget");
+				nugetSDK.SourceDirectories = new List<Path>()
+				{
+					nugetPackagesPath,
+				};
+
+				var packagesTable = nugetSDK.Properties.EnsureTableWithSyntax("Packages", 3);
+				packagesTable.Values.Clear();
+				foreach (var package in nugetPackages)
+				{
+					var packageTable = packagesTable.EnsureTableWithSyntax(package.Id, 4);
+					foreach (var packageVersion in package.Versions)
+					{
+						var packageVersionTable = packageTable.EnsureTableWithSyntax(packageVersion.Version, 5);
+						var targetFrameworksTable = packageVersionTable.EnsureTableWithSyntax("TargetFrameworks", 6);
+						foreach (var targetFramework in packageVersion.TargetFrameworks)
+						{
+							var targetFrameworkTable = targetFrameworksTable.EnsureTableWithSyntax(targetFramework.Name, 7);
+
+							if (targetFramework.Dependencies.Count > 0)
+							{
+								var dependenciesArray = targetFrameworkTable.EnsureArrayWithSyntax("Dependencies", 8);
+								foreach (var dependency in targetFramework.Dependencies)
+								{
+									var dependencyTable = dependenciesArray.AddInlineTableWithSyntax(9);
+									dependencyTable.AddInlineItemWithSyntax("Id", dependency.Id);
+									dependencyTable.AddInlineItemWithSyntax("Version", dependency.Version);
+								}
+							}
+
+							if (targetFramework.Libraries.Count > 0)
+							{
+								var librariesArray = targetFrameworkTable.EnsureArrayWithSyntax("Libraries", 8);
+								foreach (var library in targetFramework.Libraries)
+								{
+									librariesArray.AddItemWithSyntax(library, 9);
+								}
+							}
+						}
+					}
+				}
+			}
 
 			// Save the result
 			await LocalUserConfigExtensions.SaveToFileAsync(localUserConfigPath, userConfig);
