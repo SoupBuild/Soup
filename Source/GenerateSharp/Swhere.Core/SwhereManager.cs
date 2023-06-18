@@ -17,7 +17,8 @@ namespace Soup.Build.Discover
 			// Load up the Local User Config
 			var localUserConfigPath = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 				new Path(".soup/LocalUserConfig.sml");
-			var (loadConfigResult, userConfig) = await LocalUserConfigExtensions.TryLoadLocalUserConfigFromFileAsync(localUserConfigPath);
+			var (loadConfigResult, userConfig) = 
+				await LocalUserConfigExtensions.TryLoadLocalUserConfigFromFileAsync(localUserConfigPath);
 			if (!loadConfigResult)
 			{
 				Log.Info("No existing local user config.");
@@ -88,13 +89,10 @@ namespace Soup.Build.Discover
 						{ "ToolsRoot", netFXToolsPath.ToString() },
 				});
 
+			await NugetSDKUtilities.FindNugetPackagesAsync();
+
 			// Save the result
 			await LocalUserConfigExtensions.SaveToFileAsync(localUserConfigPath, userConfig);
-		}
-
-		private static void PrintUsage()
-		{
-			Log.Info("Soup.Build.Discover.exe");
 		}
 	}
 }
