@@ -8,6 +8,7 @@ using Swhere.Core.Nuget;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -65,6 +66,7 @@ namespace Soup.Build.Discover
 			}
 		}
 
+		[UnconditionalSuppressMessage("AssemblyLoadTrimming", "IL2026:RequiresUnreferencedCode", Justification = "Verified all required types are referenced")]
 		private static async Task<(NugetPackage?, NugetPackageVersion?)> LoadNugetPackageAsync(string name, Path directory)
 		{
 			var fileSystem = LifetimeManager.Get<IFileSystem>();

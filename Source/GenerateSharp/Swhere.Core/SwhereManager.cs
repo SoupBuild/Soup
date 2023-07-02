@@ -106,28 +106,31 @@ namespace Soup.Build.Discover
 					foreach (var packageVersion in package.Versions)
 					{
 						var packageVersionTable = packageTable.EnsureTableWithSyntax(packageVersion.Version, 5);
-						var targetFrameworksTable = packageVersionTable.EnsureTableWithSyntax("TargetFrameworks", 6);
-						foreach (var targetFramework in packageVersion.TargetFrameworks)
+						if (packageVersion.TargetFrameworks.Count > 0)
 						{
-							var targetFrameworkTable = targetFrameworksTable.EnsureTableWithSyntax(targetFramework.Name, 7);
-
-							if (targetFramework.Dependencies.Count > 0)
+							var targetFrameworksTable = packageVersionTable.EnsureTableWithSyntax("TargetFrameworks", 6);
+							foreach (var targetFramework in packageVersion.TargetFrameworks)
 							{
-								var dependenciesArray = targetFrameworkTable.EnsureArrayWithSyntax("Dependencies", 8);
-								foreach (var dependency in targetFramework.Dependencies)
+								var targetFrameworkTable = targetFrameworksTable.EnsureTableWithSyntax(targetFramework.Name, 7);
+
+								if (targetFramework.Dependencies.Count > 0)
 								{
-									var dependencyTable = dependenciesArray.AddInlineTableWithSyntax(9);
-									dependencyTable.AddInlineItemWithSyntax("Id", dependency.Id);
-									dependencyTable.AddInlineItemWithSyntax("Version", dependency.Version);
+									var dependenciesArray = targetFrameworkTable.EnsureArrayWithSyntax("Dependencies", 8);
+									foreach (var dependency in targetFramework.Dependencies)
+									{
+										var dependencyTable = dependenciesArray.AddInlineTableWithSyntax(9);
+										dependencyTable.AddInlineItemWithSyntax("Id", dependency.Id);
+										dependencyTable.AddInlineItemWithSyntax("Version", dependency.Version);
+									}
 								}
-							}
 
-							if (targetFramework.Libraries.Count > 0)
-							{
-								var librariesArray = targetFrameworkTable.EnsureArrayWithSyntax("Libraries", 8);
-								foreach (var library in targetFramework.Libraries)
+								if (targetFramework.Libraries.Count > 0)
 								{
-									librariesArray.AddItemWithSyntax(library, 9);
+									var librariesArray = targetFrameworkTable.EnsureArrayWithSyntax("Libraries", 8);
+									foreach (var library in targetFramework.Libraries)
+									{
+										librariesArray.AddItemWithSyntax(library, 9);
+									}
 								}
 							}
 						}
