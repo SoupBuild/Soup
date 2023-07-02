@@ -33,6 +33,21 @@ namespace Soup::Core::Generate
 			}
 
 			auto packageRoot = Path(inputTable.at("PackageRoot").AsString());
+			auto userDataPath = Path(inputTable.at("UserDataPath").AsString());
+
+			// Load the local user config and any sdk content
+			auto sdkParameters = ValueList();
+			auto sdkReadAccess = std::vector<Path>();
+			LoadLocalUserConfig(userDataPath, sdkParameters, sdkReadAccess);
+
+			// Load the recipe file
+			auto recipeFile = packageRoot + BuildConstants::RecipeFileName();
+			Recipe recipe;
+			if (!RecipeExtensions::TryLoadRecipeFromFile(recipeFile, recipe))
+			{
+				Log::Error("Failed to load the recipe: " + recipeFile.ToString());
+				throw std::runtime_error("Failed to load recipe.");
+			}
 
 			// Load the input macro definition
 			auto generateMacros = std::map<std::string, std::string>();
@@ -59,19 +74,14 @@ namespace Soup::Core::Generate
 			for (auto& [key, value] : inputTable.at("EvaluateMacros").AsTable())
 				evaluateMacros.emplace(key, value.AsString());
 
+			// Allow read access for all sdk directories
+			for (auto& value : sdkReadAccess)
+				evaluateAllowedReadAccess.push_back(std::move(value));
+
 			// Setup a macro manager to resolve macros
 			auto generateMacroManager = MacroManager(generateMacros);
 			auto generateSubGraphMacroManager = MacroManager(generateSubGraphMacros);
 			auto evaluateMacroManager = MacroManager(evaluateMacros);
-
-			// Load the recipe file
-			auto recipeFile = packageRoot + BuildConstants::RecipeFileName();
-			Recipe recipe;
-			if (!RecipeExtensions::TryLoadRecipeFromFile(recipeFile, recipe))
-			{
-				Log::Error("Failed to load the recipe: " + recipeFile.ToString());
-				throw std::runtime_error("Failed to load recipe.");
-			}
 
 			// Combine all the dependencies shared state
 			auto dependenciesSharedState = LoadDependenciesSharedState(
@@ -83,8 +93,11 @@ namespace Soup::Core::Generate
 				generateMacroManager,
 				dependenciesSharedState);
 
-			// Start a new global state that is initialized to the recipe itself
+			// Start a new global state
 			auto globalState = ValueTable();
+
+			// Pass along the sdks
+			globalState.emplace("SDKs", std::move(sdkParameters));
 
 			// Initialize the Recipe Root Table
 			auto recipeState = RecipeBuildStateConverter::ConvertToBuildState(recipe.GetTable());
@@ -166,6 +179,54 @@ namespace Soup::Core::Generate
 		}
 
 	private:
+		/// <summary>
+		/// Load Local User Config and process any known state
+		/// </summary>
+		static void LoadLocalUserConfig(
+			const Path& userDataPath,
+			ValueList& sdkParameters,
+			std::vector<Path>& sdkReadAccess)
+		{
+			// Load the local user config
+			auto localUserConfigPath = userDataPath + BuildConstants::LocalUserConfigFileName();
+			LocalUserConfig localUserConfig = {};
+			if (!LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
+			{
+				Log::Warning("Local User Config invalid");
+			}
+
+			// Process the SDKs
+			if (localUserConfig.HasSDKs())
+			{
+				Log::Info("Checking SDKs for read access");
+				auto sdks = localUserConfig.GetSDKs();
+				for (auto& sdk : sdks)
+				{
+					auto sdkName = sdk.GetName();
+					Log::Info("Found SDK: " + sdkName);
+					if (sdk.HasSourceDirectories())
+					{
+						for (auto& sourceDirectory : sdk.GetSourceDirectories())
+						{
+							Log::Info("  Read Access: " + sourceDirectory.ToString());
+							sdkReadAccess.push_back(sourceDirectory);
+						}
+					}
+
+					auto sdkParameter = ValueTable();
+					sdkParameter.emplace("Name", Value(sdkName));
+					if (sdk.HasProperties())
+					{
+						sdkParameter.emplace(
+							"Properties",
+							RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
+					}
+
+					sdkParameters.push_back(std::move(sdkParameter));
+				}
+			}
+		}
+
 		/// <summary>
 		/// Using the parameters to resolve the dependency output folders, load up the shared state table and
 		/// combine them into a single value table to be used as input the this generate phase.
