@@ -14,8 +14,7 @@ namespace Soup::Core::UnitTests
 		void Initialize_Success()
 		{
 			auto arguments = RecipeBuildArguments();
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>();
+			auto userDataPath = Path("C:/User/Soup/");
 			auto systemReadAccess = std::vector<Path>();
 			auto recipeCache = RecipeCache();
 			auto packageProvider = PackageProvider(1, PackageGraphLookupMap(), PackageLookupMap());
@@ -24,10 +23,9 @@ namespace Soup::Core::UnitTests
 			auto knownLanguages = std::map<std::string, KnownLanguage>();
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
-				std::move(arguments),
-				std::move(sdkParameters),
-				std::move(sdkReadAccess),
-				std::move(systemReadAccess),
+				arguments,
+				userDataPath,
+				systemReadAccess,
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
@@ -64,10 +62,7 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>({
-				Path("C:/FakeSDK/"),
-			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto systemReadAccess = std::vector<Path>({
 				Path("C:/FakeSystem/"),
 			});
@@ -115,8 +110,7 @@ namespace Soup::Core::UnitTests
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
@@ -323,10 +317,7 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>({
-				Path("C:/FakeSDK/"),
-			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto systemReadAccess = std::vector<Path>({
 				Path("C:/FakeSystem/"),
 			});
@@ -423,8 +414,7 @@ namespace Soup::Core::UnitTests
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
@@ -819,10 +809,7 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>({
-				Path("C:/FakeSDK/"),
-			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto systemReadAccess = std::vector<Path>({
 				Path("C:/FakeSystem/"),
 			});
@@ -940,8 +927,7 @@ namespace Soup::Core::UnitTests
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
@@ -1560,10 +1546,7 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>({
-				Path("C:/FakeSDK/"),
-			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto systemReadAccess = std::vector<Path>({
 				Path("C:/FakeSystem/"),
 			});
@@ -1656,8 +1639,7 @@ namespace Soup::Core::UnitTests
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
