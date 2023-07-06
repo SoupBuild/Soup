@@ -5,3 +5,6 @@ Type: "StaticLibrary"
 Source: [
 	"Library.c"
 ]
+PublicHeaders: [
+	"Library.h"
+]

@@ -1,10 +1,8 @@
-#include <iostream>
-
-import Samples.Cpp.StaticLibrary.Library;
-using namespace Samples::Cpp::StaticLibrary::Library;
+#include <stdio.h>
+#include <Library.h>
 
 int main()
 {
-	std::cout << "Hello World, " << Helper::GetName() << " Style!" << std::endl;
+	printf("Hello World, %s Style!", GetName());
 	return 0;
 }

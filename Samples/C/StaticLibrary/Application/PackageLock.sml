@@ -1,14 +1,14 @@
 Version: 4
 Closures: {
 	Root: {
-		"C++": [
-			{ Name: "Samples.Cpp.StaticLibrary.Application", Version: "../Application", Build: "Build0", Tool: "Tool0" }
-			{ Name: "Samples.Cpp.StaticLibrary.Library", Version: "../Library/", Build: "Build0", Tool: "Tool0" }
+		C: [
+			{ Name: "Samples.C.StaticLibrary.Application", Version: "../Application", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Samples.C.StaticLibrary.Library", Version: "../Library/", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
 		Wren: [
-			{ Name: "Soup.Cpp", Version: "0.9.0" }
+			{ Name: "Soup.C", Version: "C:/Users/mwasp/Dev/Repos/SoupC/Source/Extension/" }
 		]
 	}
 	Tool0: {

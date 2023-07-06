@@ -1,13 +1,13 @@
 Version: 4
 Closures: {
 	Root: {
-		"C++": [
-			{ Name: "Samples.Cpp.WindowsApplication", Version: "../WindowsApplication", Build: "Build0", Tool: "Tool0" }
+		C: [
+			{ Name: "Samples.C.WindowsApplication", Version: "../WindowsApplication", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
 		Wren: [
-			{ Name: "Soup.Cpp", Version: "0.9.0" }
+			{ Name: "Soup.C", Version: "C:/Users/mwasp/Dev/Repos/SoupC/Source/Extension/" }
 		]
 	}
 	Tool0: {

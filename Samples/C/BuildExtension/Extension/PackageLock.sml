@@ -2,7 +2,7 @@ Version: 4
 Closures: {
 	Root: {
 		Wren: [
-			{ Name: "Samples.Cpp.BuildExtension.Extension", Version: "./", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Samples.C.BuildExtension.Extension", Version: "./", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup.Build.Utils", Version: "0.4.1", Build: "Build0", Tool: "Tool0" }
 		]
 	}

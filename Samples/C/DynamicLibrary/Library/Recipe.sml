@@ -5,3 +5,6 @@ Type: "DynamicLibrary"
 Source: [
 	"Library.c"
 ]
+PublicHeaders: [
+	"Library.h"
+]

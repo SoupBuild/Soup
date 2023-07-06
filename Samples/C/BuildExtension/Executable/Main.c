@@ -1,11 +1,11 @@
-#include <iostream>
+#include <stdio.h>
 
 int main()
 {
 #ifdef SPECIAL_BUILD
-	std::cout << "Hello World, Soup Style!" << std::endl;
+	printf("Hello World, Soup Style!");
 #else
-	std::cout << "Hello World..." << std::endl;
+	printf("Hello World...");
 #endif
 	return 0;
 }

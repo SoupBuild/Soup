@@ -24,6 +24,10 @@ namespace Soup::Core
 			auto result = std::map<std::string, KnownLanguage>(
 			{
 				{
+					"C",
+					KnownLanguage("C", "Soup.C")
+				},
+				{
 					"C++",
 					KnownLanguage("Cpp", "Soup.Cpp")
 				},
