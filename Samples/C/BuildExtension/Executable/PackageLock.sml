@@ -8,7 +8,7 @@ Closures: {
 	Build0: {
 		Wren: [
 			{ Name: "Samples.C.BuildExtension.Extension", Version: "../Extension/" }
-			{ Name: "Soup.C", Version: "C:/Users/mwasp/Dev/Repos/SoupC/Source/Extension/" }
+			{ Name: "Soup.C", Version: "0.1.0" }
 		]
 	}
 	Tool0: {
