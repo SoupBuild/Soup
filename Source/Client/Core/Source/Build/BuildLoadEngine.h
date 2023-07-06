@@ -48,6 +48,7 @@ namespace Soup::Core
 		const RecipeBuildArguments& _arguments;
 
 		// System Parameters
+		Path _userDataPath;
 		const ValueTable& _hostBuildGlobalParameters;
 
 		// Shared Runtime State
@@ -72,11 +73,13 @@ namespace Soup::Core
 			const std::map<std::string, std::map<std::string, SemanticVersion>>& builtInPackageLookup,
 			const RecipeBuildArguments& arguments,
 			const ValueTable& hostBuildGlobalParameters,
+			Path userDataPath,
 			RecipeCache& recipeCache) :
 			_knownLanguageLookup(knownLanguageLookup),
 			_builtInPackageLookup(builtInPackageLookup),
 			_arguments(arguments),
 			_hostBuildGlobalParameters(hostBuildGlobalParameters),
+			_userDataPath(std::move(userDataPath)),
 			_recipeCache(recipeCache),
 			_packageGraphLookup(),
 			_packageLookup(),
@@ -228,7 +231,7 @@ namespace Soup::Core
 				else
 				{
 					// Build the global store location path
-					auto packageStore = GetSoupUserDataPath() + Path("packages/");
+					auto packageStore = _userDataPath + Path("packages/");
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 					auto activeVersionString = activeReference.GetVersion().ToString();
 					packagePath = packageStore +
@@ -271,7 +274,7 @@ namespace Soup::Core
 				else
 				{
 					// Build the global store location path
-					auto packageStore = GetSoupUserDataPath() + Path("locks/");
+					auto packageStore = _userDataPath + Path("locks/");
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 					packagePath = packageStore +
 						Path(languageSafeName) +
@@ -933,13 +936,6 @@ namespace Soup::Core
 				throw std::runtime_error("Unknown language: " + language);
 
 			return knownLanguageResult->second.LanguageSafeName;
-		}
-
-		Path GetSoupUserDataPath() const
-		{
-			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-				BuildConstants::SoupLocalStoreDirectory();
-			return result;
 		}
 	};
 }

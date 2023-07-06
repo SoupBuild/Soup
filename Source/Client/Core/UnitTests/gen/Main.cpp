@@ -5,6 +5,7 @@
 #include <memory>
 #include <map>
 #include <optional>
+#include <unordered_map>
 #include <set>
 #include <sstream>
 #include <stdexcept>

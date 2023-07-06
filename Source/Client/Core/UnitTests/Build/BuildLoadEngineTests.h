@@ -16,12 +16,14 @@ namespace Soup::Core::UnitTests
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 		}
 
@@ -32,12 +34,14 @@ namespace Soup::Core::UnitTests
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 		}
 
@@ -129,12 +133,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -325,12 +331,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -543,12 +551,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -838,12 +848,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -1091,12 +1103,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -1353,12 +1367,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -1643,12 +1659,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -1909,12 +1927,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -2199,12 +2219,14 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -2553,12 +2575,14 @@ namespace Soup::Core::UnitTests
 					Value(true),
 				},
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -2908,12 +2932,14 @@ namespace Soup::Core::UnitTests
 					Value(true),
 				},
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();
@@ -3177,12 +3203,14 @@ namespace Soup::Core::UnitTests
 					Value(true),
 				},
 			});
+			auto userDataPath = Path("C:/User/Soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 
 			auto packageProvider = uut.Load();

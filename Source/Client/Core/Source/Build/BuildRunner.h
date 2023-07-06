@@ -34,11 +34,8 @@ namespace Soup::Core
 		// Root arguments
 		const RecipeBuildArguments& _arguments;
 
-		// SDK Parameters
-		const ValueList& _sdkParameters;
-		const std::vector<Path>& _sdkReadAccess;
-
 		// System Parameters
+		Path _userDataPath;
 		const std::vector<Path>& _systemReadAccess;
 
 		// Shared Runtime
@@ -60,8 +57,7 @@ namespace Soup::Core
 		/// </summary>
 		BuildRunner(
 			const RecipeBuildArguments& arguments,
-			const ValueList& sdkParameters,
-			const std::vector<Path>& sdkReadAccess,
+			Path userDataPath,
 			const std::vector<Path>& systemReadAccess,
 			RecipeCache& recipeCache,
 			PackageProvider& packageProvider,
@@ -69,8 +65,7 @@ namespace Soup::Core
 			FileSystemState& fileSystemState,
 			RecipeBuildLocationManager& locationManager) :
 			_arguments(arguments),
-			_sdkParameters(sdkParameters),
-			_sdkReadAccess(sdkReadAccess),
+			_userDataPath(std::move(userDataPath)),
 			_systemReadAccess(systemReadAccess),
 			_recipeCache(recipeCache),
 			_packageProvider(packageProvider),
@@ -358,9 +353,6 @@ namespace Soup::Core
 			// Generate the dependencies input state
 			globalState.emplace("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
 
-			// Pass along the sdks
-			globalState.emplace("SDKs", _sdkParameters);
-
 			inputTable.emplace("GlobalState", std::move(globalState));
 
 			// Build up the input state for the generate call
@@ -374,13 +366,9 @@ namespace Soup::Core
 			for (auto& [key, value] : packageAccessSet.GenerateCurrentMacros)
 				generateMacros.emplace(key, value);
 
-			// Make subgraph macros are unique
+			// Make subgraph macros unique
 			for (auto& [key, value] : packageAccessSet.GenerateSubGraphMacros)
 				generateSubGraphMacros.emplace(key, value);
-
-			// Allow read access for all sdk directories
-			for (auto& value : _sdkReadAccess)
-				evaluateAllowedReadAccess.push_back(value.ToString());
 
 			// Pass along the read access set
 			for (auto& value : packageAccessSet.EvaluateCurrentReadDirectories)
@@ -399,6 +387,7 @@ namespace Soup::Core
 				evaluateMacros.emplace(key, value);
 
 			inputTable.emplace("PackageRoot", packageInfo.PackageRoot.ToString());
+			inputTable.emplace("UserDataPath", _userDataPath.ToString());
 			inputTable.emplace("GenerateMacros", std::move(generateMacros));
 			inputTable.emplace("GenerateSubGraphMacros", std::move(generateSubGraphMacros));
 			inputTable.emplace("EvaluateReadAccess", std::move(evaluateAllowedReadAccess));
@@ -454,8 +443,12 @@ namespace Soup::Core
 			auto generateAllowedReadAccess = std::vector<Path>();
 			auto generateAllowedWriteAccess = std::vector<Path>();
 
-			// Allow read access to the generate executable folder, Windows and the DotNet install
+			// Allow read access to the generate executable folder
 			generateAllowedReadAccess.push_back(generateFolder);
+
+			// Allow read access to the local user config
+			auto localUserConfigPath = _userDataPath + BuildConstants::LocalUserConfigFileName();
+			generateAllowedReadAccess.push_back(std::move(localUserConfigPath));
 
 			// TODO: Windows specific
 			generateAllowedReadAccess.push_back(Path("C:/Windows/"));
@@ -552,12 +545,6 @@ namespace Soup::Core
 			// Allow read and write access to the temporary directory that is not explicitly declared
 			allowedReadAccess.push_back(temporaryDirectory);
 			allowedWriteAccess.push_back(temporaryDirectory);
-
-			// TODO: REMOVE - Allow read access from SDKs
-			std::copy(
-				_sdkReadAccess.begin(),
-				_sdkReadAccess.end(),
-				std::back_inserter(allowedReadAccess));
 
 			// Ensure the temporary directories exists
 			if (!System::IFileSystem::Current().Exists(temporaryDirectory))

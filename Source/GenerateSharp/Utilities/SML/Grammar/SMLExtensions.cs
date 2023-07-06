@@ -37,6 +37,13 @@ namespace Soup.Build.Utilities
 				new SMLToken("\""))),
 				new List<SMLToken>());
 
+			// Update the previous last item to have a comma delmiter
+			if (array.Values.Count > 0)
+			{
+				var lastItem = array.Values.Last();
+				lastItem.Delimiter.Add(NewlineToken);
+			}
+
 			// Add the model to the parent table model
 			array.Values.Add(newValue);
 		}
@@ -46,9 +53,33 @@ namespace Soup.Build.Utilities
 			return document.Values.AddArrayWithSyntax(name, 0);
 		}
 
+		public static SMLArray EnsureArrayWithSyntax(this SMLTable table, string name, int indentLevel)
+		{
+			if (table.Values.TryGetValue(name, out var tableValue))
+			{
+				return tableValue.Value.AsArray();
+			}
+			else
+			{
+				return table.AddArrayWithSyntax(name, indentLevel);
+			}
+		}
+
 		public static SMLArray AddArrayWithSyntax(this SMLTable table, string name, int indentLevel)
 		{
 			return table.Values.AddArrayWithSyntax(name, indentLevel);
+		}
+
+		public static SMLTable EnsureTableWithSyntax(this SMLDocument document, string name)
+		{
+			if (document.Values.TryGetValue(name, out var tableValue))
+			{
+				return tableValue.Value.AsTable();
+			}
+			else
+			{
+				return document.AddTableWithSyntax(name);
+			}
 		}
 
 		public static SMLTable AddTableWithSyntax(this SMLDocument document, string name)
@@ -59,6 +90,18 @@ namespace Soup.Build.Utilities
 		public static SMLTable AddInlineTableWithSyntax(this SMLDocument document, string name)
 		{
 			return document.Values.AddInlineTableWithSyntax(name, 0);
+		}
+
+		public static SMLTable EnsureTableWithSyntax(this SMLTable table, string name, int indentLevel)
+		{
+			if (table.Values.TryGetValue(name, out var tableValue))
+			{
+				return tableValue.Value.AsTable();
+			}
+			else
+			{
+				return table.AddTableWithSyntax(name, indentLevel);
+			}
 		}
 
 		public static SMLTable AddTableWithSyntax(this SMLTable table, string name, int indentLevel)
@@ -179,6 +222,18 @@ namespace Soup.Build.Utilities
 
 			// Tables items should be on newline
 			var keyToken = new SMLToken(key); ;
+
+			// Add the model to the parent table model
+			table.Values.Add(key, CreateTableValue(keyToken, newValue));
+		}
+
+		public static void AddItemWithSyntax(this SMLTable table, string key, string value)
+		{
+			// Create a new item and matching syntax
+			var newValue = new SMLValue(new SMLStringValue(value));
+
+			// Tables items should be on newline
+			var keyToken = new SMLToken(key);
 
 			// Add the model to the parent table model
 			table.Values.Add(key, CreateTableValue(keyToken, newValue));
