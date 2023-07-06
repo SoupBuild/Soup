@@ -5,8 +5,8 @@ SET RootDir=%ScriptsDir%..\..
 SET OutDir=%RootDir%\out
 SET RunDir=%OutDir%\run
 SET SourceDir=%RootDir%\Source
-SET GlobalPackagesDir=C:\Users\mwasp\.soup\packages
-SET GlobalOutDir=C:\Users\mwasp\.soup\out
+SET GlobalPackagesDir=%UserProfile%\.soup\packages
+SET GlobalOutDir=%UserProfile%\.soup\out
 
 SET ConfigHash=OZlIVjblazFuKXg-raWUNoGEnG4
 
