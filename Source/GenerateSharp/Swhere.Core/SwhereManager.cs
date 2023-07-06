@@ -98,6 +98,10 @@ namespace Soup.Build.Discover
 					nugetPackagesPath,
 				};
 
+				nugetSDK.Properties.Values.Clear();
+
+				nugetSDK.Properties.AddItemWithSyntax("PackagesDirectory", nugetPackagesPath.ToString(), 3);
+
 				var packagesTable = nugetSDK.Properties.EnsureTableWithSyntax("Packages", 3);
 				packagesTable.Values.Clear();
 				foreach (var package in nugetPackages)

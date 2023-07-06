@@ -233,7 +233,7 @@ namespace Soup.Build.Utilities
 			var newValue = new SMLValue(new SMLStringValue(value));
 
 			// Tables items should be on newline
-			var keyToken = new SMLToken(key); ;
+			var keyToken = new SMLToken(key);
 
 			// Add the model to the parent table model
 			table.Values.Add(key, CreateTableValue(keyToken, newValue));
