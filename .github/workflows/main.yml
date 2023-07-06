@@ -66,6 +66,19 @@ jobs:
       run: soup build ./Soup/Source/Tools/PrintValueTable/ -flavor ${{matrix.config}} -v:d
 
     # Build Samples
+    - name: Soup Restore C BuildExtension
+      run: soup restore ./Soup/Samples/C/BuildExtension/Executable/
+    - name: Soup Build C BuildExtension
+      run: soup build ./Soup/Samples/C/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Build C ConsoleApplication
+      run: soup build ./Soup/Samples/C/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Build C DynamicLibrary
+      run: soup build ./Soup/Samples/C/DynamicLibrary/Application/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Build C StaticLibrary
+      run: soup build ./Soup/Samples/C/StaticLibrary/Application/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Build C WindowsApplication
+      run: soup build ./Soup/Samples/C/WindowsApplication/ -flavor ${{matrix.config}} -v:d
+
     - name: Soup Restore Cpp BuildExtension
       run: soup restore ./Soup/Samples/Cpp/BuildExtension/Executable/
     - name: Soup Build Cpp BuildExtension
