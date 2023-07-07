@@ -5,6 +5,7 @@
 namespace Soup.Build.Discover
 {
 	using System.Collections.Generic;
+	using System.Runtime.InteropServices;
 	using System.Threading.Tasks;
 	using Opal;
 	using Opal.System;
@@ -17,76 +18,110 @@ namespace Soup.Build.Discover
 			// Load up the Local User Config
 			var localUserConfigPath = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 				new Path(".soup/LocalUserConfig.sml");
-			var (loadConfigResult, userConfig) = 
+			var (loadConfigResult, userConfig) =
 				await LocalUserConfigExtensions.TryLoadLocalUserConfigFromFileAsync(localUserConfigPath);
 			if (!loadConfigResult)
 			{
 				Log.Info("No existing local user config.");
 			}
 
+			await DiscoverSharedPlatformAsync(includePrerelease, userConfig);
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				await DiscoverWindowsPlatformAsync(includePrerelease, userConfig);
+			}
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				await DiscoverLinuxPlatformAsync(includePrerelease, userConfig);
+			}
+
+			// Save the result
+			await LocalUserConfigExtensions.SaveToFileAsync(localUserConfigPath, userConfig);
+		}
+
+		private static async Task DiscoverSharedPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
+		{
+			var (dotNetExecutable, dotnetSDKs, dotnetRuntimes) = await DotNetSDKUtilities.FindDotNetAsync();
+			var dotnetSDK = userConfig.EnsureSDK("DotNet");
+			dotnetSDK.SourceDirectories = new List<Path>()
+			{
+				dotNetExecutable.GetParent(),
+			};
+			dotnetSDK.SetProperties(
+				new Dictionary<string, string>()
+				{
+					{ "DotNetExecutable", dotNetExecutable.ToString() },
+				});
+
+			var sdksTable = dotnetSDK.Properties.EnsureTableWithSyntax("SDKs", 3);
+			foreach (var sdk in dotnetSDKs)
+			{
+				sdksTable.AddItemWithSyntax(sdk.Version, sdk.InstallDirectory.ToString(), 4);
+			}
+
+			var runtimesTable = dotnetSDK.Properties.EnsureTableWithSyntax("Runtimes", 3);
+			foreach (var runtime in dotnetRuntimes)
+			{
+				var runtimeTable = runtimesTable.EnsureTableWithSyntax(runtime.Key, 4);
+				foreach (var runtimeVersion in runtime.Value)
+				{
+					runtimeTable.AddItemWithSyntax(runtimeVersion.Version, runtimeVersion.InstallDirectory.ToString(), 5);
+				}
+			}
+		}
+
+		private static async Task DiscoverWindowsPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
+		{
 			// Find the Roslyn SDKs
 			var roslynInstallPath = await VSWhereUtilities.FindRoslynInstallAsync(includePrerelease);
 
 			var roslynSDK = userConfig.EnsureSDK("Roslyn");
 			roslynSDK.SourceDirectories = new List<Path>()
-				{
-					roslynInstallPath,
-				};
+			{
+				roslynInstallPath,
+			};
 			roslynSDK.SetProperties(
 				new Dictionary<string, string>()
 				{
-						{ "ToolsRoot", roslynInstallPath.ToString() },
-				});
-
-			var (dotnetRuntimeVersion, dotnetSDKInstallPath) = DotNetSDKUtilities.FindDotNet6Refs();
-			var dotnetSDK = userConfig.EnsureSDK("DotNet");
-			dotnetSDK.SourceDirectories = new List<Path>()
-				{
-					dotnetSDKInstallPath,
-				};
-			dotnetSDK.SetProperties(
-				new Dictionary<string, string>()
-				{
-						{ "RuntimeVersion", dotnetRuntimeVersion },
-						{ "RootPath", dotnetSDKInstallPath.ToString() },
+					{ "ToolsRoot", roslynInstallPath.ToString() },
 				});
 
 			var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
 			var msvcSDK = userConfig.EnsureSDK("MSVC");
 			msvcSDK.SourceDirectories = new List<Path>()
-				{
-					msvcInstallPath,
-				};
+			{
+				msvcInstallPath,
+			};
 			msvcSDK.SetProperties(
 				new Dictionary<string, string>()
 				{
-						{ "Version", msvcVersion },
-						{ "VCToolsRoot", msvcInstallPath.ToString() },
+					{ "Version", msvcVersion },
+					{ "VCToolsRoot", msvcInstallPath.ToString() },
 				});
 
 			var (windowsSDKVersion, windowsSDKInstallPath) = WindowsSDKUtilities.FindWindows10Kit();
 			var windowsSDK = userConfig.EnsureSDK("Windows");
 			windowsSDK.SourceDirectories = new List<Path>()
-				{
-					windowsSDKInstallPath,
-				};
+			{
+				windowsSDKInstallPath,
+			};
 			windowsSDK.SetProperties(
 				new Dictionary<string, string>()
 				{
-						{ "Version", windowsSDKVersion },
-						{ "RootPath", windowsSDKInstallPath.ToString() },
+					{ "Version", windowsSDKVersion },
+					{ "RootPath", windowsSDKInstallPath.ToString() },
 				});
 
 			var netFXToolsPath = WindowsSDKUtilities.FindNetFXTools();
 			var netFXToolsSDK = userConfig.EnsureSDK("NetFXTools");
 			netFXToolsSDK.SourceDirectories = new List<Path>()
-				{
-					netFXToolsPath,
-				};
+			{
+				netFXToolsPath,
+			};
 			netFXToolsSDK.SetProperties(
 				new Dictionary<string, string>()
 				{
-						{ "ToolsRoot", netFXToolsPath.ToString() },
+					{ "ToolsRoot", netFXToolsPath.ToString() },
 				});
 
 			var (hasNuget, nugetPackagesPath, nugetPackages) = await NugetSDKUtilities.FindNugetPackagesAsync();
@@ -143,9 +178,23 @@ namespace Soup.Build.Discover
 					}
 				}
 			}
+		}
 
-			// Save the result
-			await LocalUserConfigExtensions.SaveToFileAsync(localUserConfigPath, userConfig);
+		private static async Task DiscoverLinuxPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
+		{
+			// Find the GCC SDKs
+			var gccInstallPath = await WhereIsUtilities.FindExecutableAsync("gcc");
+
+			var gccSDK = userConfig.EnsureSDK("GCC");
+			gccSDK.SourceDirectories = new List<Path>()
+			{
+				gccInstallPath,
+			};
+			gccSDK.SetProperties(
+				new Dictionary<string, string>()
+				{
+					{ "ToolsRoot", gccInstallPath.ToString() },
+				});
 		}
 	}
 }

@@ -2,11 +2,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug Swhere",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "",
+      "program": "${workspaceFolder}/Source/out/msbuild/bin/Swhere/Debug/net6.0/Swhere.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "internalConsole"
+    },
+    {
       "name": "Debug Soup",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/out/soup",
-      "args": [ "restore", "Source/Client/CLI" ],
+      "args": [
+        "restore",
+        "Source/Client/CLI"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],

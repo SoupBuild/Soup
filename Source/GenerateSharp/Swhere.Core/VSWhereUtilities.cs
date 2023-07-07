@@ -77,6 +77,12 @@ namespace Soup.Build.Discover
 			// Execute the requested target
 			var arguments = CombineArguments(argumentList);
 			Log.Info(executablePath.ToString() + " " + arguments);
+			if (!LifetimeManager.Get<IFileSystem>().Exists(executablePath))
+			{
+				Log.Error("VSWhere is not installed on the host machine");
+				throw new HandledException();
+			}
+
 			var process = LifetimeManager.Get<IProcessManager>().CreateProcess(
 				executablePath,
 				arguments,
