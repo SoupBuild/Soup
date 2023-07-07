@@ -136,14 +136,14 @@ namespace Soup.Build.Utilities
 			}
 			else
 			{
-				values = _table.AddInlineTableWithSyntax(Property_Properties, 2);
+				values = _table.AddTableWithSyntax(Property_Properties, 2);
 			}
 
 			// Add the new syntax to the parent table syntax
 			values.Values.Clear();
 			foreach (var item in value)
 			{
-				values.AddInlineItemWithSyntax(item.Key, item.Value);
+				values.AddItemWithSyntax(item.Key, item.Value, 3);
 			}
 		}
 
