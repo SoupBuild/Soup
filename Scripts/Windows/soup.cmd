@@ -5,12 +5,12 @@ SET RootDir=%ScriptsDir%..\..
 SET OutDir=%RootDir%\out
 SET RunDir=%OutDir%\run
 SET SourceDir=%RootDir%\Source
-SET GlobalPackagesDir=C:\Users\mwasp\.soup\packages
-SET GlobalOutDir=C:\Users\mwasp\.soup\out
+SET GlobalPackagesDir=%UserProfile%\.soup\packages
+SET GlobalOutDir=%UserProfile%\.soup\out
 
 SET ConfigHash=Oltq7cGwk0Rbgy1I-3mCMDDE5yM
 
-SET SOUP_VERSION=0.34.0
+SET SOUP_VERSION=0.35.0
 SET COPY_VERSION=1.0.0
 SET MKDIR_VERSION=1.0.0
 SET SOUP_CPP_VERSION=0.8.2
