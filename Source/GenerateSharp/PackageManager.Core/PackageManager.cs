@@ -197,10 +197,9 @@ namespace Soup.Build.PackageManager
 
 				// Publish the archive
 				Log.Info("Publish package");
-				var packageClient = new Api.Client.PackagesClient(_httpClient)
+				var packageClient = new Api.Client.PackagesClient(_httpClient, accessToken)
 				{
 					BaseUrl = _apiEndpoint.ToString(),
-					BearerToken = accessToken,
 				};
 
 				// Check if the package exists
@@ -234,10 +233,9 @@ namespace Soup.Build.PackageManager
 					await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
 				}
 
-				var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient)
+				var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient, accessToken)
 				{
 					BaseUrl = _apiEndpoint.ToString(),
-					BearerToken = accessToken,
 				};
 
 				using (var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath))
@@ -289,7 +287,7 @@ namespace Soup.Build.PackageManager
 
 		private async Task<Api.Client.PackageModel> GetPackageModelAsync(string languageName, string packageName)
 		{
-			var client = new Api.Client.PackagesClient(_httpClient)
+			var client = new Api.Client.PackagesClient(_httpClient, null)
 			{
 				BaseUrl = _apiEndpoint.ToString(),
 			};

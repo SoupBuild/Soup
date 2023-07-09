@@ -251,7 +251,7 @@ namespace Soup.Build.PackageManager
 			IList<Api.Client.PackagePublicReferenceModel> publicPackages)
 		{
 			// Publish the archive
-			var packageClient = new Api.Client.ClosureClient(_httpClient)
+			var packageClient = new Api.Client.ClosureClient(_httpClient, null)
 			{
 				BaseUrl = _apiEndpoint.ToString(),
 			};
@@ -793,7 +793,7 @@ namespace Soup.Build.PackageManager
 				Log.HighPriority("Downloading package");
 				var archivePath = stagingDirectory + new Path(packageName + ".zip");
 
-				var client = new Api.Client.PackageVersionsClient(_httpClient)
+				var client = new Api.Client.PackageVersionsClient(_httpClient, null)
 				{
 					BaseUrl = _apiEndpoint.ToString(),
 				};
