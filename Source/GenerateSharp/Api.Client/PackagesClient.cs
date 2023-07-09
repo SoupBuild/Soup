@@ -5,6 +5,8 @@
 namespace Soup.Build.Api.Client
 {
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Text;
@@ -18,10 +20,10 @@ namespace Soup.Build.Api.Client
 	public class PackagesClient
 	{
 		private HttpClient _httpClient;
-		private string _bearerToken;
+		private string? _bearerToken;
 		private Lazy<JsonSerializerOptions> _settings;
 
-		public PackagesClient(HttpClient httpClient, string bearerToken)
+		public PackagesClient(HttpClient httpClient, string? bearerToken)
 		{
 			_httpClient = httpClient;
 			_bearerToken = bearerToken;
@@ -81,7 +83,7 @@ namespace Soup.Build.Api.Client
 					var disposeResponse_ = true;
 					try
 					{
-						var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+						var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
 						if (response_.Content != null && response_.Content.Headers != null)
 						{
 							foreach (var item_ in response_.Content.Headers)
@@ -91,29 +93,12 @@ namespace Soup.Build.Api.Client
 						var status_ = (int)response_.StatusCode;
 						if (status_ == 200)
 						{
-							var objectResponse_ = await ReadObjectResponseAsync<PackageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
-							if (objectResponse_.Object == null)
-							{
-								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-							}
-							return objectResponse_.Object;
-						}
-						else if (status_ == 404)
-						{
-							var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(
-								response_, headers_, cancellationToken).ConfigureAwait(false);
-							if (objectResponse_.Object == null)
-							{
-								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-							}
-							throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+							var objectResponse = await ReadObjectResponseAsync<PackageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							return objectResponse;
 						}
 						else
 						{
-							var responseData_ = response_.Content == null ?
-								null :
-								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-							throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+							throw new ApiException("The HTTP status code of the response was not expected.", status_, headers_, null);
 						}
 					}
 					finally
@@ -182,7 +167,7 @@ namespace Soup.Build.Api.Client
 					var disposeResponse_ = true;
 					try
 					{
-						var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+						var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
 						if (response_.Content != null && response_.Content.Headers != null)
 						{
 							foreach (var item_ in response_.Content.Headers)
@@ -191,61 +176,15 @@ namespace Soup.Build.Api.Client
 
 
 						var status_ = (int)response_.StatusCode;
-						if (status_ == 200)
+						if (status_ == 200 || status_ == 201)
 						{
-							var objectResponse_ = await ReadObjectResponseAsync<PackageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
-							if (objectResponse_.Object == null)
-							{
-								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-							}
-							return objectResponse_.Object;
-						}
-						else
-						if (status_ == 201)
-						{
-							var objectResponse_ = await ReadObjectResponseAsync<PackageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
-							if (objectResponse_.Object == null)
-							{
-								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-							}
-							return objectResponse_.Object;
-						}
-						else
-						if (status_ == 400)
-						{
-							var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-							if (objectResponse_.Object == null)
-							{
-								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-							}
-							throw new ApiException<ProblemDetails>("Invalid request.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-						}
-						else
-						if (status_ == 403)
-						{
-							var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-							if (objectResponse_.Object == null)
-							{
-								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-							}
-							throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-						}
-						else
-						if (status_ == 404)
-						{
-							var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-							if (objectResponse_.Object == null)
-							{
-								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-							}
-							throw new ApiException<ProblemDetails>("The language does not exist.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+							var objectResponse = await ReadObjectResponseAsync<PackageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
+
+							return objectResponse;
 						}
 						else
 						{
-							var responseData_ = response_.Content == null ?
-								null :
-								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-							throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+							throw new ApiException("The HTTP status code of the response was not expected.", status_, headers_, null);
 						}
 					}
 					finally
@@ -262,57 +201,30 @@ namespace Soup.Build.Api.Client
 			}
 		}
 
-		protected struct ObjectResponseResult<T>
+		protected virtual async Task<T> ReadObjectResponseAsync<T>(
+			HttpResponseMessage response,
+			IReadOnlyDictionary<string, IEnumerable<string>> headers,
+			CancellationToken cancellationToken)
 		{
-			public ObjectResponseResult(T responseObject, string responseText)
+			try
 			{
-				this.Object = responseObject;
-				this.Text = responseText;
-			}
-
-			public T Object { get; }
-
-			public string Text { get; }
-		}
-
-		public bool ReadResponseAsString { get; set; }
-
-		protected virtual async Task<ObjectResponseResult<T>> ReadObjectResponseAsync<T>(HttpResponseMessage response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Threading.CancellationToken cancellationToken)
-		{
-			if (response == null || response.Content == null)
-			{
-				return new ObjectResponseResult<T>(default(T), string.Empty);
-			}
-
-			if (ReadResponseAsString)
-			{
-				var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-				try
+				using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
 				{
-					var typedBody = JsonSerializer.Deserialize<T>(responseText, JsonSerializerSettings);
-					return new ObjectResponseResult<T>(typedBody, responseText);
-				}
-				catch (JsonException exception)
-				{
-					var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-					throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
-				}
-			}
-			else
-			{
-				try
-				{
-					using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
+					var typedBody = await JsonSerializer.DeserializeAsync<T>(
+						responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
+					if (typedBody is null)
 					{
-						var typedBody = await JsonSerializer.DeserializeAsync<T>(responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
-						return new ObjectResponseResult<T>(typedBody, string.Empty);
+						var message = "Response body was empty.";
+						throw new ApiException(message, (int)response.StatusCode, headers, null);
 					}
+
+					return typedBody;
 				}
-				catch (JsonException exception)
-				{
-					var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-					throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
-				}
+			}
+			catch (JsonException exception)
+			{
+				var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
+				throw new ApiException(message, (int)response.StatusCode, headers, exception);
 			}
 		}
 

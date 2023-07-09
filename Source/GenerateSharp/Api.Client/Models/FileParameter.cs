@@ -13,12 +13,12 @@ namespace Soup.Build.Api.Client
 		{
 		}
 
-		public FileParameter(Stream data, string fileName)
+		public FileParameter(Stream data, string? fileName)
 			: this(data, fileName, null)
 		{
 		}
 
-		public FileParameter(Stream data, string fileName, string contentType)
+		public FileParameter(Stream data, string? fileName, string? contentType)
 		{
 			Data = data;
 			FileName = fileName;
@@ -27,8 +27,8 @@ namespace Soup.Build.Api.Client
 
 		public Stream Data { get; private set; }
 
-		public string FileName { get; private set; }
+		public string? FileName { get; private set; }
 
-		public string ContentType { get; private set; }
+		public string? ContentType { get; private set; }
 	}
 }

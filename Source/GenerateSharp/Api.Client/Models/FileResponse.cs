@@ -10,7 +10,7 @@ namespace Soup.Build.Api.Client
 {
 	public partial class FileResponse : IDisposable
 	{
-		private IDisposable _client;
+		private IDisposable? _client;
 		private IDisposable _response;
 
 		public int StatusCode { get; private set; }
@@ -28,7 +28,7 @@ namespace Soup.Build.Api.Client
 			int statusCode,
 			IReadOnlyDictionary<string, IEnumerable<string>> headers,
 			Stream stream,
-			IDisposable client,
+			IDisposable? client,
 			IDisposable response)
 		{
 			StatusCode = statusCode;

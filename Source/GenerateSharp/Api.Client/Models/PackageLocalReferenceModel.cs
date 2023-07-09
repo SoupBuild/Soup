@@ -33,6 +33,6 @@ namespace Soup.Build.Api.Client
 		/// </summary>
 		[JsonPropertyName("dependencies")]
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-		public IDictionary<string, ICollection<int>> Dependencies { get; init; }
+		public IDictionary<string, ICollection<int>>? Dependencies { get; init; }
 	}
 }
