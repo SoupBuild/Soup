@@ -155,18 +155,18 @@ namespace Opal
 			}
 		}
 
-		public bool Equals(SemanticVersion? rhs)
+		public bool Equals(SemanticVersion? other)
 		{
-			if (ReferenceEquals(rhs, null))
+			if (other is null)
 				return false;
-			return this.Major == rhs.Major &&
-				this.Minor == rhs.Minor &&
-				this.Patch == rhs.Patch;
+			return this.Major == other.Major &&
+				this.Minor == other.Minor &&
+				this.Patch == other.Patch;
 		}
 
-		public override bool Equals(object? rhs)
+		public override bool Equals(object? obj)
 		{
-			return this.Equals(rhs as SemanticVersion);
+			return this.Equals(obj as SemanticVersion);
 		}
 
 		public override int GetHashCode()

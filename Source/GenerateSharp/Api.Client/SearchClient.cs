@@ -5,8 +5,11 @@
 namespace Soup.Build.Api.Client
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
+	using System.Reflection;
+	using System.Runtime.Serialization;
 	using System.Text;
 	using System.Text.Json;
 	using System.Threading;
@@ -17,8 +20,6 @@ namespace Soup.Build.Api.Client
 	/// </summary>
 	public class SearchClient
 	{
-
-		private string _baseUrl = "http://localhost:7070";
 		private HttpClient _httpClient;
 		private string _bearerToken;
 		private Lazy<JsonSerializerOptions> _settings;
@@ -36,13 +37,9 @@ namespace Soup.Build.Api.Client
 			return settings;
 		}
 
-		public string BaseUrl
-		{
-			get { return _baseUrl; }
-			set { _baseUrl = value; }
-		}
+		public string BaseUrl { get; init; } = "http://localhost:7070";
 
-		protected JsonSerializerOptions JsonSerializerSettings { get { return _settings.Value; } }
+		protected JsonSerializerOptions JsonSerializerSettings => _settings.Value;
 
 		/// <summary>
 		/// Search for packages.
@@ -54,7 +51,7 @@ namespace Soup.Build.Api.Client
 		/// <exception cref="ApiException">A server side error occurred.</exception>
 		public virtual Task<SearchPackagesModel> SearchPackagesAsync(string q, int? skip, int? take)
 		{
-			return SearchPackagesAsync(q, skip, take, System.Threading.CancellationToken.None);
+			return SearchPackagesAsync(q, skip, take, CancellationToken.None);
 		}
 
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -132,7 +129,8 @@ namespace Soup.Build.Api.Client
 						else
 						if (status_ == 400)
 						{
-							var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(
+								response_, headers_, cancellationToken).ConfigureAwait(false);
 							if (objectResponse_.Object == null)
 							{
 								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -144,7 +142,7 @@ namespace Soup.Build.Api.Client
 						{
 							var responseData_ = response_.Content == null ?
 								null :
-								await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 							throw new ApiException(
 								"The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
 						}
@@ -178,7 +176,8 @@ namespace Soup.Build.Api.Client
 
 		public bool ReadResponseAsString { get; set; }
 
-		protected virtual async Task<ObjectResponseResult<T>> ReadObjectResponseAsync<T>(HttpResponseMessage response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Threading.CancellationToken cancellationToken)
+		protected virtual async Task<ObjectResponseResult<T>> ReadObjectResponseAsync<T>(
+			HttpResponseMessage response, IReadOnlyDictionary<string, IEnumerable<string>> headers, CancellationToken cancellationToken)
 		{
 			if (response == null || response.Content == null)
 			{
@@ -187,7 +186,7 @@ namespace Soup.Build.Api.Client
 
 			if (ReadResponseAsString)
 			{
-				var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+				var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 				try
 				{
 					var typedBody = JsonSerializer.Deserialize<T>(responseText, JsonSerializerSettings);
@@ -203,7 +202,7 @@ namespace Soup.Build.Api.Client
 			{
 				try
 				{
-					using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+					using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
 					{
 						var typedBody = await JsonSerializer.DeserializeAsync<T>(responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
 						return new ObjectResponseResult<T>(typedBody, string.Empty);
@@ -224,33 +223,32 @@ namespace Soup.Build.Api.Client
 				return "";
 			}
 
-			if (value is System.Enum)
+			if (value is Enum)
 			{
-				var name = System.Enum.GetName(value.GetType(), value);
+				var name = Enum.GetName(value.GetType(), value);
 				if (name != null)
 				{
-					var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
+					var field = IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
 					if (field != null)
 					{
-						var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-							as System.Runtime.Serialization.EnumMemberAttribute;
+						var attribute = CustomAttributeExtensions.GetCustomAttribute(field, typeof(EnumMemberAttribute)) as EnumMemberAttribute;
 						if (attribute != null)
 						{
 							return attribute.Value != null ? attribute.Value : name;
 						}
 					}
 
-					var converted = System.Convert.ToString(System.Convert.ChangeType(value, System.Enum.GetUnderlyingType(value.GetType()), cultureInfo));
+					var converted = Convert.ToString(Convert.ChangeType(value, Enum.GetUnderlyingType(value.GetType()), cultureInfo));
 					return converted == null ? string.Empty : converted;
 				}
 			}
 			else if (value is bool)
 			{
-				return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
+				return Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
 			}
 			else if (value is byte[])
 			{
-				return System.Convert.ToBase64String((byte[])value);
+				return Convert.ToBase64String((byte[])value);
 			}
 			else if (value.GetType().IsArray)
 			{
@@ -258,7 +256,7 @@ namespace Soup.Build.Api.Client
 				return string.Join(",", System.Linq.Enumerable.Select(array, o => ConvertToString(o, cultureInfo)));
 			}
 
-			var result = System.Convert.ToString(value, cultureInfo);
+			var result = Convert.ToString(value, cultureInfo);
 			return result == null ? "" : result;
 		}
 

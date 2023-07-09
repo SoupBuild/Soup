@@ -21,7 +21,6 @@ namespace Soup.Build.Api.Client
 	/// </summary>
 	public class ClosureClient
 	{
-		private string _baseUrl = "http://localhost:7070";
 		private HttpClient _httpClient;
 		private string _bearerToken;
 		private Lazy<JsonSerializerOptions> _settings;
@@ -39,13 +38,9 @@ namespace Soup.Build.Api.Client
 			return settings;
 		}
 
-		public string BaseUrl
-		{
-			get { return _baseUrl; }
-			set { _baseUrl = value; }
-		}
+		public string BaseUrl { get; init; } = "http://localhost:7070";
 
-		protected JsonSerializerOptions JsonSerializerSettings { get { return _settings.Value; } }
+		protected JsonSerializerOptions JsonSerializerSettings => _settings.Value;
 
 		/// <summary>
 		/// Generate a package closure.
@@ -68,7 +63,7 @@ namespace Soup.Build.Api.Client
 			GenerateClosureRequestModel request, CancellationToken cancellationToken)
 		{
 			if (request == null)
-				throw new ArgumentNullException("request");
+				throw new ArgumentNullException(nameof(request));
 
 			var urlBuilder_ = new StringBuilder();
 			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/closure/generate");
@@ -124,7 +119,9 @@ namespace Soup.Build.Api.Client
 						}
 						else
 						{
-							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							var responseData_ = response_.Content == null ?
+								null :
+								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 							throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
 						}
 					}
@@ -169,7 +166,7 @@ namespace Soup.Build.Api.Client
 
 			if (ReadResponseAsString)
 			{
-				var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+				var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 				try
 				{
 					var typedBody = JsonSerializer.Deserialize<T>(responseText, JsonSerializerSettings);
@@ -185,7 +182,7 @@ namespace Soup.Build.Api.Client
 			{
 				try
 				{
-					using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+					using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
 					{
 						var typedBody = await JsonSerializer.DeserializeAsync<T>(
 							responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);

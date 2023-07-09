@@ -6,8 +6,11 @@ namespace Soup.Build.Api.Client
 {
 	using System;
 	using System.Globalization;
+	using System.Linq;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
+	using System.Reflection;
+	using System.Runtime.Serialization;
 	using System.Text;
 	using System.Text.Json;
 	using System.Threading;
@@ -18,16 +21,15 @@ namespace Soup.Build.Api.Client
 	/// </summary>
 	public class PackageVersionsClient
 	{
-		private string _baseUrl = "http://localhost:7070";
 		private HttpClient _httpClient;
 		private string _bearerToken;
-		private System.Lazy<JsonSerializerOptions> _settings;
+		private Lazy<JsonSerializerOptions> _settings;
 
 		public PackageVersionsClient(HttpClient httpClient, string bearerToken)
 		{
 			_httpClient = httpClient;
 			_bearerToken = bearerToken;
-			_settings = new System.Lazy<JsonSerializerOptions>(CreateSerializerSettings);
+			_settings = new Lazy<JsonSerializerOptions>(CreateSerializerSettings);
 		}
 
 		private JsonSerializerOptions CreateSerializerSettings()
@@ -36,13 +38,9 @@ namespace Soup.Build.Api.Client
 			return settings;
 		}
 
-		public string BaseUrl
-		{
-			get { return _baseUrl; }
-			set { _baseUrl = value; }
-		}
+		public string BaseUrl { get; init; } = "http://localhost:7070";
 
-		protected JsonSerializerOptions JsonSerializerSettings { get { return _settings.Value; } }
+		protected JsonSerializerOptions JsonSerializerSettings => _settings.Value;
 
 		/// <summary>
 		/// Get a package version.
@@ -138,7 +136,9 @@ namespace Soup.Build.Api.Client
 						}
 						else
 						{
-							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							var responseData_ = response_.Content == null ?
+								null :
+								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 							throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
 						}
 					}
@@ -183,7 +183,7 @@ namespace Soup.Build.Api.Client
 		public virtual async Task PublishPackageVersionAsync(string languageName, string packageName, string packageVersion, FileParameter file, CancellationToken cancellationToken)
 		{
 			if (file == null)
-				throw new System.ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 
 			var urlBuilder_ = new StringBuilder();
 			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
@@ -283,7 +283,9 @@ namespace Soup.Build.Api.Client
 						}
 						else
 						{
-							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							var responseData_ = response_.Content == null ?
+								null :
+								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 							throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
 						}
 					}
@@ -323,7 +325,8 @@ namespace Soup.Build.Api.Client
 		/// <param name="packageVersion">The package version to download.</param>
 		/// <returns>The action result.</returns>
 		/// <exception cref="ApiException">A server side error occurred.</exception>
-		public virtual async Task<FileResponse> DownloadPackageVersionAsync(string languageName, string packageName, string packageVersion, CancellationToken cancellationToken)
+		public virtual async Task<FileResponse> DownloadPackageVersionAsync(
+			string languageName, string packageName, string packageVersion, CancellationToken cancellationToken)
 		{
 			var urlBuilder_ = new StringBuilder();
 			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}/download");
@@ -389,7 +392,9 @@ namespace Soup.Build.Api.Client
 						}
 						else
 						{
-							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							var responseData_ = response_.Content == null ?
+								null :
+								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 							throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
 						}
 					}
@@ -431,7 +436,7 @@ namespace Soup.Build.Api.Client
 
 			if (ReadResponseAsString)
 			{
-				var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+				var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 				try
 				{
 					var typedBody = JsonSerializer.Deserialize<T>(responseText, JsonSerializerSettings);
@@ -447,7 +452,7 @@ namespace Soup.Build.Api.Client
 			{
 				try
 				{
-					using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+					using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
 					{
 						var typedBody = await JsonSerializer.DeserializeAsync<T>(responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
 						return new ObjectResponseResult<T>(typedBody, string.Empty);
@@ -468,41 +473,40 @@ namespace Soup.Build.Api.Client
 				return "";
 			}
 
-			if (value is System.Enum)
+			if (value is Enum)
 			{
-				var name = System.Enum.GetName(value.GetType(), value);
+				var name = Enum.GetName(value.GetType(), value);
 				if (name != null)
 				{
-					var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
+					var field = IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
 					if (field != null)
 					{
-						var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-							as System.Runtime.Serialization.EnumMemberAttribute;
+						var attribute = CustomAttributeExtensions.GetCustomAttribute(field, typeof(EnumMemberAttribute))as EnumMemberAttribute;
 						if (attribute != null)
 						{
 							return attribute.Value != null ? attribute.Value : name;
 						}
 					}
 
-					var converted = System.Convert.ToString(System.Convert.ChangeType(value, System.Enum.GetUnderlyingType(value.GetType()), cultureInfo));
+					var converted = Convert.ToString(System.Convert.ChangeType(value, Enum.GetUnderlyingType(value.GetType()), cultureInfo));
 					return converted == null ? string.Empty : converted;
 				}
 			}
 			else if (value is bool)
 			{
-				return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
+				return Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
 			}
 			else if (value is byte[])
 			{
-				return System.Convert.ToBase64String((byte[])value);
+				return Convert.ToBase64String((byte[])value);
 			}
 			else if (value.GetType().IsArray)
 			{
-				var array = System.Linq.Enumerable.OfType<object>((System.Array)value);
-				return string.Join(",", System.Linq.Enumerable.Select(array, o => ConvertToString(o, cultureInfo)));
+				var array = Enumerable.OfType<object>((Array)value);
+				return string.Join(",", Enumerable.Select(array, o => ConvertToString(o, cultureInfo)));
 			}
 
-			var result = System.Convert.ToString(value, cultureInfo);
+			var result = Convert.ToString(value, cultureInfo);
 			return result == null ? "" : result;
 		}
 

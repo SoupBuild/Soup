@@ -17,7 +17,6 @@ namespace Soup.Build.Api.Client
 	/// </summary>
 	public class PackagesClient
 	{
-		private string _baseUrl = "http://localhost:7070";
 		private HttpClient _httpClient;
 		private string _bearerToken;
 		private Lazy<JsonSerializerOptions> _settings;
@@ -35,13 +34,9 @@ namespace Soup.Build.Api.Client
 			return settings;
 		}
 
-		public string BaseUrl
-		{
-			get { return _baseUrl; }
-			set { _baseUrl = value; }
-		}
+		public string BaseUrl { get; init; } = "http://localhost:7070";
 
-		protected JsonSerializerOptions JsonSerializerSettings { get { return _settings.Value; } }
+		protected JsonSerializerOptions JsonSerializerSettings => _settings.Value;
 
 		/// <summary>
 		/// Get a package by unique name.
@@ -103,10 +98,10 @@ namespace Soup.Build.Api.Client
 							}
 							return objectResponse_.Object;
 						}
-						else
-						if (status_ == 404)
+						else if (status_ == 404)
 						{
-							var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(
+								response_, headers_, cancellationToken).ConfigureAwait(false);
 							if (objectResponse_.Object == null)
 							{
 								throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -115,7 +110,9 @@ namespace Soup.Build.Api.Client
 						}
 						else
 						{
-							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							var responseData_ = response_.Content == null ?
+								null :
+								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 							throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
 						}
 					}
@@ -158,7 +155,7 @@ namespace Soup.Build.Api.Client
 		public virtual async Task<PackageModel> CreateOrUpdatePackageAsync(string languageName, string packageName, PackageCreateOrUpdateModel model, System.Threading.CancellationToken cancellationToken)
 		{
 			if (model == null)
-				throw new System.ArgumentNullException("model");
+				throw new ArgumentNullException(nameof(model));
 
 			var urlBuilder_ = new StringBuilder();
 			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/languages/{languageName}/packages/{packageName}");
@@ -245,7 +242,9 @@ namespace Soup.Build.Api.Client
 						}
 						else
 						{
-							var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+							var responseData_ = response_.Content == null ?
+								null :
+								await response_.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 							throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
 						}
 					}
@@ -287,7 +286,7 @@ namespace Soup.Build.Api.Client
 
 			if (ReadResponseAsString)
 			{
-				var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+				var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 				try
 				{
 					var typedBody = JsonSerializer.Deserialize<T>(responseText, JsonSerializerSettings);
@@ -303,7 +302,7 @@ namespace Soup.Build.Api.Client
 			{
 				try
 				{
-					using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+					using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
 					{
 						var typedBody = await JsonSerializer.DeserializeAsync<T>(responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
 						return new ObjectResponseResult<T>(typedBody, string.Empty);

@@ -2,10 +2,18 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+
 namespace Opal
 {
+	[Flags]
 	public enum TraceEventFlag
 	{
+		/// <summary>
+		/// None.
+		/// </summary>
+		None = 0,
+
 		/// <summary>
 		/// High Priority message.
 		/// </summary>
