@@ -6,14 +6,12 @@ namespace Soup.Build.Api.Client
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using System.Linq;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
-	using System.Reflection;
-	using System.Runtime.Serialization;
 	using System.Text;
 	using System.Text.Json;
+	using System.Text.Json.Serialization.Metadata;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -24,24 +22,14 @@ namespace Soup.Build.Api.Client
 	{
 		private HttpClient _httpClient;
 		private string _bearerToken;
-		private Lazy<JsonSerializerOptions> _settings;
 
 		public LanguagesClient(HttpClient httpClient, string bearerToken)
 		{
 			_httpClient = httpClient;
 			_bearerToken = bearerToken;
-			_settings = new Lazy<JsonSerializerOptions>(CreateSerializerSettings);
-		}
-
-		private JsonSerializerOptions CreateSerializerSettings()
-		{
-			var settings = new JsonSerializerOptions();
-			return settings;
 		}
 
 		public string BaseUrl { get; init; } = "http://localhost:7070";
-
-		protected JsonSerializerOptions JsonSerializerSettings => _settings.Value;
 
 		/// <summary>
 		/// Get a language by unique name.
@@ -94,7 +82,8 @@ namespace Soup.Build.Api.Client
 						var status_ = (int)response_.StatusCode;
 						if (status_ == 200)
 						{
-							var objectResponse = await ReadObjectResponseAsync<LanguageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
+							var objectResponse = await ReadObjectResponseAsync<LanguageModel>(
+								response_, headers_, SourceGenerationContext.Default.LanguageModel, cancellationToken).ConfigureAwait(false);
 							return objectResponse;
 						}
 						else
@@ -119,6 +108,7 @@ namespace Soup.Build.Api.Client
 		protected virtual async Task<T> ReadObjectResponseAsync<T>(
 			HttpResponseMessage response,
 			IReadOnlyDictionary<string, IEnumerable<string>> headers,
+			JsonTypeInfo<T> jsonTypeInfo,
 			CancellationToken cancellationToken)
 		{
 			try
@@ -126,7 +116,7 @@ namespace Soup.Build.Api.Client
 				using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
 				{
 					var typedBody = await JsonSerializer.DeserializeAsync<T>(
-						responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
+						responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
 					if (typedBody is null)
 					{
 						var message = "Response body was empty.";
