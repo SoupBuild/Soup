@@ -19,7 +19,7 @@
 
   <!-- Inject Analyzers into all projects -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <!-- <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" /> -->
   </ItemGroup>
 
