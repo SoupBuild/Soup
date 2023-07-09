@@ -15,7 +15,7 @@ namespace Soup.Build.Api.Client
 	/// <summary>
 	/// The package client.
 	/// </summary>
-	public partial class PackagesClient
+	public class PackagesClient
 	{
 		private string _baseUrl = "http://localhost:7070";
 		private HttpClient _httpClient;

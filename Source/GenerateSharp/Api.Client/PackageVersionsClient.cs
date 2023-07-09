@@ -16,7 +16,7 @@ namespace Soup.Build.Api.Client
 	/// <summary>
 	/// The package version client.
 	/// </summary>
-	public partial class PackageVersionsClient
+	public class PackageVersionsClient
 	{
 		private string _baseUrl = "http://localhost:7070";
 		private HttpClient _httpClient;
@@ -33,7 +33,6 @@ namespace Soup.Build.Api.Client
 		private JsonSerializerOptions CreateSerializerSettings()
 		{
 			var settings = new JsonSerializerOptions();
-			UpdateJsonSerializerSettings(settings);
 			return settings;
 		}
 
@@ -44,12 +43,6 @@ namespace Soup.Build.Api.Client
 		}
 
 		protected JsonSerializerOptions JsonSerializerSettings { get { return _settings.Value; } }
-
-		partial void UpdateJsonSerializerSettings(JsonSerializerOptions settings);
-
-		partial void PrepareRequest(HttpClient client, HttpRequestMessage request, string url);
-		partial void PrepareRequest(HttpClient client, HttpRequestMessage request, StringBuilder urlBuilder);
-		partial void ProcessResponse(HttpClient client, HttpResponseMessage response);
 
 		/// <summary>
 		/// Get a package version.
@@ -99,12 +92,8 @@ namespace Soup.Build.Api.Client
 					request_.Method = new HttpMethod("GET");
 					request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
-					PrepareRequest(client_, request_, urlBuilder_);
-
 					var url_ = urlBuilder_.ToString();
 					request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-					PrepareRequest(client_, request_, url_);
 
 					var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 					var disposeResponse_ = true;
@@ -116,8 +105,6 @@ namespace Soup.Build.Api.Client
 							foreach (var item_ in response_.Content.Headers)
 								headers_[item_.Key] = item_.Value;
 						}
-
-						ProcessResponse(client_, response_);
 
 						var status_ = (int)response_.StatusCode;
 						if (status_ == 200)
@@ -215,12 +202,8 @@ namespace Soup.Build.Api.Client
 					request_.Content = content_;
 					request_.Method = new HttpMethod("PUT");
 
-					PrepareRequest(client_, request_, urlBuilder_);
-
 					var url_ = urlBuilder_.ToString();
 					request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-					PrepareRequest(client_, request_, url_);
 
 					var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 					var disposeResponse_ = true;
@@ -232,8 +215,6 @@ namespace Soup.Build.Api.Client
 							foreach (var item_ in response_.Content.Headers)
 								headers_[item_.Key] = item_.Value;
 						}
-
-						ProcessResponse(client_, response_);
 
 						var status_ = (int)response_.StatusCode;
 						if (status_ == 201)
@@ -359,12 +340,8 @@ namespace Soup.Build.Api.Client
 					request_.Method = new HttpMethod("GET");
 					request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
-					PrepareRequest(client_, request_, urlBuilder_);
-
 					var url_ = urlBuilder_.ToString();
 					request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-					PrepareRequest(client_, request_, url_);
 
 					var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 					var disposeResponse_ = true;
@@ -376,8 +353,6 @@ namespace Soup.Build.Api.Client
 							foreach (var item_ in response_.Content.Headers)
 								headers_[item_.Key] = item_.Value;
 						}
-
-						ProcessResponse(client_, response_);
 
 						var status_ = (int)response_.StatusCode;
 						if (status_ == 200 || status_ == 206)

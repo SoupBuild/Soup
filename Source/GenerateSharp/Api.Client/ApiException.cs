@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Soup.Build.Api.Client
 {
-	public partial class ApiException : Exception
+	public class ApiException : Exception
 	{
 		public int StatusCode { get; private set; }
 
@@ -34,7 +34,7 @@ namespace Soup.Build.Api.Client
 		}
 	}
 
-	public partial class ApiException<TResult> : ApiException
+	public class ApiException<TResult> : ApiException
 	{
 		public TResult Result { get; private set; }
 
