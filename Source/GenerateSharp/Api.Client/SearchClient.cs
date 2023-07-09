@@ -67,8 +67,8 @@ namespace Soup.Build.Api.Client
 		public virtual async Task<SearchPackagesModel> SearchPackagesAsync(string q, int? skip, int? take, System.Threading.CancellationToken cancellationToken)
 		{
 			var urlBuilder_ = new StringBuilder();
-			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/search/packages?");
-			if (q != null)
+			urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/search/packages?");
+			if (q is not null)
 			{
 				urlBuilder_
 					.Append(Uri.EscapeDataString("q") + "=")
@@ -76,19 +76,19 @@ namespace Soup.Build.Api.Client
 					.Append('&');
 			}
 
-			if (skip != null)
+			if (skip is not null)
 			{
 				urlBuilder_
 					.Append(Uri.EscapeDataString("skip") + "=")
-					.Append(Uri.EscapeDataString(skip.ToString()))
+					.Append(Uri.EscapeDataString($"{skip}"))
 					.Append('&');
 			}
 
-			if (take != null)
+			if (take is not null)
 			{
 				urlBuilder_
 					.Append(Uri.EscapeDataString("take") + "=")
-					.Append(Uri.EscapeDataString(take.ToString()))
+					.Append(Uri.EscapeDataString($"{take}"))
 					.Append('&');
 			}
 

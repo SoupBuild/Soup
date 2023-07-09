@@ -71,7 +71,7 @@ namespace Soup.Build.Api.Client
 		{
 			var urlBuilder_ = new StringBuilder();
 			urlBuilder_
-				.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "")
+				.Append(BaseUrl.TrimEnd('/'))
 				.Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
 			urlBuilder_.Replace(
 				"{languageName}",

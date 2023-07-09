@@ -60,12 +60,12 @@ namespace Soup.Build.Api.Client
 		/// <param name="packageName">The unique name of the package.</param>
 		/// <returns>The action result.</returns>
 		/// <exception cref="ApiException">A server side error occurred.</exception>
-		public virtual async Task<PackageModel> GetPackageAsync(string languageName, string packageName, System.Threading.CancellationToken cancellationToken)
+		public virtual async Task<PackageModel> GetPackageAsync(string languageName, string packageName, CancellationToken cancellationToken)
 		{
 			var urlBuilder_ = new StringBuilder();
-			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/languages/{languageName}/packages/{packageName}");
-			urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(ConvertToString(languageName, System.Globalization.CultureInfo.InvariantCulture)));
-			urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(ConvertToString(packageName, System.Globalization.CultureInfo.InvariantCulture)));
+			urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
+			urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+			urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 
 			var client_ = _httpClient;
 			var disposeClient_ = false;
@@ -125,7 +125,7 @@ namespace Soup.Build.Api.Client
 		/// <exception cref="ApiException">A server side error occurred.</exception>
 		public virtual Task<PackageModel> CreateOrUpdatePackageAsync(string languageName, string packageName, PackageCreateOrUpdateModel model)
 		{
-			return CreateOrUpdatePackageAsync(languageName, packageName, model, System.Threading.CancellationToken.None);
+			return CreateOrUpdatePackageAsync(languageName, packageName, model, CancellationToken.None);
 		}
 
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -137,15 +137,16 @@ namespace Soup.Build.Api.Client
 		/// <param name="model">The incoming model.</param>
 		/// <returns>Updated.</returns>
 		/// <exception cref="ApiException">A server side error occurred.</exception>
-		public virtual async Task<PackageModel> CreateOrUpdatePackageAsync(string languageName, string packageName, PackageCreateOrUpdateModel model, System.Threading.CancellationToken cancellationToken)
+		public virtual async Task<PackageModel> CreateOrUpdatePackageAsync(
+			string languageName, string packageName, PackageCreateOrUpdateModel model, CancellationToken cancellationToken)
 		{
 			if (model == null)
 				throw new ArgumentNullException(nameof(model));
 
 			var urlBuilder_ = new StringBuilder();
-			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/languages/{languageName}/packages/{packageName}");
-			urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(ConvertToString(languageName, System.Globalization.CultureInfo.InvariantCulture)));
-			urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(ConvertToString(packageName, System.Globalization.CultureInfo.InvariantCulture)));
+			urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
+			urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+			urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 
 			var client_ = _httpClient;
 			var disposeClient_ = false;
@@ -226,51 +227,6 @@ namespace Soup.Build.Api.Client
 				var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
 				throw new ApiException(message, (int)response.StatusCode, headers, exception);
 			}
-		}
-
-		private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
-		{
-			if (value == null)
-			{
-				return "";
-			}
-
-			if (value is System.Enum)
-			{
-				var name = System.Enum.GetName(value.GetType(), value);
-				if (name != null)
-				{
-					var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
-					if (field != null)
-					{
-						var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-							as System.Runtime.Serialization.EnumMemberAttribute;
-						if (attribute != null)
-						{
-							return attribute.Value != null ? attribute.Value : name;
-						}
-					}
-
-					var converted = System.Convert.ToString(System.Convert.ChangeType(value, System.Enum.GetUnderlyingType(value.GetType()), cultureInfo));
-					return converted == null ? string.Empty : converted;
-				}
-			}
-			else if (value is bool)
-			{
-				return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
-			}
-			else if (value is byte[])
-			{
-				return System.Convert.ToBase64String((byte[])value);
-			}
-			else if (value.GetType().IsArray)
-			{
-				var array = System.Linq.Enumerable.OfType<object>((System.Array)value);
-				return string.Join(",", System.Linq.Enumerable.Select(array, o => ConvertToString(o, cultureInfo)));
-			}
-
-			var result = System.Convert.ToString(value, cultureInfo);
-			return result == null ? "" : result;
 		}
 
 		/// <summary>

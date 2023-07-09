@@ -256,7 +256,7 @@ namespace Soup.Build.PackageManager
 						{
 							case 400:
 								if (ex is Api.Client.ApiException<Api.Client.ProblemDetails> problemDetailsEx)
-									Log.Error(problemDetailsEx.Result.Detail);
+									Log.Error(problemDetailsEx.Result.Detail ?? "Bad request");
 								else
 									Log.Error("Bad request");
 								break;

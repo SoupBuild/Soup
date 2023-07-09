@@ -11,11 +11,11 @@ namespace Soup.Build.Api.Client
 	{
 		[JsonPropertyName("type")]
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-		public string Type { get; set; }
+		public string? Type { get; set; }
 
 		[JsonPropertyName("title")]
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-		public string Title { get; set; }
+		public string? Title { get; set; }
 
 		[JsonPropertyName("status")]
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
@@ -23,13 +23,13 @@ namespace Soup.Build.Api.Client
 
 		[JsonPropertyName("detail")]
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-		public string Detail { get; set; }
+		public string? Detail { get; set; }
 
 		[JsonPropertyName("instance")]
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-		public string Instance { get; set; }
+		public string? Instance { get; set; }
 
-		private IDictionary<string, object> _additionalProperties;
+		private IDictionary<string, object>? _additionalProperties;
 
 		[JsonExtensionData]
 		public IDictionary<string, object> AdditionalProperties

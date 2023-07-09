@@ -64,8 +64,8 @@ namespace Soup.Build.Api.Client
 		public virtual async Task<LanguageModel> GetLanguageAsync(string languageName, CancellationToken cancellationToken)
 		{
 			var urlBuilder_ = new StringBuilder();
-			urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/languages/{languageName}");
-			urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(ConvertToString(languageName, CultureInfo.InvariantCulture)));
+			urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/languages/{languageName}");
+			urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
 
 			var client_ = _httpClient;
 			var disposeClient_ = false;
@@ -141,50 +141,6 @@ namespace Soup.Build.Api.Client
 				var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
 				throw new ApiException(message, (int)response.StatusCode, headers, exception);
 			}
-		}
-
-		private string ConvertToString(object value, CultureInfo cultureInfo)
-		{
-			if (value == null)
-			{
-				return "";
-			}
-
-			if (value is Enum)
-			{
-				var name = Enum.GetName(value.GetType(), value);
-				if (name != null)
-				{
-					var field = IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
-					if (field != null)
-					{
-						var attribute = CustomAttributeExtensions.GetCustomAttribute(field, typeof(EnumMemberAttribute)) as EnumMemberAttribute;
-						if (attribute != null)
-						{
-							return attribute.Value != null ? attribute.Value : name;
-						}
-					}
-
-					var converted = Convert.ToString(Convert.ChangeType(value, Enum.GetUnderlyingType(value.GetType()), cultureInfo));
-					return converted == null ? string.Empty : converted;
-				}
-			}
-			else if (value is bool)
-			{
-				return Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
-			}
-			else if (value is byte[])
-			{
-				return Convert.ToBase64String((byte[])value);
-			}
-			else if (value.GetType().IsArray)
-			{
-				var array = Enumerable.OfType<object>((Array)value);
-				return string.Join(",", Enumerable.Select(array, o => ConvertToString(o, cultureInfo)));
-			}
-
-			var result = Convert.ToString(value, cultureInfo);
-			return result == null ? "" : result;
 		}
 
 		/// <summary>

@@ -40,6 +40,6 @@ namespace Soup.Build.Api.Client
 		/// </summary>
 		[JsonPropertyName("versions")]
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-		public ICollection<PackageVersionModel> Versions { get; set; }
+		public ICollection<PackageVersionModel> Versions { get; init; }
 	}
 }
