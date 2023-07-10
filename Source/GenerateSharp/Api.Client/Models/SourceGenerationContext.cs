@@ -6,7 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace Soup.Build.Api.Client
 {
-	[JsonSourceGenerationOptions(WriteIndented = false)]
+	[JsonSourceGenerationOptions(
+		WriteIndented = false,
+		PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+		GenerationMode = JsonSourceGenerationMode.Metadata)]
 	[JsonSerializable(typeof(GenerateClosureRequestModel))]
 	[JsonSerializable(typeof(GenerateClosureResultModel))]
 	[JsonSerializable(typeof(LanguageModel))]
