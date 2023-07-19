@@ -1,4 +1,4 @@
-#  C++ Console Application
+#  C Console Application
 This is the smallest amount of code to get a console application building using Soup.
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/C/ConsoleApplication)

@@ -1,4 +1,4 @@
-# C++ Windows Application
+# C Windows Application
 This is a windows application that demonstrates creating a GUI windows application.
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/C/WindowsApplication)
