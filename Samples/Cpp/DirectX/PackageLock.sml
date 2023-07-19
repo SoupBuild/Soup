@@ -2,7 +2,7 @@ Version: 4
 Closures: {
 	Root: {
 		"C++": [
-			{ Name: "Samples.Cpp.DirectX", Version: "./", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Samples.Cpp.DirectX", Version: "../DirectX", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {

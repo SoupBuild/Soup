@@ -1,4 +1,4 @@
-# C++ Dynamic Library
+# C Dynamic Library
 This is a console application that has a single dynamic library dependency.
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/C/DynamicLibrary)
