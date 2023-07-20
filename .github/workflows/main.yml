@@ -6,7 +6,7 @@ jobs:
   windows-build:
     strategy:
       matrix:
-        os: [ windows-2022 ]
+        os: [ windows-2022, ubuntu-22.04 ]
         config: [ Debug, Release ]
     name: PR Build ${{matrix.os}} ${{matrix.config}}
     runs-on: ${{ matrix.os }}
@@ -40,6 +40,7 @@ jobs:
       run: soup restore ./Soup/Source/Client/CLI/ -v:d
     - name: Soup Build
       run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
+      if: matrix.os != 'ubuntu-latest'
     - name: Soup Run Version
       run: soup run ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}} -args version
     - name: Soup Restore GenerateTest
@@ -106,32 +107,4 @@ jobs:
     #   run: soup build ./Soup/Samples/CSharp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
     # - name: Soup Build CSharp ConsoleApplication
     #   run: soup build ./Soup/Samples/CSharp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
-  linux-build:
-    strategy:
-      matrix:
-        os: [ ubuntu-22.04 ]
-        config: [ Debug ]
-    name: PR Build ${{matrix.os}} ${{matrix.config}}
-    runs-on: ${{ matrix.os }}
-    steps:
-    # Setup Environment
-    - uses: actions/checkout@v2
-      with:
-        path: "Soup"
-        submodules: true
-    - name: Setup Soup Build
-      uses: soupbuild/setup-soup@v1
-      with:
-        version: latest
-
-    # Build Soup
-    - name: Soup Restore
-      run: soup restore ./Soup/Source/Client/CLI/ -v:d
-    - name: Soup Build
-      run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
-    - name: Soup Run Version
-      run: soup run ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}} -args version
-
-    # Build Samples
-    - name: Soup Build Cpp ConsoleApplication
       run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
