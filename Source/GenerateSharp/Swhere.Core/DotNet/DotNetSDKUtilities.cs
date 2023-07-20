@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,18 +35,18 @@ namespace Soup.Build.Discover
 				dotnetExecutablePath,
 				new List<string>() { "--list-sdks" });
 			var sdks = new List<(string, Path)>();
-			foreach (var sdkValue in sdksOutput.Split('\n').SkipLast(1))
+			foreach (var sdkValue in sdksOutput.Split(Environment.NewLine).SkipLast(1))
 			{
-				var sdkValues = sdkValue.Split(' ');
-				if (sdkValues.Length != 2)
+				var splitIndex = sdkValue.IndexOf(' ');
+				if (splitIndex == -1)
 				{
 					Log.Error($"DotNet SDK format invalid: {sdkValue}");
 					throw new HandledException();
 				}
 
-				var version = sdkValues[0];
-				var installationValue = sdkValues[1];
-				var installationPath = new Path(installationValue.Substring(1, installationValue.Length - 2));
+				var version = sdkValue.Substring(0, splitIndex);
+				var installationValue = sdkValue.Substring(splitIndex + 2, sdkValue.Length - splitIndex - 3);
+				var installationPath = new Path(installationValue);
 
 				Log.Info($"Found SDK: {version} {installationPath}");
 				sdks.Add((version, installationPath));
@@ -63,18 +64,19 @@ namespace Soup.Build.Discover
 				dotnetExecutablePath,
 				new List<string>() { "--list-runtimes" });
 			var runtimes = new Dictionary<string, IList<(string, Path)>>();
-			foreach (var runtimeValue in runtimesOutput.Split('\n').SkipLast(1))
+			foreach (var runtimeValue in runtimesOutput.Split(Environment.NewLine).SkipLast(1))
 			{
-				var runtimeValues = runtimeValue.Split(' ');
-				if (runtimeValues.Length != 3)
+				var split1Index = runtimeValue.IndexOf(' ');
+				var split2Index = runtimeValue.IndexOf(' ', split1Index + 1);
+				if (split1Index == -1 || split2Index == -1)
 				{
 					Log.Error($"DotNet Runtime format invalid: {runtimeValue}");
 					throw new HandledException();
 				}
 
-				var name = runtimeValues[0];
-				var version = runtimeValues[1];
-				var installationValue = runtimeValues[2];
+				var name = runtimeValue.Substring(0, split1Index);
+				var version = runtimeValue.Substring(split1Index + 1, split2Index - split1Index - 1);
+				var installationValue = runtimeValue.Substring(split2Index + 2, runtimeValue.Length - split2Index - 3);
 				var installationPath = new Path(installationValue.Substring(1, installationValue.Length - 2));
 
 				Log.Info($"Found Runtime: {name} {version} {installationPath}");
