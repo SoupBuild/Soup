@@ -2,8 +2,8 @@
   "profiles": {
     "Soup.Build.PackageManager": {
       "commandName": "Project",
-      "commandLineArgs": "restore-packages [TEST_DIR]",
-      "commandLineArgs2": "publish-package [TEST_DIR]"
+      "commandLineArgs2": "restore-packages [TEST_DIR]",
+      "commandLineArgs": "publish-package C:/Users/mwasp/Dev/Repos/Soup/Source/GenerateSharp/Opal"
     }
   }
 }

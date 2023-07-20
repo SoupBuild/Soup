@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Soup.Build.PackageManager.UnitTests
@@ -25,9 +26,10 @@ namespace Soup.Build.PackageManager.UnitTests
 			return _handler.Send(method, requestUri, headers, content);
 		}
 
-		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+		protected override async Task<HttpResponseMessage> SendAsync(
+			HttpRequestMessage request, CancellationToken cancellationToken)
 		{
-			string content = null;
+			string? content = null;
 			if (request.Content != null)
 			{
 				using var memoryStream = new MemoryStream();

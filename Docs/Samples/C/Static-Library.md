@@ -1,4 +1,4 @@
-# Static Library Reference
+# C Static Library Reference
 This is a console application that has a single static library dependency.
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/C/StaticLibrary)

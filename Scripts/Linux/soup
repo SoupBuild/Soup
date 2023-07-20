@@ -45,8 +45,8 @@ mkdir -p $RUN_DIR/BuiltIn/Soup.Wren/$SOUP_WREN_VERSION
 cp $GLOBAL_PACKAGES_DIR/Wren/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml $RUN_DIR/BuiltIn/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml
 cp -R $GLOBAL_OUT_DIR/Wren/Soup.Wren/$SOUP_WREN_VERSION/J_HqSstV55vlb-x6RWC_hLRFRDU/ $RUN_DIR/BuiltIn/Soup.Wren/$SOUP_WREN_VERSION/out/
 
-cp -R $ROOT_DIR/Source/out/msbuild/bin/Soup.Build.PackageManager/Release/net6.0/linux-x64/publish/ $RUN_DIR/PackageManager
+cp -R $ROOT_DIR/Source/out/msbuild/bin/Soup.Build.PackageManager/Release/net7.0/linux-x64/publish/ $RUN_DIR/PackageManager
 
-cp -R $ROOT_DIR/Source/out/msbuild/bin/Swhere/Release/net6.0/linux-x64/publish/Swhere $RUN_DIR/swhere
+cp -R $ROOT_DIR/Source/out/msbuild/bin/Swhere/Release/net7.0/linux-x64/publish/Swhere $RUN_DIR/swhere
 
 eval $RUN_DIR/soup "$@"

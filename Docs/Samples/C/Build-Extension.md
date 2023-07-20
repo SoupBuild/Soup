@@ -1,4 +1,4 @@
-# C++ Build Extension
+# C Build Extension
 This is a console application that has a custom build extension that alters the build state. The custom build Tasks will run before and after the core Build Task and will simply print a nice hello message.
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/C/BuildExtension)
