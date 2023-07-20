@@ -27,13 +27,13 @@ jobs:
 
     # Build DotNet
     - name: DotNet Restore
-      if: matrix.os != 'ubuntu-latest'
+      if: matrix.os != 'ubuntu-22.04'
       run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Build
-      if: matrix.os != 'ubuntu-latest'
+      if: matrix.os != 'ubuntu-22.04'
       run: dotnet build -c ${{matrix.config}} --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Test
-      if: matrix.os != 'ubuntu-latest'
+      if: matrix.os != 'ubuntu-22.04'
       run: dotnet test -c ${{matrix.config}} --no-build --verbosity normal ./Soup/Source/GenerateSharp/GenerateSharp.sln
 
     # Build Soup
@@ -42,7 +42,7 @@ jobs:
     - name: Soup Restore
       run: soup restore ./Soup/Source/Client/CLI/ -v:d
     - name: Soup Build
-      if: matrix.os != 'ubuntu-latest'
+      if: matrix.os != 'ubuntu-22.04'
       run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
     - name: Soup Run Version
       run: soup run ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}} -args version
