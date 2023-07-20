@@ -102,6 +102,7 @@ jobs:
       if: matrix.os != 'ubuntu-22.04'
       run: soup build ./Soup/Samples/Cpp/DirectX/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp DynamicLibrary
+      if: matrix.os != 'ubuntu-22.04'
       run: soup build ./Soup/Samples/Cpp/DynamicLibrary/Application/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp ModuleInterface
       if: matrix.os != 'ubuntu-22.04'
