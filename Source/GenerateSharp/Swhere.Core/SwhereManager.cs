@@ -182,18 +182,45 @@ namespace Soup.Build.Discover
 
 		private static async Task DiscoverLinuxPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
 		{
+			await DiscoverGCCAsync(userConfig);
+			await DiscoverClangAsync(userConfig);
+		}
+
+		private static async Task DiscoverGCCAsync(LocalUserConfig userConfig)
+		{
 			// Find the GCC SDKs
-			var gccInstallPath = await WhereIsUtilities.FindExecutableAsync("gcc");
+			var cCompilerPath = await WhereIsUtilities.FindExecutableAsync("gcc");
+			var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync("g++");
 
 			var gccSDK = userConfig.EnsureSDK("GCC");
 			gccSDK.SourceDirectories = new List<Path>()
 			{
-				gccInstallPath,
 			};
 			gccSDK.SetProperties(
 				new Dictionary<string, string>()
 				{
-					{ "ToolsRoot", gccInstallPath.ToString() },
+					{ "CCompiler", cCompilerPath.ToString() },
+					{ "CppCompiler", cppCompilerPath.ToString() },
+				});
+		}
+
+		private static async Task DiscoverClangAsync(LocalUserConfig userConfig)
+		{
+			// Find the GCC SDKs
+			var cCompilerPath = await WhereIsUtilities.FindExecutableAsync("clang");
+			var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync("clang++");
+			var archiverPath = await WhereIsUtilities.FindExecutableAsync("ar");
+
+			var clangSDK = userConfig.EnsureSDK("Clang");
+			clangSDK.SourceDirectories = new List<Path>()
+			{
+			};
+			clangSDK.SetProperties(
+				new Dictionary<string, string>()
+				{
+					{ "CCompiler", cCompilerPath.ToString() },
+					{ "CppCompiler", cppCompilerPath.ToString() },
+					{ "Archiver", archiverPath.ToString() },
 				});
 		}
 	}

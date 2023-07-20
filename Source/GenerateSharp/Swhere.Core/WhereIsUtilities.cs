@@ -24,7 +24,7 @@ namespace Soup.Build.Discover
 			var stdOut = await ExecutableUtilities.RunExecutableAsync(executablePath, arguments);
 
 			// The first line is the path
-			var values = stdOut.Split(' ');
+			var values = stdOut.Substring(0, stdOut.Length - 1).Split(' ');
 			if (values.Length < 2)
 			{
 				Log.Error("Failed to parse where output.");
@@ -32,22 +32,6 @@ namespace Soup.Build.Discover
 			}
 
 			return new Path(values[1]);
-		}
-
-		private static string CombineArguments(IList<string> args)
-		{
-			var argumentString = new StringBuilder();
-			bool isFirst = true;
-			foreach (var arg in args)
-			{
-				if (!isFirst)
-					argumentString.Append(" ");
-
-				argumentString.Append(arg);
-				isFirst = false;
-			}
-
-			return argumentString.ToString();
 		}
 	}
 }
