@@ -7,18 +7,14 @@ using Opal.System;
 using Swhere.Core.Nuget;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
 
 namespace Soup.Build.Discover
 {
 	internal static class NugetSDKUtilities
 	{
-		public static async Task<(bool HasNuget, Path NugetPackagesPath, IList<NugetPackage> Packages)> FindNugetPackagesAsync()
+		public static (bool HasNuget, Path NugetPackagesPath, IList<NugetPackage> Packages) FindNugetPackages()
 		{
 			var fileSystem = LifetimeManager.Get<IFileSystem>();
 			var nugetDirectory = fileSystem.GetUserProfileDirectory() +
@@ -35,7 +31,7 @@ namespace Soup.Build.Discover
 					NugetPackage? package = null;
 					foreach (var nugetPackageVersionDirectory in fileSystem.GetChildDirectories(nugetPackageDirectory.Path))
 					{
-						var (currentPackage, packageVersion) = await LoadNugetPackageAsync(
+						var (currentPackage, packageVersion) = LoadNugetPackage(
 							packageName,
 							nugetPackageVersionDirectory.Path);
 						if (currentPackage is not null && packageVersion is not null)
@@ -65,8 +61,9 @@ namespace Soup.Build.Discover
 			}
 		}
 
-		[UnconditionalSuppressMessage("AssemblyLoadTrimming", "IL2026:RequiresUnreferencedCode", Justification = "Verified all required types are referenced")]
-		private static async Task<(NugetPackage?, NugetPackageVersion?)> LoadNugetPackageAsync(string name, Path directory)
+		private static (NugetPackage?, NugetPackageVersion?) LoadNugetPackage(
+			string name,
+			Path directory)
 		{
 			var fileSystem = LifetimeManager.Get<IFileSystem>();
 
@@ -79,24 +76,14 @@ namespace Soup.Build.Discover
 			}
 
 			using var nuspec = fileSystem.OpenRead(nuspecFile);
-			using var reader = XmlReader.Create(nuspec.GetInStream(), new XmlReaderSettings() {  Async = true });
-			var rootNamespace = await ReadRootNamespaceAsync(reader);
-			if (!Regex.IsMatch(rootNamespace, @"^http://schemas.microsoft.com/packaging/\d\d\d\d/\d\d/nuspec.xsd$"))
+			using var reader = XmlReader.Create(nuspec.GetInStream(), new XmlReaderSettings() { Async = true });
+
+			NuspecPackage nuspecDocument;
+			try
 			{
-				Log.Warning($"Unknown Nuspec file namespace: {rootNamespace}");
-				return (null, null);
+				nuspecDocument = NuspecPackage.Deserialize(reader);
 			}
-
-			var serializer = new XmlSerializer(typeof(NuspecPackage), rootNamespace);
-
-			if (!serializer.CanDeserialize(reader))
-			{
-				Log.Warning($"Cannot deserialize Nuspec file: {nuspecFile}");
-				return (null, null);
-			}
-
-			var nuspecDocument = (NuspecPackage?)serializer.Deserialize(reader);
-			if (nuspecDocument is null)
+			catch (InvalidOperationException)
 			{
 				Log.Warning($"Failed to parse Nuspec file: {nuspecFile}");
 				return (null, null);
@@ -143,20 +130,6 @@ namespace Soup.Build.Discover
 			}
 
 			return (nugetPackage, nugetPackageVersion);
-		}
-
-		private static async Task<string> ReadRootNamespaceAsync(XmlReader reader)
-		{
-			while (await reader.ReadAsync())
-			{
-				switch (reader.NodeType)
-				{
-					case XmlNodeType.Element:
-						return reader.NamespaceURI;
-				}
-			}
-
-			throw new InvalidOperationException("XML had no root");
 		}
 
 		private static string? GetTFM(string targetFramework)

@@ -124,7 +124,7 @@ namespace Soup.Build.Discover
 					{ "ToolsRoot", netFXToolsPath.ToString() },
 				});
 
-			var (hasNuget, nugetPackagesPath, nugetPackages) = await NugetSDKUtilities.FindNugetPackagesAsync();
+			var (hasNuget, nugetPackagesPath, nugetPackages) = NugetSDKUtilities.FindNugetPackages();
 			if (hasNuget)
 			{
 				var nugetSDK = userConfig.EnsureSDK("Nuget");
