@@ -77,7 +77,7 @@ namespace Soup.Build.Discover
 				var name = runtimeValue.Substring(0, split1Index);
 				var version = runtimeValue.Substring(split1Index + 1, split2Index - split1Index - 1);
 				var installationValue = runtimeValue.Substring(split2Index + 2, runtimeValue.Length - split2Index - 3);
-				var installationPath = new Path(installationValue.Substring(1, installationValue.Length - 2));
+				var installationPath = new Path(installationValue);
 
 				Log.Info($"Found Runtime: {name} {version} {installationPath}");
 

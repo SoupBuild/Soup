@@ -24,9 +24,16 @@ namespace Soup.Build.Discover.UnitTests
 			var mockProcessManager = new MockProcessManager();
 			using var scopedProcessManager = new ScopedSingleton<IProcessManager>(mockProcessManager);
 
+			var mockFileSystem = new MockFileSystem();
+			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+
 			mockProcessManager.RegisterExecuteResult(
 				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"),
+				new MockFile(new System.IO.MemoryStream()));
 
 			bool includePrerelease = false;
 			var result = await VSWhereUtilities.FindRoslynInstallAsync(includePrerelease);
@@ -41,6 +48,14 @@ namespace Soup.Build.Discover.UnitTests
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 				},
 				testListener.GetMessages());
+
+			// Verify expected file system requests
+			Assert.Equal(
+				new List<string>()
+				{
+					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
+				},
+				mockFileSystem.GetRequests());
 
 			// Verify expected process requests
 			Assert.Equal(
@@ -66,9 +81,16 @@ namespace Soup.Build.Discover.UnitTests
 			var mockProcessManager = new MockProcessManager();
 			using var scopedProcessManager = new ScopedSingleton<IProcessManager>(mockProcessManager);
 
+			var mockFileSystem = new MockFileSystem();
+			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+
 			mockProcessManager.RegisterExecuteResult(
 				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\n");
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"),
+				new MockFile(new System.IO.MemoryStream()));
 
 			bool includePrerelease = true;
 			var result = await VSWhereUtilities.FindRoslynInstallAsync(includePrerelease);
@@ -83,6 +105,14 @@ namespace Soup.Build.Discover.UnitTests
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
 				},
 				testListener.GetMessages());
+
+			// Verify expected file system requests
+			Assert.Equal(
+				new List<string>()
+				{
+					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
+				},
+				mockFileSystem.GetRequests());
 
 			// Verify expected process requests
 			Assert.Equal(
@@ -116,6 +146,10 @@ namespace Soup.Build.Discover.UnitTests
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
 			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"),
+				new MockFile(new System.IO.MemoryStream()));
+
+			mockFileSystem.CreateMockFile(
 				new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.33.31629\r\n"))));
 
@@ -139,6 +173,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
+					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				},
@@ -176,6 +211,10 @@ namespace Soup.Build.Discover.UnitTests
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\n");
 
 			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"),
+				new MockFile(new System.IO.MemoryStream()));
+
+			mockFileSystem.CreateMockFile(
 				new Path("C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.34.31823\r\n"))));
 
@@ -199,6 +238,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
+					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				},
