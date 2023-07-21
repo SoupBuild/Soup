@@ -60,6 +60,17 @@ namespace Soup.Build.Discover.UnitTests
 				new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.33.31629\r\n"))));
 
+			mockFileSystem.RegisterChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
+				new List<DirectoryEntry>()
+				{
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
+				});
+
 			bool includePrerelease = false;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -109,6 +120,7 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
@@ -118,6 +130,7 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: CheckFile: 10.0.19041.0",
 					"INFO: Nuget not found",
 					"INFO: Creating directory C:/Users/Me/.soup/",
+
 				},
 				testListener.GetMessages());
 
@@ -127,6 +140,7 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -234,6 +248,15 @@ namespace Soup.Build.Discover.UnitTests
 					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
 				}
 			}
+			Packs: {
+				""Microsoft.NETCore.App.Ref"": {
+					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+				}
+			}
 		}
 	}
 	{
@@ -325,6 +348,17 @@ namespace Soup.Build.Discover.UnitTests
 				new Path("C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.34.31823\r\n"))));
 
+			mockFileSystem.RegisterChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
+				new List<DirectoryEntry>()
+				{
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
+				});
+
 			bool includePrerelease = true;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -374,6 +408,7 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
@@ -392,6 +427,7 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -497,6 +533,15 @@ namespace Soup.Build.Discover.UnitTests
 					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
 					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
 					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+				}
+			}
+			Packs: {
+				""Microsoft.NETCore.App.Ref"": {
+					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
 				}
 			}
 		}
@@ -659,6 +704,17 @@ namespace Soup.Build.Discover.UnitTests
 				new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.33.31629\r\n"))));
 
+			mockFileSystem.RegisterChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
+				new List<DirectoryEntry>()
+				{
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
+				});
+
 			bool includePrerelease = false;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -706,6 +762,7 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
@@ -725,6 +782,7 @@ namespace Soup.Build.Discover.UnitTests
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -848,6 +906,15 @@ namespace Soup.Build.Discover.UnitTests
 					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
 					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
 					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+				}
+			}
+			Packs: {
+				""Microsoft.NETCore.App.Ref"": {
+					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
 				}
 			}
 		}

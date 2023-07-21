@@ -20,6 +20,9 @@ namespace Soup.Build.Discover.UnitTests
 			var testListener = new TestTraceListener();
 			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
+			var mockFileSystem = new MockFileSystem();
+			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+
 			var mockProcessManager = new MockProcessManager();
 			using var scopedProcessManager = new ScopedSingleton<IProcessManager>(mockProcessManager);
 			mockProcessManager.RegisterExecuteResult(
@@ -31,6 +34,17 @@ namespace Soup.Build.Discover.UnitTests
 			mockProcessManager.RegisterExecuteResult(
 				"CreateProcess: 3 [./] C:/Program Files/dotnet/dotnet.exe --list-runtimes",
 				"Microsoft.AspNetCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.NETCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.12 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.15 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.WindowsDesktop.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\n");
+
+			mockFileSystem.RegisterChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
+				new List<DirectoryEntry>()
+				{
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
+				});
 
 			var result = await DotNetSDKUtilities.FindDotNetAsync();
 
@@ -97,6 +111,25 @@ namespace Soup.Build.Discover.UnitTests
 				result.Runtimes,
 				new DictionaryOfListsComparer<(string Version, Path InstallDirectory)>());
 
+			Assert.Equal(
+				new Dictionary<string, IList<(string Version, Path InstallDirectory)>>()
+				{
+					{
+						"Microsoft.NETCore.App.Ref",
+						new List<(string Version, Path InstallDirectory)>()
+						{
+							("5.0.0", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref")),
+							("6.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref")),
+							("6.0.8", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref")),
+							("6.0.9", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref")),
+							("7.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref")),
+
+						}
+					},
+				},
+				result.Packs,
+				new DictionaryOfListsComparer<(string Version, Path InstallDirectory)>());
+
 			// Verify expected logs
 			Assert.Equal(
 				new List<string>()
@@ -140,8 +173,17 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 				},
 				testListener.GetMessages());
+
+			// Verify expected file system requests
+			Assert.Equal(
+				new List<string>()
+				{
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
+				},
+				mockFileSystem.GetRequests());
 
 			// Verify expected process requests
 			Assert.Equal(

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Opal;
+using Opal.System;
 
 namespace Soup.Build.Discover
 {
@@ -15,15 +16,18 @@ namespace Soup.Build.Discover
 		public static async Task<(
 			Path DotNetExecutable,
 			IList<(string Version, Path InstallDirectory)> SDKVersions,
-			IDictionary<string, IList<(string Version, Path InstallDirectory)>> Runtimes)> FindDotNetAsync()
+			IDictionary<string, IList<(string Version, Path InstallDirectory)>> Runtimes,
+			IDictionary<string, IList<(string Version, Path InstallDirectory)>> Packs)> FindDotNetAsync()
 		{
 			var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync("dotnet");
 			Log.HighPriority($"Using DotNet: {dotnetExecutablePath}");
 
+			var dotnetInstallPath = dotnetExecutablePath.GetParent();
 			var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath);
 			var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath);
+			var dotnetPacks = FindDotNetPacksVersoins(dotnetInstallPath);
 
-			return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes);
+			return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetPacks);
 		}
 
 		private static async Task<IList<(string Version, Path InstallDirectory)>> FindDotNetSDKVersionsAsync(
@@ -92,6 +96,42 @@ namespace Soup.Build.Discover
 			}
 
 			return runtimes;
+		}
+
+		private static IDictionary<string, IList<(string Version, Path InstallDirectory)>> FindDotNetPacksVersoins(
+			Path dotnetInstallPath)
+		{
+			var knownPacks = new List<string>()
+			{
+				"Microsoft.NETCore.App.Ref",
+			};
+
+			var result = new Dictionary<string, IList<(string Version, Path InstallDirectory)>>();
+			foreach (var packageName in knownPacks)
+			{
+				var packageVersions = FindDotNetPackVersions(dotnetInstallPath, packageName);
+				result.Add(packageName, packageVersions);
+			}
+
+			return result;
+		}
+
+		private static IList<(string Version, Path InstallDirectory)> FindDotNetPackVersions(
+			Path dotnetInstallPath,
+			string packageName)
+		{
+			var dotnetPacksPath = dotnetInstallPath + new Path($"./packs/{packageName}");
+
+			// Check the default tools version
+			Log.HighPriority("FindDotNetPackVersions: " + dotnetPacksPath.ToString());
+			var versions = new List<(string Version, Path InstallDirectory)>();
+			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetPacksPath))
+			{
+				var folderName = child.Path.GetFileName();
+				versions.Add((folderName, dotnetPacksPath));
+			}
+
+			return versions;
 		}
 	}
 }

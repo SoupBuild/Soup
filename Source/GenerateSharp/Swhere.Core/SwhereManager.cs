@@ -41,7 +41,8 @@ namespace Soup.Build.Discover
 
 		private static async Task DiscoverSharedPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
 		{
-			var (dotNetExecutable, dotnetSDKs, dotnetRuntimes) = await DotNetSDKUtilities.FindDotNetAsync();
+			var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetPacks) =
+				await DotNetSDKUtilities.FindDotNetAsync();
 			var dotnetSDK = userConfig.EnsureSDK("DotNet");
 			dotnetSDK.SourceDirectories = new List<Path>()
 			{
@@ -66,6 +67,16 @@ namespace Soup.Build.Discover
 				foreach (var runtimeVersion in runtime.Value)
 				{
 					runtimeTable.AddItemWithSyntax(runtimeVersion.Version, runtimeVersion.InstallDirectory.ToString(), 5);
+				}
+			}
+
+			var packsTable = dotnetSDK.Properties.EnsureTableWithSyntax("Packs", 3);
+			foreach (var pack in dotnetPacks)
+			{
+				var packTable = packsTable.EnsureTableWithSyntax(pack.Key, 4);
+				foreach (var packVersion in pack.Value)
+				{
+					packTable.AddItemWithSyntax(packVersion.Version, packVersion.InstallDirectory.ToString(), 5);
 				}
 			}
 		}
