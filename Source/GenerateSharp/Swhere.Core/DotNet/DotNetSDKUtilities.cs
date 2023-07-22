@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Opal;
 using Opal.System;
@@ -22,7 +23,20 @@ namespace Soup.Build.Discover
 			var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync("dotnet");
 			Log.HighPriority($"Using DotNet: {dotnetExecutablePath}");
 
-			var dotnetInstallPath = dotnetExecutablePath.GetParent();
+			Path dotnetInstallPath;
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				dotnetInstallPath = new Path("C:/Program Files/dotnet");
+			}
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				dotnetInstallPath = new Path("/usr/lib/dotnet");
+			}
+			else
+			{
+				throw new InvalidOperationException("Unsupported operating system");
+			}
+
 			var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath);
 			var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath);
 			var dotnetTargetingPacks = FindDotNetTargetingPacksVersoins(dotnetInstallPath);
