@@ -25,7 +25,7 @@ namespace Soup.Build.Discover
 				Log.Info("No existing local user config.");
 			}
 
-			await DiscoverSharedPlatformAsync(includePrerelease, userConfig);
+			await DiscoverSharedPlatformAsync(userConfig);
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
 				await DiscoverWindowsPlatformAsync(includePrerelease, userConfig);
@@ -39,9 +39,9 @@ namespace Soup.Build.Discover
 			await LocalUserConfigExtensions.SaveToFileAsync(localUserConfigPath, userConfig);
 		}
 
-		private static async Task DiscoverSharedPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
+		private static async Task DiscoverSharedPlatformAsync(LocalUserConfig userConfig)
 		{
-			var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetPacks) =
+			var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks) =
 				await DotNetSDKUtilities.FindDotNetAsync();
 			var dotnetSDK = userConfig.EnsureSDK("DotNet");
 			dotnetSDK.SourceDirectories = new List<Path>()
@@ -70,8 +70,8 @@ namespace Soup.Build.Discover
 				}
 			}
 
-			var packsTable = dotnetSDK.Properties.EnsureTableWithSyntax("Packs", 3);
-			foreach (var pack in dotnetPacks)
+			var packsTable = dotnetSDK.Properties.EnsureTableWithSyntax("TargetingPacks", 3);
+			foreach (var pack in dotnetTargetingPacks)
 			{
 				var packTable = packsTable.EnsureTableWithSyntax(pack.Key, 4);
 				foreach (var packVersion in pack.Value)

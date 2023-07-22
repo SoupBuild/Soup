@@ -248,7 +248,7 @@ namespace Soup.Build.Discover.UnitTests
 					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
 				}
 			}
-			Packs: {
+			TargetingPacks: {
 				""Microsoft.NETCore.App.Ref"": {
 					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
 					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
@@ -535,7 +535,7 @@ namespace Soup.Build.Discover.UnitTests
 					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
 				}
 			}
-			Packs: {
+			TargetingPacks: {
 				""Microsoft.NETCore.App.Ref"": {
 					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
 					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
@@ -908,7 +908,7 @@ namespace Soup.Build.Discover.UnitTests
 					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
 				}
 			}
-			Packs: {
+			TargetingPacks: {
 				""Microsoft.NETCore.App.Ref"": {
 					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
 					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""

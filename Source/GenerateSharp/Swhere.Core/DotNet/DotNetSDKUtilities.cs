@@ -17,7 +17,7 @@ namespace Soup.Build.Discover
 			Path DotNetExecutable,
 			IList<(string Version, Path InstallDirectory)> SDKVersions,
 			IDictionary<string, IList<(string Version, Path InstallDirectory)>> Runtimes,
-			IDictionary<string, IList<(string Version, Path InstallDirectory)>> Packs)> FindDotNetAsync()
+			IDictionary<string, IList<(string Version, Path InstallDirectory)>> TargetingPacks)> FindDotNetAsync()
 		{
 			var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync("dotnet");
 			Log.HighPriority($"Using DotNet: {dotnetExecutablePath}");
@@ -25,9 +25,9 @@ namespace Soup.Build.Discover
 			var dotnetInstallPath = dotnetExecutablePath.GetParent();
 			var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath);
 			var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath);
-			var dotnetPacks = FindDotNetPacksVersoins(dotnetInstallPath);
+			var dotnetTargetingPacks = FindDotNetTargetingPacksVersoins(dotnetInstallPath);
 
-			return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetPacks);
+			return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks);
 		}
 
 		private static async Task<IList<(string Version, Path InstallDirectory)>> FindDotNetSDKVersionsAsync(
@@ -98,7 +98,7 @@ namespace Soup.Build.Discover
 			return runtimes;
 		}
 
-		private static IDictionary<string, IList<(string Version, Path InstallDirectory)>> FindDotNetPacksVersoins(
+		private static IDictionary<string, IList<(string Version, Path InstallDirectory)>> FindDotNetTargetingPacksVersoins(
 			Path dotnetInstallPath)
 		{
 			var knownPacks = new List<string>()
@@ -109,14 +109,14 @@ namespace Soup.Build.Discover
 			var result = new Dictionary<string, IList<(string Version, Path InstallDirectory)>>();
 			foreach (var packageName in knownPacks)
 			{
-				var packageVersions = FindDotNetPackVersions(dotnetInstallPath, packageName);
+				var packageVersions = FindDotNetTargetingPackVersions(dotnetInstallPath, packageName);
 				result.Add(packageName, packageVersions);
 			}
 
 			return result;
 		}
 
-		private static IList<(string Version, Path InstallDirectory)> FindDotNetPackVersions(
+		private static IList<(string Version, Path InstallDirectory)> FindDotNetTargetingPackVersions(
 			Path dotnetInstallPath,
 			string packageName)
 		{

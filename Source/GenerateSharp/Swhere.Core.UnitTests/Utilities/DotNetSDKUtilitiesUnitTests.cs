@@ -127,7 +127,7 @@ namespace Soup.Build.Discover.UnitTests
 						}
 					},
 				},
-				result.Packs,
+				result.TargetingPacks,
 				new DictionaryOfListsComparer<(string Version, Path InstallDirectory)>());
 
 			// Verify expected logs
