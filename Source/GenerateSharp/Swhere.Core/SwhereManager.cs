@@ -83,20 +83,6 @@ namespace Soup.Build.Discover
 
 		private static async Task DiscoverWindowsPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
 		{
-			// Find the Roslyn SDKs
-			var roslynInstallPath = await VSWhereUtilities.FindRoslynInstallAsync(includePrerelease);
-
-			var roslynSDK = userConfig.EnsureSDK("Roslyn");
-			roslynSDK.SourceDirectories = new List<Path>()
-			{
-				roslynInstallPath,
-			};
-			roslynSDK.SetProperties(
-				new Dictionary<string, string>()
-				{
-					{ "ToolsRoot", roslynInstallPath.ToString() },
-				});
-
 			var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
 			var msvcSDK = userConfig.EnsureSDK("MSVC");
 			msvcSDK.SourceDirectories = new List<Path>()
