@@ -4,6 +4,8 @@
 
 #pragma once
 #include "DetourMonitorCallback.h"
+#include "DetourCallbackLogger.h"
+#include "DetourForkCallback.h"
 #include "EventListener.h"
 
 namespace Monitor::Windows
@@ -44,7 +46,13 @@ namespace Monitor::Windows
 			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
 			m_environmentVariables(environmentVariables),
+#ifdef TRACE_DETOUR_SERVER
+			m_eventListener(std::make_shared<DetourForkCallback>(
+				std::make_shared<DetourMonitorCallback>(std::move(callback)),
+				std::make_shared<DetourCallbackLogger>(std::cout))),
+#else
 			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
+#endif
 			m_enableAccessChecks(enableAccessChecks),
 			m_allowedReadAccess(std::move(allowedReadAccess)),
 			m_allowedWriteAccess(std::move(allowedWriteAccess)),
@@ -138,7 +146,7 @@ namespace Monitor::Windows
 				environmentBuilder << key << '=' << value << (char)'\0';
 			}
 
-			// Add the required windows evironment
+			// Add the required windows environment
 			environmentBuilder << "ALLUSERSPROFILE" << '=' << "C:\\ProgramData" << '\0';
 			environmentBuilder << "APPDATA" << '=' << "C:\\Users\\USERNAME\\AppData\\Roaming" << '\0';
 			environmentBuilder << "CommonProgramFiles" << '=' << "C:\\Program Files\\Common Files" << '\0';
@@ -256,6 +264,7 @@ namespace Monitor::Windows
 			// Wait until child process exits.
 			DebugTrace("WaitForExit");
 			auto waitResult = WaitForSingleObject(m_processHandle.Get(), INFINITE);
+
 			DebugTrace("WaitForExit Signal");
 			m_processRunning = false;
 			switch (waitResult)
