@@ -38,11 +38,7 @@ namespace Soup.Build.Discover.UnitTests
 				"Microsoft.AspNetCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.NETCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.12 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.15 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.WindowsDesktop.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\n");
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
-				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
-
-			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 5 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
+				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
 			mockFileSystem.CreateMockFile(
@@ -121,8 +117,6 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
-					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
-					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 					"HIGH: Using VC Version: 14.33.31629",
@@ -130,7 +124,6 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: CheckFile: 10.0.19041.0",
 					"INFO: Nuget not found",
 					"INFO: Creating directory C:/Users/Me/.soup/",
-
 				},
 				testListener.GetMessages());
 
@@ -141,7 +134,6 @@ namespace Soup.Build.Discover.UnitTests
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
-					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -176,18 +168,12 @@ namespace Soup.Build.Discover.UnitTests
 					"GetStandardOutput: 3",
 					"GetStandardError: 3",
 					"GetExitCode: 3",
-					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
+					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 					"ProcessStart: 4",
 					"WaitForExit: 4",
 					"GetStandardOutput: 4",
 					"GetStandardError: 4",
 					"GetExitCode: 4",
-					"CreateProcess: 5 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
-					"ProcessStart: 5",
-					"WaitForExit: 5",
-					"GetStandardOutput: 5",
-					"GetStandardError: 5",
-					"GetExitCode: 5",
 				},
 				mockProcessManager.GetRequests());
 
@@ -260,15 +246,6 @@ namespace Soup.Build.Discover.UnitTests
 		}
 	}
 	{
-		Name: ""Roslyn""
-		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
-		]
-		Properties: {
-			ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
-		}
-	}
-	{
 		Name: ""MSVC""
 		SourceDirectories: [
 			""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
@@ -326,11 +303,7 @@ namespace Soup.Build.Discover.UnitTests
 				"Microsoft.AspNetCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.NETCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.12 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.15 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.WindowsDesktop.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\n");
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
-				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\n");
-
-			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 5 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
+				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\n");
 
 			mockFileSystem.CreateMockFile(
@@ -409,8 +382,6 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
-					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
-					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
 					"HIGH: Using VC Version: 14.34.31823",
@@ -429,7 +400,6 @@ namespace Soup.Build.Discover.UnitTests
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
-					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"GetChildDirectories: C:/Program Files (x86)/Windows Kits/10/include/",
@@ -438,6 +408,7 @@ namespace Soup.Build.Discover.UnitTests
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
+
 				},
 				mockFileSystem.GetRequests());
 
@@ -463,18 +434,13 @@ namespace Soup.Build.Discover.UnitTests
 					"GetStandardOutput: 3",
 					"GetStandardError: 3",
 					"GetExitCode: 3",
-					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
+					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 					"ProcessStart: 4",
 					"WaitForExit: 4",
 					"GetStandardOutput: 4",
 					"GetStandardError: 4",
 					"GetExitCode: 4",
-					"CreateProcess: 5 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
-					"ProcessStart: 5",
-					"WaitForExit: 5",
-					"GetStandardOutput: 5",
-					"GetStandardError: 5",
-					"GetExitCode: 5",
+
 				},
 				mockProcessManager.GetRequests());
 
@@ -547,15 +513,6 @@ namespace Soup.Build.Discover.UnitTests
 		}
 	}
 	{
-		Name: ""Roslyn""
-		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/Roslyn/""
-		]
-		Properties: {
-			ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/Roslyn/""
-		}
-	}
-	{
 		Name: ""MSVC""
 		SourceDirectories: [
 			""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
@@ -612,15 +569,6 @@ namespace Soup.Build.Discover.UnitTests
 		]
 		Properties: {
 			ToolsRoot: ""C:/SomeWhere/""
-		}
-	}
-	{
-		Name: ""Roslyn""
-		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/Roslyn/""
-		]
-		Properties: {
-			ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/Roslyn/""
 		}
 	}
 	{
@@ -682,11 +630,7 @@ namespace Soup.Build.Discover.UnitTests
 				"Microsoft.AspNetCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.NETCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.12 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.15 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.WindowsDesktop.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\n");
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
-				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
-
-			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 5 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
+				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
 			mockFileSystem.CreateMockFile(
@@ -763,8 +707,6 @@ namespace Soup.Build.Discover.UnitTests
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
-					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
-					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 					"HIGH: Using VC Version: 14.33.31629",
@@ -784,7 +726,6 @@ namespace Soup.Build.Discover.UnitTests
 					"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
-					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"GetChildDirectories: C:/Program Files (x86)/Windows Kits/10/include/",
@@ -793,6 +734,7 @@ namespace Soup.Build.Discover.UnitTests
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
+
 				},
 				mockFileSystem.GetRequests());
 
@@ -818,18 +760,12 @@ namespace Soup.Build.Discover.UnitTests
 					"GetStandardOutput: 3",
 					"GetStandardError: 3",
 					"GetExitCode: 3",
-					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
+					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 					"ProcessStart: 4",
 					"WaitForExit: 4",
 					"GetStandardOutput: 4",
 					"GetStandardError: 4",
 					"GetExitCode: 4",
-					"CreateProcess: 5 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
-					"ProcessStart: 5",
-					"WaitForExit: 5",
-					"GetStandardOutput: 5",
-					"GetStandardError: 5",
-					"GetExitCode: 5",
 				},
 				mockProcessManager.GetRequests());
 
@@ -847,15 +783,6 @@ namespace Soup.Build.Discover.UnitTests
 		]
 		Properties: {
 			ToolsRoot: ""C:/SomeWhere/""
-		}
-	}
-	{
-		Name: ""Roslyn""
-		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
-		]
-		Properties: {
-			ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
 		}
 	}
 	{
