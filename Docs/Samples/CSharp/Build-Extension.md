@@ -124,7 +124,7 @@ Closures: {
             { Name: "Samples.CSharp.BuildExtension.Extension", Version: "../Extension/" }
         ]
         Wren: [
-            { Name: "Soup.CSharp", Version: "0.10.0" }
+            { Name: "Soup.CSharp", Version: "0.11.0" }
         ]
     }
     Tool0: {
