@@ -41,13 +41,10 @@ namespace Soup.Build.Discover
 
 		private static async Task DiscoverSharedPlatformAsync(LocalUserConfig userConfig)
 		{
-			var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks) =
+			var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories) =
 				await DotNetSDKUtilities.FindDotNetAsync();
 			var dotnetSDK = userConfig.EnsureSDK("DotNet");
-			dotnetSDK.SourceDirectories = new List<Path>()
-			{
-				dotNetExecutable.GetParent(),
-			};
+			dotnetSDK.SourceDirectories = sourceDirectories;
 			dotnetSDK.SetProperties(
 				new Dictionary<string, string>()
 				{

@@ -18,7 +18,8 @@ namespace Soup.Build.Discover
 			Path DotNetExecutable,
 			IList<(string Version, Path InstallDirectory)> SDKVersions,
 			IDictionary<string, IList<(string Version, Path InstallDirectory)>> Runtimes,
-			IDictionary<string, IList<(string Version, Path InstallDirectory)>> TargetingPacks)> FindDotNetAsync()
+			IDictionary<string, IList<(string Version, Path InstallDirectory)>> TargetingPacks,
+			IList<Path> SourceDirectories)> FindDotNetAsync()
 		{
 			var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync("dotnet");
 			Log.HighPriority($"Using DotNet: {dotnetExecutablePath}");
@@ -37,11 +38,17 @@ namespace Soup.Build.Discover
 				throw new InvalidOperationException("Unsupported operating system");
 			}
 
+			// Grant access to the install folder
+			var sourceDirectories = new List<Path>()
+			{
+				dotnetInstallPath,
+			};
+
 			var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath);
 			var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath);
 			var dotnetTargetingPacks = FindDotNetTargetingPacksVersoins(dotnetInstallPath);
 
-			return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks);
+			return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories);
 		}
 
 		private static async Task<IList<(string Version, Path InstallDirectory)>> FindDotNetSDKVersionsAsync(
