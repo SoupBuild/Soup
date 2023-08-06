@@ -187,7 +187,7 @@ namespace Soup.Build.Discover.UnitTests
 	{
 		Name: ""DotNet""
 		SourceDirectories: [
-			""C:/Program Files/dotnet/""
+			""C:/Program Files/dotnet""
 		]
 		Properties: {
 			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
@@ -454,7 +454,7 @@ namespace Soup.Build.Discover.UnitTests
 	{
 		Name: ""DotNet""
 		SourceDirectories: [
-			""C:/Program Files/dotnet/""
+			""C:/Program Files/dotnet""
 		]
 		Properties: {
 			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
@@ -788,7 +788,7 @@ namespace Soup.Build.Discover.UnitTests
 	{
 		Name: ""DotNet""
 		SourceDirectories: [
-			""C:/Program Files/dotnet/""
+			""C:/Program Files/dotnet""
 		]
 		Properties: {
 			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
