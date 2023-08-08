@@ -84,7 +84,7 @@ namespace Monitor::Windows
 			std::stringstream argumentsValue;
 			argumentsValue << "\"" << m_executable.ToAlternateString() << "\"";
 			for (auto& argument : m_arguments)
-				argumentsValue << " " << argument;
+				argumentsValue << " \"" << argument << "\"";
 			std::string argumentsString = argumentsValue.str();
 
 			// Setup the input/output streams
