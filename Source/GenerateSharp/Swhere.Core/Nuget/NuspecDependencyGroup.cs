@@ -2,7 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Swhere.Core.Nuget
@@ -14,5 +16,41 @@ namespace Swhere.Core.Nuget
 
 		[XmlElement("dependency")]
 		public List<NuspecDependency> Dependencies { get; set; } = new List<NuspecDependency>();
+
+		internal static NuspecDependencyGroup Deserialize(XmlNode node)
+		{
+			var result = new NuspecDependencyGroup();
+
+			if (node.Attributes is not null)
+			{
+				for (int i = 0; i < node.Attributes.Count; i++)
+				{
+					var attribute = node.Attributes[i];
+					switch (attribute.Name)
+					{
+						case "targetFramework":
+							result.TargetFramework = attribute.Value ?? string.Empty;
+							break;
+					}
+				}
+			}
+
+			if (node.HasChildNodes)
+			{
+				for (int i = 0; i < node.ChildNodes.Count; i++)
+				{
+					var child = node.ChildNodes[i] ?? throw new InvalidOperationException("Null child");
+					switch (child.Name)
+					{
+						case "dependency":
+							var dependency = NuspecDependency.Deserialize(child);
+							result.Dependencies.Add(dependency);
+							break;
+					}
+				}
+			}
+
+			return result;
+		}
 	}
 }

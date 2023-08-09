@@ -18,7 +18,7 @@ namespace Soup.Build.Api.Client
 			int statusCode,
 			IReadOnlyDictionary<string, IEnumerable<string>> headers,
 			Exception? innerException)
-			: base(message, innerException)
+			: base($"{message} - StatusCode {statusCode}", innerException)
 		{
 			StatusCode = statusCode;
 			Headers = headers;

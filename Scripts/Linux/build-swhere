@@ -11,5 +11,5 @@ SOURCE_DIR=$SCRIPTS_DIR/../../Source
 SWHERE_DIR=$SOURCE_DIR/GenerateSharp/Swhere
 
 # Build SWhere tool
-echo dotnet publish $SWHERE_DIR -c Debug
-eval dotnet publish $SWHERE_DIR -c Debug
+echo dotnet publish $SWHERE_DIR -c Release -r linux-x64 --self-contained
+eval dotnet publish $SWHERE_DIR -c Release -r linux-x64 --self-contained

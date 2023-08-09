@@ -63,11 +63,12 @@ namespace Soup.Build.Api.Client
 			{
 				using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
 				using var jsonContent = new MemoryStream();
-				using var content = new StreamContent(jsonContent);
-
 				await JsonSerializer.SerializeAsync(
 					jsonContent, request, SourceGenerationContext.Default.GenerateClosureRequestModel, cancellationToken);
 				jsonContent.Seek(0, SeekOrigin.Begin);
+
+				using var content = new StreamContent(jsonContent);
+				content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
 				request_.Content = content;
 				request_.Method = new HttpMethod("GET");

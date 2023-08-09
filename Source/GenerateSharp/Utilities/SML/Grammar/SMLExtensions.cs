@@ -221,7 +221,7 @@ namespace Soup.Build.Utilities
 			var newValue = new SMLValue(new SMLIntegerValue(value));
 
 			// Tables items should be on newline
-			var keyToken = new SMLToken(key); ;
+			var keyToken = new SMLToken(EnsureSafeKey(key));
 
 			// Add the model to the parent table model
 			table.Values.Add(key, CreateTableValue(keyToken, newValue));
@@ -233,7 +233,7 @@ namespace Soup.Build.Utilities
 			var newValue = new SMLValue(new SMLStringValue(value));
 
 			// Tables items should be on newline
-			var keyToken = new SMLToken(key);
+			var keyToken = new SMLToken(EnsureSafeKey(key));
 
 			// Add the model to the parent table model
 			table.Values.Add(key, CreateTableValue(keyToken, newValue));
@@ -257,7 +257,7 @@ namespace Soup.Build.Utilities
 				new SMLToken("\"")));
 
 			// Tables items should be on newline
-			var keyToken = new SMLToken(key)
+			var keyToken = new SMLToken(EnsureSafeKey(key))
 			{
 				LeadingTrivia = leadingTrivia,
 			};
@@ -283,7 +283,7 @@ namespace Soup.Build.Utilities
 				new SMLToken("\"")));
 
 			// Tables items should be on newline
-			var keyToken = new SMLToken(key)
+			var keyToken = new SMLToken(EnsureSafeKey(key))
 			{
 				LeadingTrivia = new List<string>()
 				{
@@ -304,7 +304,7 @@ namespace Soup.Build.Utilities
 
 		private static SMLTableValue CreateTableValue(string key, SMLValue value)
 		{
-			return CreateTableValue(new SMLToken(key), value);
+			return CreateTableValue(new SMLToken(EnsureSafeKey(key)), value);
 		}
 
 		private static SMLTableValue CreateInlineTableValue(SMLToken key, SMLValue value)
@@ -362,12 +362,7 @@ namespace Soup.Build.Utilities
 					},
 				});
 
-			// If the key contains unsafe characters, wrap in string key
-			var keyTokenText = name;
-			if (!SafeKeyRegex.IsMatch(keyTokenText))
-				keyTokenText = $"\"{keyTokenText}\"";
-
-			var keyToken = new SMLToken(keyTokenText)
+			var keyToken = new SMLToken(EnsureSafeKey(name))
 			{
 				LeadingTrivia = new List<string>()
 				{
@@ -464,13 +459,7 @@ namespace Soup.Build.Utilities
 					},
 				});
 
-
-			// If the key contains unsafe characters, wrap in string key
-			var keyTokenText = name;
-			if (!SafeKeyRegex.IsMatch(keyTokenText))
-				keyTokenText = $"\"{keyTokenText}\"";
-
-			var keyToken = new SMLToken(keyTokenText)
+			var keyToken = new SMLToken(EnsureSafeKey(name))
 			{
 				LeadingTrivia = new List<string>()
 				{
@@ -491,6 +480,16 @@ namespace Soup.Build.Utilities
 				CreateTableValue(keyToken, new SMLValue(newArray)));
 
 			return newArray;
+		}
+
+		private static string EnsureSafeKey(string name)
+		{
+			// If the key contains unsafe characters, wrap in string key
+			var keyTokenText = name;
+			if (!SafeKeyRegex.IsMatch(keyTokenText))
+				keyTokenText = $"\"{keyTokenText}\"";
+
+			return keyTokenText;
 		}
 	}
 }

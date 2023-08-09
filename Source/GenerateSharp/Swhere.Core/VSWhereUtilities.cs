@@ -13,24 +13,6 @@ namespace Soup.Build.Discover
 	public static class VSWhereUtilities
 	{
 		/// <summary>
-		/// Attempt to find Roslyn compiler installation 
-		/// </summary>
-		public static async Task<Path> FindRoslynInstallAsync(bool includePrerelease)
-		{
-			// Find the location of the Windows SDK
-			var visualStudioInstallRoot = await FindVSInstallRootAsync(
-				"Microsoft.VisualStudio.Component.Roslyn.Compiler",
-				includePrerelease);
-			Log.HighPriority("Using VS Installation: " + visualStudioInstallRoot.ToString());
-
-			// Calculate the final Roslyn binaries folder
-			var roslynFolder =
-				visualStudioInstallRoot + new Path("./MSBuild/Current/Bin/Roslyn/");
-
-			return roslynFolder;
-		}
-
-		/// <summary>
 		/// Attempt to find MSVC compiler installation 
 		/// </summary>
 		public static async Task<(string Version, Path Path)> FindMSVCInstallAsync(bool includePrerelease)
@@ -77,6 +59,12 @@ namespace Soup.Build.Discover
 			// Execute the requested target
 			var arguments = CombineArguments(argumentList);
 			Log.Info(executablePath.ToString() + " " + arguments);
+			if (!LifetimeManager.Get<IFileSystem>().Exists(executablePath))
+			{
+				Log.Error("VSWhere is not installed on the host machine");
+				throw new HandledException();
+			}
+
 			var process = LifetimeManager.Get<IProcessManager>().CreateProcess(
 				executablePath,
 				arguments,
