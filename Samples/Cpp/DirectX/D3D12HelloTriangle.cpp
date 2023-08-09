@@ -115,8 +115,7 @@ private:
 		// NOTE: Enabling the debug layer after device creation will invalidate the active device.
 		{
 			ComPtr<ID3D12Debug> debugController;
-			// TODO: MSVC BUG if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
-			if (SUCCEEDED(D3D12GetDebugInterface(IID_ID3D12Debug, (void**)&debugController)))
+			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
 			{
 				debugController->EnableDebugLayer();
 
@@ -127,39 +126,27 @@ private:
 	#endif
 
 		ComPtr<IDXGIFactory4> factory;
-		// TODO: MSVC BUG ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
-		ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_IDXGIFactory4, (void**)&factory));
+		ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
 
 		if (m_useWarpDevice)
 		{
 			ComPtr<IDXGIAdapter> warpAdapter;
-			// TODO: MSVC BUG ThrowIfFailed(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
-			ThrowIfFailed(factory->EnumWarpAdapter(IID_IDXGIAdapter, (void**)&warpAdapter));
+			ThrowIfFailed(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
 
-			// TODO: MSVC BUG ThrowIfFailed(D3D12CreateDevice(
-			// 	warpAdapter.Get(),
-			// 	D3D_FEATURE_LEVEL_11_0,
-			// 	IID_PPV_ARGS(&m_device)));
 			ThrowIfFailed(D3D12CreateDevice(
 				warpAdapter.Get(),
 				D3D_FEATURE_LEVEL_11_0,
-				IID_ID3D12Device,
-				(void**)&m_device));
+				IID_PPV_ARGS(&m_device)));
 		}
 		else
 		{
 			ComPtr<IDXGIAdapter1> hardwareAdapter;
 			GetHardwareAdapter(factory.Get(), &hardwareAdapter);
 
-			// TODO: MSVC BUG ThrowIfFailed(D3D12CreateDevice(
-			//	hardwareAdapter.Get(),
-			//	D3D_FEATURE_LEVEL_11_0,
-			//	IID_PPV_ARGS(&m_device)));
 			ThrowIfFailed(D3D12CreateDevice(
 				hardwareAdapter.Get(),
 				D3D_FEATURE_LEVEL_11_0,
-				IID_ID3D12Device,
-				(void**)&m_device));
+				IID_PPV_ARGS(&m_device)));
 		}
 
 		// Describe and create the command queue.
@@ -167,8 +154,7 @@ private:
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-		// TODO: MSVC BUG ThrowIfFailed(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
-		ThrowIfFailed(m_device->CreateCommandQueue(&queueDesc, IID_ID3D12CommandQueue, (void**)&m_commandQueue));
+		ThrowIfFailed(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
 
 		// Describe and create the swap chain.
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -203,8 +189,7 @@ private:
 			rtvHeapDesc.NumDescriptors = FrameCount;
 			rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			// TODO: MSVC BUG ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
-			ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_ID3D12DescriptorHeap, (void**)&m_rtvHeap));
+			ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
 
 			m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		}
@@ -216,15 +201,13 @@ private:
 			// Create a RTV for each frame.
 			for (UINT n = 0; n < FrameCount; n++)
 			{
-				// TODO: MSVC BUG ThrowIfFailed(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])));
-				ThrowIfFailed(m_swapChain->GetBuffer(n, IID_ID3D12Resource, (void**)&m_renderTargets[n]));
+				ThrowIfFailed(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])));
 				m_device->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle);
 				rtvHandle.Offset(1, m_rtvDescriptorSize);
 			}
 		}
 
-		// TODO: MSVC BUG ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
-		ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_ID3D12CommandAllocator, (void**)&m_commandAllocator));
+		ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
 	}
 
 	// Load the sample assets.
@@ -238,8 +221,7 @@ private:
 			ComPtr<ID3DBlob> signature;
 			ComPtr<ID3DBlob> error;
 			ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-			// TODO: MSVC BUG ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
-			ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_ID3D12RootSignature, (void**)&m_rootSignature));
+			ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
 		}
 
 		// Create the pipeline state, which includes compiling and loading shaders.
@@ -279,13 +261,11 @@ private:
 			psoDesc.NumRenderTargets = 1;
 			psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 			psoDesc.SampleDesc.Count = 1;
-			// TODO: MSVC BUG ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
-			ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_ID3D12PipelineState, (void**)&m_pipelineState));
+			ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
 		}
 
 		// Create the command list.
-		// TODO: MSVC BUG ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList)));
-		ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_ID3D12GraphicsCommandList, (void**)&m_commandList));
+		ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList)));
 
 		// Command lists are created in the recording state, but there is nothing
 		// to record yet. The main loop expects it to be closed, so close it now.
@@ -309,21 +289,13 @@ private:
 			// code simplicity and because there are very few verts to actually transfer.
 			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 			auto resourceDescription = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-			// TODO: MSVC BUG ThrowIfFailed(m_device->CreateCommittedResource(
-				// &heapProperties,
-				// D3D12_HEAP_FLAG_NONE,
-				// &resourceDescription,
-				// D3D12_RESOURCE_STATE_GENERIC_READ,
-				// nullptr,
-				// IID_PPV_ARGS(&m_vertexBuffer)));
 			ThrowIfFailed(m_device->CreateCommittedResource(
 				&heapProperties,
 				D3D12_HEAP_FLAG_NONE,
 				&resourceDescription,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				nullptr,
-				IID_ID3D12Resource,
-				(void**)&m_vertexBuffer));
+				IID_PPV_ARGS(&m_vertexBuffer)));
 
 			// Copy the triangle data to the vertex buffer.
 			UINT8* pVertexDataBegin;
@@ -340,8 +312,7 @@ private:
 
 		// Create synchronization objects and wait until assets have been uploaded to the GPU.
 		{
-			// TODO: MSVC BUG ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
-			ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_ID3D12Fence, (void**)&m_fence));
+			ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
 			m_fenceValue = 1;
 
 			// Create an event handle to use for frame synchronization.
