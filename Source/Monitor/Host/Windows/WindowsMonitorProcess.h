@@ -84,7 +84,14 @@ namespace Monitor::Windows
 			std::stringstream argumentsValue;
 			argumentsValue << "\"" << m_executable.ToAlternateString() << "\"";
 			for (auto& argument : m_arguments)
-				argumentsValue << " \"" << argument << "\"";
+			{
+				// TODO: Handle quotes better, for now do not add wrapper when double quotes exist
+				if (argument.find('"') != std::string::npos)
+					argumentsValue << " " << argument;
+				else
+					argumentsValue << " \"" << argument << "\"";
+			}
+
 			std::string argumentsString = argumentsValue.str();
 
 			// Setup the input/output streams
