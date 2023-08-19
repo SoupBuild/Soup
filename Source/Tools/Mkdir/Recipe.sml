@@ -5,3 +5,8 @@ Type: "Executable"
 Source: [
 	"Main.cpp"
 ]
+Dependencies: {
+	Runtime: [
+		"Opal@0.5"
+	]
+}

@@ -775,7 +775,8 @@ namespace Soup::Core
 									macroToolTargetDirectory.ToString());
 
 								// Allow read access for all indirect tool dependencies target directories
-								// and macros during evaluate. This is needed to run them.
+								// and macros during generate and evaluate. This is needed to load the shared properties and run them.
+								targetSet.GenerateCurrentReadDirectories.insert(dependencyState.RealTargetDirectory);
 								targetSet.EvaluateCurrentReadDirectories.insert(dependencyState.RealTargetDirectory);
 								targetSet.EvaluateCurrentMacros.emplace(
 									macroToolTargetDirectory.ToString(),
