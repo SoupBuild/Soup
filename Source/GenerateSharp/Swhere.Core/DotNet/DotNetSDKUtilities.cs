@@ -46,7 +46,7 @@ namespace Soup.Build.Discover
 
 			var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath);
 			var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath);
-			var dotnetTargetingPacks = FindDotNetTargetingPacksVersoins(dotnetInstallPath);
+			var dotnetTargetingPacks = FindDotNetTargetingPacksVersions(dotnetInstallPath);
 
 			return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories);
 		}
@@ -119,7 +119,7 @@ namespace Soup.Build.Discover
 			return runtimes;
 		}
 
-		private static IDictionary<string, IList<(string Version, Path InstallDirectory)>> FindDotNetTargetingPacksVersoins(
+		private static IDictionary<string, IList<(string Version, Path InstallDirectory)>> FindDotNetTargetingPacksVersions(
 			Path dotnetInstallPath)
 		{
 			var knownPacks = new List<string>()
@@ -146,10 +146,17 @@ namespace Soup.Build.Discover
 			// Check the default tools version
 			Log.HighPriority("FindDotNetPackVersions: " + dotnetPacksPath.ToString());
 			var versions = new List<(string Version, Path InstallDirectory)>();
-			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetPacksPath))
+			if (LifetimeManager.Get<IFileSystem>().Exists(dotnetPacksPath))
 			{
-				var folderName = child.Path.GetFileName();
-				versions.Add((folderName, dotnetPacksPath));
+				foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetPacksPath))
+				{
+					var folderName = child.Path.GetFileName();
+					versions.Add((folderName, dotnetPacksPath));
+				}
+			}
+			else
+			{
+				Log.Warning("Directory does not exist");
 			}
 
 			return versions;
