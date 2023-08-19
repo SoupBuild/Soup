@@ -16,7 +16,7 @@ namespace Soup::Core::UnitTests
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -34,7 +34,7 @@ namespace Soup::Core::UnitTests
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -133,7 +133,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -331,7 +331,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -466,7 +466,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestTool"
 					Language: "C++|1.1.1"
@@ -551,7 +551,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -572,8 +572,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/4.5.6/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/Soup.Cpp/4.5.6/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/TestTool/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
@@ -588,16 +588,12 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/4.5.6/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/4.5.6/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/Soup.Cpp/4.5.6/PackageLock.sml",
-					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
-					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/3.3.3/PackageLock.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
@@ -687,7 +683,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Tool",
 										{
-											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
+											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(3, 3, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -716,9 +712,9 @@ namespace Soup::Core::UnitTests
 								3,
 								"TestTool",
 								false,
-								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/"),
+								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/"),
 								Path(),
-								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -848,7 +844,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -882,15 +878,12 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"GetCurrentDirectory",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1103,7 +1096,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -1137,15 +1130,12 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"GetCurrentDirectory",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1367,7 +1357,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -1404,15 +1394,11 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.3/PackageLock.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
@@ -1659,7 +1645,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -1927,7 +1913,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -1961,10 +1947,8 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.3/PackageLock.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
@@ -2133,7 +2117,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestTool"
 					Language: "C++|1.1.1"
@@ -2219,7 +2203,7 @@ namespace Soup::Core::UnitTests
 			{
 				{ "HostValue", Value(true) },
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -2240,8 +2224,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/TestTool/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
@@ -2257,16 +2241,12 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.3/PackageLock.sml",
-					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
-					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/3.3.3/PackageLock.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
@@ -2367,7 +2347,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Tool",
 										{
-											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
+											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(3, 3, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -2396,9 +2376,9 @@ namespace Soup::Core::UnitTests
 								3,
 								"TestTool",
 								false,
-								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/"),
+								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/"),
 								Path(""),
-								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -2575,7 +2555,7 @@ namespace Soup::Core::UnitTests
 					Value(true),
 				},
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -2615,23 +2595,17 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.4/PackageLock.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.4/PackageLock.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/Soup.Wren/2.2.3/PackageLock.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/Soup.Cpp/1.1.2/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
@@ -2932,7 +2906,7 @@ namespace Soup::Core::UnitTests
 					Value(true),
 				},
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -2964,7 +2938,6 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/Recipe.sml",
@@ -3203,7 +3176,7 @@ namespace Soup::Core::UnitTests
 					Value(true),
 				},
 			});
-			auto userDataPath = Path("C:/User/Soup/");
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
@@ -3240,14 +3213,11 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"Exists: C:/WorkingDirectory/Package1/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/Package1/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/Soup.CSharp/2.2.3/PackageLock.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"GetCurrentDirectory",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
