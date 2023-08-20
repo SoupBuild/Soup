@@ -1018,6 +1018,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Build evaluation start",
 					"DIAG: Check for previous operation invocation",
 					"INFO: Input altered after last evaluate [C:/TestWorkingDirectory/Command.exe]",
+					"DIAG: Executable out of date",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"DIAG: Allowed Read Access:",
