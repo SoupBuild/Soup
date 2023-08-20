@@ -1,16 +1,17 @@
 #!/bin/bash
-echo "Linux Build!"
+echo "Linux Build: $1"
 
 # Stop on first error
 set -e
 
+FLAVOR="$1"
 SCRIPTS_DIR=$(dirname "$0")
 
 # Build Client
 # echo $SCRIPTS_DIR/build-client
 # eval $SCRIPTS_DIR/build-client
-echo $SCRIPTS_DIR/soup build Source/Client/CLI
-eval $SCRIPTS_DIR/soup build Source/Client/CLI
+echo $SCRIPTS_DIR/soup build Source/Client/CLI -flavor $FLAVOR
+eval $SCRIPTS_DIR/soup build Source/Client/CLI -flavor $FLAVOR
 
 # Build SWhere tool
 echo $SCRIPTS_DIR/build-swhere

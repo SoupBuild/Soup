@@ -250,6 +250,7 @@ namespace Soup::Core
 						operationInfo.Command.WorkingDirectory);
 					if (_stateChecker.IsOutdated(previousResult->EvaluateTime, executableFileId))
 					{
+						Log::Diag("Executable out of date");
 						executableOutOfDate = true;
 					}
 				}
