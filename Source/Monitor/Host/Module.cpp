@@ -16,6 +16,14 @@ module;
 #include <strsafe.h>
 #pragma warning(pop)
 
+#elif defined(__linux__)
+
+#include <spawn.h>
+#include <sys/wait.h>
+
+// The existing environment for this process
+extern char **environ;
+
 #endif
 
 #include <stdio.h>
@@ -26,6 +34,7 @@ module;
 #include <atomic>
 #include <array>
 #include <codecvt>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <locale>
@@ -39,7 +48,9 @@ module;
 #ifdef SOUP_BUILD
 
 export module Monitor.Host;
+#if defined(_WIN32)
 import Detours;
+#endif
 import Monitor.Shared;
 import Opal;
 

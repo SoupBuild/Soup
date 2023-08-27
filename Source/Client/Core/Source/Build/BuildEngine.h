@@ -24,6 +24,10 @@ namespace Soup::Core
 			auto result = std::map<std::string, KnownLanguage>(
 			{
 				{
+					"C",
+					KnownLanguage("C", "Soup.C")
+				},
+				{
 					"C++",
 					KnownLanguage("Cpp", "Soup.Cpp")
 				},
@@ -86,25 +90,16 @@ namespace Soup::Core
 		{
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			// Load the local user config and any sdk content
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>();
-			LoadLocalUserConfig(sdkParameters, sdkReadAccess);
-
-			auto endTime = std::chrono::high_resolution_clock::now();
-			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
-
-			// std::cout << "LoadLocalUserConfig: " << std::to_string(duration.count()) << " seconds." << std::endl;
-			
-			startTime = std::chrono::high_resolution_clock::now();
+			// Load user config state
+			auto userDataPath = GetSoupUserDataPath();
 
 			// Load the system specific state
 			auto hostBuildGlobalParameters = ValueTable();
 			auto systemReadAccess = std::vector<Path>();
 			LoadHostSystemState(hostBuildGlobalParameters, systemReadAccess);
 
-			endTime = std::chrono::high_resolution_clock::now();
-			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+			auto endTime = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
 			// std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
@@ -119,6 +114,7 @@ namespace Soup::Core
 				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
+				userDataPath,
 				recipeCache);
 			auto packageProvider = loadEngine.Load();
 
@@ -144,8 +140,7 @@ namespace Soup::Core
 			// for each individual package
 			auto buildRunner = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
@@ -161,53 +156,11 @@ namespace Soup::Core
 		}
 
 	private:
-		/// <summary>
-		/// Load Local User Config and process any known state
-		/// </summary>
-		static void LoadLocalUserConfig(
-			ValueList& sdkParameters,
-			std::vector<Path>& sdkReadAccess)
+		static Path GetSoupUserDataPath()
 		{
-			// Load the local user config
-			auto localUserConfigPath = System::IFileSystem::Current().GetUserProfileDirectory() +
-				BuildConstants::SoupLocalStoreDirectory() +
-				BuildConstants::LocalUserConfigFileName();
-			LocalUserConfig localUserConfig = {};
-			if (!LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
-			{
-				Log::Warning("Local User Config invalid");
-			}
-
-			// Process the SDKs
-			if (localUserConfig.HasSDKs())
-			{
-				Log::Info("Checking SDKs for read access");
-				auto sdks = localUserConfig.GetSDKs();
-				for (auto& sdk : sdks)
-				{
-					auto sdkName = sdk.GetName();
-					Log::Info("Found SDK: " + sdkName);
-					if (sdk.HasSourceDirectories())
-					{
-						for (auto& sourceDirectory : sdk.GetSourceDirectories())
-						{
-							Log::Info("  Read Access: " + sourceDirectory.ToString());
-							sdkReadAccess.push_back(sourceDirectory);
-						}
-					}
-
-					auto sdkParameter = ValueTable();
-					sdkParameter.emplace("Name", Value(sdkName));
-					if (sdk.HasProperties())
-					{
-						sdkParameter.emplace(
-							"Properties",
-							RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
-					}
-
-					sdkParameters.push_back(std::move(sdkParameter));
-				}
-			}
+			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
+				BuildConstants::SoupLocalStoreDirectory();
+			return result;
 		}
 
 		static void LoadHostSystemState(
@@ -215,7 +168,7 @@ namespace Soup::Core
 			std::vector<Path>& systemReadAccess)
 		{
 			auto system = std::string("Windows");
-			hostBuildGlobalParameters.emplace("System", Value(std::string(system)));
+			hostBuildGlobalParameters.emplace("System", Value(system));
 
 			// Allow read access from system directories
 			systemReadAccess.push_back(

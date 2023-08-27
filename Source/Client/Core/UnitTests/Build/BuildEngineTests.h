@@ -67,9 +67,6 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"WARN: Local User Config file does not exist",
-					"WARN: Local User Config invalid",
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
@@ -96,6 +93,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/",
+					"DIAG: 1>C:/Users/Me/.soup/LocalUserConfig.sml",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
@@ -126,7 +124,6 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
@@ -162,7 +159,7 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
+					"CreateMonitorProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -274,12 +271,15 @@ namespace Soup::Core::UnitTests
 								})
 							},
 							{ "Parameters", ValueTable() },
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/WorkingDirectory/MyPackage/")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),

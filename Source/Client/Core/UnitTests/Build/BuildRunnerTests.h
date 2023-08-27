@@ -14,8 +14,7 @@ namespace Soup::Core::UnitTests
 		void Initialize_Success()
 		{
 			auto arguments = RecipeBuildArguments();
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>();
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto systemReadAccess = std::vector<Path>();
 			auto recipeCache = RecipeCache();
 			auto packageProvider = PackageProvider(1, PackageGraphLookupMap(), PackageLookupMap());
@@ -24,10 +23,9 @@ namespace Soup::Core::UnitTests
 			auto knownLanguages = std::map<std::string, KnownLanguage>();
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
-				std::move(arguments),
-				std::move(sdkParameters),
-				std::move(sdkReadAccess),
-				std::move(systemReadAccess),
+				arguments,
+				userDataPath,
+				systemReadAccess,
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
@@ -64,10 +62,7 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>({
-				Path("C:/FakeSDK/"),
-			});
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto systemReadAccess = std::vector<Path>({
 				Path("C:/FakeSystem/"),
 			});
@@ -115,8 +110,7 @@ namespace Soup::Core::UnitTests
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
@@ -213,7 +207,6 @@ namespace Soup::Core::UnitTests
 						"EvaluateReadAccess",
 						ValueList(
 						{
-							std::string("C:/FakeSDK/"),
 							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})
@@ -254,12 +247,15 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", true },
 								})
 							},
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/WorkingDirectory/MyPackage/")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),
@@ -323,10 +319,7 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>({
-				Path("C:/FakeSDK/"),
-			});
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto systemReadAccess = std::vector<Path>({
 				Path("C:/FakeSystem/"),
 			});
@@ -423,8 +416,7 @@ namespace Soup::Core::UnitTests
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
@@ -564,7 +556,6 @@ namespace Soup::Core::UnitTests
 						"EvaluateReadAccess",
 						ValueList(
 						{
-							std::string("C:/FakeSDK/"),
 							std::string("/(PACKAGE_TestBuild)/"),
 							std::string("/(TARGET_TestBuild)/"),
 						})
@@ -605,12 +596,15 @@ namespace Soup::Core::UnitTests
 									{ "HostValue", true },
 								})
 							},
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(testBuildGenerateInputMockFile->Content),
@@ -670,7 +664,6 @@ namespace Soup::Core::UnitTests
 						"EvaluateReadAccess",
 						ValueList(
 						{
-							std::string("C:/FakeSDK/"),
 							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})
@@ -742,12 +735,15 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", true },
 								})
 							},
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/WorkingDirectory/MyPackage/")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),
@@ -819,10 +815,7 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>({
-				Path("C:/FakeSDK/"),
-			});
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto systemReadAccess = std::vector<Path>({
 				Path("C:/FakeSystem/"),
 			});
@@ -940,8 +933,7 @@ namespace Soup::Core::UnitTests
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
@@ -1142,7 +1134,6 @@ namespace Soup::Core::UnitTests
 						"EvaluateReadAccess",
 						ValueList(
 						{
-							std::string("C:/FakeSDK/"),
 							std::string("/(PACKAGE_PackageA)/"),
 							std::string("/(TARGET_PackageA)/"),
 							std::string("/(TARGET_PackageB)/"),
@@ -1212,12 +1203,15 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", true },
 								})
 							},
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(packageAGenerateInputMockFile->Content),
@@ -1262,7 +1256,6 @@ namespace Soup::Core::UnitTests
 						"EvaluateReadAccess",
 						ValueList(
 						{
-							std::string("C:/FakeSDK/"),
 							std::string("/(PACKAGE_PackageB)/"),
 							std::string("/(TARGET_PackageB)/"),
 						})
@@ -1303,12 +1296,15 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", true },
 								})
 							},
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(packageBGenerateInputMockFile->Content),
@@ -1377,7 +1373,6 @@ namespace Soup::Core::UnitTests
 						"EvaluateReadAccess",
 						ValueList(
 						{
-							std::string("C:/FakeSDK/"),
 							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 							std::string("/(TARGET_PackageA)/"),
@@ -1463,12 +1458,15 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", true },
 								})
 							},
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/WorkingDirectory/MyPackage/")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),
@@ -1560,10 +1558,7 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto sdkParameters = ValueList();
-			auto sdkReadAccess = std::vector<Path>({
-				Path("C:/FakeSDK/"),
-			});
+			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto systemReadAccess = std::vector<Path>({
 				Path("C:/FakeSystem/"),
 			});
@@ -1656,8 +1651,7 @@ namespace Soup::Core::UnitTests
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
-				sdkParameters,
-				sdkReadAccess,
+				userDataPath,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,
@@ -1797,7 +1791,6 @@ namespace Soup::Core::UnitTests
 						"EvaluateReadAccess",
 						ValueList(
 						{
-							std::string("C:/FakeSDK/"),
 							std::string("/(PACKAGE_TestBuild)/"),
 							std::string("/(TARGET_TestBuild)/"),
 						})
@@ -1838,12 +1831,15 @@ namespace Soup::Core::UnitTests
 									{ "HostValue", true },
 								})
 							},
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(testBuildGenerateInputMockFile->Content),
@@ -1903,7 +1899,6 @@ namespace Soup::Core::UnitTests
 						"EvaluateReadAccess",
 						ValueList(
 						{
-							std::string("C:/FakeSDK/"),
 							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})
@@ -1975,12 +1970,15 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", true },
 								})
 							},
-							{ "SDKs", ValueList() },
 						})
 					},
 					{
 						"PackageRoot",
 						std::string("C:/WorkingDirectory/MyPackage/")
+					},
+					{
+						"UserDataPath",
+						std::string("C:/Users/Me/.soup/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),

@@ -4,6 +4,8 @@
 #else
 #error "Unknown platform"
 #endif
+
+#include <filesystem>
 #include <iostream>
 #include <string_view>
 #include <string>
@@ -32,6 +34,11 @@ void CopyFile(std::string_view sourcePath, std::string_view destinationPath)
 #elif defined(__linux__)
 void CopyFile(std::string_view sourcePath, std::string_view destinationPath)
 {
+	auto options = std::filesystem::copy_options::overwrite_existing;
+	if (!std::filesystem::copy_file(sourcePath, destinationPath, options))
+	{
+		throw std::runtime_error("Copy failed");
+	}
 }
 #else
 #error "Unknown platform"

@@ -4,26 +4,13 @@
 
 namespace Soup.Build.PackageManager
 {
-	using System.Linq;
 	using System.Threading.Tasks;
-	using Microsoft.Identity.Client;
-	using Opal;
+	using IdentityModel.OidcClient;
 
 	internal class AuthenticationManager : IAuthenticationManager
 	{
-		private static readonly string Tenant = $"soupbuild.com";
-		private static readonly string AzureAdB2CHostname = $"soupbuild.b2clogin.com";
-		private static readonly string ClientId = "29b9e45c-332b-4f93-a41f-af525dee4730";
-		private static readonly string SignUpSignInPolicyId = "B2C_1_SignUp_SignIn";
-		private static readonly string SoupApiScope = "/ba178231-c318-435d-881a-25f9e00df20a/soup_build_api";
-
-		private static readonly string Scope = $"https://{Tenant}{SoupApiScope}";
-
-		private static string RedirectUri => $"https://{AzureAdB2CHostname}/oauth2/nativeclient";
-
-		private static string AuthorityBase => $"https://{AzureAdB2CHostname}/tfp/{Tenant}/";
-
-		public static string SignUpSignInAuthority => $"{AuthorityBase}{SignUpSignInPolicyId}";
+		static string _authority = "https://auth.soupbuild.com/";
+		// static string _authority = "https://localhost:5001/";
 
 		/// <summary>
 		/// Ensure the user is logged in
@@ -31,38 +18,30 @@ namespace Soup.Build.PackageManager
 		/// <returns>The access token</returns>
 		public async Task<string> EnsureSignInAsync()
 		{
-			IPublicClientApplication publicClientApp = PublicClientApplicationBuilder.Create(ClientId)
-				.WithB2CAuthority(SignUpSignInAuthority)
-				.WithRedirectUri(RedirectUri)
-				.WithLogging(PublicClientLog, LogLevel.Info, false)
-				.Build();
-
-			TokenCache.Bind(publicClientApp.UserTokenCache);
-
-			AuthenticationResult authResult = null;
-			var scopes = new string[] { Scope };
-
-			try
-			{
-				// Attempt to silently acquire the user token
-				var accounts = await publicClientApp.GetAccountsAsync(SignUpSignInPolicyId);
-				authResult = await publicClientApp.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
-					.ExecuteAsync();
-			}
-			catch (MsalUiRequiredException)
-			{
-				// Ignore, user will need to sign in interactively.
-				authResult = await publicClientApp.AcquireTokenInteractive(scopes)
-					.ExecuteAsync();
-			}
-
-			return authResult.AccessToken;
+			var token = await Login();
+			return token;
 		}
 
-		private static void PublicClientLog(LogLevel level, string message, bool containsPii)
+		private async Task<string> Login()
 		{
-			string logs = $"{level} {message}";
-			Log.Diag(logs);
+			// Create a redirect URI using an available port on the loopback address
+			var browser = new SystemBrowser();
+			string redirectUri = string.Format($"http://127.0.0.1:{browser.Port}");
+
+			var options = new OidcClientOptions()
+			{
+				Authority = _authority,
+				ClientId = "Soup.Native",
+				RedirectUri = redirectUri,
+				Scope = "openid profile soup_api",
+				FilterClaims = false,
+				Browser = browser,
+			};
+
+			var oidcClient = new OidcClient(options);
+			var result = await oidcClient.LoginAsync(new LoginRequest());
+
+			return result.AccessToken;
 		}
 	}
 }

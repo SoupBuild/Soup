@@ -7,6 +7,6 @@ SET SourceDir=%RootDir%\Source
 SET PackageManagerDir=%SourceDir%\GenerateSharp\PackageManager
 
 REM - Build PackageManager
-echo dotnet publish %PackageManagerDir% --self-contained -f net6.0-windows10.0.17763.0 -r win-x64 -c %Flavor%
-call dotnet publish %PackageManagerDir% --self-contained -f net6.0-windows10.0.17763.0 -r win-x64 -c %Flavor%
+echo dotnet publish %PackageManagerDir% -c %Flavor% -f net7.0 -r win-x64 --self-contained
+call dotnet publish %PackageManagerDir% -c %Flavor% -f net7.0 -r win-x64 --self-contained
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%

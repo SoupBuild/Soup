@@ -1,10 +1,12 @@
-# SML
-SML stands for "Simple Minimal Language". It is a simple declarative language that has its roots in [Toml](https://toml.io/en/). SML removes the overly complex Table and dot key syntax from Toml in favor of a more direct hierarchical representation. I believe this leads to a clearer strict view with less variance for "odd" interleaving of values and makes parsing straightforward as tables cannot "spring into existence". It also drops support for date-times, since they are very hard to get right and not that important to build definitions.
+# Simple Minimal Language
+Simple Minimal Language (SML) is a simple declarative language that has its roots in [Toml](https://toml.io/en/). SML removes the overly complex Table and dot key syntax from Toml in favor of a more direct hierarchical representation. This enforces a clearer, strict view with less variance for "odd" interleaving of values. It also makes parsing straightforward as tables cannot "spring into existence". Support for date-times is removed, since they are very hard to get right and not that important to build definitions.
 
-Example.sml
+In SML newline characters (`\r\n`) and comma (`,`) characters can be used interchangeably for delimiters, however they cannot both be used at the same time. This removes unnecessary commas when it is already clear that the items are separated by a newline. But still allows for the comma to clearly define items that are on the same line. Newline characters can have one or more in a row to allow for vertical whitespace.
+
+## Example.sml
 ```sml
 # Here is a comment
-Key: "A String Value"
+KeyName: "A String Value"
 "KeyWithSpecial#@": 1234
 IsEnabled: true
 AnArray: [
@@ -12,13 +14,14 @@ AnArray: [
     1234
 ]
 
-ATable: {
+Table1: {
     ChildArray: [ "value1", "value2" ]
 }
 ```
 
-Note: SML is very much a work in progress and is a key part of the Beta stabilization phase.
+> Note: SML is very much a work in progress and is a key part of the Beta stabilization phase.
 
+## Grammar
 ```antlr
 grammar SML;
 

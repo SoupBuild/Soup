@@ -15,7 +15,7 @@ Source: [
 
 Dependencies: {
     Runtime: [
-        "Soup.Build.Utils@0.2.0"
+        "Soup.Build.Utils@0.4.0"
     ]
 }
 ```
@@ -28,7 +28,7 @@ Closures: {
     Root: {
         Wren: [
             { Name: "Samples.CSharp.BuildExtension.Extension", Version: "./", Build: "Build0", Tool: "Tool0" }
-            { Name: "Soup.Build.Utils", Version: "0.3.0", Build: "Build0", Tool: "Tool0" }
+            { Name: "Soup.Build.Utils", Version: "0.4.0", Build: "Build0", Tool: "Tool0" }
         ]
     }
     Build0: {
@@ -124,7 +124,7 @@ Closures: {
             { Name: "Samples.CSharp.BuildExtension.Extension", Version: "../Extension/" }
         ]
         Wren: [
-            { Name: "Soup.CSharp", Version: "0.9.0" }
+            { Name: "Soup.CSharp", Version: "0.11.1" }
         ]
     }
     Tool0: {

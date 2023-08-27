@@ -56,30 +56,15 @@ namespace Soup::Core
 	class SMLArray
 	{
 	public:
-		SMLArray() :
-			_value()
-		{
-		}
+		SMLArray();
 
-		SMLArray(std::vector<SMLValue> value) :
-			_value(std::move(value))
-		{
-		}
+		SMLArray(std::vector<SMLValue> value);
 
-		const SMLValue& operator[](size_t key) const
-		{
-			return _value.at(key);
-		}
+		const SMLValue& operator[](size_t key) const;
 
-		const size_t GetSize() const
-		{
-			return _value.size();
-		}
+		const size_t GetSize() const;
 
-		const std::vector<SMLValue>& GetValue() const
-		{
-			return _value;
-		}
+		const std::vector<SMLValue>& GetValue() const;
 
 	private:
 		std::vector<SMLValue> _value;
@@ -225,6 +210,31 @@ namespace Soup::Core
 
 	std::ostream& operator<<(std::ostream& stream, const SMLValue& value);
 	std::ostream& operator<<(std::ostream& stream, const SMLDocument& value);
+
+	SMLArray::SMLArray() :
+		_value()
+	{
+	}
+
+	SMLArray::SMLArray(std::vector<SMLValue> value) :
+		_value(std::move(value))
+	{
+	}
+
+	const SMLValue& SMLArray::operator[](size_t key) const
+	{
+		return _value.at(key);
+	}
+
+	const size_t SMLArray::GetSize() const
+	{
+		return _value.size();
+	}
+
+	const std::vector<SMLValue>& SMLArray::GetValue() const
+	{
+		return _value;
+	}
 
 #ifdef CLIENT_CORE_IMPLEMENTATION
 	std::ostream& operator<<(std::ostream& stream, const SMLDocument& document)

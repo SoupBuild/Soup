@@ -44,17 +44,20 @@ module;
 #pragma warning(disable:4702)
 
 # include <iostream>
+# include <chrono>
+#ifndef _WIN32 // TODO: MSVC BUG
 # include <optional>
-# include <string>
-# include <sstream>
+# include <unordered_map>
+# include <vector>
+#endif
 
 #ifdef SOUP_BUILD
 
 module Soup.Core;
+import reflex;
 
 #else
 
-#include <unordered_map>
 #include <variant>
 #include <vector>
 #include "SML.h"

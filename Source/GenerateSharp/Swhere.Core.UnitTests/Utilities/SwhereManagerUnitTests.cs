@@ -28,22 +28,22 @@ namespace Soup.Build.Discover.UnitTests
 			using var scopedProcessManager = new ScopedSingleton<IProcessManager>(mockProcessManager);
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
-				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
+				"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
+				"C:\\Program Files\\dotnet\\dotnet.exe\r\n");
+			mockProcessManager.RegisterExecuteResult(
+				"CreateProcess: 2 [./] C:/Program Files/dotnet/dotnet.exe --list-sdks",
+				"5.0.0 [C:\\Program Files\\dotnet\\sdk]\r\n6.0.8 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.201 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.300-preview.23179.2 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.304 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.400-preview.23274.1 [C:\\Program Files\\dotnet\\sdk]\r\n");
+			mockProcessManager.RegisterExecuteResult(
+				"CreateProcess: 3 [./] C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+				"Microsoft.AspNetCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.NETCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.12 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.15 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.WindowsDesktop.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\n");
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
+				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
-			mockFileSystem.RegisterChildren(
-				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
-				new List<DirectoryEntry>()
-				{
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
-				});
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"),
+				new MockFile(new System.IO.MemoryStream()));
 
 			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
@@ -56,6 +56,17 @@ namespace Soup.Build.Discover.UnitTests
 				new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.33.31629\r\n"))));
 
+			mockFileSystem.RegisterChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
+				new List<DirectoryEntry>()
+				{
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
+				});
+
 			bool includePrerelease = false;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -66,18 +77,52 @@ namespace Soup.Build.Discover.UnitTests
 					"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"WARN: Local User Config file does not exist",
 					"INFO: No existing local user config.",
-					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
-					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
-					"HIGH: FindNewestDotNet6RuntimeVersion: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
-					"INFO: CheckFile: 5.0.0",
-					"INFO: CheckFile: 6.0.7",
-					"INFO: CheckFile: 6.0.8",
-					"INFO: CheckFile: 6.0.9",
+					"INFO: C:/Windows/System32/where.exe dotnet",
+					"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
+					"HIGH: Find DotNet SDK Versions",
+					"INFO: C:/Program Files/dotnet/dotnet.exe --list-sdks",
+					"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk",
+					"HIGH: Find DotNet Runtime Versions",
+					"INFO: C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.12 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.15 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.20 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 					"HIGH: Using VC Version: 14.33.31629",
 					"HIGH: FindNewestWindows10KitVersion: C:/Program Files (x86)/Windows Kits/10/",
 					"INFO: CheckFile: 10.0.19041.0",
+					"INFO: Nuget not found",
 					"INFO: Creating directory C:/Users/Me/.soup/",
 				},
 				testListener.GetMessages());
@@ -88,10 +133,13 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
+					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"GetChildDirectories: C:/Program Files (x86)/Windows Kits/10/include/",
+					"GetUserProfileDirectory",
+					"Exists: C:/Users/Me/.nuget/packages",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
@@ -102,18 +150,30 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
+					"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
-					"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
+					"CreateProcess: 2 [./] C:/Program Files/dotnet/dotnet.exe --list-sdks",
 					"ProcessStart: 2",
 					"WaitForExit: 2",
 					"GetStandardOutput: 2",
 					"GetStandardError: 2",
 					"GetExitCode: 2",
+					"CreateProcess: 3 [./] C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+					"ProcessStart: 3",
+					"WaitForExit: 3",
+					"GetStandardOutput: 3",
+					"GetStandardError: 3",
+					"GetExitCode: 3",
+					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
+					"ProcessStart: 4",
+					"WaitForExit: 4",
+					"GetStandardOutput: 4",
+					"GetStandardError: 4",
+					"GetExitCode: 4",
 				},
 				mockProcessManager.GetRequests());
 
@@ -125,39 +185,94 @@ namespace Soup.Build.Discover.UnitTests
 			var expected =
 @"SDKs: [
 	{
-		Name: ""Roslyn""
-		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
-		]
-		Properties: { ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/"" }
-	}
-	{
 		Name: ""DotNet""
 		SourceDirectories: [
-			""C:/Program Files/dotnet/""
+			""C:/Program Files/dotnet""
 		]
-		Properties: { RuntimeVersion: ""6.0.9"", RootPath: ""C:/Program Files/dotnet/"" }
+		Properties: {
+			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
+			SDKs: {
+				""5.0.0"": ""C:/Program Files/dotnet/sdk""
+				""6.0.8"": ""C:/Program Files/dotnet/sdk""
+				""7.0.201"": ""C:/Program Files/dotnet/sdk""
+				""7.0.300-preview.23179.2"": ""C:/Program Files/dotnet/sdk""
+				""7.0.304"": ""C:/Program Files/dotnet/sdk""
+				""7.0.400-preview.23274.1"": ""C:/Program Files/dotnet/sdk""
+			}
+			Runtimes: {
+				""Microsoft.AspNetCore.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+				}
+				""Microsoft.NETCore.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.12"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.15"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.20"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+				}
+				""Microsoft.WindowsDesktop.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+				}
+			}
+			TargetingPacks: {
+				""Microsoft.NETCore.App.Ref"": {
+					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+				}
+			}
+		}
 	}
 	{
 		Name: ""MSVC""
 		SourceDirectories: [
 			""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
 		]
-		Properties: { Version: ""14.33.31629"", VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/"" }
+		Properties: {
+			Version: ""14.33.31629""
+			VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+		}
 	}
 	{
 		Name: ""Windows""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Windows Kits/10/""
 		]
-		Properties: { Version: ""10.0.19041.0"", RootPath: ""C:/Program Files (x86)/Windows Kits/10/"" }
+		Properties: {
+			Version: ""10.0.19041.0""
+			RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
+		}
 	}
 	{
 		Name: ""NetFXTools""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
 		]
-		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/"" }
+		Properties: {
+			ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+		}
 	}
 ]";
 
@@ -178,22 +293,22 @@ namespace Soup.Build.Discover.UnitTests
 			using var scopedProcessManager = new ScopedSingleton<IProcessManager>(mockProcessManager);
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
-				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\n");
+				"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
+				"C:\\Program Files\\dotnet\\dotnet.exe\r\n");
+			mockProcessManager.RegisterExecuteResult(
+				"CreateProcess: 2 [./] C:/Program Files/dotnet/dotnet.exe --list-sdks",
+				"5.0.0 [C:\\Program Files\\dotnet\\sdk]\r\n6.0.8 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.201 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.300-preview.23179.2 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.304 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.400-preview.23274.1 [C:\\Program Files\\dotnet\\sdk]\r\n");
+			mockProcessManager.RegisterExecuteResult(
+				"CreateProcess: 3 [./] C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+				"Microsoft.AspNetCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.NETCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.12 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.15 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.WindowsDesktop.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\n");
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
+				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\n");
 
-			mockFileSystem.RegisterChildren(
-				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
-				new List<DirectoryEntry>()
-				{
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
-				});
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"),
+				new MockFile(new System.IO.MemoryStream()));
 
 			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
@@ -206,6 +321,17 @@ namespace Soup.Build.Discover.UnitTests
 				new Path("C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.34.31823\r\n"))));
 
+			mockFileSystem.RegisterChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
+				new List<DirectoryEntry>()
+				{
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
+				});
+
 			bool includePrerelease = true;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -216,18 +342,52 @@ namespace Soup.Build.Discover.UnitTests
 					"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"WARN: Local User Config file does not exist",
 					"INFO: No existing local user config.",
-					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
-					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
-					"HIGH: FindNewestDotNet6RuntimeVersion: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
-					"INFO: CheckFile: 5.0.0",
-					"INFO: CheckFile: 6.0.7",
-					"INFO: CheckFile: 6.0.8",
-					"INFO: CheckFile: 6.0.9",
+					"INFO: C:/Windows/System32/where.exe dotnet",
+					"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
+					"HIGH: Find DotNet SDK Versions",
+					"INFO: C:/Program Files/dotnet/dotnet.exe --list-sdks",
+					"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk",
+					"HIGH: Find DotNet Runtime Versions",
+					"INFO: C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.12 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.15 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.20 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
 					"HIGH: Using VC Version: 14.34.31823",
 					"HIGH: FindNewestWindows10KitVersion: C:/Program Files (x86)/Windows Kits/10/",
 					"INFO: CheckFile: 10.0.19041.0",
+					"INFO: Nuget not found",
 					"INFO: Creating directory C:/Users/Me/.soup/",
 				},
 				testListener.GetMessages());
@@ -238,13 +398,17 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
+					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"GetChildDirectories: C:/Program Files (x86)/Windows Kits/10/include/",
+					"GetUserProfileDirectory",
+					"Exists: C:/Users/Me/.nuget/packages",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
+
 				},
 				mockFileSystem.GetRequests());
 
@@ -252,18 +416,31 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
+					"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
-					"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
+					"CreateProcess: 2 [./] C:/Program Files/dotnet/dotnet.exe --list-sdks",
 					"ProcessStart: 2",
 					"WaitForExit: 2",
 					"GetStandardOutput: 2",
 					"GetStandardError: 2",
 					"GetExitCode: 2",
+					"CreateProcess: 3 [./] C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+					"ProcessStart: 3",
+					"WaitForExit: 3",
+					"GetStandardOutput: 3",
+					"GetStandardError: 3",
+					"GetExitCode: 3",
+					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
+					"ProcessStart: 4",
+					"WaitForExit: 4",
+					"GetStandardOutput: 4",
+					"GetStandardError: 4",
+					"GetExitCode: 4",
+
 				},
 				mockProcessManager.GetRequests());
 
@@ -275,39 +452,94 @@ namespace Soup.Build.Discover.UnitTests
 			var expected =
 @"SDKs: [
 	{
-		Name: ""Roslyn""
-		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/Roslyn/""
-		]
-		Properties: { ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/Roslyn/"" }
-	}
-	{
 		Name: ""DotNet""
 		SourceDirectories: [
-			""C:/Program Files/dotnet/""
+			""C:/Program Files/dotnet""
 		]
-		Properties: { RuntimeVersion: ""6.0.9"", RootPath: ""C:/Program Files/dotnet/"" }
+		Properties: {
+			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
+			SDKs: {
+				""5.0.0"": ""C:/Program Files/dotnet/sdk""
+				""6.0.8"": ""C:/Program Files/dotnet/sdk""
+				""7.0.201"": ""C:/Program Files/dotnet/sdk""
+				""7.0.300-preview.23179.2"": ""C:/Program Files/dotnet/sdk""
+				""7.0.304"": ""C:/Program Files/dotnet/sdk""
+				""7.0.400-preview.23274.1"": ""C:/Program Files/dotnet/sdk""
+			}
+			Runtimes: {
+				""Microsoft.AspNetCore.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+				}
+				""Microsoft.NETCore.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.12"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.15"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.20"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+				}
+				""Microsoft.WindowsDesktop.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+				}
+			}
+			TargetingPacks: {
+				""Microsoft.NETCore.App.Ref"": {
+					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+				}
+			}
+		}
 	}
 	{
 		Name: ""MSVC""
 		SourceDirectories: [
 			""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
 		]
-		Properties: { Version: ""14.34.31823"", VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/"" }
+		Properties: {
+			Version: ""14.34.31823""
+			VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
+		}
 	}
 	{
 		Name: ""Windows""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Windows Kits/10/""
 		]
-		Properties: { Version: ""10.0.19041.0"", RootPath: ""C:/Program Files (x86)/Windows Kits/10/"" }
+		Properties: {
+			Version: ""10.0.19041.0""
+			RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
+		}
 	}
 	{
 		Name: ""NetFXTools""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
 		]
-		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/"" }
+		Properties: {
+			ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+		}
 	}
 ]";
 
@@ -335,42 +567,48 @@ namespace Soup.Build.Discover.UnitTests
 		SourceDirectories: [
 			""C:/SomeWhere/""
 		]
-		Properties: { ToolsRoot: ""C:/SomeWhere/"" }
-	}
-	{
-		Name: ""Roslyn""
-		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/Roslyn/""
-		]
-		Properties: { ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/Roslyn/"" }
+		Properties: {
+			ToolsRoot: ""C:/SomeWhere/""
+		}
 	}
 	{
 		Name: ""DotNet""
 		SourceDirectories: [
 			""C:/Program Files/dotnet/""
 		]
-		Properties: { RuntimeVersion: ""6.0.9"", RootPath: ""C:/Program Files/dotnet/"" }
+		Properties: {
+			RuntimeVersion: ""6.0.9""
+			RootPath: ""C:/Program Files/dotnet/""
+		}
 	}
 	{
 		Name: ""MSVC""
 		SourceDirectories: [
 			""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
 		]
-		Properties: { Version: ""14.34.31823"", VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/"" }
+		Properties: {
+			Version: ""14.34.31823""
+			VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
+		}
 	}
 	{
 		Name: ""Windows""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Windows Kits/10/""
 		]
-		Properties: { Version: ""10.0.19041.0"", RootPath: ""C:/Program Files (x86)/Windows Kits/10/"" }
+		Properties: {
+			Version: ""10.0.19041.0""
+			RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
+		}
 	}
 	{
 		Name: ""NetFXTools""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
 		]
-		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/"" }
+		Properties: {
+			ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+		}
 	}
 ]
 ";
@@ -382,22 +620,22 @@ namespace Soup.Build.Discover.UnitTests
 				new MockFile(originalContent));
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
-				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
+				"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
+				"C:\\Program Files\\dotnet\\dotnet.exe\r\n");
+			mockProcessManager.RegisterExecuteResult(
+				"CreateProcess: 2 [./] C:/Program Files/dotnet/dotnet.exe --list-sdks",
+				"5.0.0 [C:\\Program Files\\dotnet\\sdk]\r\n6.0.8 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.201 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.300-preview.23179.2 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.304 [C:\\Program Files\\dotnet\\sdk]\r\n7.0.400-preview.23274.1 [C:\\Program Files\\dotnet\\sdk]\r\n");
+			mockProcessManager.RegisterExecuteResult(
+				"CreateProcess: 3 [./] C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+				"Microsoft.AspNetCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.AspNetCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.NETCore.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.12 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.15 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 6.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.WindowsDesktop.App 3.1.32 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 5.0.17 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.14 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.16 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 6.0.18 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.5 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.7 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\n");
 
 			mockProcessManager.RegisterExecuteResult(
-				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
+				"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
-			mockFileSystem.RegisterChildren(
-				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
-				new List<DirectoryEntry>()
-				{
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
-					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
-				});
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"),
+				new MockFile(new System.IO.MemoryStream()));
 
 			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
@@ -410,6 +648,17 @@ namespace Soup.Build.Discover.UnitTests
 				new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.33.31629\r\n"))));
 
+			mockFileSystem.RegisterChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
+				new List<DirectoryEntry>()
+				{
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
+				});
+
 			bool includePrerelease = false;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -418,20 +667,53 @@ namespace Soup.Build.Discover.UnitTests
 				new List<string>()
 				{
 					"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
-					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
-					"HIGH: FindNewestDotNet6RuntimeVersion: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
-					"INFO: CheckFile: 5.0.0",
-					"INFO: CheckFile: 6.0.7",
-					"INFO: CheckFile: 6.0.8",
-					"INFO: CheckFile: 6.0.9",
+					"INFO: C:/Windows/System32/where.exe dotnet",
+					"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
+					"HIGH: Find DotNet SDK Versions",
+					"INFO: C:/Program Files/dotnet/dotnet.exe --list-sdks",
+					"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk",
+					"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk",
+					"HIGH: Find DotNet Runtime Versions",
+					"INFO: C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.AspNetCore.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.12 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.15 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 6.0.20 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.NETCore.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.NETCore.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 5.0.17 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.14 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.16 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 6.0.18 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.3 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
+					"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 					"HIGH: Using VC Version: 14.33.31629",
 					"HIGH: FindNewestWindows10KitVersion: C:/Program Files (x86)/Windows Kits/10/",
 					"INFO: CheckFile: 10.0.19041.0",
+					"INFO: Nuget not found",
 					"INFO: Creating directory C:/Users/Me/.soup/",
-
 				},
 				testListener.GetMessages());
 
@@ -442,13 +724,17 @@ namespace Soup.Build.Discover.UnitTests
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
+					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"GetChildDirectories: C:/Program Files (x86)/Windows Kits/10/include/",
+					"GetUserProfileDirectory",
+					"Exists: C:/Users/Me/.nuget/packages",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
+
 				},
 				mockFileSystem.GetRequests());
 
@@ -456,18 +742,30 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
+					"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
-					"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
+					"CreateProcess: 2 [./] C:/Program Files/dotnet/dotnet.exe --list-sdks",
 					"ProcessStart: 2",
 					"WaitForExit: 2",
 					"GetStandardOutput: 2",
 					"GetStandardError: 2",
 					"GetExitCode: 2",
+					"CreateProcess: 3 [./] C:/Program Files/dotnet/dotnet.exe --list-runtimes",
+					"ProcessStart: 3",
+					"WaitForExit: 3",
+					"GetStandardOutput: 3",
+					"GetStandardError: 3",
+					"GetExitCode: 3",
+					"CreateProcess: 4 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
+					"ProcessStart: 4",
+					"WaitForExit: 4",
+					"GetStandardOutput: 4",
+					"GetStandardError: 4",
+					"GetExitCode: 4",
 				},
 				mockProcessManager.GetRequests());
 
@@ -483,42 +781,99 @@ namespace Soup.Build.Discover.UnitTests
 		SourceDirectories: [
 			""C:/SomeWhere/""
 		]
-		Properties: { ToolsRoot: ""C:/SomeWhere/"" }
-	}
-	{
-		Name: ""Roslyn""
-		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
-		]
-		Properties: { ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/"" }
+		Properties: {
+			ToolsRoot: ""C:/SomeWhere/""
+		}
 	}
 	{
 		Name: ""DotNet""
 		SourceDirectories: [
-			""C:/Program Files/dotnet/""
+			""C:/Program Files/dotnet""
 		]
-		Properties: { RuntimeVersion: ""6.0.9"", RootPath: ""C:/Program Files/dotnet/"" }
+		Properties: {
+			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
+			SDKs: {
+				""5.0.0"": ""C:/Program Files/dotnet/sdk""
+				""6.0.8"": ""C:/Program Files/dotnet/sdk""
+				""7.0.201"": ""C:/Program Files/dotnet/sdk""
+				""7.0.300-preview.23179.2"": ""C:/Program Files/dotnet/sdk""
+				""7.0.304"": ""C:/Program Files/dotnet/sdk""
+				""7.0.400-preview.23274.1"": ""C:/Program Files/dotnet/sdk""
+			}
+			Runtimes: {
+				""Microsoft.AspNetCore.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+				}
+				""Microsoft.NETCore.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.12"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.15"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""6.0.20"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+				}
+				""Microsoft.WindowsDesktop.App"": {
+					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+				}
+			}
+			TargetingPacks: {
+				""Microsoft.NETCore.App.Ref"": {
+					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+				}
+			}
+		}
 	}
 	{
 		Name: ""MSVC""
 		SourceDirectories: [
 			""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
 		]
-		Properties: { Version: ""14.33.31629"", VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/"" }
+		Properties: {
+			Version: ""14.33.31629""
+			VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+		}
 	}
 	{
 		Name: ""Windows""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Windows Kits/10/""
 		]
-		Properties: { Version: ""10.0.19041.0"", RootPath: ""C:/Program Files (x86)/Windows Kits/10/"" }
+		Properties: {
+			Version: ""10.0.19041.0""
+			RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
+		}
 	}
 	{
 		Name: ""NetFXTools""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
 		]
-		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/"" }
+		Properties: {
+			ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+		}
 	}
 ]
 ";

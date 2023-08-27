@@ -20,14 +20,14 @@ Dependencies: {
 		"Soup.Test.Cpp@0.6.0"
 	]
 	Runtime: [
-		"Opal@0.5.0"
-		"reflex@1.0.2"
+		"Opal@0.5"
+		"reflex@1.0"
 		"../../Monitor/Host/"
-		"wren@1.0.0"
-		"CryptoPP@1.1.0"
+		"wren@1.0"
+		"CryptoPP@1.1"
 	]
 	Test: [
-		"Soup.Test.Assert@0.3.0"
+		"Soup.Test.Assert@0.3"
 	]
 }
 

@@ -36,12 +36,18 @@ module;
 #undef GetCurrentTime
 #undef GetClassName
 
+#elif defined(__linux__)
+
+#include <spawn.h>
+#include <sys/wait.h>
+
 #endif
 
 #ifdef SOUP_BUILD
 
 // TODO module
-#include "include/Wren.hpp"
+// TODO: Treat wren as C code
+#include "include/wren.h"
 
 export module Soup.Core;
 
@@ -70,9 +76,6 @@ using namespace Opal;
 #include <sstream>
 #include <string>
 
-#include <spawn.h>
-#include <sys/wait.h>
-
 #include "Utilities/Path.h"
 #include "Utilities/SemanticVersion.h"
 #include "IO/SystemConsoleManager.h"
@@ -91,7 +94,7 @@ using namespace Opal;
 #include "Linux/LinuxMonitorProcessManager.h"
 
 // import Wren
-#include "wren.hpp"
+#include "wren.h"
 
 #endif
 

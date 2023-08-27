@@ -48,6 +48,7 @@ namespace Soup::Core
 		const RecipeBuildArguments& _arguments;
 
 		// System Parameters
+		Path _userDataPath;
 		const ValueTable& _hostBuildGlobalParameters;
 
 		// Shared Runtime State
@@ -72,11 +73,13 @@ namespace Soup::Core
 			const std::map<std::string, std::map<std::string, SemanticVersion>>& builtInPackageLookup,
 			const RecipeBuildArguments& arguments,
 			const ValueTable& hostBuildGlobalParameters,
+			Path userDataPath,
 			RecipeCache& recipeCache) :
 			_knownLanguageLookup(knownLanguageLookup),
 			_builtInPackageLookup(builtInPackageLookup),
 			_arguments(arguments),
 			_hostBuildGlobalParameters(hostBuildGlobalParameters),
+			_userDataPath(std::move(userDataPath)),
 			_recipeCache(recipeCache),
 			_packageGraphLookup(),
 			_packageLookup(),
@@ -94,6 +97,9 @@ namespace Soup::Core
 
 			// Load the package lock if present from project folder
 			auto packageLockState = LoadPackageLockIfPresent(projectRoot);
+
+			// There is no parent, create empty state
+			auto parentPackageLockState = PackageLockState();
 
 			auto recipePath = projectRoot + BuildConstants::RecipeFileName();
 			const Recipe* recipe;
@@ -131,6 +137,7 @@ namespace Soup::Core
 				parentSet,
 				knownPackageSet,
 				packageLockState,
+				parentPackageLockState,
 				toolDependencyProjects);
 
 			for (auto& toolDependency : toolDependencyProjects)
@@ -228,7 +235,7 @@ namespace Soup::Core
 				else
 				{
 					// Build the global store location path
-					auto packageStore = GetSoupUserDataPath() + Path("packages/");
+					auto packageStore = _userDataPath + Path("packages/");
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 					auto activeVersionString = activeReference.GetVersion().ToString();
 					packagePath = packageStore +
@@ -271,7 +278,7 @@ namespace Soup::Core
 				else
 				{
 					// Build the global store location path
-					auto packageStore = GetSoupUserDataPath() + Path("locks/");
+					auto packageStore = _userDataPath + Path("locks/");
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 					packagePath = packageStore +
 						Path(languageSafeName) +
@@ -330,6 +337,7 @@ namespace Soup::Core
 			const std::set<std::string>& parentSet,
 			KnownPackageMap& knownPackageSet,
 			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState,
 			std::vector<PackageChildInfo>& toolDependencies)
 		{
 			// Add current package to the parent set when building child dependencies
@@ -362,7 +370,8 @@ namespace Soup::Core
 						projectRoot,
 						buildClosureName,
 						toolClosureName,
-						packageLockState);
+						packageLockState,
+						parentPackageLockState);
 					dependencyProjects.emplace(_dependencyTypeBuild, std::move(buildDependencies));
 					buildDependencyToolDependencies = std::move(buildToolDependencies);
 				}
@@ -374,7 +383,8 @@ namespace Soup::Core
 							recipe,
 							projectRoot,
 							buildToolClosureName.value(),
-							packageLockState);
+							packageLockState,
+							parentPackageLockState);
 					}
 					else
 					{
@@ -389,7 +399,8 @@ namespace Soup::Core
 						dependencyType,
 						activeParentSet,
 						knownPackageSet,
-						packageLockState);
+						packageLockState,
+						parentPackageLockState);
 					dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
 				}
 			}
@@ -401,7 +412,8 @@ namespace Soup::Core
 					projectRoot,
 					buildClosureName,
 					toolClosureName,
-					packageLockState);
+					packageLockState,
+					parentPackageLockState);
 			buildDependencyToolDependencies.insert(
 				buildDependencyToolDependencies.end(),
 				std::make_move_iterator(languageExtensionToolDependencies.begin()),
@@ -435,7 +447,8 @@ namespace Soup::Core
 			const std::string& dependencyType,
 			const std::set<std::string>& activeParentSet,
 			KnownPackageMap& knownPackageSet,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState)
 		{
 			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
 			for (auto dependency : recipe.GetNamedDependencies(dependencyType))
@@ -446,8 +459,9 @@ namespace Soup::Core
 					projectRoot,
 					activeParentSet,
 					knownPackageSet,
-					packageLockState);
-				
+					packageLockState,
+					parentPackageLockState);
+
 				dependencyTypeProjects.push_back(
 					std::move(dependencyInfo));
 			}
@@ -461,7 +475,8 @@ namespace Soup::Core
 			const Path& projectRoot,
 			const std::set<std::string>& activeParentSet,
 			KnownPackageMap& knownPackageSet,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState)
 		{
 			// Use the parent recipe language as the implicit language
 			auto implicitLanguage = recipe.GetLanguage().GetName();
@@ -548,6 +563,7 @@ namespace Soup::Core
 					activeParentSet,
 					knownPackageSet,
 					packageLockState,
+					parentPackageLockState,
 					toolDependencyProjects);
 
 				for (auto& toolDependency : toolDependencyProjects)
@@ -563,7 +579,8 @@ namespace Soup::Core
 			const Path& projectRoot,
 			const std::string& buildClosureName,
 			const std::string& toolClosureName,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState)
 		{
 			auto buildProjects = std::vector<PackageChildInfo>();
 			auto buildToolProjects = std::vector<PackageChildInfo>();
@@ -574,7 +591,8 @@ namespace Soup::Core
 					projectRoot,
 					buildClosureName,
 					toolClosureName,
-					packageLockState);
+					packageLockState,
+					parentPackageLockState);
 				buildProjects.push_back(std::move(buildDependency));
 
 				// Propagate the build tool dependencies
@@ -591,7 +609,8 @@ namespace Soup::Core
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& toolClosureName,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState)
 		{
 			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
 			for (auto dependency : recipe.GetNamedDependencies(_dependencyTypeTool))
@@ -601,7 +620,8 @@ namespace Soup::Core
 						dependency,
 						projectRoot,
 						toolClosureName,
-						packageLockState));
+						packageLockState,
+						parentPackageLockState));
 			}
 
 			return dependencyTypeProjects;
@@ -612,7 +632,8 @@ namespace Soup::Core
 			const Path& projectRoot,
 			const std::string& buildClosureName,
 			const std::string& toolClosureName,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState)
 		{
 			// Build dependencies do not inherit the parent language
 			// Instead, they default to Wren
@@ -640,7 +661,8 @@ namespace Soup::Core
 				return LoadSubGraphBuiltInPackage(
 					activeReference,
 					toolClosureName,
-					packageLockState);
+					packageLockState,
+					parentPackageLockState);
 			}
 			else
 			{
@@ -673,7 +695,8 @@ namespace Soup::Core
 			const PackageReference& originalReference,
 			const Path& projectRoot,
 			const std::string& toolClosureName,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState)
 		{
 			// Tool dependencies do not inherit the parent language
 			// They must be explicitly defined
@@ -687,11 +710,12 @@ namespace Soup::Core
 				throw std::runtime_error("Tool dependency must have explicit language defined: " + originalReference.ToString());
 			}
 
+			// Retrieve the tool version from the build dependency parent lock
 			auto activeReference = GetActivePackageReference(
 				originalReference,
 				language,
 				toolClosureName,
-				packageLockState);
+				parentPackageLockState);
 
 			PackageChildInfo toolDependency;
 			std::vector<PackageChildInfo> toolToolDependencies;
@@ -703,7 +727,8 @@ namespace Soup::Core
 				std::tie(toolDependency, toolToolDependencies) = LoadSubGraphBuiltInPackage(
 					activeReference,
 					toolToolClosureName,
-					packageLockState);
+					packageLockState,
+					parentPackageLockState);
 			}
 			else
 			{
@@ -791,6 +816,7 @@ namespace Soup::Core
 					parentSet,
 					knownPackageSet,
 					dependencyPackageLockState,
+					packageLockState,
 					toolDependencyProjects);
 
 				// Create the build graph
@@ -818,7 +844,8 @@ namespace Soup::Core
 			const Path& projectRoot,
 			const std::string& buildClosureName,
 			const std::string& toolClosureName,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState)
 		{
 			auto language = recipe.GetLanguage();
 
@@ -838,13 +865,15 @@ namespace Soup::Core
 				projectRoot,
 				buildClosureName,
 				toolClosureName,
-				packageLockState);
+				packageLockState,
+				parentPackageLockState);
 		}
 
 		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadSubGraphBuiltInPackage(
 			const PackageReference& activeReference,
 			const std::string& toolClosureName,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			const PackageLockState& parentPackageLockState)
 		{
 			// Use the prebuilt version in the install folder
 			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
@@ -884,7 +913,8 @@ namespace Soup::Core
 						*recipe,
 						packageRoot,
 						toolClosureName,
-						packageLockState);
+						packageLockState,
+						parentPackageLockState);
 				}
 
 				// Create a fake child package id
@@ -933,13 +963,6 @@ namespace Soup::Core
 				throw std::runtime_error("Unknown language: " + language);
 
 			return knownLanguageResult->second.LanguageSafeName;
-		}
-
-		Path GetSoupUserDataPath() const
-		{
-			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-				BuildConstants::SoupLocalStoreDirectory();
-			return result;
 		}
 	};
 }

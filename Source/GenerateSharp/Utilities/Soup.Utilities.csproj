@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<PropertyGroup>
 	  <NoWarn>1701;1702;3021</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
+		<PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Opal\Opal.csproj" />

@@ -5,26 +5,28 @@ Ensure that the client build number is updated in Recipe.sml, VersionCommand.h a
 
 Create a PR with this change.
 
-## Build Client
-Build the release client executable
+## Build Windows Release
 ```
-build release
+./Scripts/Windows/build.cmd Release
+./Scripts/Windows/soup.cmd version
+./Scripts/Windows/release.cmd
 ```
 
-## Create the release artifacts
-Zip up the contents of the bin folder into Soup.zip
+Manually build ./Source/Installer/Installer.sln
 
-[Soup]\Source\Client\CLI\out\bin\MSVC\release\win32\x64\
-
-
-## Build the Installer
-Open [Soup]\Source\Installer\Installer.sln in Visual Studio 2019
-
-Rebuild solution
+## Build Linux Release
+```
+./Scripts/Linux/build
+./Scripts/Linux/soup version
+./Scripts/Linux/release
+```
 
 ## Create a GitHub Release
 Tag the new release
 * title: "Soup 0.\*.\* (Alpha)"
 * tag: "v0.\*.\*-alpha
 
-Upload the Soup.zip and Soup.msi files.
+Upload artifacts:
+* soup-build-[version]-linux-[architecture].tar.gz
+* soup-build-[version]-windows-[architecture].zip
+* soup-build-[version]-windows-[architecture].msi

@@ -8,7 +8,7 @@
 
   <Identity
     Name="7a16c044-069a-400b-bc10-b118c242d03c"
-    Publisher="CN=mwasp"
+    Publisher="CN=SoupBuild"
     Version="1.0.0.0" />
 
   <Properties>

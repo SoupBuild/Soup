@@ -6,6 +6,7 @@
 module;
 #endif
 
+#include <chrono>
 #include <iostream>
 #include <memory>
 #include <stdexcept>

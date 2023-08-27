@@ -5,7 +5,10 @@ class Script
 {
 	static public void Main()
 	{
-		var soupRunFolder = @"../../../out/run";
+		var soupVersion = new Version(0, 35, 1);
+
+		var soupOutFolder = "../../../out";
+		var soupRunFolder = $"{soupOutFolder}/run";
 		var project = new Project(
 			"Soup Build",
 			new Dir(
@@ -23,8 +26,8 @@ class Script
 		project.BackgroundImage = @"Images\DialogBackground.bmp";
 		project.BannerImage = @"Images\DialogBanner.bmp";
 		project.LicenceFile = @"License.rtf";
-		project.OutDir = @"msi";
-		project.OutFileName = "SoupBuild";
+		project.OutDir = soupOutFolder;
+		project.OutFileName = $"soup-build-{soupVersion}-windows-x64";
 
 		// Prevent two installations at the same time
 		project.MajorUpgrade = new MajorUpgrade()
@@ -34,7 +37,7 @@ class Script
 		};
 
 		// Upgrade values
-		project.Version = new Version(0, 33, 1);
+		project.Version = soupVersion;
 
 		Compiler.BuildMsi(project);
 	}

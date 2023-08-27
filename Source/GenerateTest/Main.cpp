@@ -2,16 +2,16 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#include <stdexcept>
+#include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <map>
-#include <string>
 #include <optional>
-#include <vector>
-#include <sstream>
 #include <set>
-#include <algorithm>
-#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <sstream>
+#include <vector>
 
 #ifdef SOUP_BUILD
 
@@ -62,8 +62,9 @@ using namespace Opal;
 
 #endif
 
-// TODO import 
-#include "include/wren.hpp"
+// TODO import
+// TODO: Treat wren as C code
+#include "include/wren.h"
 
 #include "GenerateTestHost.h"
 

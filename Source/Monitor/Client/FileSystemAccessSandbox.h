@@ -30,8 +30,8 @@ namespace Monitor
 
 		static void UpdateWorkingDirectory(const wchar_t* fileName)
 		{
-			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			return UpdateWorkingDirectory(converter.to_bytes(fileName).c_str());
+			auto fileNameEncoded = UTF8Encode(fileName);
+			return UpdateWorkingDirectory(fileNameEncoded.c_str());
 		}
 
 		static void UpdateWorkingDirectory(const char* fileName)
@@ -89,8 +89,8 @@ namespace Monitor
 			if (!m_enableAccessChecks)
 				return true;
 
-			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			return IsReadAllowed(converter.to_bytes(fileName).c_str());
+			auto fileNameEncoded = UTF8Encode(fileName);
+			return IsReadAllowed(fileNameEncoded.c_str());
 		}
 
 		static bool IsWriteAllowed(const char* fileName)
@@ -116,8 +116,8 @@ namespace Monitor
 			if (!m_enableAccessChecks)
 				return true;
 
-			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			return IsWriteAllowed(converter.to_bytes(fileName).c_str());
+			auto fileNameEncoded = UTF8Encode(fileName);
+			return IsWriteAllowed(fileNameEncoded.c_str());
 		}
 
 	private:
@@ -153,6 +153,21 @@ namespace Monitor
 		{
 			// Check if the fileName starts with the directory
 			return fileName.find(directory) == 0;
+		}
+
+		static std::string UTF8Encode(const std::wstring_view wideString)
+		{
+			if (wideString.empty())
+				return std::string();
+
+			int requiredSizes = WideCharToMultiByte(
+				CP_UTF8, 0, wideString.data(), (int)wideString.size(), nullptr, 0, nullptr, nullptr);
+
+			std::string result(requiredSizes, 0);
+			WideCharToMultiByte(
+				CP_UTF8, 0, wideString.data(), (int)wideString.size(), result.data(), requiredSizes, nullptr, nullptr);
+
+			return result;
 		}
 
 		static bool m_enableAccessChecks;

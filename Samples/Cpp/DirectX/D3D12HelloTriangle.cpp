@@ -1,5 +1,6 @@
 module;
 
+#include <initguid.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <D3Dcompiler.h>
@@ -135,8 +136,7 @@ private:
 			ThrowIfFailed(D3D12CreateDevice(
 				warpAdapter.Get(),
 				D3D_FEATURE_LEVEL_11_0,
-				IID_PPV_ARGS(&m_device)
-				));
+				IID_PPV_ARGS(&m_device)));
 		}
 		else
 		{
@@ -146,8 +146,7 @@ private:
 			ThrowIfFailed(D3D12CreateDevice(
 				hardwareAdapter.Get(),
 				D3D_FEATURE_LEVEL_11_0,
-				IID_PPV_ARGS(&m_device)
-				));
+				IID_PPV_ARGS(&m_device)));
 		}
 
 		// Describe and create the command queue.
