@@ -179,12 +179,11 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new Path("C:/Users/Me/.nuget/packages"),
 				result.NugetPackagesPath);
-			Assert.Equal(
-				new List<NugetPackage>()
+			var expectedPackages = new List<NugetPackage>()
 				{
 					new NugetPackage()
 					{
-						Id = "123",
+						Id = "Package1",
 						Versions = new List<NugetPackageVersion>()
 						{
 							new NugetPackageVersion()
@@ -194,25 +193,31 @@ namespace Soup.Build.Discover.UnitTests
 								{
 									new NugetPackageTargetFramework()
 									{
-										Name = "test",
+										Name = "net461",
 										Libraries = new List<string>(),
 										Dependencies = new List<NugetPackageDependency>(),
 									},
 									new NugetPackageTargetFramework()
 									{
-										Name = "test",
+										Name = "netcoreapp2.1",
 										Libraries = new List<string>(),
 										Dependencies = new List<NugetPackageDependency>(),
 									},
 									new NugetPackageTargetFramework()
 									{
-										Name = "test",
+										Name = "net5.0",
 										Libraries = new List<string>(),
 										Dependencies = new List<NugetPackageDependency>(),
 									},
 									new NugetPackageTargetFramework()
 									{
-										Name = "test",
+										Name = "net6.0",
+										Libraries = new List<string>(),
+										Dependencies = new List<NugetPackageDependency>(),
+									},
+									new NugetPackageTargetFramework()
+									{
+										Name = "netstandard2.0",
 										Libraries = new List<string>(),
 										Dependencies = new List<NugetPackageDependency>(),
 									},
@@ -220,8 +225,9 @@ namespace Soup.Build.Discover.UnitTests
 							},
 						},
 					},
-				},
-				result.Packages);
+				};
+
+			Assert.Equivalent(expectedPackages, result.Packages);
 
 			// Verify expected logs
 			Assert.Equal(
@@ -239,6 +245,13 @@ namespace Soup.Build.Discover.UnitTests
 					"Exists: C:/Users/Me/.nuget/packages",
 					"GetChildDirectories: C:/Users/Me/.nuget/packages",
 					"GetChildDirectories: C:/Users/Me/.nuget/packages/Package1",
+					"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
+					"OpenRead: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
+					"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/net461/",
+					"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/netcoreapp2.1/",
+					"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/net5.0/",
+					"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/net6.0/",
+					"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/netstandard2.0/",
 				},
 				mockFileSystem.GetRequests());
 		}
