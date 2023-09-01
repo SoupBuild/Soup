@@ -4,7 +4,7 @@
 
 namespace Swhere.Core.Nuget
 {
-	internal class NugetPackageDependency
+	public class NugetPackageDependency
 	{
 		public string Id { get; set; } = string.Empty;
 

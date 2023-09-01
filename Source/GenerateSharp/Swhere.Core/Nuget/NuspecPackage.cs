@@ -21,7 +21,7 @@ namespace Swhere.Core.Nuget
 			var document = new XmlDocument();
 			document.Load(reader);
 
-			//Display the contents of the child nodes.
+			// Display the contents of the child nodes.
 			NuspecPackage? result = null;
 			if (document.HasChildNodes)
 			{

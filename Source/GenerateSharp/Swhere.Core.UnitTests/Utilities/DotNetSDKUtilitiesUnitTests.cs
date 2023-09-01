@@ -181,6 +181,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
+					"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 				},
 				mockFileSystem.GetRequests());

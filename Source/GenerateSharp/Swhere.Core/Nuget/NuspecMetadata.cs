@@ -48,25 +48,25 @@ namespace Swhere.Core.Nuget
 					switch (child.Name)
 					{
 						case "id":
-							result.Id = child.Value ?? string.Empty;
+							result.Id = child.InnerText ?? string.Empty;
 							break;
 						case "version":
-							result.Version = child.Value ?? string.Empty;
+							result.Version = child.InnerText ?? string.Empty;
 							break;
 						case "description":
-							result.Description = child.Value ?? string.Empty;
+							result.Description = child.InnerText ?? string.Empty;
 							break;
 						case "authors":
-							result.Authors = child.Value ?? string.Empty;
+							result.Authors = child.InnerText ?? string.Empty;
 							break;
 						case "releaseNotes":
-							result.ReleaseNotes = child.Value ?? string.Empty;
+							result.ReleaseNotes = child.InnerText ?? string.Empty;
 							break;
 						case "copyright":
-							result.Copyright = child.Value ?? string.Empty;
+							result.Copyright = child.InnerText ?? string.Empty;
 							break;
 						case "tags":
-							result.Tags = child.Value ?? string.Empty;
+							result.Tags = child.InnerText ?? string.Empty;
 							break;
 						case "dependencies":
 							result.Dependencies = DeserializeDependencies(child);

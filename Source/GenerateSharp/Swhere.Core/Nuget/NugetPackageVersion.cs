@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Swhere.Core.Nuget
 {
-	internal class NugetPackageVersion
+	public class NugetPackageVersion
 	{
 		public string Version { get; set; } = string.Empty;
 

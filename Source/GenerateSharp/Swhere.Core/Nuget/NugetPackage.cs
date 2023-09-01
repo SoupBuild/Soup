@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Swhere.Core.Nuget
 {
-	internal class NugetPackage
+	public class NugetPackage
 	{
 		public string Id { get; set; } = string.Empty;
 
