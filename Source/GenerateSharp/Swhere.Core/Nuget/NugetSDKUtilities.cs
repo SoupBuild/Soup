@@ -12,7 +12,7 @@ using System.Xml;
 
 namespace Soup.Build.Discover
 {
-	internal static class NugetSDKUtilities
+	public static class NugetSDKUtilities
 	{
 		public static (bool HasNuget, Path NugetPackagesPath, IList<NugetPackage> Packages) FindNugetPackages()
 		{

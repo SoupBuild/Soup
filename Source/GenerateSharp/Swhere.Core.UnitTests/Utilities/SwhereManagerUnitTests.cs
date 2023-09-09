@@ -133,6 +133,7 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -398,6 +399,7 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -408,7 +410,6 @@ namespace Soup.Build.Discover.UnitTests
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
-
 				},
 				mockFileSystem.GetRequests());
 
@@ -724,6 +725,7 @@ namespace Soup.Build.Discover.UnitTests
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 					"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -734,7 +736,6 @@ namespace Soup.Build.Discover.UnitTests
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
-
 				},
 				mockFileSystem.GetRequests());
 
