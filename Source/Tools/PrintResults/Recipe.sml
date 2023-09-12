@@ -10,5 +10,6 @@ Dependencies: {
 	Runtime: [
 		"Opal@0.5.0"
 		"../../Client/Core/"
+		"fmt@10"
 	]
 }

@@ -220,8 +220,9 @@ namespace Soup::Core
 			/////////////////////////////////////////////
 
 			// Load the previous operation graph and results if they exist
-			Log::Info("Checking for existing Evaluate Operation Graph");
 			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
+			Log::Info("Checking for existing Evaluate Operation Graph");
+			Log::Diag(evaluateGraphFile.ToString());
 			auto evaluateGraph = OperationGraph();
 			auto evaluateResults = OperationResults();
 			auto hasExistingGraph = OperationGraphManager::TryLoadState(
@@ -233,8 +234,9 @@ namespace Soup::Core
 			{
 				Log::Info("Previous graph found");
 
-				Log::Info("Checking for existing Evaluate Operation Results");
 				auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
+				Log::Info("Checking for existing Evaluate Operation Results");
+				Log::Diag(evaluateResultsFile.ToString());
 				if (OperationResultsManager::TryLoadState(
 					evaluateResultsFile,
 					evaluateResults,
@@ -463,8 +465,9 @@ namespace Soup::Core
 				generateAllowedWriteAccess.push_back(value);
 
 			// Load the previous build results if it exists
-			Log::Info("Checking for existing Generate Operation Results");
 			auto generateResultsFile = soupTargetDirectory + BuildConstants::GenerateResultsFileName();
+			Log::Info("Checking for existing Generate Operation Results");
+			Log::Diag(generateResultsFile.ToString());
 			auto generateResults = OperationResults();
 			if (OperationResultsManager::TryLoadState(
 				generateResultsFile,

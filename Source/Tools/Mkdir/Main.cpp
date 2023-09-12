@@ -1,12 +1,4 @@
-#if defined(_WIN32)
-#include <Windows.h>
-#include <Shlobj.h>
-#undef GetCurrentDirectory
-#elif defined(__linux__)
-#include <sys/stat.h> 
-#else
-#error "Unknown platform"
-#endif
+#include <chrono>
 #include <iostream>
 #include <filesystem>
 
@@ -32,9 +24,13 @@ int main(int argc, char** argv)
 
 		if (fileSystem.Exists(directory))
 		{
-			auto now = std::chrono::clock_cast<std::chrono::file_clock>(
-				std::chrono::system_clock::now());
-			fileSystem.SetLastWriteTime(directory, now);
+			auto now = std::chrono::system_clock::now();
+			#ifdef _WIN32
+			auto nowFileTime = std::chrono::clock_cast<std::chrono::file_clock>(now);
+			#else
+			auto nowFileTime = std::chrono::file_clock::from_sys(now);
+			#endif
+			fileSystem.SetLastWriteTime(directory, nowFileTime);
 		}
 		else
 		{

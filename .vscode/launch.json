@@ -16,24 +16,27 @@
       "name": "Debug Soup",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/soup",
+      "program": "${workspaceFolder}/out/run/soup",
       "args": [
-        "restore",
-        "Source/Client/CLI"
+        "build",
+        "Samples/Cpp/ConsoleApplication/"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "externalConsole": false,
       "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/gdb",
       "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          // "text": "catch throw",
-          "ignoreFailures": true
-        }
+          {
+              "description": "Enable pretty-printing for gdb",
+              "text": "-enable-pretty-printing",
+              "ignoreFailures": true
+          },
+          {
+              "description": "Set Disassembly Flavor to Intel",
+              "text": "-gdb-set disassembly-flavor intel",
+              "ignoreFailures": true
+          }
       ]
     }
   ]

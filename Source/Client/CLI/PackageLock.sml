@@ -4,7 +4,7 @@ Closures: {
 		"C++": [
 			{ Name: "copy", Version: "../../Tools/Copy/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "CryptoPP", Version: "1.2.1", Build: "Build0", Tool: "Tool0" }
-			{ Name: "Detours", Version: "4.0.10", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Detours", Version: "4.0.11", Build: "Build0", Tool: "Tool0" }
 			{ Name: "mkdir", Version: "../../Tools/Mkdir/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0", Tool: "Tool0" }
@@ -17,7 +17,7 @@ Closures: {
 			{ Name: "wren", Version: "1.0.3", Build: "Build0", Tool: "Tool0" }
 		]
 		Wren: [
-			{ Name: "Soup.Build.Utils", Version: "0.4.0", Build: "Build2", Tool: "Tool0" }
+			{ Name: "Soup.Build.Utils", Version: "0.5.0", Build: "Build2", Tool: "Tool0" }
 			{ Name: "Soup.Cpp", Version: "0.8.2", Build: "Build2", Tool: "Tool0" }
 			{ Name: "Soup.Cpp.Compiler", Version: "0.7.0", Build: "Build2", Tool: "Tool0" }
 			{ Name: "Soup.Cpp.Compiler.GCC", Version: "0.1.1", Build: "Build2", Tool: "Tool0" }
