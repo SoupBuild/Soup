@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 
-namespace SoupView;
+namespace Soup.View;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
-    {
-        InitializeComponent();
-    }
+	public MainWindow()
+	{
+		InitializeComponent();
+	}
 }
