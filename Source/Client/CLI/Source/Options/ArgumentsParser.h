@@ -11,6 +11,7 @@
 #include "RunOptions.h"
 #include "TargetOptions.h"
 #include "VersionOptions.h"
+#include "ViewOptions.h"
 
 namespace Soup::Client
 {
@@ -217,6 +218,23 @@ namespace Soup::Client
 				Log::Diag("Parse version");
 
 				auto options = std::make_unique<VersionOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
+
+				result = std::move(options);
+			}
+			else if (commandType == "view")
+			{
+				Log::Diag("Parse view");
+
+				auto options = std::make_unique<ViewOptions>();
+
+				// Check if the optional index arguments exist
+				auto argument = std::string();
+				if (TryGetIndexArgument(unusedArgs, argument))
+				{
+					options->Path = std::move(argument);
+				}
+
 				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
