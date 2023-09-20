@@ -1,0 +1,26 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Soup.View.ViewModels"
+	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+	x:Class="Soup.View.Views.DependenciesView"
+	x:DataType="vm:DependenciesViewModel">
+	<SplitView
+		IsPaneOpen="True"
+		PanePlacement="Right"
+		DisplayMode="Inline"
+		OpenPaneLength="300">
+		<SplitView.Pane>
+			<TreeView />
+		</SplitView.Pane>
+		<Grid>
+			<TextBlock
+				Text="Content"
+				FontSize="24"
+				VerticalAlignment="Center"
+				HorizontalAlignment="Center"/>
+		</Grid>
+	</SplitView>
+</UserControl>
