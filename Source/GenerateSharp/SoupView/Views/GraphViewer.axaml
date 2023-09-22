@@ -1,0 +1,31 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:Soup.View.Views">
+	<Design.PreviewWith>
+		<controls:GraphViewer />
+	</Design.PreviewWith>
+
+	<Style Selector="controls|GraphViewer">
+		<!-- Set Defaults -->
+		<Setter Property="Template">
+			<ControlTemplate>
+				<ScrollViewer Background="Red"
+					HorizontalScrollBarVisibility="Visible"
+					VerticalScrollBarVisibility="Visible">
+					<Canvas Background="Green" x:Name="RootCanvas" />
+				</ScrollViewer>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+
+
+	<Style Selector="controls|GraphViewerItem">
+		<!-- Set Defaults -->
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Button Background="Pink" Content="TestStuff" />
+			</ControlTemplate>
+		</Setter>
+	</Style>
+</Styles>

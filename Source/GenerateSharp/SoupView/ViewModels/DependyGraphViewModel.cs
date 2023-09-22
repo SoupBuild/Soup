@@ -1,9 +1,10 @@
-﻿// <copyright file="DependencyGraphPageModel.cs" company="Soup">
+﻿// <copyright file="DependencyGraphViewModel.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 using Opal;
 using Opal.System;
+using ReactiveUI;
 using Soup.Build;
 using Soup.Build.Utilities;
 using System;
@@ -12,100 +13,58 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SoupView.ViewModel
+namespace Soup.View.ViewModels
 {
-	internal class DependencyGraphPageModel : Observable
+	internal class DependencyGraphViewModel : ViewModelBase
 	{
-		private GraphNode? selectedNode = null;
+		private GraphNodeViewModel? selectedNode = null;
 		private ProjectDetailsViewModel? selectedProject = null;
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNode>>? graph = null;
+		private IList<IList<GraphNodeViewModel>>? graph = null;
 		private uint uniqueId = 0;
 		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
 
 		public string ErrorBarMessage
 		{
-			get { return errorBarMessage; }
-			set
-			{
-				if (value != errorBarMessage)
-				{
-					errorBarMessage = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => errorBarMessage;
+			set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
 		}
 
-		public IList<IList<GraphNode>>? Graph
+		public IList<IList<GraphNodeViewModel>>? Graph
 		{
-			get { return graph; }
-			set
-			{
-				if (value != graph)
-				{
-					graph = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => graph;
+			set => this.RaiseAndSetIfChanged(ref graph, value);
 		}
 
-		public GraphNode? SelectedNode
+		public GraphNodeViewModel? SelectedNode
 		{
-			get { return selectedNode; }
-			set
-			{
-				if (value != selectedNode)
-				{
-					selectedNode = value;
-					NotifyPropertyChanged();
-					if (selectedNode != null)
-					{
-						SelectedProject = this.projectDetailsLookup[selectedNode.Id];
-					}
-					else
-					{
-						selectedProject = null;
-					}
-				}
-			}
+			get => selectedNode;
+			set => this.RaiseAndSetIfChanged(ref selectedNode, value);
 		}
 
 		public bool IsErrorBarOpen
 		{
-			get { return isErrorBarOpen; }
-			set
-			{
-				if (value != isErrorBarOpen)
-				{
-					isErrorBarOpen = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => isErrorBarOpen;
+			set => this.RaiseAndSetIfChanged(ref isErrorBarOpen, value);
 		}
 
 		public ProjectDetailsViewModel? SelectedProject
 		{
-			get { return selectedProject; }
-			set
-			{
-				if (value != selectedProject)
-				{
-					selectedProject = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => selectedProject;
+			set => this.RaiseAndSetIfChanged(ref selectedProject, value);
 		}
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
 		{
 			this.uniqueId = 1;
 			this.projectDetailsLookup.Clear();
-			var activeGraph = new List<IList<GraphNode>>();
+			var activeGraph = new List<IList<GraphNodeViewModel>>();
 			var recipeFiles = new List<(Path Path, uint Id)>()
 			{
 				(recipeFilePath, this.uniqueId++),
 			};
+
 			await BuildGraphAsync(recipeFiles, activeGraph);
 			Graph = activeGraph;
 		}
@@ -119,9 +78,11 @@ namespace SoupView.ViewModel
 			IsErrorBarOpen = true;
 		}
 
-		private async Task BuildGraphAsync(IList<(Path Path, uint Id)> recipeFiles, IList<IList<GraphNode>> activeGraph)
+		private async Task BuildGraphAsync(
+			IList<(Path Path, uint Id)> recipeFiles,
+			IList<IList<GraphNodeViewModel>> activeGraph)
 		{
-			var column = new List<GraphNode>();
+			var column = new List<GraphNodeViewModel>();
 			var childRecipeFiles = new List<(Path Path, uint Id)>();
 			foreach (var recipeFile in recipeFiles)
 			{
@@ -152,7 +113,7 @@ namespace SoupView.ViewModel
 					title = "[MISSING]";
 				}
 
-				column.Add(new GraphNode(title, recipeFile.Id)
+				column.Add(new GraphNodeViewModel(title, recipeFile.Id)
 				{
 					ChildNodes = currentChildRecipes.Select(value => value.Id).ToList(),
 				});

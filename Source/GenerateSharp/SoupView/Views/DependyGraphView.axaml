@@ -4,9 +4,10 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Soup.View.ViewModels"
+	xmlns:v="using:Soup.View.Views"
 	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-	x:Class="Soup.View.Views.DependenciesView"
-	x:DataType="vm:DependenciesViewModel">
+	x:Class="Soup.View.Views.DependencyGraphView"
+	x:DataType="vm:DependencyGraphViewModel">
 	<SplitView
 		IsPaneOpen="True"
 		PanePlacement="Right"
@@ -15,12 +16,8 @@
 		<SplitView.Pane>
 			<TreeView />
 		</SplitView.Pane>
-		<Grid>
-			<TextBlock
-				Text="Content"
-				FontSize="24"
-				VerticalAlignment="Center"
-				HorizontalAlignment="Center"/>
-		</Grid>
+		<v:GraphViewer
+			Graph="{Binding Graph}"
+			SelectedNode="{Binding SelectedNode, Mode=TwoWay}" />
 	</SplitView>
 </UserControl>

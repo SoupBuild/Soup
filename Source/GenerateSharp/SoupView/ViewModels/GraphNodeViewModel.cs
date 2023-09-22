@@ -4,11 +4,11 @@
 
 using System.Collections.Generic;
 
-namespace SoupView.ViewModel
+namespace Soup.View.ViewModels
 {
-	public class GraphNode
+	public class GraphNodeViewModel
 	{
-		public GraphNode(string title, uint id)
+		public GraphNodeViewModel(string title, uint id)
 		{
 			this.Title = title;
 			this.Id = id;

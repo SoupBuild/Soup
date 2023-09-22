@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
+using Opal;
+using Opal.System;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
 using System;
@@ -24,8 +26,11 @@ class Program
 	/// </summary>
 	public static AppBuilder BuildAvaloniaApp()
 	{
-		IconProvider.Current
-			.Register<FontAwesomeIconProvider>();
+		// Register the runtime services
+		Log.RegisterListener(new ConsoleTraceListener());
+		LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
+
+		IconProvider.Current.Register<FontAwesomeIconProvider>();
 
 		return AppBuilder.Configure<App>()
 			.UsePlatformDetect()

@@ -1,17 +1,42 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
+using Opal;
 using ReactiveUI;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Soup.View.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-	private ViewModelBase content;
+	private IStorageProvider storageProvider;
+	private Path? recipeFile;
+	private DependencyGraphViewModel dependencyGraph;
 
 	public ICommand OpenCommand { get; }
 
 	public ICommand ExitCommand { get; }
+
+	private ViewModelBase content;
+
+	public Path? RecipeFile
+	{
+		get => recipeFile;
+		private set
+		{
+			if (this.CheckRaiseAndSetIfChanged(ref recipeFile, value))
+			{
+				if (recipeFile is not null)
+				{
+					_ = dependencyGraph.LoadProjectAsync(recipeFile);
+				}
+			}
+		}
+	}
 
 	public ViewModelBase Content
 	{
@@ -19,16 +44,38 @@ public class MainWindowViewModel : ViewModelBase
 		private set => this.RaiseAndSetIfChanged(ref content, value);
 	}
 
-	public MainWindowViewModel()
+	public MainWindowViewModel(IStorageProvider storageProvider)
 	{
-		OpenCommand = ReactiveCommand.Create(OnOpen);
+		this.storageProvider = storageProvider;
+
+		OpenCommand = ReactiveCommand.Create(OnOpenAsync);
 		ExitCommand = ReactiveCommand.Create(OnExit);
 
-		content = new DependenciesViewModel();
+		dependencyGraph = new DependencyGraphViewModel();
+		content = dependencyGraph;
 	}
 
-	private void OnOpen()
+	private async Task OnOpenAsync()
 	{
+		var filePickerResult = await this.storageProvider.OpenFilePickerAsync(
+			new FilePickerOpenOptions()
+			{
+				FileTypeFilter = new List<FilePickerFileType>()
+				{
+					new FilePickerFileType("Recipe")
+					{
+						Patterns = new List<string>() { "Recipe.sml" },
+					},
+				}
+			});
+
+		// Use file picker like normal!
+		var file = filePickerResult.FirstOrDefault();
+
+		if (file != null)
+		{
+			RecipeFile = new Path(file.Path.ToString());
+		}
 	}
 
 	private void OnExit()

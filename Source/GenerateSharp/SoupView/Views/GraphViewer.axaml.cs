@@ -4,17 +4,19 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Shapes;
-using SoupView.ViewModel;
-using Windows.Foundation;
-using Windows.UI;
+using System.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
+using Avalonia.Controls.Templates;
+using Avalonia.Interactivity;
+using Avalonia.Media;
+using Soup.View.ViewModels;
 
-namespace SoupView.View
+namespace Soup.View.Views
 {
-	public sealed class GraphViewer : Control
+	public sealed class GraphViewer : TemplatedControl
 	{
 		private static int NodeWidth = 200;
 		private static int NodeHeight = 50;
@@ -24,71 +26,74 @@ namespace SoupView.View
 
 		private static int InternalPadding = 20;
 
-		/// <summary>
-		/// Identifies the <see cref="Graph"/> dependency property.
-		/// </summary>
-		public static readonly DependencyProperty GraphProperty = DependencyProperty.Register(
-			nameof(Graph),
-			typeof(IList<IList<GraphNode>>),
-			typeof(GraphViewer),
-			new PropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
+		private Canvas? root;
 
 		/// <summary>
-		/// Identifies the <see cref="SelectedNode"/> dependency property.
+		/// Identifies the <see cref="Graph"/> property.
 		/// </summary>
-		public static readonly DependencyProperty SelectedNodeProperty = DependencyProperty.Register(
-			nameof(SelectedNode),
-			typeof(GraphNode),
-			typeof(GraphViewer),
-			new PropertyMetadata(null));
+		public static readonly StyledProperty<IList<IList<GraphNodeViewModel>>> GraphProperty =
+			AvaloniaProperty.Register<GraphViewer, IList<IList<GraphNodeViewModel>>>(nameof(Graph));
+
+		/// <summary>
+		/// Identifies the <see cref="SelectedNode"/> property.
+		/// </summary>
+		/// 
+		public static readonly StyledProperty<GraphNodeViewModel?> SelectedNodeProperty =
+			AvaloniaProperty.Register<GraphViewer, GraphNodeViewModel?>(nameof(SelectedNode));
 
 		public GraphViewer()
 		{
-			this.DefaultStyleKey = typeof(GraphViewer);
+			this.PropertyChanged += GraphViewer_PropertyChanged;
 			this.SizeChanged += GraphViewer_SizeChanged;
 		}
 
 		/// <summary>
 		/// Gets or sets the Graph
 		/// </summary>
-		public IList<IList<GraphNode>> Graph
+		public IList<IList<GraphNodeViewModel>> Graph
 		{
-			get { return (IList<IList<GraphNode>>)GetValue(GraphProperty); }
-			set { SetValue(GraphProperty, value); }
+			get => GetValue(GraphProperty);
+			set => SetValue(GraphProperty, value);
 		}
 
 		/// <summary>
 		/// Gets or sets the Selected Node
 		/// </summary>
-		public GraphNode SelectedNode
+		public GraphNodeViewModel? SelectedNode
 		{
-			get { return (GraphNode)GetValue(SelectedNodeProperty); }
-			set { SetValue(SelectedNodeProperty, value); }
+			get => GetValue(SelectedNodeProperty);
+			set => SetValue(SelectedNodeProperty, value);
 		}
 
-		private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+
+		private void GraphViewer_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
 		{
-			((GraphViewer)d).LayoutGraph();
+			if (e.Property.Name == nameof(Graph))
+			{
+				((GraphViewer?)sender)?.LayoutGraph();
+			}
 		}
 
-		private void GraphViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+		private void GraphViewer_SizeChanged(object? sender, SizeChangedEventArgs e)
 		{
 			this.LayoutGraph();
 		}
 
-		protected override void OnApplyTemplate()
+		protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
 		{
 			this.LayoutGraph();
-			base.OnApplyTemplate();
+
+			root = e.NameScope.Find<Canvas>("RootCanvas");
+
+			base.OnApplyTemplate(e);
 		}
 
 		private void LayoutGraph()
 		{
-			var canvas = this.GetTemplateChild("RootCanvas") as Canvas;
-			if (canvas is null)
+			if (root is null)
 				return;
 
-			canvas.Children.Clear();
+			root.Children.Clear();
 
 			if (this.Graph is null)
 				return;
@@ -125,12 +130,12 @@ namespace SoupView.View
 							Height = NodeHeight,
 						};
 						node.DataContext = value;
-						node.Click += Node_Click;
+						// node.Click += Node_Click;
 
 						Canvas.SetLeft(node, currentOffsetX);
 						Canvas.SetTop(node, currentOffsetY);
 
-						canvas.Children.Add(node);
+						root.Children.Add(node);
 
 						// Save the node state
 						var inConnect = new Point(currentOffsetX, currentOffsetY + (NodeHeight / 2));
@@ -161,21 +166,24 @@ namespace SoupView.View
 						{
 							var endNode = nodeState[child];
 							var path = ConnectNodes(startNode.OutConnect, endNode.InConnect);
-							canvas.Children.Add(path);
+							root.Children.Add(path);
 						}
 					}
 				}
 			}
 
 			// Add the final internal padding to get the total size
-			canvas.Width = currentOffsetX + InternalPadding;
-			canvas.Height = maxHeight + InternalPadding;
+			root.Width = currentOffsetX + InternalPadding;
+			root.Height = maxHeight + InternalPadding;
 		}
 
-		private void Node_Click(object sender, RoutedEventArgs e)
+		private void Node_Click(object? sender, RoutedEventArgs e)
 		{
-			var node = (GraphViewerItem)sender;
-			this.SelectedNode = (GraphNode)node.DataContext;
+			if (sender is not null)
+			{
+				var node = (GraphViewerItem)sender;
+				this.SelectedNode = (GraphNodeViewModel?)node.DataContext;
+			}
 		}
 
 		private Path ConnectNodes(Point start, Point end)
@@ -194,16 +202,16 @@ namespace SoupView.View
 		{
 			var path = new Path()
 			{
-				Stroke = new SolidColorBrush((Color)Resources["SystemBaseLowColor"]),
+				Stroke = new SolidColorBrush((Color?)Resources["SystemBaseLowColor"] ?? Colors.Red),
 				StrokeThickness = 1,
 				Data = new PathGeometry()
 				{
-					Figures = new PathFigureCollection()
+					Figures = new PathFigures()
 					{
 						new PathFigure()
 						{
 							StartPoint = start,
-							Segments = new PathSegmentCollection()
+							Segments = new PathSegments()
 							{
 								new BezierSegment()
 								{
