@@ -1,0 +1,27 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:v="using:Soup.View.Views">
+	<Design.PreviewWith>
+		<v:GraphViewerItem Title="Some Test Content"/>
+	</Design.PreviewWith>
+
+	<Style Selector="v|GraphViewerItem">
+		<!-- Set Defaults -->
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Button
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch">
+					<ToolTip.Tip>
+						<Label Content="{TemplateBinding ToolTip}"/>
+					</ToolTip.Tip>
+					<TextBlock
+						Text="{TemplateBinding Title}"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center" />
+				</Button>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+</Styles>

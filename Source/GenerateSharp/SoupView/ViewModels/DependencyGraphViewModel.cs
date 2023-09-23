@@ -89,6 +89,7 @@ namespace Soup.View.ViewModels
 				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile.Path);
 				var currentChildRecipes = new List<(Path Path, uint Id)>();
 				string title;
+				string toolTip = recipeFile.Path.ToString();
 				Recipe? recipe = null;
 				var packageFolder = recipeFile.Path.GetParent();
 
@@ -113,7 +114,7 @@ namespace Soup.View.ViewModels
 					title = "[MISSING]";
 				}
 
-				column.Add(new GraphNodeViewModel(title, recipeFile.Id)
+				column.Add(new GraphNodeViewModel(title, toolTip, recipeFile.Id)
 				{
 					ChildNodes = currentChildRecipes.Select(value => value.Id).ToList(),
 				});

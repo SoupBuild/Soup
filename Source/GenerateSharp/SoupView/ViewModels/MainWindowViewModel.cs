@@ -60,6 +60,7 @@ public class MainWindowViewModel : ViewModelBase
 		var filePickerResult = await this.storageProvider.OpenFilePickerAsync(
 			new FilePickerOpenOptions()
 			{
+				AllowMultiple = false,
 				FileTypeFilter = new List<FilePickerFileType>()
 				{
 					new FilePickerFileType("Recipe")
@@ -74,7 +75,7 @@ public class MainWindowViewModel : ViewModelBase
 
 		if (file != null)
 		{
-			RecipeFile = new Path(file.Path.ToString());
+			RecipeFile = new Path(file.Path.AbsolutePath);
 		}
 	}
 

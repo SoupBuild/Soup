@@ -1,4 +1,4 @@
-﻿// <copyright file="GraphViewer.cs" company="Soup">
+﻿// <copyright file="GraphViewer.axaml.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -126,11 +126,12 @@ namespace Soup.View.Views
 						var node = new GraphViewerItem()
 						{
 							Title = value.Title,
+							ToolTip = value.ToolTip,
 							Width = NodeWidth,
 							Height = NodeHeight,
 						};
 						node.DataContext = value;
-						// node.Click += Node_Click;
+						node.Click += Node_Click;
 
 						Canvas.SetLeft(node, currentOffsetX);
 						Canvas.SetTop(node, currentOffsetY);
@@ -202,14 +203,13 @@ namespace Soup.View.Views
 		{
 			var path = new Path()
 			{
-				Stroke = new SolidColorBrush((Color?)Resources["SystemBaseLowColor"] ?? Colors.Red),
-				StrokeThickness = 1,
 				Data = new PathGeometry()
 				{
 					Figures = new PathFigures()
 					{
 						new PathFigure()
 						{
+							IsClosed = false,
 							StartPoint = start,
 							Segments = new PathSegments()
 							{
@@ -224,6 +224,8 @@ namespace Soup.View.Views
 					},
 				},
 			};
+
+			path.Classes.Add("graphViewerPath");
 
 			return path;
 		}
