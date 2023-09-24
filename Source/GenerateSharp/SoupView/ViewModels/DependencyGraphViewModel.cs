@@ -12,18 +12,22 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Soup.View.ViewModels
 {
-	internal class DependencyGraphViewModel : ViewModelBase
+	public class DependencyGraphViewModel : ViewModelBase
 	{
 		private GraphNodeViewModel? selectedNode = null;
 		private ProjectDetailsViewModel? selectedProject = null;
 		private string errorBarMessage = string.Empty;
+		private bool isMenuOpen = true;
 		private bool isErrorBarOpen = false;
 		private IList<IList<GraphNodeViewModel>>? graph = null;
 		private uint uniqueId = 0;
 		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
+
+		public ICommand ToggleMenuCommand { get; }
 
 		public string ErrorBarMessage
 		{
@@ -56,6 +60,12 @@ namespace Soup.View.ViewModels
 			}
 		}
 
+		public bool IsMenuOpen
+		{
+			get => isMenuOpen;
+			set => this.RaiseAndSetIfChanged(ref isMenuOpen, value);
+		}
+
 		public bool IsErrorBarOpen
 		{
 			get => isErrorBarOpen;
@@ -66,6 +76,11 @@ namespace Soup.View.ViewModels
 		{
 			get => selectedProject;
 			set => this.RaiseAndSetIfChanged(ref selectedProject, value);
+		}
+
+		public DependencyGraphViewModel()
+		{
+			ToggleMenuCommand = ReactiveCommand.Create(OnToggleMenu);
 		}
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
@@ -82,9 +97,11 @@ namespace Soup.View.ViewModels
 				recipeFilePath.GetParent() +
 				BuildConstants.PackageLockFileName;
 			var packageLockResult = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
+			GraphNodeViewModel? rootNode = null;
 			if (packageLockResult.IsSuccess)
 			{
-				await BuildGraphAsync(recipeFiles, activeGraph, packageLockResult.Result);
+				var rootColumn = await BuildGraphAsync(recipeFiles, activeGraph, packageLockResult.Result);
+				rootNode = rootColumn.FirstOrDefault();
 			}
 			else
 			{
@@ -92,6 +109,12 @@ namespace Soup.View.ViewModels
 			}
 
 			Graph = activeGraph;
+			SelectedNode = rootNode;
+		}
+
+		private void OnToggleMenu()
+		{
+			this.IsMenuOpen = !this.IsMenuOpen;
 		}
 
 		private void NotifyError(string message)
@@ -103,7 +126,7 @@ namespace Soup.View.ViewModels
 			IsErrorBarOpen = true;
 		}
 
-		private async Task BuildGraphAsync(
+		private async Task<List<GraphNodeViewModel>> BuildGraphAsync(
 			IList<(Path Path, uint Id)> recipeFiles,
 			IList<IList<GraphNodeViewModel>> activeGraph,
 			PackageLock packageLock)
@@ -158,8 +181,10 @@ namespace Soup.View.ViewModels
 
 			if (childRecipeFiles.Count > 0)
 			{
-				await BuildGraphAsync(childRecipeFiles, activeGraph, packageLock);
+				_ = await BuildGraphAsync(childRecipeFiles, activeGraph, packageLock);
 			}
+
+			return column;
 		}
 
 		private void AddRecipeFiles(

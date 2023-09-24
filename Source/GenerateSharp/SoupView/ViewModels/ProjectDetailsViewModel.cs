@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 
 namespace Soup.View.ViewModels
 {
-	internal class ProjectDetailsViewModel : ViewModelBase
+	public class ProjectDetailsViewModel : ViewModelBase
 	{
 		private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
 

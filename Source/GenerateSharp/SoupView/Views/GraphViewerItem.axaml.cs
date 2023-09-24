@@ -42,5 +42,13 @@ namespace Soup.View.Views
 			get => GetValue(ToolTipProperty);
 			set => SetValue(ToolTipProperty, value);
 		}
+
+		/// <summary>
+		/// Sets the is selected value
+		/// </summary>
+		public bool IsSelected
+		{
+			set => PseudoClasses.Set(":selected", value);
+		}
 	}
 }

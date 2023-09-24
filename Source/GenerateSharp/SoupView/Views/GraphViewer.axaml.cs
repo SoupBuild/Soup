@@ -27,6 +27,7 @@ namespace Soup.View.Views
 		private static int InternalPadding = 20;
 
 		private Canvas? root;
+		private IDictionary<uint, GraphViewerItem> itemLookup = new Dictionary<uint, GraphViewerItem>();
 
 		/// <summary>
 		/// Identifies the <see cref="Graph"/> property.
@@ -65,12 +66,29 @@ namespace Soup.View.Views
 			set => SetValue(SelectedNodeProperty, value);
 		}
 
-
 		private void GraphViewer_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
 		{
-			if (e.Property.Name == nameof(Graph))
+			switch (e.Property.Name)
 			{
-				((GraphViewer?)sender)?.LayoutGraph();
+				case nameof(Graph):
+					((GraphViewer?)sender)?.LayoutGraph();
+					break;
+				case nameof(SelectedNode):
+					// Deselect the previous item
+					if (e.OldValue is GraphNodeViewModel oldNode &&
+						itemLookup.TryGetValue(oldNode.Id, out var oldItem))
+					{
+						oldItem.IsSelected = false;
+					}
+
+					// Select the new one
+					if (e.NewValue is GraphNodeViewModel newNode &&
+						itemLookup.TryGetValue(newNode.Id, out var newItem))
+					{
+						newItem.IsSelected = true;
+					}
+
+					break;
 			}
 		}
 
@@ -102,6 +120,7 @@ namespace Soup.View.Views
 			int currentOffsetX = 0;
 			int currentOffsetY;
 			var nodeState = new Dictionary<uint, (GraphViewerItem Item, Point InConnect, Point OutConnect)>();
+			itemLookup.Clear();
 			foreach (var column in this.Graph)
 			{
 				// Reset vertical offset for each column
@@ -142,6 +161,8 @@ namespace Soup.View.Views
 						var inConnect = new Point(currentOffsetX, currentOffsetY + (NodeHeight / 2));
 						var outConnect = new Point(currentOffsetX + NodeWidth, currentOffsetY + (NodeHeight / 2));
 						nodeState.Add(value.Id, (node, inConnect, outConnect));
+
+						itemLookup.Add(value.Id, node);
 					}
 
 					// Update for the next row location
@@ -176,6 +197,12 @@ namespace Soup.View.Views
 			// Add the final internal padding to get the total size
 			root.Width = currentOffsetX + InternalPadding;
 			root.Height = maxHeight + InternalPadding;
+
+			// Ensure the current selected item is notified
+			if (SelectedNode is not null && itemLookup.TryGetValue(SelectedNode.Id, out var selectedItem))
+			{
+				selectedItem.IsSelected = true;
+			}
 		}
 
 		private void Node_Click(object? sender, RoutedEventArgs e)

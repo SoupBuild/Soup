@@ -6,6 +6,10 @@
 		<v:GraphViewerItem Title="Some Test Content"/>
 	</Design.PreviewWith>
 
+	<Style Selector="v|GraphViewerItem:selected > Button">
+		<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}" />
+	</Style>
+
 	<Style Selector="v|GraphViewerItem">
 		<!-- Set Defaults -->
 		<Setter Property="Template">
