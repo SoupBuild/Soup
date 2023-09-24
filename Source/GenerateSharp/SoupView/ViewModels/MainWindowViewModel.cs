@@ -1,9 +1,9 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Opal;
 using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ namespace Soup.View.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-	private IStorageProvider storageProvider;
+	private IStorageProvider? storageProvider;
 	private Path? recipeFile;
 	private DependencyGraphViewModel dependencyGraph;
 
@@ -44,7 +44,11 @@ public class MainWindowViewModel : ViewModelBase
 		private set => this.RaiseAndSetIfChanged(ref content, value);
 	}
 
-	public MainWindowViewModel(IStorageProvider storageProvider)
+	public MainWindowViewModel() : this(null)
+	{
+	}
+
+	public MainWindowViewModel(IStorageProvider? storageProvider)
 	{
 		this.storageProvider = storageProvider;
 
@@ -57,6 +61,9 @@ public class MainWindowViewModel : ViewModelBase
 
 	private async Task OnOpenAsync()
 	{
+		if (this.storageProvider is null)
+			throw new InvalidOperationException("Missing storage provider");
+
 		var filePickerResult = await this.storageProvider.OpenFilePickerAsync(
 			new FilePickerOpenOptions()
 			{

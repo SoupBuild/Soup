@@ -2,9 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using ReactiveUI;
 using System.Collections.ObjectModel;
 
-namespace SoupView.ViewModel
+namespace Soup.View.ViewModels
 {
 	public enum ValueTableItemType
 	{
@@ -13,7 +14,7 @@ namespace SoupView.ViewModel
 		Value,
 	};
 
-	class ValueTableItemViewModel : Observable
+	class ValueTableItemViewModel : ViewModelBase
 	{
 		public string Title { get; set; }
 
@@ -22,36 +23,22 @@ namespace SoupView.ViewModel
 		private ObservableCollection<ValueTableItemViewModel> m_children = new ObservableCollection<ValueTableItemViewModel>();
 		public ObservableCollection<ValueTableItemViewModel> Children
 		{
-			get { return m_children; }
-			set { m_children = value; }
+			get => m_children;
+			set => m_children = value;
 		}
 
 		private bool m_isExpanded;
 		public bool IsExpanded
 		{
-			get { return m_isExpanded; }
-			set
-			{
-				if (m_isExpanded != value)
-				{
-					m_isExpanded = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => m_isExpanded;
+			set => this.RaiseAndSetIfChanged(ref m_isExpanded, value);
 		}
 
 		private bool m_isSelected;
 		public bool IsSelected
 		{
-			get { return m_isSelected; }
-			set
-			{
-				if (m_isSelected != value)
-				{
-					m_isSelected = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => m_isSelected;
+			set => this.RaiseAndSetIfChanged(ref m_isSelected, value);
 		}
 
 		public ValueTableItemViewModel(string title)

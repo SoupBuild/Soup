@@ -12,6 +12,10 @@
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\Soup.ico" />
+    <AvaloniaResource Include="Assets\Soup.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.4" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.4" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.4" />

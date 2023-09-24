@@ -40,7 +40,20 @@ namespace Soup.View.ViewModels
 		public GraphNodeViewModel? SelectedNode
 		{
 			get => selectedNode;
-			set => this.RaiseAndSetIfChanged(ref selectedNode, value);
+			set
+			{
+				if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
+				{
+					if (selectedNode != null)
+					{
+						SelectedProject = this.projectDetailsLookup[selectedNode.Id];
+					}
+					else
+					{
+						SelectedProject = null;
+					}
+				}
+			}
 		}
 
 		public bool IsErrorBarOpen
@@ -65,7 +78,19 @@ namespace Soup.View.ViewModels
 				(recipeFilePath, this.uniqueId++),
 			};
 
-			await BuildGraphAsync(recipeFiles, activeGraph);
+			var packageLockPath =
+				recipeFilePath.GetParent() +
+				BuildConstants.PackageLockFileName;
+			var packageLockResult = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
+			if (packageLockResult.IsSuccess)
+			{
+				await BuildGraphAsync(recipeFiles, activeGraph, packageLockResult.Result);
+			}
+			else
+			{
+				NotifyError("Failed to load package lock");
+			}
+
 			Graph = activeGraph;
 		}
 
@@ -80,7 +105,8 @@ namespace Soup.View.ViewModels
 
 		private async Task BuildGraphAsync(
 			IList<(Path Path, uint Id)> recipeFiles,
-			IList<IList<GraphNodeViewModel>> activeGraph)
+			IList<IList<GraphNodeViewModel>> activeGraph,
+			PackageLock packageLock)
 		{
 			var column = new List<GraphNodeViewModel>();
 			var childRecipeFiles = new List<(Path Path, uint Id)>();
@@ -99,7 +125,7 @@ namespace Soup.View.ViewModels
 
 					foreach (var dependencyType in recipe.GetDependencyTypes())
 					{
-						var implicitLanguage = dependencyType == Recipe.Property_Build ? "C#" : recipe.Language.Name;
+						var implicitLanguage = dependencyType == Recipe.Property_Build ? "Wren" : recipe.Language.Name;
 						AddRecipeFiles(
 							recipe.GetNamedDependencies(dependencyType),
 							implicitLanguage,
@@ -132,7 +158,7 @@ namespace Soup.View.ViewModels
 
 			if (childRecipeFiles.Count > 0)
 			{
-				await BuildGraphAsync(childRecipeFiles, activeGraph);
+				await BuildGraphAsync(childRecipeFiles, activeGraph, packageLock);
 			}
 		}
 

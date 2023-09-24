@@ -8,22 +8,22 @@ using System.Collections.ObjectModel;
 using Soup.Build.Utilities;
 using ValueType = Soup.Build.Utilities.ValueType;
 
-namespace SoupView.ViewModel
+namespace Soup.View.ViewModels
 {
-	internal class TaskDetailsViewModel : Observable
+	internal class TaskDetailsViewModel : ViewModelBase
 	{
-		private ObservableCollection<PropertyValue> properties = new ObservableCollection<PropertyValue>();
+		private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
 
 		public TaskDetailsViewModel(string name, ValueTable taskInfo)
 		{
 			properties.Clear();
-			properties.Add(new PropertyValue("Name", name));
+			properties.Add(new PropertyValueViewModel("Name", name));
 
 			State = new ObservableCollection<ValueTableItemViewModel>();
 			BuildValueTable(taskInfo, State);
 		}
 
-		public IList<PropertyValue> Properties => properties;
+		public IList<PropertyValueViewModel> Properties => properties;
 
 
 		public ObservableCollection<ValueTableItemViewModel> State { get; init; }

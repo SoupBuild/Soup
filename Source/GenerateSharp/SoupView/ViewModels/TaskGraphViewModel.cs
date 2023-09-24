@@ -1,8 +1,9 @@
-﻿// <copyright file="TaskGraphPageModel.cs" company="Soup">
+﻿// <copyright file="TaskGraphViewModel.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 using Opal;
+using ReactiveUI;
 using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,54 +11,38 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using ValueType = Soup.Build.Utilities.ValueType;
 
-namespace SoupView.ViewModel
+namespace Soup.View.ViewModels
 {
-	internal class TaskGraphPageModel : Observable
+	internal class TaskGraphViewModel : ViewModelBase
 	{
-		private GraphNode? selectedNode = null;
+		private GraphNodeViewModel? selectedNode = null;
 		private TaskDetailsViewModel? selectedTask = null;
 		private string errorBarMessage = string.Empty;
 		private uint uniqueId = 0;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNode>>? graph = null;
+		private IList<IList<GraphNodeViewModel>>? graph = null;
 		private Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = new Dictionary<uint, TaskDetailsViewModel>();
 
 		public string ErrorBarMessage
 		{
-			get { return errorBarMessage; }
-			set
-			{
-				if (value != errorBarMessage)
-				{
-					errorBarMessage = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => errorBarMessage;
+			set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
 		}
 
-		public IList<IList<GraphNode>>? Graph
+		public IList<IList<GraphNodeViewModel>>? Graph
 		{
-			get { return graph; }
-			set
-			{
-				if (value != graph)
-				{
-					graph = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => graph;
+			set => this.RaiseAndSetIfChanged(ref graph, value);
 		}
 
-		public GraphNode? SelectedNode
+		public GraphNodeViewModel? SelectedNode
 		{
-			get { return selectedNode; }
+			get => selectedNode;
 			set
 			{
-				if (value != selectedNode)
+				if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
 				{
-					selectedNode = value;
-					NotifyPropertyChanged();
-					if (selectedNode!= null)
+					if (selectedNode != null)
 					{
 						SelectedTask = this.taskDetailsLookup[selectedNode.Id];
 					}
@@ -71,28 +56,14 @@ namespace SoupView.ViewModel
 
 		public TaskDetailsViewModel? SelectedTask
 		{
-			get { return selectedTask; }
-			set
-			{
-				if (value != selectedTask)
-				{
-					selectedTask = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => selectedTask;
+			set => this.RaiseAndSetIfChanged(ref selectedTask, value);
 		}
 
 		public bool IsErrorBarOpen
 		{
-			get { return isErrorBarOpen; }
-			set
-			{
-				if (value != isErrorBarOpen)
-				{
-					isErrorBarOpen = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => isErrorBarOpen;
+			set => this.RaiseAndSetIfChanged(ref isErrorBarOpen, value);
 		}
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
@@ -126,9 +97,9 @@ namespace SoupView.ViewModel
 			IsErrorBarOpen = true;
 		}
 
-		private IList<IList<GraphNode>> BuildGraph(ValueTable generateInfoTable)
+		private IList<IList<GraphNodeViewModel>> BuildGraph(ValueTable generateInfoTable)
 		{
-			var activeGraph = new List<IList<GraphNode>>();
+			var activeGraph = new List<IList<GraphNodeViewModel>>();
 			this.taskDetailsLookup.Clear();
 			this.uniqueId = 1;
 
@@ -159,14 +130,15 @@ namespace SoupView.ViewModel
 			ValueList runtimeOrderList,
 			ValueTable taskInfoTable,
 			ValueTable globalStateTable,
-			IList<IList<GraphNode>> activeGraph)
+			IList<IList<GraphNodeViewModel>> activeGraph)
 		{
 			// Add each task to its own column
 			foreach (var taskNameValue in runtimeOrderList)
 			{
 				var taskName = taskNameValue.AsString();
+				var taskToolTip = string.Empty;
 
-				var node = new GraphNode(taskName, this.uniqueId++);
+				var node = new GraphNodeViewModel(taskName, taskToolTip, this.uniqueId++);
 
 				// Find the Task Info
 				var taskInfo = taskInfoTable[taskName].AsTable();
@@ -177,7 +149,7 @@ namespace SoupView.ViewModel
 				this.taskDetailsLookup.Add(node.Id, new TaskDetailsViewModel(taskName, taskInfo));
 
 				// Add the new column at the start
-				var column = new List<GraphNode>()
+				var column = new List<GraphNodeViewModel>()
 				{
 					node
 				};
