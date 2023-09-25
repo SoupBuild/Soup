@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,10 +6,10 @@
 	xmlns:vm="using:Soup.View.ViewModels"
 	xmlns:v="using:Soup.View.Views"
 	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-	x:Class="Soup.View.Views.DependencyGraphView"
-	x:DataType="vm:DependencyGraphViewModel"
-	d:DataContext="{x:Static vm:DesignData.ExampleDependencyGraph}">
-	<Grid >
+	x:Class="Soup.View.Views.OperationGraphView"
+	x:DataType="vm:OperationGraphViewModel"
+	d:DataContext="{x:Static vm:DesignData.ExampleOperationGraph}">
+	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="3*" MinWidth="150" />
 			<ColumnDefinition Width="Auto" />
@@ -24,7 +24,7 @@
 		<DataGrid
 			Grid.Column="2"
 			Margin="5"
-			DataContext="{Binding SelectedProject}"
+			DataContext="{Binding SelectedOperation}"
 			ItemsSource="{Binding Properties}"
 			AutoGenerateColumns="True"
 			GridLinesVisibility="All"

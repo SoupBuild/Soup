@@ -10,7 +10,7 @@ using ValueType = Soup.Build.Utilities.ValueType;
 
 namespace Soup.View.ViewModels
 {
-	internal class TaskDetailsViewModel : ViewModelBase
+	public class TaskDetailsViewModel : ViewModelBase
 	{
 		private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
 

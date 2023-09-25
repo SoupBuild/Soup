@@ -16,10 +16,18 @@ public class MainWindowViewModel : ViewModelBase
 	private IStorageProvider? storageProvider;
 	private Path? recipeFile;
 	private DependencyGraphViewModel dependencyGraph;
+	private TaskGraphViewModel taskGraph;
+	private OperationGraphViewModel operationGraph;
 
 	public ICommand OpenCommand { get; }
 
 	public ICommand ExitCommand { get; }
+
+	public ICommand SelectRootCommand { get; }
+
+	public ICommand SelectTasksCommand { get; }
+
+	public ICommand SelectOperationsCommand { get; }
 
 	private ViewModelBase content;
 
@@ -33,6 +41,8 @@ public class MainWindowViewModel : ViewModelBase
 				if (recipeFile is not null)
 				{
 					_ = dependencyGraph.LoadProjectAsync(recipeFile);
+					_ = taskGraph.LoadProjectAsync(recipeFile);
+					_ = operationGraph.LoadProjectAsync(recipeFile);
 				}
 			}
 		}
@@ -55,7 +65,14 @@ public class MainWindowViewModel : ViewModelBase
 		OpenCommand = ReactiveCommand.Create(OnOpenAsync);
 		ExitCommand = ReactiveCommand.Create(OnExit);
 
+		SelectRootCommand = ReactiveCommand.Create(OnSelectRoot);
+		SelectTasksCommand = ReactiveCommand.Create(OnSelectTasks);
+		SelectOperationsCommand = ReactiveCommand.Create(OnSelectOperations);
+
 		dependencyGraph = new DependencyGraphViewModel();
+		taskGraph = new TaskGraphViewModel();
+		operationGraph = new OperationGraphViewModel();
+
 		content = dependencyGraph;
 	}
 
@@ -92,5 +109,20 @@ public class MainWindowViewModel : ViewModelBase
 		{
 			desktopApp.Shutdown();
 		}
+	}
+
+	private void OnSelectRoot()
+	{
+		Content = dependencyGraph;
+	}
+
+	private void OnSelectTasks()
+	{
+		Content = taskGraph;
+	}
+
+	private void OnSelectOperations()
+	{
+		Content = operationGraph;
 	}
 }

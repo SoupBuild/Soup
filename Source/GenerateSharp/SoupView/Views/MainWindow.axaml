@@ -15,14 +15,50 @@
 	<Design.DataContext>
 		<vm:MainWindowViewModel />
 	</Design.DataContext>
+	<Window.Styles>
+		<Style Selector=".nav > Button">
+			<Setter Property="FontSize" Value="15"/>
+			<Setter Property="Margin" Value="2,0" />
+			<Setter Property="Padding" Value="6,1" />
+			<Setter Property="BorderThickness" Value="2" />
+			<Setter Property="Background" Value="{DynamicResource SystemAltMediumColor}"/>
+			<Setter Property="CornerRadius" Value="20" />
+		</Style>
+		<Style Selector=".nav > Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}"/>
+		</Style>
+		<Style Selector=".nav > Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+		</Style>
+		<Style Selector=".nav > Label">
+			<Setter Property="FontSize" Value="15"/>
+			<Setter Property="Margin" Value="0" />
+		</Style>
+	</Window.Styles>
 	<Grid RowDefinitions="Auto,*">
-		<Menu Grid.Row="0" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
-			<MenuItem Header="_File">
-				<MenuItem Header="_Open..." Command="{Binding OpenCommand}" />
-				<Separator/>
-				<MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
-			</MenuItem>
-		</Menu>
+		<Grid
+			Grid.Row="0"
+			ColumnDefinitions="Auto,*"
+			Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+			<Menu Grid.Column="0">
+				<MenuItem Header="_File">
+					<MenuItem Header="_Open..." Command="{Binding OpenCommand}" />
+					<Separator/>
+					<MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
+				</MenuItem>
+			</Menu>
+			<StackPanel
+				Grid.Column="1"
+				Orientation="Horizontal"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Classes="nav">
+				<Button Content="Root" Command="{Binding SelectRootCommand}" />
+				<Label Content="/" />
+				<Button Content="Tasks" Command="{Binding SelectTasksCommand}" />
+				<Button Content="Operations" Command="{Binding SelectOperationsCommand}" />
+			</StackPanel>
+		</Grid>
 		<ContentControl
 			Grid.Row="1"
 			Content="{Binding Content}" />

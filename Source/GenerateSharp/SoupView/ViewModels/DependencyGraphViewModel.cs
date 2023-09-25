@@ -21,13 +21,10 @@ namespace Soup.View.ViewModels
 		private GraphNodeViewModel? selectedNode = null;
 		private ProjectDetailsViewModel? selectedProject = null;
 		private string errorBarMessage = string.Empty;
-		private bool isMenuOpen = true;
 		private bool isErrorBarOpen = false;
 		private IList<IList<GraphNodeViewModel>>? graph = null;
 		private uint uniqueId = 0;
 		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
-
-		public ICommand ToggleMenuCommand { get; }
 
 		public string ErrorBarMessage
 		{
@@ -60,12 +57,6 @@ namespace Soup.View.ViewModels
 			}
 		}
 
-		public bool IsMenuOpen
-		{
-			get => isMenuOpen;
-			set => this.RaiseAndSetIfChanged(ref isMenuOpen, value);
-		}
-
 		public bool IsErrorBarOpen
 		{
 			get => isErrorBarOpen;
@@ -80,7 +71,6 @@ namespace Soup.View.ViewModels
 
 		public DependencyGraphViewModel()
 		{
-			ToggleMenuCommand = ReactiveCommand.Create(OnToggleMenu);
 		}
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
@@ -110,11 +100,6 @@ namespace Soup.View.ViewModels
 
 			Graph = activeGraph;
 			SelectedNode = rootNode;
-		}
-
-		private void OnToggleMenu()
-		{
-			this.IsMenuOpen = !this.IsMenuOpen;
 		}
 
 		private void NotifyError(string message)

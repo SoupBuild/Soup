@@ -3,6 +3,7 @@
 // </copyright>
 
 using Opal;
+using ReactiveUI;
 using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,52 +11,36 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SoupView.ViewModel
+namespace Soup.View.ViewModels
 {
-	internal class OperationGraphPageModel : Observable
+	public class OperationGraphViewModel : ViewModelBase
 	{
-		private GraphNode? selectedNode = null;
+		private GraphNodeViewModel? selectedNode = null;
 		private OperationDetailsViewModel? selectedOperation = null;
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNode>>? graph = null;
+		private IList<IList<GraphNodeViewModel>>? graph = null;
 		private Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = new Dictionary<uint, OperationDetailsViewModel>();
 
 		public string ErrorBarMessage
 		{
-			get { return errorBarMessage; }
-			set
-			{
-				if (value != errorBarMessage)
-				{
-					errorBarMessage = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => errorBarMessage;
+			set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
 		}
 
-		public IList<IList<GraphNode>>? Graph
+		public IList<IList<GraphNodeViewModel>>? Graph
 		{
-			get { return graph; }
-			set
-			{
-				if (value != graph)
-				{
-					graph = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => graph;
+			set => this.RaiseAndSetIfChanged(ref graph, value);
 		}
 
-		public GraphNode? SelectedNode
+		public GraphNodeViewModel? SelectedNode
 		{
-			get { return selectedNode; }
+			get => selectedNode;
 			set
 			{
-				if (value != selectedNode)
+				if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
 				{
-					selectedNode = value;
-					NotifyPropertyChanged();
 					if (selectedNode != null)
 					{
 						SelectedOperation = this.operationDetailsLookup[selectedNode.Id];
@@ -70,28 +55,14 @@ namespace SoupView.ViewModel
 
 		public OperationDetailsViewModel? SelectedOperation
 		{
-			get { return selectedOperation; }
-			set
-			{
-				if (value != selectedOperation)
-				{
-					selectedOperation = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => selectedOperation;
+			set => this.RaiseAndSetIfChanged(ref selectedOperation, value);
 		}
 
 		public bool IsErrorBarOpen
 		{
-			get { return isErrorBarOpen; }
-			set
-			{
-				if (value != isErrorBarOpen)
-				{
-					isErrorBarOpen = value;
-					NotifyPropertyChanged();
-				}
-			}
+			get => isErrorBarOpen;
+			set => this.RaiseAndSetIfChanged(ref isErrorBarOpen, value);
 		}
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
@@ -137,14 +108,14 @@ namespace SoupView.ViewModel
 			IsErrorBarOpen = true;
 		}
 
-		private IList<IList<GraphNode>> BuildGraph(
+		private IList<IList<GraphNodeViewModel>> BuildGraph(
 			FileSystemState fileSystemState,
 			OperationGraph evaluateGraph,
 			OperationResults? operationResults)
 		{
 			this.operationDetailsLookup.Clear();
 			var activeIds = evaluateGraph.RootOperationIds;
-			var activeGraph = new List<IList<GraphNode>>();
+			var activeGraph = new List<IList<GraphNodeViewModel>>();
 			var knownIds = new HashSet<OperationId>();
 			BuildGraphColumn(
 				fileSystemState,
@@ -161,7 +132,7 @@ namespace SoupView.ViewModel
 			FileSystemState fileSystemState,
 			OperationGraph evaluateGraph,
 			OperationResults? operationResults,
-			IList<IList<GraphNode>> activeGraph,
+			IList<IList<GraphNodeViewModel>> activeGraph,
 			IList<OperationId> activeIds,
 			HashSet<OperationId> knownIds)
 		{
@@ -189,14 +160,14 @@ namespace SoupView.ViewModel
 			}
 
 			// Build up all the nodes at this level that have not already been added
-			var column = new List<GraphNode>();
+			var column = new List<GraphNodeViewModel>();
 			foreach (var operationId in activeIds)
 			{
 				if (!knownIds.Contains(operationId))
 				{
 					var operation = evaluateGraph.GetOperationInfo(operationId);
-
-					var node = new GraphNode(operation.Title, operationId.value)
+					var toolTop = string.Empty;
+					var node = new GraphNodeViewModel(operation.Title, toolTop, operationId.value)
 					{
 						ChildNodes = operation.Children.Select(value => value.value).ToList(),
 					};

@@ -14,7 +14,7 @@ namespace Soup.View.ViewModels
 		Value,
 	};
 
-	class ValueTableItemViewModel : ViewModelBase
+	public class ValueTableItemViewModel : ViewModelBase
 	{
 		public string Title { get; set; }
 

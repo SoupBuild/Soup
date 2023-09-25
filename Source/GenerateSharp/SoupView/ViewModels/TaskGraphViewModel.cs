@@ -13,7 +13,7 @@ using ValueType = Soup.Build.Utilities.ValueType;
 
 namespace Soup.View.ViewModels
 {
-	internal class TaskGraphViewModel : ViewModelBase
+	public class TaskGraphViewModel : ViewModelBase
 	{
 		private GraphNodeViewModel? selectedNode = null;
 		private TaskDetailsViewModel? selectedTask = null;

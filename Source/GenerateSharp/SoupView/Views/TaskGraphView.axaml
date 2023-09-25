@@ -7,17 +7,27 @@
 	xmlns:v="using:Soup.View.Views"
 	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 	x:Class="Soup.View.Views.TaskGraphView"
-	x:DataType="vm:TaskGraphViewModel">
-	<SplitView
-		IsPaneOpen="True"
-		PanePlacement="Right"
-		DisplayMode="Inline"
-		OpenPaneLength="300">
-		<SplitView.Pane>
-			<TreeView />
-		</SplitView.Pane>
+	x:DataType="vm:TaskGraphViewModel"
+	d:DataContext="{x:Static vm:DesignData.ExampleTaskGraph}">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="3*" MinWidth="150" />
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" MinWidth="150" />
+		</Grid.ColumnDefinitions>
 		<v:GraphViewer
 			Graph="{Binding Graph}"
 			SelectedNode="{Binding SelectedNode, Mode=TwoWay}" />
-	</SplitView>
+		<GridSplitter
+			Grid.Column="1"
+			Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
+		<DataGrid
+			Grid.Column="2"
+			Margin="5"
+			DataContext="{Binding SelectedTask}"
+			ItemsSource="{Binding Properties}"
+			AutoGenerateColumns="True"
+			GridLinesVisibility="All"
+			BorderBrush="Gray" />
+	</Grid>
 </UserControl>
