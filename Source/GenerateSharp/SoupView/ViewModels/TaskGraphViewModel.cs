@@ -66,28 +66,33 @@ namespace Soup.View.ViewModels
 			set => this.RaiseAndSetIfChanged(ref isErrorBarOpen, value);
 		}
 
-		public async Task LoadProjectAsync(Path recipeFilePath)
+		public async Task LoadProjectAsync(Path? packageFolder)
 		{
-			var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFilePath);
-			if (loadResult.IsSuccess)
+			Graph = null;
+
+			if (packageFolder is not null)
 			{
-				var packageDirectory = recipeFilePath.GetParent();
-				var targetPath = await GetTargetPathAsync(packageDirectory);
-
-				var soupTargetDirectory = targetPath + new Path(".soup/");
-
-				var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateInfoFileName;
-				if (!ValueTableManager.TryLoadState(generateInfoStateFile, out var generateInfoTable))
+				var recipeFile = packageFolder + BuildConstants.RecipeFileName;
+				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
+				if (loadResult.IsSuccess)
 				{
-					NotifyError($"Failed to load Value Table: {generateInfoStateFile}");
-					return;
-				}
+					var targetPath = await GetTargetPathAsync(packageFolder);
 
-				Graph = BuildGraph(generateInfoTable);
-			}
-			else
-			{
-				NotifyError($"Failed to load Recipe file: {recipeFilePath}");
+					var soupTargetDirectory = targetPath + new Path(".soup/");
+
+					var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateInfoFileName;
+					if (!ValueTableManager.TryLoadState(generateInfoStateFile, out var generateInfoTable))
+					{
+						NotifyError($"Failed to load Value Table: {generateInfoStateFile}");
+						return;
+					}
+
+					Graph = BuildGraph(generateInfoTable);
+				}
+				else
+				{
+					NotifyError($"Failed to load Recipe file: {packageFolder}");
+				}
 			}
 		}
 
@@ -136,7 +141,7 @@ namespace Soup.View.ViewModels
 			foreach (var taskNameValue in runtimeOrderList)
 			{
 				var taskName = taskNameValue.AsString();
-				var taskToolTip = string.Empty;
+				var taskToolTip = taskName;
 
 				var node = new GraphNodeViewModel(taskName, taskToolTip, this.uniqueId++);
 

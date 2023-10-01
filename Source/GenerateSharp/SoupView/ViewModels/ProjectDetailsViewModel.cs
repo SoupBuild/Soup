@@ -21,11 +21,19 @@ namespace Soup.View.ViewModels
 				properties.Add(new PropertyValueViewModel("Name", recipe.Name));
 				properties.Add(new PropertyValueViewModel("Version", recipe.Version.ToString()));
 				properties.Add(new PropertyValueViewModel("Language", recipe.Language.ToString()));
+
+				Name = recipe.Name;
 			}
 
 			properties.Add(new PropertyValueViewModel("Path", path.ToString()));
+
+			Path = path;
 		}
 
 		public IList<PropertyValueViewModel> Properties => properties;
+
+		public string? Name { get; private set; }
+
+		public Path Path { get; private set; }
 	}
 }

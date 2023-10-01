@@ -65,37 +65,42 @@ namespace Soup.View.ViewModels
 			set => this.RaiseAndSetIfChanged(ref isErrorBarOpen, value);
 		}
 
-		public async Task LoadProjectAsync(Path recipeFilePath)
+		public async Task LoadProjectAsync(Path? packageFolder)
 		{
-			var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFilePath);
-			if (loadResult.IsSuccess)
+			Graph = null;
+
+			if (packageFolder is not null)
 			{
-				var packageDirectory = recipeFilePath.GetParent();
-				var targetPath = await GetTargetPathAsync(packageDirectory);
-
-				var soupTargetDirectory = targetPath + new Path(".soup/");
-
-				var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
-				var fileSystemState = new FileSystemState();
-				if (!OperationGraphManager.TryLoadState(evaluateGraphFile, fileSystemState, out var evaluateGraph))
+				var recipeFile = packageFolder + BuildConstants.RecipeFileName;
+				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
+				if (loadResult.IsSuccess)
 				{
-					NotifyError($"Failed to load Operation Graph: {evaluateGraphFile}");
-					return;
-				}
+					var targetPath = await GetTargetPathAsync(packageFolder);
 
-				// Check for the optional results
-				var evaluateResultsFile = soupTargetDirectory + BuildConstants.EvaluateResultsFileName;
-				OperationResults? operationResults = null;
-				if (OperationResultsManager.TryLoadState(evaluateResultsFile, fileSystemState, out var loadOperationResults))
+					var soupTargetDirectory = targetPath + new Path(".soup/");
+
+					var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
+					var fileSystemState = new FileSystemState();
+					if (!OperationGraphManager.TryLoadState(evaluateGraphFile, fileSystemState, out var evaluateGraph))
+					{
+						NotifyError($"Failed to load Operation Graph: {evaluateGraphFile}");
+						return;
+					}
+
+					// Check for the optional results
+					var evaluateResultsFile = soupTargetDirectory + BuildConstants.EvaluateResultsFileName;
+					OperationResults? operationResults = null;
+					if (OperationResultsManager.TryLoadState(evaluateResultsFile, fileSystemState, out var loadOperationResults))
+					{
+						operationResults = loadOperationResults;
+					}
+
+					Graph = BuildGraph(fileSystemState, evaluateGraph, operationResults);
+				}
+				else
 				{
-					operationResults = loadOperationResults;
+					NotifyError($"Failed to load Recipe file: {packageFolder}");
 				}
-
-				Graph = BuildGraph(fileSystemState, evaluateGraph, operationResults);
-			}
-			else
-			{
-				NotifyError($"Failed to load Recipe file: {recipeFilePath}");
 			}
 		}
 
@@ -166,7 +171,7 @@ namespace Soup.View.ViewModels
 				if (!knownIds.Contains(operationId))
 				{
 					var operation = evaluateGraph.GetOperationInfo(operationId);
-					var toolTop = string.Empty;
+					var toolTop = operation.Title;
 					var node = new GraphNodeViewModel(operation.Title, toolTop, operationId.value)
 					{
 						ChildNodes = operation.Children.Select(value => value.value).ToList(),

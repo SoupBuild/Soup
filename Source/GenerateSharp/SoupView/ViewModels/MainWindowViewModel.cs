@@ -41,8 +41,6 @@ public class MainWindowViewModel : ViewModelBase
 				if (recipeFile is not null)
 				{
 					_ = dependencyGraph.LoadProjectAsync(recipeFile);
-					_ = taskGraph.LoadProjectAsync(recipeFile);
-					_ = operationGraph.LoadProjectAsync(recipeFile);
 				}
 			}
 		}
@@ -81,7 +79,25 @@ public class MainWindowViewModel : ViewModelBase
 		taskGraph = new TaskGraphViewModel();
 		operationGraph = new OperationGraphViewModel();
 
+		dependencyGraph.PropertyChanged += DependencyGraph_PropertyChanged;
+
 		content = dependencyGraph;
+	}
+
+	private void DependencyGraph_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName == nameof(dependencyGraph.SelectedProject))
+		{
+			_ = taskGraph.LoadProjectAsync(dependencyGraph.SelectedProject?.Path);
+			_ = operationGraph.LoadProjectAsync(dependencyGraph.SelectedProject?.Path);
+
+			this.RaisePropertyChanged(nameof(SelectedPackageName));
+		}
+	}
+
+	public string SelectedPackageName
+	{
+		get => this.dependencyGraph.SelectedProject?.Name ?? "[Package]";
 	}
 
 	public bool IsRootSelected

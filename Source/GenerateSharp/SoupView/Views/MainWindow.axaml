@@ -57,7 +57,7 @@
 					</Style>
 				</StackPanel.Styles>
 				<v:SelectedButton
-					Content="Root"
+					Content="{Binding SelectedPackageName}"
 					Command="{Binding SelectRootCommand}"
 					IsSelected="{Binding IsRootSelected}"/>
 				<Label Content="/" />
