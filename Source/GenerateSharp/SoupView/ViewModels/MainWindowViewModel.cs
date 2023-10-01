@@ -51,7 +51,15 @@ public class MainWindowViewModel : ViewModelBase
 	public ViewModelBase Content
 	{
 		get => content;
-		private set => this.RaiseAndSetIfChanged(ref content, value);
+		private set
+		{
+			if (this.CheckRaiseAndSetIfChanged(ref content, value))
+			{
+				this.RaisePropertyChanged(nameof(IsRootSelected));
+				this.RaisePropertyChanged(nameof(IsTasksSelected));
+				this.RaisePropertyChanged(nameof(IsOperationsSelected));
+			}
+		}
 	}
 
 	public MainWindowViewModel() : this(null)
@@ -74,6 +82,21 @@ public class MainWindowViewModel : ViewModelBase
 		operationGraph = new OperationGraphViewModel();
 
 		content = dependencyGraph;
+	}
+
+	public bool IsRootSelected
+	{
+		get => ReferenceEquals(content, dependencyGraph);
+	}
+
+	public bool IsTasksSelected
+	{
+		get => ReferenceEquals(content, taskGraph);
+	}
+
+	public bool IsOperationsSelected
+	{
+		get => ReferenceEquals(content, operationGraph);
 	}
 
 	private async Task OnOpenAsync()

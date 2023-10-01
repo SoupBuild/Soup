@@ -1,0 +1,33 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:v="using:Soup.View.Views">
+	<Design.PreviewWith>
+		<v:SelectedButton Content="Some Test Content" IsSelected="True"/>
+	</Design.PreviewWith>
+
+	<Style Selector="v|SelectedButton:selected">
+		<Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}" />
+	</Style>
+
+	<Style Selector="v|SelectedButton">
+		<!-- Set Defaults -->
+		<Setter Property="Template">
+			<ControlTemplate>
+				<ContentPresenter
+					Name="PART_ContentPresenter"
+					Padding="{TemplateBinding Padding}"
+					HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+					VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+					Background="{TemplateBinding Background}"
+					BorderBrush="{TemplateBinding BorderBrush}"
+					BorderThickness="{TemplateBinding BorderThickness}"
+					Content="{TemplateBinding Content}"
+					ContentTemplate="{TemplateBinding ContentTemplate}"
+					CornerRadius="{TemplateBinding CornerRadius}"
+					RecognizesAccessKey="True"
+					TextElement.Foreground="{TemplateBinding Foreground}" />
+			</ControlTemplate>
+		</Setter>
+	</Style>
+</Styles>

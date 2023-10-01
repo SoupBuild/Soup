@@ -3,11 +3,10 @@
 // </copyright>
 
 using Avalonia;
-using Avalonia.Controls;
 
 namespace Soup.View.Views
 {
-	public sealed class GraphViewerItem : Button
+	public sealed class GraphViewerItem : SelectedButton
 	{
 		/// <summary>
 		/// Identifies the <see cref="Title"/> property.
@@ -41,14 +40,6 @@ namespace Soup.View.Views
 		{
 			get => GetValue(ToolTipProperty);
 			set => SetValue(ToolTipProperty, value);
-		}
-
-		/// <summary>
-		/// Sets the is selected value
-		/// </summary>
-		public bool IsSelected
-		{
-			set => PseudoClasses.Set(":selected", value);
 		}
 	}
 }
