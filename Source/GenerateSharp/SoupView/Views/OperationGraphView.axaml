@@ -23,11 +23,21 @@
 			Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
 		<DataGrid
 			Grid.Column="2"
-			Margin="5"
 			DataContext="{Binding SelectedOperation}"
 			ItemsSource="{Binding Properties}"
-			AutoGenerateColumns="True"
-			GridLinesVisibility="All"
-			BorderBrush="Gray" />
+			CanUserResizeColumns="True"
+			IsReadOnly="True"
+			GridLinesVisibility="All">
+			<DataGrid.Columns>
+				<DataGridTextColumn
+					Width="*"
+					Header="Name"
+					Binding="{Binding Name}"/>
+				<DataGridTextColumn
+					Width="2*"
+					Header="Value"
+					Binding="{Binding Value}" />
+			</DataGrid.Columns>
+		</DataGrid>
 	</Grid>
 </UserControl>
