@@ -23,7 +23,7 @@ namespace Soup.View.ViewModels
 			properties.Add(new PropertyValueViewModel("DependencyCount", operation.DependencyCount.ToString()));
 			properties.Add(new PropertyValueViewModel("Executable", operation.Command.Executable.ToString()));
 			properties.Add(new PropertyValueViewModel("WorkingDirectory", operation.Command.WorkingDirectory.ToString()));
-			properties.Add(new PropertyValueViewModel("Arguments", operation.Command.Arguments));
+			properties.Add(new PropertyValueViewModel("Arguments", string.Concat(operation.Command.Arguments)));
 
 			var declaredInputFiles = fileSystemState.GetFilePaths(operation.DeclaredInput);
 			var declaredOutputFiles = fileSystemState.GetFilePaths(operation.DeclaredOutput);
