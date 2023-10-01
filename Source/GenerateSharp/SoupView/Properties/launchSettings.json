@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SoupView": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\mwasp\\Dev\\Repos\\Soup\\Source\\Client\\CLI\\Recipe.sml"
+    }
+  }
+}

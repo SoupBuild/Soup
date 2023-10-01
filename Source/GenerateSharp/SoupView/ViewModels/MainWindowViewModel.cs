@@ -13,11 +13,12 @@ namespace Soup.View.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-	private IStorageProvider? storageProvider;
 	private Path? recipeFile;
 	private DependencyGraphViewModel dependencyGraph;
 	private TaskGraphViewModel taskGraph;
 	private OperationGraphViewModel operationGraph;
+
+	public IStorageProvider? StorageProvider { get; set; }
 
 	public ICommand OpenCommand { get; }
 
@@ -60,14 +61,8 @@ public class MainWindowViewModel : ViewModelBase
 		}
 	}
 
-	public MainWindowViewModel() : this(null)
+	public MainWindowViewModel(string? packagePath)
 	{
-	}
-
-	public MainWindowViewModel(IStorageProvider? storageProvider)
-	{
-		this.storageProvider = storageProvider;
-
 		OpenCommand = ReactiveCommand.Create(OnOpenAsync);
 		ExitCommand = ReactiveCommand.Create(OnExit);
 
@@ -82,6 +77,11 @@ public class MainWindowViewModel : ViewModelBase
 		dependencyGraph.PropertyChanged += DependencyGraph_PropertyChanged;
 
 		content = dependencyGraph;
+
+		if (packagePath is not null)
+		{
+			RecipeFile = new Path(packagePath);
+		}
 	}
 
 	private void DependencyGraph_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -117,10 +117,10 @@ public class MainWindowViewModel : ViewModelBase
 
 	private async Task OnOpenAsync()
 	{
-		if (this.storageProvider is null)
+		if (this.StorageProvider is null)
 			throw new InvalidOperationException("Missing storage provider");
 
-		var filePickerResult = await this.storageProvider.OpenFilePickerAsync(
+		var filePickerResult = await this.StorageProvider.OpenFilePickerAsync(
 			new FilePickerOpenOptions()
 			{
 				AllowMultiple = false,

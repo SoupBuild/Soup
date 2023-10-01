@@ -8,8 +8,9 @@ public partial class MainWindow : Window
 	public MainWindow()
 	{
 		InitializeComponent();
-
-
-		DataContext = new MainWindowViewModel(StorageProvider);
+		if (DataContext is MainWindowViewModel viewModel)
+		{
+			viewModel.StorageProvider = StorageProvider;
+		}
 	}
 }

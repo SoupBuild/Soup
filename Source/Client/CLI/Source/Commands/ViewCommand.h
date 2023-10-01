@@ -46,7 +46,13 @@ namespace Soup::Client
 				}
 			}
 
-			auto arguments = std::vector<std::string>();
+			auto recipePath =
+				workingDirectory +
+				Core::BuildConstants::RecipeFileName();
+
+			auto arguments = std::vector<std::string>({
+				recipePath.ToString(),
+			});
 
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
