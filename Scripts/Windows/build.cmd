@@ -17,3 +17,8 @@ REM - Build PackageManager
 echo %ScriptsDir%/build-packagemanager.cmd %Flavor%
 call %ScriptsDir%/build-packagemanager.cmd %Flavor%
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
+
+REM - Build VIew
+echo %ScriptsDir%/build-view.cmd %Flavor%
+call %ScriptsDir%/build-view.cmd %Flavor%
+if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%

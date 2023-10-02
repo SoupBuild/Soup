@@ -1,15 +1,8 @@
 {
   "profiles": {
-    "SoupView (Package)": {
-      "commandName": "MsixPackage"
-    },
-    "SoupView (Unpackaged)": {
-      "commandName": "Project"
-    },
-    "WSL": {
-      "commandName": "WSL2",
-      "environmentVariables": {},
-      "distributionName": ""
+    "SoupView": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\mwasp\\Dev\\Repos\\Soup\\Source\\Client\\CLI\\Recipe.sml"
     }
   }
 }
