@@ -3,8 +3,9 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Avalonia.Controls;
+using Avalonia.Controls.Models.TreeDataGrid;
 using Soup.Build.Utilities;
 using ValueType = Soup.Build.Utilities.ValueType;
 
@@ -21,10 +22,22 @@ namespace Soup.View.ViewModels
 
 			State = new ObservableCollection<ValueTableItemViewModel>();
 			BuildValueTable(taskInfo, State);
+
+			Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(properties)
+			{
+				Columns =
+				{
+					new TextColumn<PropertyValueViewModel, string>(
+						"Name",
+						x => x.Name),
+					new TextColumn<PropertyValueViewModel, string>(
+						"Value",
+						x => x.Value),
+				},
+			};
 		}
 
-		public IList<PropertyValueViewModel> Properties => properties;
-
+		public FlatTreeDataGridSource<PropertyValueViewModel> Properties { get; }
 
 		public ObservableCollection<ValueTableItemViewModel> State { get; init; }
 

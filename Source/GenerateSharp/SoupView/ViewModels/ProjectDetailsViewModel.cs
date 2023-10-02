@@ -2,9 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Avalonia.Controls;
+using Avalonia.Controls.Models.TreeDataGrid;
 using Opal;
 using Soup.Build.Utilities;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Soup.View.ViewModels
@@ -28,9 +29,22 @@ namespace Soup.View.ViewModels
 			properties.Add(new PropertyValueViewModel("Path", path.ToString()));
 
 			Path = path;
+
+			Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(properties)
+			{
+				Columns =
+				{
+					new TextColumn<PropertyValueViewModel, string>(
+						"Name",
+						x => x.Name),
+					new TextColumn<PropertyValueViewModel, string>(
+						"Value",
+						x => x.Value),
+				},
+			};
 		}
 
-		public IList<PropertyValueViewModel> Properties => properties;
+		public FlatTreeDataGridSource<PropertyValueViewModel>? Properties { get; }
 
 		public string? Name { get; private set; }
 

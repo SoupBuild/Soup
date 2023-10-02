@@ -21,23 +21,9 @@
 		<GridSplitter
 			Grid.Column="1"
 			Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
-		<DataGrid
+		<TreeDataGrid
 			Grid.Column="2"
 			DataContext="{Binding SelectedProject}"
-			ItemsSource="{Binding Properties}"
-			CanUserResizeColumns="True"
-			IsReadOnly="True"
-			GridLinesVisibility="All">
-			<DataGrid.Columns>
-				<DataGridTextColumn
-					Width="*"
-					Header="Name"
-					Binding="{Binding Name}"/>
-				<DataGridTextColumn
-					Width="2*"
-					Header="Value"
-					Binding="{Binding Value}" />
-			</DataGrid.Columns>
-		</DataGrid>
+			Source="{Binding Properties}" />
 	</Grid>
 </UserControl>

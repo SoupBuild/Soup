@@ -12,7 +12,7 @@
 	<!-- Use system theme -->
 	<Application.Styles>
 		<FluentTheme />
-		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
 		<StyleInclude Source="/Views/GraphViewer.axaml"/>
 		<StyleInclude Source="/Views/SelectedButton.axaml"/>
 	</Application.Styles>
