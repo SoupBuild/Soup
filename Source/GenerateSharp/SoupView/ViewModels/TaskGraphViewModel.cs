@@ -151,7 +151,7 @@ namespace Soup.View.ViewModels
 				// TODO: Have a custom view for the global state
 				taskInfo["GlobalState"] = new Value(globalStateTable);
 
-				this.taskDetailsLookup.Add(node.Id, new TaskDetailsViewModel(taskName, taskInfo));
+				this.taskDetailsLookup.Add(node.Id, new TaskDetailsViewModel(taskInfo));
 
 				// Add the new column at the start
 				var column = new List<GraphNodeViewModel>()

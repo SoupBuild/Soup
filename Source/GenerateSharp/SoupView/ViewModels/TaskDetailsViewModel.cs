@@ -13,33 +13,25 @@ namespace Soup.View.ViewModels
 {
 	public class TaskDetailsViewModel : ViewModelBase
 	{
-		private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
+		private ObservableCollection<ValueTableItemViewModel> properties = new ObservableCollection<ValueTableItemViewModel>();
 
-		public TaskDetailsViewModel(string name, ValueTable taskInfo)
+		public TaskDetailsViewModel(ValueTable taskInfo)
 		{
 			properties.Clear();
-			properties.Add(new PropertyValueViewModel("Name", name));
+			BuildValueTable(taskInfo, properties);
 
-			State = new ObservableCollection<ValueTableItemViewModel>();
-			BuildValueTable(taskInfo, State);
-
-			Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(properties)
+			Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(properties)
 			{
 				Columns =
 				{
-					new TextColumn<PropertyValueViewModel, string>(
-						"Name",
-						x => x.Name),
-					new TextColumn<PropertyValueViewModel, string>(
-						"Value",
-						x => x.Value),
+					new HierarchicalExpanderColumn<ValueTableItemViewModel>(
+						new TextColumn<ValueTableItemViewModel, string>("Title", x => x.Title),
+						x => x.Children),
 				},
 			};
 		}
 
-		public FlatTreeDataGridSource<PropertyValueViewModel> Properties { get; }
-
-		public ObservableCollection<ValueTableItemViewModel> State { get; init; }
+		public HierarchicalTreeDataGridSource<ValueTableItemViewModel> Properties { get; }
 
 		private void BuildValueTable(
 			ValueTable table,

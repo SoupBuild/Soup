@@ -23,7 +23,6 @@ public static class DesignData
 		new TaskGraphViewModel()
 		{
 			SelectedTask = new TaskDetailsViewModel(
-				"FakeTask1",
 				new ValueTable()),
 		};
 
