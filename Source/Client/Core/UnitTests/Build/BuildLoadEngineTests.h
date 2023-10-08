@@ -14,14 +14,14 @@ namespace Soup::Core::UnitTests
 		{
 			auto knownLanguages = std::map<std::string, KnownLanguage>();
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
-			auto arguments = RecipeBuildArguments();
+			auto targetBuildGlobalParameters = ValueTable();
 			auto hostBuildGlobalParameters = ValueTable();
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
@@ -32,14 +32,14 @@ namespace Soup::Core::UnitTests
 		{
 			auto knownLanguages = std::map<std::string, KnownLanguage>();
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
-			auto arguments = RecipeBuildArguments();
+			auto targetBuildGlobalParameters = ValueTable();
 			auto hostBuildGlobalParameters = ValueTable();
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
@@ -123,12 +123,10 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -138,12 +136,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -322,11 +321,10 @@ namespace Soup::Core::UnitTests
 				},
 			});
 			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -336,12 +334,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -541,12 +540,10 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -556,12 +553,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -834,12 +832,10 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -849,12 +845,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -1086,12 +1083,10 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -1101,12 +1096,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -1347,12 +1343,10 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -1362,12 +1356,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -1635,12 +1630,10 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -1650,12 +1643,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -1903,12 +1897,10 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -1918,12 +1910,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -2193,12 +2186,10 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{ "ArgumentValue", Value(true) },
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{ "HostValue", Value(true) },
@@ -2208,12 +2199,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -2539,15 +2531,13 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{
 					"ArgumentValue",
 					Value(true),
 				},
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{
@@ -2560,12 +2550,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -2890,15 +2881,13 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{
 					"ArgumentValue",
 					Value(true),
 				},
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{
@@ -2911,12 +2900,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -3160,15 +3150,13 @@ namespace Soup::Core::UnitTests
 					}
 				},
 			});
-			auto arguments = RecipeBuildArguments();
-			arguments.GlobalParameters = ValueTable(
+			auto targetBuildGlobalParameters = ValueTable(
 			{
 				{
 					"ArgumentValue",
 					Value(true),
 				},
 			});
-			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
 			{
 				{
@@ -3181,12 +3169,13 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				targetBuildGlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
 
-			auto packageProvider = uut.Load();
+			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto packageProvider = uut.Load(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(

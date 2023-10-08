@@ -112,11 +112,11 @@ namespace Soup::Core
 			auto loadEngine = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments,
+				arguments.GlobalParameters,
 				hostBuildGlobalParameters,
 				userDataPath,
 				recipeCache);
-			auto packageProvider = loadEngine.Load();
+			auto packageProvider = loadEngine.Load(arguments.WorkingDirectory);
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);

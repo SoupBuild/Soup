@@ -13,7 +13,7 @@ GLOBAL_OUT_DIR=~/.soup/out
 
 CONFIG_HASH=J_HqSstV55vlb-x6RWC_hLRFRDU
 
-SOUP_VERSION="0.35.2"
+SOUP_VERSION="0.35.3"
 COPY_VERSION="1.0.0"
 MKDIR_VERSION="1.0.0"
 SOUP_CPP_VERSION="0.8.2"
@@ -48,6 +48,8 @@ cp -p $GLOBAL_PACKAGES_DIR/Wren/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml $RUN_DIR
 cp -p -R $GLOBAL_OUT_DIR/Wren/Soup.Wren/$SOUP_WREN_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/Soup.Wren/$SOUP_WREN_VERSION/out/
 
 cp -p -R $ROOT_DIR/Source/out/msbuild/bin/Soup.Build.PackageManager/Release/net7.0/linux-x64/publish/ $RUN_DIR/PackageManager
+
+cp -p -R $ROOT_DIR/Source/out/msbuild/bin/SoupView/Release/net7.0/linux-x64/publish/ $RUN_DIR/View
 
 cp -p -R $ROOT_DIR/Source/out/msbuild/bin/Swhere/Release/net7.0/linux-x64/publish/Swhere $RUN_DIR/swhere
 

@@ -20,3 +20,7 @@ eval $SCRIPTS_DIR/build-swhere
 # Build PackageManager
 echo $SCRIPTS_DIR/build-packagemanager
 eval $SCRIPTS_DIR/build-packagemanager
+
+# Build View
+echo $SCRIPTS_DIR/build-view
+eval $SCRIPTS_DIR/build-view

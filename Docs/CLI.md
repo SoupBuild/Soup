@@ -20,3 +20,5 @@ soup <command> [arguments]
 * [Target](CLI/Target.md) - Prints the target directory for a specified package.
 
 * [Version](CLI/Version.md) - Print the version of the current installed Soup application.
+
+* [View](CLI/View.md) - Launch the Soup View tool.

@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Soup.View.ViewModels;
+using Soup.View.Views;
 using System;
 
 namespace Soup.View;
@@ -9,14 +10,17 @@ public class ViewLocator : IDataTemplate
 {
 	public Control Build(object? data)
 	{
-		var name = data?.GetType().FullName?.Replace("ViewModel", "View") ??
-			throw new InvalidOperationException("Failed to get the view name");
-
-		var type = Type.GetType(name) ??
-			throw new InvalidOperationException("Failed to get the view type");
-
-		return (Control?)Activator.CreateInstance(type) ??
-			throw new InvalidOperationException("Failed to get the create the view type");
+		switch (data)
+		{
+			case DependencyGraphViewModel:
+				return new DependencyGraphView();
+			case OperationGraphViewModel:
+				return new OperationGraphView();
+			case TaskGraphViewModel:
+				return new TaskGraphView();
+			default:
+				throw new InvalidOperationException("Failed to get the view type");
+		}
 	}
 
 	public bool Match(object? data)
