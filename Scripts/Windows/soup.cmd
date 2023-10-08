@@ -42,6 +42,4 @@ robocopy %OutDir%\msbuild\bin\SoupView\Release\net7.0\win-x64\publish\ %RunDir%\
 
 robocopy %OutDir%\msbuild\bin\Swhere\Release\net7.0\win-x64\publish\ %RunDir%\ swhere.exe /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\msbuild\bin\Swhere\Release\net7.0\win-x64\publish\ %RunDir%\ swhere.exe /NJH /NJS /NDL > NUL
-
 %RunDir%\Soup.cmd %*

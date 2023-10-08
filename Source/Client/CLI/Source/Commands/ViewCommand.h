@@ -56,11 +56,18 @@ namespace Soup::Client
 
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
-			auto packageManagerFolder = moduleFolder + Path("View/");
-			auto executable = packageManagerFolder + Path("SoupView.exe");
+			auto soupViewFolder = moduleFolder + Path("View/");
+			#if defined(_WIN32)
+			auto executable = soupViewFolder + Path("SoupView.exe");
+			#elif defined(__linux__)
+			auto executable = soupViewFolder + Path("SoupView");
+			#else
+			#error "Unknown platform"
+			#endif
 
 			// Execute the requested target
 			Log::Info("CreateProcess");
+			Log::Diag(executable.ToString());
 			auto process = System::IProcessManager::Current().CreateProcess(
 				executable,
 				std::move(arguments),

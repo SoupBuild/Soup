@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "Linux Build SoupView!"
+
+OUT_DIR=~/repos/Soup/out
+
+# Stop on first error
+set -e
+
+SCRIPTS_DIR=$(dirname "$0")
+SOURCE_DIR=$SCRIPTS_DIR/../../Source
+SWHERE_DIR=$SOURCE_DIR/GenerateSharp/SoupView
+
+# Build SWhere tool
+echo dotnet publish $SWHERE_DIR -c Release -r linux-x64 --self-contained
+eval dotnet publish $SWHERE_DIR -c Release -r linux-x64 --self-contained
