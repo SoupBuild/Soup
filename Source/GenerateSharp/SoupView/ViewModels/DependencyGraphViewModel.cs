@@ -83,6 +83,10 @@ namespace Soup.View.ViewModels
 				(recipeFilePath, this.uniqueId++),
 			};
 
+			var value2 = SoupTools.AddStuff(1, 3);
+
+			var value = SoupTools.GetName();
+
 			var packageLockPath =
 				recipeFilePath.GetParent() +
 				BuildConstants.PackageLockFileName;

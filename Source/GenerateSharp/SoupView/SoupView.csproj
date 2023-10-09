@@ -16,6 +16,11 @@
     <AvaloniaResource Include="Assets\Soup.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\out\Cpp\SoupTools\1.0.0\J_HqSstV55vlb-x6RWC_hLRFRDU\bin\SoupTools.dll" Link="SoupTools.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.4" />
     <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.4" />
