@@ -1,10 +1,14 @@
 #include <iostream>
+#include <Library.h>
 
-import Samples.Cpp.DynamicLibrary.Library;
 using namespace Samples::Cpp::DynamicLibrary::Library;
 
 int main()
 {
-	std::cout << "Hello World, " << Helper::GetName() << " Style!" << std::endl;
+	if (Helper::IsAwesome())
+		std::cout << "Hello World, Soup Style!" << std::endl;
+	else
+		std::cout << "Hello World" << std::endl;
+
 	return 0;
 }

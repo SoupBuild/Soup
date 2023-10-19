@@ -26,14 +26,14 @@ export module Samples.Cpp.DynamicLibrary.Library;
 // Note: The namespace does not have to match the module name
 export namespace Samples.Cpp.DynamicLibrary.Library
 {
-    class Helper
+  class Helper
+  {
+  public:
+    __declspec(dllexport) static std::string GetName()
     {
-    public:
-        __declspec(dllexport) static std::string GetName()
-        {
-            return "Soup";
-        }
-    };
+      return "Soup";
+    }
+  };
 }
 ```
 
@@ -45,13 +45,13 @@ Language: "C++|0.1"
 Type: "Executable"
 Version: "1.0.0"
 Source: [
-    "Main.cpp"
+  "Main.cpp"
 ]
 
 Dependencies: {
-    Runtime: [
-        "../Library/"
-    ]
+  Runtime: [
+    "../Library/"
+  ]
 }
 ```
 
@@ -60,23 +60,23 @@ The package lock that was generated to capture the unique dependencies required 
 ```
 Version: 4
 Closures: {
-    Root: {
-        "C++": [
-            { Name: "Samples.Cpp.DynamicLibrary.Application", Version: "../Application", Build: "Build0", Tool: "Tool0" }
-            { Name: "Samples.Cpp.DynamicLibrary.Library", Version: "../Library/", Build: "Build0", Tool: "Tool0" }
-        ]
-    }
-    Build0: {
-        Wren: [
-            { Name: "Soup.Cpp", Version: "0.8.2" }
-        ]
-    }
-    Tool0: {
-        "C++": [
-            { Name: "copy", Version: "1.0.0" }
-            { Name: "mkdir", Version: "1.0.0" }
-        ]
-    }
+  Root: {
+    "C++": [
+      { Name: "Samples.Cpp.DynamicLibrary.Application", Version: "../Application", Build: "Build0", Tool: "Tool0" }
+      { Name: "Samples.Cpp.DynamicLibrary.Library", Version: "../Library/", Build: "Build0", Tool: "Tool0" }
+    ]
+  }
+  Build0: {
+    Wren: [
+      { Name: "Soup.Cpp", Version: "0.10.0" }
+    ]
+  }
+  Tool0: {
+    "C++": [
+      { Name: "copy", Version: "1.0.0" }
+      { Name: "mkdir", Version: "1.0.0" }
+    ]
+  }
 }
 ```
 
@@ -90,8 +90,8 @@ using namespace Samples.Cpp.DynamicLibrary.Library;
 
 int main()
 {
-    std::cout << "Hello World, " << Helper::GetName() << " Style!" << std::endl;
-    return 0;
+  std::cout << "Hello World, " << Helper::GetName() << " Style!" << std::endl;
+  return 0;
 }
 ```
 
