@@ -47,7 +47,7 @@ module;
 
 // TODO module
 // TODO: Treat wren as C code
-#include "include/wren.h"
+#include "wren.h"
 
 export module Soup.Core;
 

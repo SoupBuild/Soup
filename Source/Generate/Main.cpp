@@ -17,7 +17,7 @@
 
 // TODO import
 // TODO: Treat wren as C code
-#include "include/wren.h"
+#include "wren.h"
 
 import Opal;
 import Soup.Core;

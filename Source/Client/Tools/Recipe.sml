@@ -5,3 +5,9 @@ Source: [
     "Public.cpp"
 ]
 Type: "DynamicLibrary"
+
+Dependencies: {
+	Runtime: [
+		"../Core/"
+	]
+}

@@ -62,7 +62,22 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			BuildEngine::Execute(std::move(arguments));
+
+			// Load user config state
+			auto userDataPath = BuildEngine::GetSoupUserDataPath();
+			auto recipeCache = RecipeCache();
+
+			auto packageProvider = BuildEngine::LoadBuildGraph(
+				arguments.WorkingDirectory,
+				arguments.GlobalParameters,
+				userDataPath,
+				recipeCache);
+
+			BuildEngine::Execute(
+				packageProvider,
+				std::move(arguments),
+				userDataPath,
+				recipeCache);
 
 			// Verify expected logs
 			Assert::AreEqual(

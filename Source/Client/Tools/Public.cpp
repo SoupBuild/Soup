@@ -10,6 +10,8 @@
 #define CoTaskMemFree(p) free(p)
 #endif
 
+import Soup.Core;
+
 extern "C" 
 {
 	DLL_EXPORT const char* GetName()

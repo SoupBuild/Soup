@@ -86,17 +86,16 @@ namespace Soup::Core
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		static void Execute(const RecipeBuildArguments& arguments)
+		static PackageProvider LoadBuildGraph(
+			const Path& workingDirectory,
+			const ValueTable& targetGlobalParameters,
+			const Path& userDataPath,
+			RecipeCache& recipeCache)
 		{
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			// Load user config state
-			auto userDataPath = GetSoupUserDataPath();
-
 			// Load the system specific state
-			auto hostBuildGlobalParameters = ValueTable();
-			auto systemReadAccess = std::vector<Path>();
-			LoadHostSystemState(hostBuildGlobalParameters, systemReadAccess);
+			auto hostGlobalParameters = LoadHostSystemState();
 
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
@@ -108,22 +107,30 @@ namespace Soup::Core
 			// Generate the package build graph
 			auto knownLanguages = GetKnownLanguages();
 			auto builtInPackages = GetBuiltInPackages();
-			auto recipeCache = RecipeCache();
 			auto loadEngine = BuildLoadEngine(
 				knownLanguages,
 				builtInPackages,
-				arguments.GlobalParameters,
-				hostBuildGlobalParameters,
+				targetGlobalParameters,
+				hostGlobalParameters,
 				userDataPath,
 				recipeCache);
-			auto packageProvider = loadEngine.Load(arguments.WorkingDirectory);
+			auto packageProvider = loadEngine.Load(workingDirectory);
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
 			// std::cout << "BuildLoadEngine: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
-			startTime = std::chrono::high_resolution_clock::now();
+			return packageProvider;
+		}
+
+		static void Execute(
+			PackageProvider& packageProvider,
+			const RecipeBuildArguments& arguments,
+			const Path& userDataPath,
+			RecipeCache& recipeCache)
+		{
+			auto startTime = std::chrono::high_resolution_clock::now();
 
 			// Initialize a shared File System State to cache file system access
 			auto fileSystemState = FileSystemState();
@@ -134,7 +141,11 @@ namespace Soup::Core
 				fileSystemState);
 
 			// Initialize shared location manager
+			auto knownLanguages = GetKnownLanguages();
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
+
+			// Load the system specific state
+			auto systemReadAccess = LoadHostSystemAccess();
 
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package
@@ -149,13 +160,12 @@ namespace Soup::Core
 				locationManager);
 			buildRunner.Execute();
 
-			endTime = std::chrono::high_resolution_clock::now();
-			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+			auto endTime = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
 			// std::cout << "BuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
 		}
 
-	private:
 		static Path GetSoupUserDataPath()
 		{
 			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
@@ -163,16 +173,26 @@ namespace Soup::Core
 			return result;
 		}
 
-		static void LoadHostSystemState(
-			ValueTable& hostBuildGlobalParameters,
-			std::vector<Path>& systemReadAccess)
+	private:
+		static ValueTable LoadHostSystemState()
 		{
+			auto hostGlobalParameters = ValueTable();
+
 			auto system = std::string("Windows");
-			hostBuildGlobalParameters.emplace("System", Value(system));
+			hostGlobalParameters.emplace("System", Value(system));
+
+			return hostGlobalParameters;
+		}
+
+		static std::vector<Path> LoadHostSystemAccess()
+		{
+			auto systemReadAccess = std::vector<Path>();
 
 			// Allow read access from system directories
 			systemReadAccess.push_back(
 				Path("C:/Windows/"));
+
+			return systemReadAccess;
 		}
 	};
 }

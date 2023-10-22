@@ -74,7 +74,22 @@ namespace Soup::Client
 			// Now build the current project
 			Log::Info("Begin Build:");
 
-			Core::BuildEngine::Execute(std::move(arguments));
+			// Load user config state
+			auto userDataPath = Core::BuildEngine::GetSoupUserDataPath();
+			
+			auto recipeCache = Core::RecipeCache();
+
+			auto packageProvider = Core::BuildEngine::LoadBuildGraph(
+				arguments.WorkingDirectory,
+				arguments.GlobalParameters,
+				userDataPath,
+				recipeCache);
+
+			Core::BuildEngine::Execute(
+				packageProvider,
+				std::move(arguments),
+				userDataPath,
+				recipeCache);
 
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime -startTime);
