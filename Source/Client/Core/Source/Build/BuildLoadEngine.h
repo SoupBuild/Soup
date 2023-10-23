@@ -33,7 +33,6 @@ namespace Soup::Core
 	{
 	private:
 		const int _packageLockVersion = 4;
-		const Path _builtInPackagePath = Path("BuiltIn/");
 		const Path _builtInPackageOutPath = Path("out/");
 		const std::string _builtInWrenLanguage = "Wren";
 		const std::string _dependencyTypeBuild = "Build";
@@ -41,6 +40,7 @@ namespace Soup::Core
 		const std::string _rootClosureName = "Root";
 
 		// Built ins
+		const Path& _builtInPackageDirectory;
 		const std::map<std::string, KnownLanguage>& _knownLanguageLookup;
 		const std::map<std::string, std::map<std::string, SemanticVersion>>& _builtInPackageLookup;
 
@@ -69,12 +69,14 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="BuildLoadEngine"/> class.
 		/// </summary>
 		BuildLoadEngine(
+			const Path& builtInPackageDirectory,
 			const std::map<std::string, KnownLanguage>& knownLanguageLookup,
 			const std::map<std::string, std::map<std::string, SemanticVersion>>& builtInPackageLookup,
 			const ValueTable& targetBuildGlobalParameters,
 			const ValueTable& hostBuildGlobalParameters,
 			Path userDataPath,
 			RecipeCache& recipeCache) :
+			_builtInPackageDirectory(builtInPackageDirectory),
 			_knownLanguageLookup(knownLanguageLookup),
 			_builtInPackageLookup(builtInPackageLookup),
 			_targetBuildGlobalParameters(targetBuildGlobalParameters),
@@ -874,10 +876,7 @@ namespace Soup::Core
 			const PackageLockState& parentPackageLockState)
 		{
 			// Use the prebuilt version in the install folder
-			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
-			auto processDirectory = processFilename.GetParent();
-			auto packageRoot = processDirectory +
-				_builtInPackagePath +
+			auto packageRoot = _builtInPackageDirectory +
 				Path(activeReference.GetName()) +
 				Path(activeReference.GetVersion().ToString() + "/");
 

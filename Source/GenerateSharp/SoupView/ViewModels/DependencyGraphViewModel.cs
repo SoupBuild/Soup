@@ -85,7 +85,8 @@ namespace Soup.View.ViewModels
 
 			var value2 = SoupTools.AddStuff(1, 3);
 
-			var value = SoupTools.GetName();
+			var workingDirectoryString = recipeFilePath.GetParent().ToString();
+			var value = SoupTools.LoadBuildGraph(workingDirectoryString);
 
 			var packageLockPath =
 				recipeFilePath.GetParent() +

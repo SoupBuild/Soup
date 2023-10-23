@@ -87,6 +87,7 @@ namespace Soup::Core
 		/// The Core Execute task
 		/// </summary>
 		static PackageProvider LoadBuildGraph(
+			const Path& builtInDirectory,
 			const Path& workingDirectory,
 			const ValueTable& targetGlobalParameters,
 			const Path& userDataPath,
@@ -108,6 +109,7 @@ namespace Soup::Core
 			auto knownLanguages = GetKnownLanguages();
 			auto builtInPackages = GetBuiltInPackages();
 			auto loadEngine = BuildLoadEngine(
+				builtInDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetGlobalParameters,

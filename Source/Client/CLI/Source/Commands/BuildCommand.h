@@ -74,12 +74,18 @@ namespace Soup::Client
 			// Now build the current project
 			Log::Info("Begin Build:");
 
+			// Find the built in folder root
+			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+			auto processDirectory = processFilename.GetParent();
+			auto builtInPackageDirectory = processDirectory + Path("BuiltIn/");
+
 			// Load user config state
 			auto userDataPath = Core::BuildEngine::GetSoupUserDataPath();
 			
 			auto recipeCache = Core::RecipeCache();
 
 			auto packageProvider = Core::BuildEngine::LoadBuildGraph(
+				builtInPackageDirectory,
 				arguments.WorkingDirectory,
 				arguments.GlobalParameters,
 				userDataPath,

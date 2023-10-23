@@ -12,6 +12,7 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Initialize()
 		{
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>();
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
 			auto targetBuildGlobalParameters = ValueTable();
@@ -19,6 +20,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -30,6 +32,7 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Load_LanguageExtension_BuiltInVersion()
 		{
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>();
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
 			auto targetBuildGlobalParameters = ValueTable();
@@ -37,6 +40,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -65,7 +69,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
@@ -77,16 +81,13 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/TestTool/4.4.4/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/TestTool/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestTool"
 					Language: "C++|1.1.1"
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -134,6 +135,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -150,8 +152,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/TestTool/4.4.4/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/TestTool/4.4.4/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -162,22 +164,13 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/TestTool/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/TestTool/4.4.4/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/TestTool/4.4.4/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/TestTool/4.4.4/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -242,8 +235,8 @@ namespace Soup::Core::UnitTests
 								2,
 								"TestTool",
 								true,
-								Path("C:/testlocation/BuiltIn/TestTool/4.4.4/"),
-								Path("C:/testlocation/BuiltIn/TestTool/4.4.4/out/"),
+								Path("C:/BuiltIn/Packages/TestTool/4.4.4/"),
+								Path("C:/BuiltIn/Packages/TestTool/4.4.4/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -253,8 +246,8 @@ namespace Soup::Core::UnitTests
 								3,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -283,16 +276,13 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -332,6 +322,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -348,7 +339,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -359,19 +350,11 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -423,8 +406,8 @@ namespace Soup::Core::UnitTests
 								2,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -472,14 +455,14 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|2.2.2"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
 					Language: "Wren|2.2.2"
@@ -509,10 +492,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -551,6 +531,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -573,8 +554,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/TestTool/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -592,22 +573,13 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/3.3.3/PackageLock.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -728,8 +700,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -739,8 +711,8 @@ namespace Soup::Core::UnitTests
 								5,
 								"Soup.Wren",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -791,16 +763,13 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1.1.1"
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -843,6 +812,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -861,10 +831,10 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
 					"DIAG: Recipe already loaded: C++|PackageB",
-					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
+					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -879,21 +849,11 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -994,8 +954,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1046,16 +1006,13 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1.1.1"
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -1094,6 +1051,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -1112,10 +1070,10 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
 					"DIAG: Recipe already loaded: C++|PackageB",
-					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
+					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1130,21 +1088,11 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -1245,8 +1193,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1299,23 +1247,20 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
 					Language: "Wren|1"
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -1354,6 +1299,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -1376,9 +1322,9 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1395,23 +1341,13 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -1533,8 +1469,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1544,8 +1480,8 @@ namespace Soup::Core::UnitTests
 								5,
 								"Soup.Wren",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1586,23 +1522,20 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
 					Language: "Wren|1"
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -1641,6 +1574,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -1660,8 +1594,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/TestBuild/Recipe.sml",
 					"DIAG: Load PackageLock: C:/WorkingDirectory/TestBuild/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1675,22 +1609,13 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/TestBuild/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/TestBuild/Recipe.sml",
 					"Exists: C:/WorkingDirectory/TestBuild/PackageLock.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -1778,8 +1703,8 @@ namespace Soup::Core::UnitTests
 								3,
 								"Soup.Wren",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1789,8 +1714,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1831,14 +1756,14 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
 					Language: "Wren|1"
@@ -1866,10 +1791,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -1908,6 +1830,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -1927,8 +1850,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1943,22 +1866,13 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -2052,8 +1966,8 @@ namespace Soup::Core::UnitTests
 								3,
 								"Soup.Wren",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2063,8 +1977,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2117,14 +2031,14 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
 					Language: "Wren|1"
@@ -2155,10 +2069,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -2197,6 +2108,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -2219,9 +2131,9 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/TestTool/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -2239,23 +2151,13 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/3.3.3/PackageLock.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -2386,8 +2288,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2397,8 +2299,8 @@ namespace Soup::Core::UnitTests
 								5,
 								"Soup.Wren",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2453,7 +2355,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
 					Language: "Wren|1"
@@ -2500,10 +2402,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -2548,6 +2447,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -2570,11 +2470,11 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/Soup.Wren/2.2.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/Soup.Cpp/1.1.2/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/",
+					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Wren/2.2.2/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -2593,23 +2493,14 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/locks/Wren/Soup.Wren/2.2.3/PackageLock.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/locks/Wren/Soup.Cpp/1.1.2/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -2740,8 +2631,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Wren",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2800,14 +2691,14 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.CSharp/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.CSharp"
 					Language: "Wren|1"
@@ -2842,10 +2733,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -2898,6 +2786,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -2915,8 +2804,8 @@ namespace Soup::Core::UnitTests
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.CSharp/3.3.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -2930,22 +2819,13 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.CSharp/3.3.3/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.CSharp/3.3.3/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -3031,8 +2911,8 @@ namespace Soup::Core::UnitTests
 								3,
 								"Soup.CSharp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/"),
-								Path("C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/out/"),
+								Path("C:/BuiltIn/Packages/Soup.CSharp/3.3.3/"),
+								Path("C:/BuiltIn/Packages/Soup.CSharp/3.3.3/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -3042,8 +2922,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Cpp",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
-								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
+								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -3091,7 +2971,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
 					Language: "Wren|1"
@@ -3119,10 +2999,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
-
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
@@ -3167,6 +3044,7 @@ namespace Soup::Core::UnitTests
 			auto userDataPath = Path("C:/Users/Me/.soup/");
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
+				builtInPackageDirectory,
 				knownLanguages,
 				builtInPackages,
 				targetBuildGlobalParameters,
@@ -3187,7 +3065,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/Soup.CSharp/2.2.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
 					"DIAG: Graph already loaded: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/",
 				}),
 				testListener->GetMessages(),
@@ -3205,19 +3083,11 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/locks/Wren/Soup.CSharp/2.2.3/PackageLock.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -3321,8 +3191,8 @@ namespace Soup::Core::UnitTests
 								4,
 								"Soup.Wren",
 								true,
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
+								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
