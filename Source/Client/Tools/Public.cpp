@@ -12,6 +12,7 @@
 #define CoTaskMemFree(p) free(p)
 #endif
 
+import json11;
 import Opal;
 import Soup.Core;
 
@@ -58,16 +59,31 @@ std::string LoadBuildGraphContent(const Path& workingDirectory)
 			userDataPath,
 			recipeCache);
 
-		auto value = std::string("Some test to return");
+		auto keys = json11::Json::array({ 1, 2, 3 });
+
+		json11::Json jsonResult = json11::Json::object({
+			{ "Message", "" },
+			{ "IsSuccess", true },
+			{ "Keys", std::move(keys) },
+		});
+		auto value = jsonResult.dump();
 		return value;
 	}
 	catch (const HandledException&)
 	{
-		return "FAILED";
+		json11::Json jsonResult = json11::Json::object({
+			{ "Message", "FAILED" },
+			{ "IsSuccess", false },
+		});
+		return jsonResult.dump();
 	}
 	catch(const std::exception& e)
 	{
-		return e.what();
+		json11::Json jsonResult = json11::Json::object({
+			{ "Message", e.what() },
+			{ "IsSuccess", false },
+		});
+		return jsonResult.dump();
 	}
 }
 

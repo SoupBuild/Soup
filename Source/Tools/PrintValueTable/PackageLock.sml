@@ -11,7 +11,7 @@ Closures: {
 			{ Name: "reflex", Version: "1.0.3", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup.Core", Version: "../../Client/Core/", Build: "Build1", Tool: "Tool0" }
 			{ Name: "Soup.Test.Assert", Version: "0.3.1", Build: "Build0", Tool: "Tool0" }
-			{ Name: "wren", Version: "1.0.3", Build: "Build0", Tool: "Tool0" }
+			{ Name: "wren", Version: "1.0.4", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {

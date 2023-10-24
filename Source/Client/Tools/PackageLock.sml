@@ -4,6 +4,7 @@ Closures: {
 		"C++": [
 			{ Name: "CryptoPP", Version: "1.2.1", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Detours", Version: "4.0.11", Build: "Build0", Tool: "Tool0" }
+			{ Name: "json11", Version: "1.1.0", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Opal", Version: "0.9.5", Build: "Build0", Tool: "Tool0" }
@@ -11,7 +12,7 @@ Closures: {
 			{ Name: "Soup.Core", Version: "../Core/", Build: "Build1", Tool: "Tool0" }
 			{ Name: "Soup.Test.Assert", Version: "0.3.1", Build: "Build0", Tool: "Tool0" }
 			{ Name: "SoupTools", Version: "../Tools", Build: "Build0", Tool: "Tool0" }
-			{ Name: "wren", Version: "1.0.3", Build: "Build0", Tool: "Tool0" }
+			{ Name: "wren", Version: "1.0.4", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {

@@ -17,7 +17,7 @@
 
 // TODO import
 // TODO: Treat wren as C code
-#include "wren.h"
+#include "wren/wren.h"
 
 import Opal;
 import Soup.Core;
@@ -64,7 +64,7 @@ using namespace Opal;
 
 // import Wren
 // TODO: Treat wren as C code
-#include "wren.h"
+#include "wren/wren.h"
 
 // import Soup.Core
 #include <cstring>

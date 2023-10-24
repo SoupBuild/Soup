@@ -47,7 +47,7 @@ module;
 
 // TODO module
 // TODO: Treat wren as C code
-#include "wren.h"
+#include "wren/wren.h"
 
 export module Soup.Core;
 
@@ -94,7 +94,7 @@ using namespace Opal;
 #include "Linux/LinuxMonitorProcessManager.h"
 
 // import Wren
-#include "wren.h"
+#include "wren/wren.h"
 
 #endif
 

@@ -9,5 +9,6 @@ Type: "DynamicLibrary"
 Dependencies: {
 	Runtime: [
 		"../Core/"
+		"json11@1.1.0"
 	]
 }
