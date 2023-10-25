@@ -230,6 +230,26 @@ namespace Soup::Core::Generate
 				}
 			}
 
+			// Check for output directories that are under previous output files
+			for (auto file : operationInfo.DeclaredOutput)
+			{
+				auto& filePath = _fileSystemState.GetFilePath(file);
+
+				// If this is a directory output check if under previous output files
+				if (!filePath.HasFileName())
+				{
+					for (auto outputFile : _outputFileLookup)
+					{
+						auto& outputFilePath = _fileSystemState.GetFilePath(outputFile.first);
+						if (outputFilePath.ToString().starts_with(filePath.ToString()))
+						{
+							// The active operation must run before the matched file output operation
+							CheckAddChildOperation(operationInfo, _graph.GetOperationInfo(outputFile.second));
+						}
+					}
+				}
+			}
+
 			// Check for output files that are under previous output directories
 			for (auto file : operationInfo.DeclaredOutput)
 			{
