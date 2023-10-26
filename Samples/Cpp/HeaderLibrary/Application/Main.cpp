@@ -1,7 +1,7 @@
 #include <iostream>
 #include <Library.h>
 
-using namespace Samples::Cpp::DynamicLibrary::Library;
+using namespace Samples::Cpp::HeaderLibrary::Library;
 
 int main()
 {

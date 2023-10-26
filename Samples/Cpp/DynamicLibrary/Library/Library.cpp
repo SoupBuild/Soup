@@ -2,8 +2,8 @@
 
 namespace Samples::Cpp::DynamicLibrary::Library
 {
-	bool Helper::IsAwesome()
+	const char* Helper::GetName()
 	{
-		return true;
+		return "Soup";
 	}
 }

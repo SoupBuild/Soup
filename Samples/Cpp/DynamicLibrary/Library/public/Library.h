@@ -1,5 +1,3 @@
-#include <string>
-
 #ifdef _WIN32
 	#ifdef EXPORT_LIBRARY
 		#define LIBRARY_API __declspec(dllexport)
@@ -15,6 +13,6 @@ namespace Samples::Cpp::DynamicLibrary::Library
 	class Helper
 	{
 	public:
-		LIBRARY_API static bool IsAwesome();
+		LIBRARY_API static const char* GetName();
 	};
 }
