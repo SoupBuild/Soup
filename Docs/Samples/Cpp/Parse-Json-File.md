@@ -11,13 +11,13 @@ Language: "C++|0.1"
 Version: "1.0.0"
 Type: "Executable"
 Source: [
-    "Main.cpp"
+  "Main.cpp"
 ]
 
 Dependencies: {
-    Runtime: [
-        "json11@1.1.0"
-    ]
+  Runtime: [
+    "json11@1.1.0"
+  ]
 }
 ```
 
@@ -26,23 +26,23 @@ The package lock that was generated to capture the unique dependencies required 
 ```
 Version: 4
 Closures: {
-    Root: {
-        "C++": [
-            { Name: "json11", Version: "1.1.0", Build: "Build0", Tool: "Tool0" }
-            { Name: "Samples.Cpp.ParseJsonFile", Version: "../ParseJsonFile", Build: "Build0", Tool: "Tool0" }
-        ]
-    }
-    Build0: {
-        Wren: [
-            { Name: "Soup.Cpp", Version: "0.8.2" }
-        ]
-    }
-    Tool0: {
-        "C++": [
-            { Name: "copy", Version: "1.0.0" }
-            { Name: "mkdir", Version: "1.0.0" }
-        ]
-    }
+  Root: {
+    "C++": [
+      { Name: "json11", Version: "1.1.0", Build: "Build0", Tool: "Tool0" }
+      { Name: "Samples.Cpp.ParseJsonFile", Version: "../ParseJsonFile", Build: "Build0", Tool: "Tool0" }
+    ]
+  }
+  Build0: {
+    Wren: [
+      { Name: "Soup.Cpp", Version: "0.10.1" }
+    ]
+  }
+  Tool0: {
+    "C++": [
+      { Name: "copy", Version: "1.0.0" }
+      { Name: "mkdir", Version: "1.0.0" }
+    ]
+  }
 }
 ```
 
@@ -66,20 +66,20 @@ import json11;
 
 int main()
 {
-    // Read in the contents of the json file
-    auto jsonFile = std::ifstream("Message.json");
-    auto jsonContent = std::string(
-        std::istreambuf_iterator<char>(jsonFile),
-        std::istreambuf_iterator<char>());
+  // Read in the contents of the json file
+  auto jsonFile = std::ifstream("Message.json");
+  auto jsonContent = std::string(
+    std::istreambuf_iterator<char>(jsonFile),
+    std::istreambuf_iterator<char>());
 
-    // Parse the json
-    std::string errorMessage;
-    auto json = json11::Json::parse(jsonContent, errorMessage);
+  // Parse the json
+  std::string errorMessage;
+  auto json = json11::Json::parse(jsonContent, errorMessage);
 
-    // Print the single property value
-    std::cout << "Message: " << json["message"].string_value() << std::endl;
+  // Print the single property value
+  std::cout << "Message: " << json["message"].string_value() << std::endl;
 
-    return 0;
+  return 0;
 }
 ```
 

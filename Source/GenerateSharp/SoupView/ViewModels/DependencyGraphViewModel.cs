@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Avalonia.Threading;
 using Opal;
 using Opal.System;
 using ReactiveUI;
@@ -12,7 +13,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace Soup.View.ViewModels
 {
@@ -23,7 +23,6 @@ namespace Soup.View.ViewModels
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
 		private IList<IList<GraphNodeViewModel>>? graph = null;
-		private uint uniqueId = 0;
 		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
 
 		public string ErrorBarMessage
@@ -75,28 +74,18 @@ namespace Soup.View.ViewModels
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
 		{
-			this.uniqueId = 1;
-			this.projectDetailsLookup.Clear();
-			var activeGraph = new List<IList<GraphNodeViewModel>>();
-			var recipeFiles = new List<(Path Path, uint Id)>()
+			var activeGraph = await Task.Run(() =>
 			{
-				(recipeFilePath, this.uniqueId++),
-			};
+				this.projectDetailsLookup.Clear();
 
-			var packageLockPath =
-				recipeFilePath.GetParent() +
-				BuildConstants.PackageLockFileName;
-			var packageLockResult = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
-			GraphNodeViewModel? rootNode = null;
-			if (packageLockResult.IsSuccess)
-			{
-				var rootColumn = await BuildGraphAsync(recipeFiles, activeGraph, packageLockResult.Result);
-				rootNode = rootColumn.FirstOrDefault();
-			}
-			else
-			{
-				NotifyError("Failed to load package lock");
-			}
+				var workingDirectory = recipeFilePath.GetParent();
+				var packageProvider = SoupTools.LoadBuildGraph(workingDirectory);
+
+				var activeGraph = BuildGraph(packageProvider);
+				return activeGraph;
+			});
+
+			var rootNode = activeGraph.FirstOrDefault()?.FirstOrDefault();
 
 			Graph = activeGraph;
 			SelectedNode = rootNode;
@@ -111,101 +100,82 @@ namespace Soup.View.ViewModels
 			IsErrorBarOpen = true;
 		}
 
-		private async Task<List<GraphNodeViewModel>> BuildGraphAsync(
-			IList<(Path Path, uint Id)> recipeFiles,
-			IList<IList<GraphNodeViewModel>> activeGraph,
-			PackageLock packageLock)
+		private IList<IList<GraphNodeViewModel>> BuildGraph(
+			PackageProvider packageProvider)
 		{
-			var column = new List<GraphNodeViewModel>();
-			var childRecipeFiles = new List<(Path Path, uint Id)>();
-			foreach (var recipeFile in recipeFiles)
+			this.projectDetailsLookup.Clear();
+
+			var rootNodes = new List<uint>()
 			{
-				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile.Path);
-				var currentChildRecipes = new List<(Path Path, uint Id)>();
-				string title;
-				string toolTip = recipeFile.Path.ToString();
-				Recipe? recipe = null;
-				var packageFolder = recipeFile.Path.GetParent();
+				(uint)packageProvider.RootPackageGraphId,
+			};
+			var graph = packageProvider.PackageLookup
+				.ToDictionary(
+					kvp => (uint)kvp.Key,
+					kvp => GetChildren(kvp.Value.Dependencies, packageProvider));
 
-				if (loadResult.IsSuccess)
-				{
-					recipe = loadResult.Result;
+			var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(graph, rootNodes);
 
-					foreach (var dependencyType in recipe.GetDependencyTypes())
-					{
-						var implicitLanguage = dependencyType == Recipe.Property_Build ? "Wren" : recipe.Language.Name;
-						AddRecipeFiles(
-							recipe.GetNamedDependencies(dependencyType),
-							implicitLanguage,
-							packageFolder,
-							currentChildRecipes);
-					}
+			var graphNodes = BuildGraphNodes(packageProvider);
+			var activeGraph = graphView
+				.Select(column => (IList<GraphNodeViewModel>)column.Select(nodeId => graphNodes[nodeId]).ToList())
+				.ToList();
 
-					title = recipe.Name;
-				}
-				else
-				{
-					title = "[MISSING]";
-				}
-
-				column.Add(new GraphNodeViewModel(title, toolTip, recipeFile.Id)
-				{
-					ChildNodes = currentChildRecipes.Select(value => value.Id).ToList(),
-				});
-
-				this.projectDetailsLookup.Add(
-					recipeFile.Id,
-					new ProjectDetailsViewModel(
-						recipe,
-						packageFolder));
-
-				childRecipeFiles.AddRange(currentChildRecipes);
-			}
-
-			activeGraph.Add(column);
-
-			if (childRecipeFiles.Count > 0)
-			{
-				_ = await BuildGraphAsync(childRecipeFiles, activeGraph, packageLock);
-			}
-
-			return column;
+			return activeGraph;
 		}
 
-		private void AddRecipeFiles(
-			IEnumerable<PackageReference> packageReferences,
-			string recipeLanguage,
-			Path packageFolder,
-			IList<(Path Path, uint Id)> recipeFiles)
+		private IDictionary<uint, GraphNodeViewModel> BuildGraphNodes(
+			PackageProvider packageProvider)
 		{
-			foreach (var packageReference in packageReferences)
+			var result = new Dictionary<uint, GraphNodeViewModel>();
+			foreach (var (packageId, package) in packageProvider.PackageLookup)
 			{
-				if (packageReference.IsLocal)
+				string title = package.Name;
+				string toolTip = package.PackageRoot;
+				var packageFolder = new Path(package.PackageRoot);
+
+				var node = new GraphNodeViewModel(title, toolTip, (uint)packageId)
 				{
-					var recipeFile = packageReference.Path + BuildConstants.RecipeFileName;
-					if (!recipeFile.HasRoot)
+					ChildNodes = GetChildren(package.Dependencies, packageProvider),
+				};
+
+				result.Add((uint)packageId, node);
+
+				this.projectDetailsLookup.Add(
+					(uint)packageId,
+					new ProjectDetailsViewModel(
+						package.Name,
+						packageFolder));
+			}
+
+			return result;
+		}
+
+		private static IList<uint> GetChildren(
+			IDictionary<string, IList<PackageChildInfo>> dependencies,
+			PackageProvider packageProvider)
+		{
+			var result = new List<uint>();
+			foreach (var (dependencyType, children) in dependencies)
+			{
+				foreach (var child in children)
+				{
+					if (child.IsSubGraph)
 					{
-						recipeFile = packageFolder + recipeFile;
+						var subGraph = packageProvider.GetPackageGraph(child.PackageGraphId ??
+							throw new InvalidOperationException("SubGraph child does not have package graph id"));
+
+						// TODO: result.Add((uint)subGraph.RootPackageId);
 					}
-
-					recipeFiles.Add((recipeFile, this.uniqueId++));
-				}
-				else
-				{
-					if (packageReference.Version == null)
-						throw new InvalidOperationException("Package reference must have version");
-					var packagesDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-						new Path(".soup/packages/");
-					var languageRootFolder = packagesDirectory + new Path(recipeLanguage);
-					var packageRootFolder = languageRootFolder + new Path(packageReference.Name);
-					var packageVersionFolder = packageRootFolder +
-						new Path(packageReference.Version.ToString()) +
-						new Path();
-					var recipeFile = packageVersionFolder + BuildConstants.RecipeFileName;
-
-					recipeFiles.Add((recipeFile, this.uniqueId++));
+					else
+					{
+						result.Add((uint?)child.PackageId ??
+							throw new InvalidOperationException("Package child does not have package id"));
+					}
 				}
 			}
+
+			return result;
 		}
 	}
 }

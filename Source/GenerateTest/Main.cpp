@@ -64,7 +64,7 @@ using namespace Opal;
 
 // TODO import
 // TODO: Treat wren as C code
-#include "include/wren.h"
+#include "wren/wren.h"
 
 #include "GenerateTestHost.h"
 

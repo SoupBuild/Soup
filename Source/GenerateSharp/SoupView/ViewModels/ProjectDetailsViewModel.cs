@@ -14,18 +14,13 @@ namespace Soup.View.ViewModels
 	{
 		private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
 
-		public ProjectDetailsViewModel(Recipe? recipe, Path path)
+		public ProjectDetailsViewModel(string name, Path path)
 		{
+			Name = name;
+
 			properties.Clear();
-			if (recipe is not null)
-			{
-				properties.Add(new PropertyValueViewModel("Name", recipe.Name));
-				properties.Add(new PropertyValueViewModel("Version", recipe.Version.ToString()));
-				properties.Add(new PropertyValueViewModel("Language", recipe.Language.ToString()));
 
-				Name = recipe.Name;
-			}
-
+			properties.Add(new PropertyValueViewModel("Name", name));
 			properties.Add(new PropertyValueViewModel("Path", path.ToString()));
 
 			Path = path;

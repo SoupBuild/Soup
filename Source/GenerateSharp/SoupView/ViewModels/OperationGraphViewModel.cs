@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Avalonia.Threading;
 using Opal;
 using ReactiveUI;
 using Soup.Build.Utilities;
@@ -15,6 +16,7 @@ namespace Soup.View.ViewModels
 {
 	public class OperationGraphViewModel : ViewModelBase
 	{
+		private FileSystemState fileSystemState = new FileSystemState();
 		private GraphNodeViewModel? selectedNode = null;
 		private OperationDetailsViewModel? selectedOperation = null;
 		private string errorBarMessage = string.Empty;
@@ -69,39 +71,46 @@ namespace Soup.View.ViewModels
 		{
 			Graph = null;
 
-			if (packageFolder is not null)
+			var activeGraph = await Task.Run(async () =>
 			{
-				var recipeFile = packageFolder + BuildConstants.RecipeFileName;
-				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
-				if (loadResult.IsSuccess)
+				if (packageFolder is not null)
 				{
-					var targetPath = await GetTargetPathAsync(packageFolder);
-
-					var soupTargetDirectory = targetPath + new Path(".soup/");
-
-					var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
-					var fileSystemState = new FileSystemState();
-					if (!OperationGraphManager.TryLoadState(evaluateGraphFile, fileSystemState, out var evaluateGraph))
+					var recipeFile = packageFolder + BuildConstants.RecipeFileName;
+					var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
+					if (loadResult.IsSuccess)
 					{
-						NotifyError($"Failed to load Operation Graph: {evaluateGraphFile}");
-						return;
-					}
+						var targetPath = await GetTargetPathAsync(packageFolder);
 
-					// Check for the optional results
-					var evaluateResultsFile = soupTargetDirectory + BuildConstants.EvaluateResultsFileName;
-					OperationResults? operationResults = null;
-					if (OperationResultsManager.TryLoadState(evaluateResultsFile, fileSystemState, out var loadOperationResults))
+						var soupTargetDirectory = targetPath + new Path(".soup/");
+
+						var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
+						if (!OperationGraphManager.TryLoadState(evaluateGraphFile, fileSystemState, out var evaluateGraph))
+						{
+							NotifyError($"Failed to load Operation Graph: {evaluateGraphFile}");
+							return null;
+						}
+
+						// Check for the optional results
+						var evaluateResultsFile = soupTargetDirectory + BuildConstants.EvaluateResultsFileName;
+						OperationResults? operationResults = null;
+						if (OperationResultsManager.TryLoadState(evaluateResultsFile, fileSystemState, out var loadOperationResults))
+						{
+							operationResults = loadOperationResults;
+						}
+
+						return BuildGraph(evaluateGraph, operationResults);
+					}
+					else
 					{
-						operationResults = loadOperationResults;
+						NotifyError($"Failed to load Recipe file: {packageFolder}");
+						return null;
 					}
+				}
 
-					Graph = BuildGraph(fileSystemState, evaluateGraph, operationResults);
-				}
-				else
-				{
-					NotifyError($"Failed to load Recipe file: {packageFolder}");
-				}
-			}
+				return null;
+			});
+
+			Graph = activeGraph;
 		}
 
 		private void NotifyError(string message)
@@ -114,90 +123,56 @@ namespace Soup.View.ViewModels
 		}
 
 		private IList<IList<GraphNodeViewModel>> BuildGraph(
-			FileSystemState fileSystemState,
 			OperationGraph evaluateGraph,
 			OperationResults? operationResults)
 		{
 			this.operationDetailsLookup.Clear();
-			var activeIds = evaluateGraph.RootOperationIds;
-			var activeGraph = new List<IList<GraphNodeViewModel>>();
-			var knownIds = new HashSet<OperationId>();
-			BuildGraphColumn(
-				fileSystemState,
-				evaluateGraph,
-				operationResults,
-				activeGraph,
-				activeIds,
-				knownIds);
+
+			var rootNodes = evaluateGraph.RootOperationIds.Select(value => value.value).ToList();
+			var graph = evaluateGraph.Operations
+				.ToDictionary(kvp => kvp.Key.value, kvp => (IList<uint>)kvp.Value.Children.Select(value => value.value).ToList());
+
+			var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(graph, rootNodes);
+
+			var graphNodes = BuildGraphNodes(evaluateGraph, operationResults);
+			var activeGraph = graphView
+				.Select(column => (IList<GraphNodeViewModel>)column.Select(nodeId => graphNodes[nodeId]).ToList())
+				.ToList();
 
 			return activeGraph;
 		}
 
-		private void BuildGraphColumn(
-			FileSystemState fileSystemState,
+		private IDictionary<uint, GraphNodeViewModel> BuildGraphNodes(
 			OperationGraph evaluateGraph,
-			OperationResults? operationResults,
-			IList<IList<GraphNodeViewModel>> activeGraph,
-			IList<OperationId> activeIds,
-			HashSet<OperationId> knownIds)
+			OperationResults? operationResults)
 		{
-			// Build up the total set of nodes in the next level
-			var nextIds = new List<OperationId>();
-			foreach (var operationId in activeIds)
+			var result = new Dictionary<uint, GraphNodeViewModel>();
+			foreach (var (operationId, operation) in evaluateGraph.Operations)
 			{
-				var operation = evaluateGraph.GetOperationInfo(operationId);
-				foreach (var childId in operation.Children)
+				var toolTop = operation.Title;
+				var node = new GraphNodeViewModel(operation.Title, toolTop, operationId.value)
 				{
-					nextIds.Add(childId);
-				}
-			}
+					ChildNodes = operation.Children.Select(value => value.value).ToList(),
+				};
 
-			// Find the depest level first
-			if (nextIds.Count > 0)
-			{
-				BuildGraphColumn(
-					fileSystemState,
-					evaluateGraph,
-					operationResults,
-					activeGraph,
-					nextIds,
-					knownIds);
-			}
+				result.Add(operationId.value, node);
 
-			// Build up all the nodes at this level that have not already been added
-			var column = new List<GraphNodeViewModel>();
-			foreach (var operationId in activeIds)
-			{
-				if (!knownIds.Contains(operationId))
+				// Check if there is a matching result
+				OperationResult? operationResult = null;
+				if (operationResults != null)
 				{
-					var operation = evaluateGraph.GetOperationInfo(operationId);
-					var toolTop = operation.Title;
-					var node = new GraphNodeViewModel(operation.Title, toolTop, operationId.value)
+					if (operationResults.TryFindResult(operationId, out var operationResultValue))
 					{
-						ChildNodes = operation.Children.Select(value => value.value).ToList(),
-					};
-
-					knownIds.Add(operationId);
-					column.Add(node);
-
-					// Check if there is a matching result
-					OperationResult? operationResult = null;
-					if (operationResults != null)
-					{
-						if (operationResults.TryFindResult(operationId, out var operationResultValue))
-						{
-							operationResult = operationResultValue;
-						}
+						operationResult = operationResultValue;
 					}
-
-					this.operationDetailsLookup.Add(
-						operationId.value,
-						new OperationDetailsViewModel(fileSystemState, operation, operationResult));
 				}
+
+				this.operationDetailsLookup.Add(
+					operationId.value,
+					new OperationDetailsViewModel(fileSystemState, operation, operationResult));
 			}
 
-			// Add the new column at the start
-			activeGraph.Insert(0, column);
+			return result;
 		}
 
 		private async Task<Path> GetTargetPathAsync(Path packageDirectory)

@@ -11,17 +11,17 @@ Closures: {
 			{ Name: "reflex", Version: "1.0.3", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Soup.Core", Version: "../../Client/Core/", Build: "Build1", Tool: "Tool0" }
 			{ Name: "Soup.Test.Assert", Version: "0.3.1", Build: "Build0", Tool: "Tool0" }
-			{ Name: "wren", Version: "1.0.3", Build: "Build0", Tool: "Tool0" }
+			{ Name: "wren", Version: "1.0.4", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
 		Wren: [
-			{ Name: "Soup.Cpp", Version: "0.9.1" }
+			{ Name: "Soup.Cpp", Version: "0.10.1" }
 		]
 	}
 	Build1: {
 		Wren: [
-			{ Name: "Soup.Cpp", Version: "0.9.1" }
+			{ Name: "Soup.Cpp", Version: "0.10.1" }
 			{ Name: "Soup.Test.Cpp", Version: "0.9.0" }
 		]
 	}
