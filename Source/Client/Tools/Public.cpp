@@ -19,6 +19,62 @@ import Soup.Core;
 using namespace Opal;
 using namespace Soup::Core;
 
+json11::Json ConvertToJson(const PackageGraphLookupMap& lookup)
+{
+	auto result = json11::Json::array();
+
+	for (const auto& value : lookup)
+	{
+		auto jsonValue = json11::Json::object({
+			{ "Id", value.second.Id },
+			{ "RootPackageId", value.second.RootPackageId },
+			// TODO : { "GlobalParameters", value.second.GlobalParameters },
+		});
+
+		result.push_back(std::move(jsonValue));
+	}
+
+	return result;
+}
+
+json11::Json ConvertToJson(const PackageLookupMap& lookup)
+{
+	auto result = json11::Json::array();
+
+	for (const auto& value : lookup)
+	{
+		auto dependencies = json11::Json::object();
+		for (const auto& dependency : value.second.Dependencies)
+		{
+			auto dependencyChildren = json11::Json::array();
+			for (const auto& dependencyChild : dependency.second)
+			{
+				auto jsonChildValue = json11::Json::object({
+					{ "OriginalReference", dependencyChild.OriginalReference.ToString() },
+					{ "IsSubGraph", dependencyChild.IsSubGraph },
+					{ "PackageId", dependencyChild.PackageId },
+					{ "PackageGraphId", dependencyChild.PackageGraphId },
+				});
+				dependencyChildren.push_back(std::move(jsonChildValue));
+			}
+
+			dependencies.emplace(dependency.first, std::move(dependencyChildren));
+		}
+
+		auto jsonValue = json11::Json::object({
+			{ "Id", value.second.Id },
+			{ "Name", value.second.Name },
+			{ "IsPrebuilt", value.second.IsPrebuilt },
+			{ "PackageRoot", value.second.PackageRoot.ToString() },
+			{ "TargetDirectory", value.second.TargetDirectory.ToString() },
+			{ "Dependencies",  std::move(dependencies) },
+		});
+		result.push_back(std::move(jsonValue));
+	}
+
+	return result;
+}
+
 std::string LoadBuildGraphContent(const Path& workingDirectory)
 {
 	try
@@ -59,12 +115,19 @@ std::string LoadBuildGraphContent(const Path& workingDirectory)
 			userDataPath,
 			recipeCache);
 
-		auto keys = json11::Json::array({ 1, 2, 3 });
+		auto packageGraphs = ConvertToJson(packageProvider.GetPackageGraphLookup());
+		auto packages = ConvertToJson(packageProvider.GetPackageLookup());
+
+		json11::Json jsonGraphResult = json11::Json::object({
+			{ "RootPackageGraphId", packageProvider.GetRootPackageGraphId() },
+			{ "PackageGraphs", packageGraphs },
+			{ "Packages", packages },
+		});
 
 		json11::Json jsonResult = json11::Json::object({
 			{ "Message", "" },
 			{ "IsSuccess", true },
-			{ "Keys", std::move(keys) },
+			{ "Graph", std::move(jsonGraphResult) },
 		});
 		auto value = jsonResult.dump();
 		return value;
@@ -98,10 +161,5 @@ extern "C"
 		value.copy(result, value.size());
 		result[value.size()] = 0;
 		return result;
-	}
-	
-	SOUP_TOOLS_API int AddStuff(int a, int b)
-	{
-		return a + b;
 	}
 }

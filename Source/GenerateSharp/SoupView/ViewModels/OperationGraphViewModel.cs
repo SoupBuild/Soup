@@ -152,7 +152,7 @@ namespace Soup.View.ViewModels
 				}
 			}
 
-			// Find the depest level first
+			// Find the deepest level first
 			if (nextIds.Count > 0)
 			{
 				BuildGraphColumn(

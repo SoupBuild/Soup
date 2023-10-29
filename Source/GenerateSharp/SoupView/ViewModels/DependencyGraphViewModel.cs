@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace Soup.View.ViewModels
 {
@@ -23,7 +22,6 @@ namespace Soup.View.ViewModels
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
 		private IList<IList<GraphNodeViewModel>>? graph = null;
-		private uint uniqueId = 0;
 		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
 
 		public string ErrorBarMessage
@@ -75,33 +73,19 @@ namespace Soup.View.ViewModels
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
 		{
-			this.uniqueId = 1;
 			this.projectDetailsLookup.Clear();
+
+			var workingDirectory = recipeFilePath.GetParent();
+			var packageProvider = SoupTools.LoadBuildGraph(workingDirectory);
+
 			var activeGraph = new List<IList<GraphNodeViewModel>>();
-			var recipeFiles = new List<(Path Path, uint Id)>()
+			var packages = new List<int>()
 			{
-				(recipeFilePath, this.uniqueId++),
+				packageProvider.GetRootPackageGraph().RootPackageId,
 			};
 
-			var value2 = SoupTools.AddStuff(1, 3);
-
-			var workingDirectoryString = recipeFilePath.GetParent().ToString();
-			var value = SoupTools.LoadBuildGraph(workingDirectoryString);
-
-			var packageLockPath =
-				recipeFilePath.GetParent() +
-				BuildConstants.PackageLockFileName;
-			var packageLockResult = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
-			GraphNodeViewModel? rootNode = null;
-			if (packageLockResult.IsSuccess)
-			{
-				var rootColumn = await BuildGraphAsync(recipeFiles, activeGraph, packageLockResult.Result);
-				rootNode = rootColumn.FirstOrDefault();
-			}
-			else
-			{
-				NotifyError("Failed to load package lock");
-			}
+			var rootColumn = await BuildGraphAsync(packages, activeGraph, packageProvider);
+			var rootNode = rootColumn.FirstOrDefault();
 
 			Graph = activeGraph;
 			SelectedNode = rootNode;
@@ -116,99 +100,75 @@ namespace Soup.View.ViewModels
 			IsErrorBarOpen = true;
 		}
 
-		private async Task<List<GraphNodeViewModel>> BuildGraphAsync(
-			IList<(Path Path, uint Id)> recipeFiles,
+		private async Task<IList<GraphNodeViewModel>> BuildGraphAsync(
+			IList<int> packages,
 			IList<IList<GraphNodeViewModel>> activeGraph,
-			PackageLock packageLock)
+			PackageProvider packageProvider)
 		{
 			var column = new List<GraphNodeViewModel>();
-			var childRecipeFiles = new List<(Path Path, uint Id)>();
-			foreach (var recipeFile in recipeFiles)
+			var childPackages = new List<int>();
+			foreach (var packageId in packages)
 			{
-				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile.Path);
-				var currentChildRecipes = new List<(Path Path, uint Id)>();
+				var package = packageProvider.GetPackageInfo(packageId);
+
+				var currentChildPackages = new List<int>();
 				string title;
-				string toolTip = recipeFile.Path.ToString();
+				string toolTip = package.PackageRoot;
 				Recipe? recipe = null;
-				var packageFolder = recipeFile.Path.GetParent();
+				var packageFolder = new Path(package.PackageRoot);
 
-				if (loadResult.IsSuccess)
+				foreach (var dependencyType in package.Dependencies)
 				{
-					recipe = loadResult.Result;
-
-					foreach (var dependencyType in recipe.GetDependencyTypes())
-					{
-						var implicitLanguage = dependencyType == Recipe.Property_Build ? "Wren" : recipe.Language.Name;
-						AddRecipeFiles(
-							recipe.GetNamedDependencies(dependencyType),
-							implicitLanguage,
-							packageFolder,
-							currentChildRecipes);
-					}
-
-					title = recipe.Name;
-				}
-				else
-				{
-					title = "[MISSING]";
+					AddRecipeFiles(
+						dependencyType.Value,
+						packageProvider,
+						currentChildPackages);
 				}
 
-				column.Add(new GraphNodeViewModel(title, toolTip, recipeFile.Id)
+				title = package.Name;
+
+				column.Add(new GraphNodeViewModel(title, toolTip, (uint)packageId)
 				{
-					ChildNodes = currentChildRecipes.Select(value => value.Id).ToList(),
+					ChildNodes = currentChildPackages.Select(value => (uint)value).ToList(),
 				});
 
 				this.projectDetailsLookup.Add(
-					recipeFile.Id,
+					(uint)packageId,
 					new ProjectDetailsViewModel(
 						recipe,
 						packageFolder));
 
-				childRecipeFiles.AddRange(currentChildRecipes);
+				childPackages.AddRange(currentChildPackages);
 			}
 
 			activeGraph.Add(column);
 
-			if (childRecipeFiles.Count > 0)
+			if (childPackages.Count > 0)
 			{
-				_ = await BuildGraphAsync(childRecipeFiles, activeGraph, packageLock);
+				_ = await BuildGraphAsync(childPackages, activeGraph, packageProvider);
 			}
 
 			return column;
 		}
 
 		private void AddRecipeFiles(
-			IEnumerable<PackageReference> packageReferences,
-			string recipeLanguage,
-			Path packageFolder,
-			IList<(Path Path, uint Id)> recipeFiles)
+			IEnumerable<PackageChildInfo> children,
+			PackageProvider packageProvider,
+			IList<int> packages)
 		{
-			foreach (var packageReference in packageReferences)
+			foreach (var child in children)
 			{
-				if (packageReference.IsLocal)
+				if (child.IsSubGraph)
 				{
-					var recipeFile = packageReference.Path + BuildConstants.RecipeFileName;
-					if (!recipeFile.HasRoot)
-					{
-						recipeFile = packageFolder + recipeFile;
-					}
+					var subGraph = packageProvider.GetPackageGraph(child.PackageGraphId ??
+						throw new InvalidOperationException("SubGraph child does not have package graph id"));
 
-					recipeFiles.Add((recipeFile, this.uniqueId++));
+					packages.Add(subGraph.RootPackageId);
 				}
 				else
 				{
-					if (packageReference.Version == null)
-						throw new InvalidOperationException("Package reference must have version");
-					var packagesDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-						new Path(".soup/packages/");
-					var languageRootFolder = packagesDirectory + new Path(recipeLanguage);
-					var packageRootFolder = languageRootFolder + new Path(packageReference.Name);
-					var packageVersionFolder = packageRootFolder +
-						new Path(packageReference.Version.ToString()) +
-						new Path();
-					var recipeFile = packageVersionFolder + BuildConstants.RecipeFileName;
-
-					recipeFiles.Add((recipeFile, this.uniqueId++));
+					packages.Add(child.PackageId ??
+						throw new InvalidOperationException("Package child does not have package id"));
 				}
 			}
 		}
