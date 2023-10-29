@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Avalonia.Threading;
 using Opal;
 using ReactiveUI;
 using Soup.Build.Utilities;
@@ -70,30 +71,37 @@ namespace Soup.View.ViewModels
 		{
 			Graph = null;
 
-			if (packageFolder is not null)
+			var activeGraph = await Task.Run(async () =>
 			{
-				var recipeFile = packageFolder + BuildConstants.RecipeFileName;
-				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
-				if (loadResult.IsSuccess)
+				if (packageFolder is not null)
 				{
-					var targetPath = await GetTargetPathAsync(packageFolder);
-
-					var soupTargetDirectory = targetPath + new Path(".soup/");
-
-					var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateInfoFileName;
-					if (!ValueTableManager.TryLoadState(generateInfoStateFile, out var generateInfoTable))
+					var recipeFile = packageFolder + BuildConstants.RecipeFileName;
+					var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
+					if (loadResult.IsSuccess)
 					{
-						NotifyError($"Failed to load Value Table: {generateInfoStateFile}");
-						return;
-					}
+						var targetPath = await GetTargetPathAsync(packageFolder);
 
-					Graph = BuildGraph(generateInfoTable);
+						var soupTargetDirectory = targetPath + new Path(".soup/");
+
+						var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateInfoFileName;
+						if (!ValueTableManager.TryLoadState(generateInfoStateFile, out var generateInfoTable))
+						{
+							NotifyError($"Failed to load Value Table: {generateInfoStateFile}");
+							return null;
+						}
+
+						return BuildGraph(generateInfoTable);
+					}
+					else
+					{
+						NotifyError($"Failed to load Recipe file: {packageFolder}");
+					}
 				}
-				else
-				{
-					NotifyError($"Failed to load Recipe file: {packageFolder}");
-				}
-			}
+
+				return null;
+			});
+
+			Graph = activeGraph;
 		}
 
 		private void NotifyError(string message)

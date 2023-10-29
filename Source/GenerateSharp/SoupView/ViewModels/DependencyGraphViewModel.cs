@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Avalonia.Threading;
 using Opal;
 using Opal.System;
 using ReactiveUI;
@@ -73,19 +74,18 @@ namespace Soup.View.ViewModels
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
 		{
-			this.projectDetailsLookup.Clear();
-
-			var workingDirectory = recipeFilePath.GetParent();
-			var packageProvider = SoupTools.LoadBuildGraph(workingDirectory);
-
-			var activeGraph = new List<IList<GraphNodeViewModel>>();
-			var packages = new List<int>()
+			var activeGraph = await Task.Run(() =>
 			{
-				packageProvider.GetRootPackageGraph().RootPackageId,
-			};
+				this.projectDetailsLookup.Clear();
 
-			var rootColumn = await BuildGraphAsync(packages, activeGraph, packageProvider);
-			var rootNode = rootColumn.FirstOrDefault();
+				var workingDirectory = recipeFilePath.GetParent();
+				var packageProvider = SoupTools.LoadBuildGraph(workingDirectory);
+
+				var activeGraph = BuildGraph(packageProvider);
+				return activeGraph;
+			});
+
+			var rootNode = activeGraph.FirstOrDefault()?.FirstOrDefault();
 
 			Graph = activeGraph;
 			SelectedNode = rootNode;
@@ -100,77 +100,82 @@ namespace Soup.View.ViewModels
 			IsErrorBarOpen = true;
 		}
 
-		private async Task<IList<GraphNodeViewModel>> BuildGraphAsync(
-			IList<int> packages,
-			IList<IList<GraphNodeViewModel>> activeGraph,
+		private IList<IList<GraphNodeViewModel>> BuildGraph(
 			PackageProvider packageProvider)
 		{
-			var column = new List<GraphNodeViewModel>();
-			var childPackages = new List<int>();
-			foreach (var packageId in packages)
-			{
-				var package = packageProvider.GetPackageInfo(packageId);
+			this.projectDetailsLookup.Clear();
 
-				var currentChildPackages = new List<int>();
-				string title;
+			var rootNodes = new List<uint>()
+			{
+				(uint)packageProvider.RootPackageGraphId,
+			};
+			var graph = packageProvider.PackageLookup
+				.ToDictionary(
+					kvp => (uint)kvp.Key,
+					kvp => GetChildren(kvp.Value.Dependencies, packageProvider));
+
+			var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(graph, rootNodes);
+
+			var graphNodes = BuildGraphNodes(packageProvider);
+			var activeGraph = graphView
+				.Select(column => (IList<GraphNodeViewModel>)column.Select(nodeId => graphNodes[nodeId]).ToList())
+				.ToList();
+
+			return activeGraph;
+		}
+
+		private IDictionary<uint, GraphNodeViewModel> BuildGraphNodes(
+			PackageProvider packageProvider)
+		{
+			var result = new Dictionary<uint, GraphNodeViewModel>();
+			foreach (var (packageId, package) in packageProvider.PackageLookup)
+			{
+				string title = package.Name;
 				string toolTip = package.PackageRoot;
-				Recipe? recipe = null;
 				var packageFolder = new Path(package.PackageRoot);
 
-				foreach (var dependencyType in package.Dependencies)
+				var node = new GraphNodeViewModel(title, toolTip, (uint)packageId)
 				{
-					AddRecipeFiles(
-						dependencyType.Value,
-						packageProvider,
-						currentChildPackages);
-				}
+					ChildNodes = GetChildren(package.Dependencies, packageProvider),
+				};
 
-				title = package.Name;
-
-				column.Add(new GraphNodeViewModel(title, toolTip, (uint)packageId)
-				{
-					ChildNodes = currentChildPackages.Select(value => (uint)value).ToList(),
-				});
+				result.Add((uint)packageId, node);
 
 				this.projectDetailsLookup.Add(
 					(uint)packageId,
 					new ProjectDetailsViewModel(
-						recipe,
+						package.Name,
 						packageFolder));
-
-				childPackages.AddRange(currentChildPackages);
 			}
 
-			activeGraph.Add(column);
-
-			if (childPackages.Count > 0)
-			{
-				_ = await BuildGraphAsync(childPackages, activeGraph, packageProvider);
-			}
-
-			return column;
+			return result;
 		}
 
-		private void AddRecipeFiles(
-			IEnumerable<PackageChildInfo> children,
-			PackageProvider packageProvider,
-			IList<int> packages)
+		private static IList<uint> GetChildren(
+			IDictionary<string, IList<PackageChildInfo>> dependencies,
+			PackageProvider packageProvider)
 		{
-			foreach (var child in children)
+			var result = new List<uint>();
+			foreach (var (dependencyType, children) in dependencies)
 			{
-				if (child.IsSubGraph)
+				foreach (var child in children)
 				{
-					var subGraph = packageProvider.GetPackageGraph(child.PackageGraphId ??
-						throw new InvalidOperationException("SubGraph child does not have package graph id"));
+					if (child.IsSubGraph)
+					{
+						var subGraph = packageProvider.GetPackageGraph(child.PackageGraphId ??
+							throw new InvalidOperationException("SubGraph child does not have package graph id"));
 
-					packages.Add(subGraph.RootPackageId);
-				}
-				else
-				{
-					packages.Add(child.PackageId ??
-						throw new InvalidOperationException("Package child does not have package id"));
+						// TODO: result.Add((uint)subGraph.RootPackageId);
+					}
+					else
+					{
+						result.Add((uint?)child.PackageId ??
+							throw new InvalidOperationException("Package child does not have package id"));
+					}
 				}
 			}
+
+			return result;
 		}
 	}
 }

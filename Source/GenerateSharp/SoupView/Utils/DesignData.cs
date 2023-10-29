@@ -1,7 +1,6 @@
 ﻿
 using Soup.Build.Utilities;
 using Opal;
-using Soup.Build;
 using System.Collections.Generic;
 
 namespace Soup.View.ViewModels;
@@ -12,10 +11,7 @@ public static class DesignData
 		new DependencyGraphViewModel()
 		{
 			SelectedProject = new ProjectDetailsViewModel(
-				new Recipe("TestProject", new LanguageReference("C++", new SemanticVersion(1)))
-				{
-					Version = new SemanticVersion(1, 2, 3),
-				},
+				"TestProject",
 				new Path("C:/Test/Project/Recipe.sml")),
 		};
 
