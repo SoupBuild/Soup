@@ -15,12 +15,12 @@
     <None Remove="Assets\Soup.ico" />
     <AvaloniaResource Include="Assets\Soup.ico" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(Configuration)'=='Debug' And '$(OS)'=='Windows_NT'">
     <None Include="..\..\..\out\Cpp\SoupTools\1.0.0\OZlIVjblazFuKXg-raWUNoGEnG4\bin\SoupTools.dll" Link="SoupTools.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(Configuration)'=='Release' And '$(OS)'=='Windows_NT'">
     <None Include="..\..\..\out\Cpp\SoupTools\1.0.0\Oltq7cGwk0Rbgy1I-3mCMDDE5yM\bin\SoupTools.dll" Link="SoupTools.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
