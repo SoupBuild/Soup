@@ -49,6 +49,8 @@ jobs:
     #   run: soup restore ./Soup/Source/GenerateSharp/PackageManager/
     # - name: Soup Build PackageManager
     #   run: soup build ./Soup/Source/GenerateSharp/PackageManager/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Restore Tools
+      run: soup restore ./Soup/Source/Client/Tools/ -v:d
     - name: Soup Build Tools
       if: matrix.os != 'ubuntu-22.04'
       run: soup build ./Soup/Source/Client/Tools/ -v:d -flavor ${{matrix.config}}
