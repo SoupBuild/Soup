@@ -16,3 +16,6 @@ wix/
 
 # Antlr
 .antlr/
+
+# Avalonia
+.avalonia-build-tasks/
