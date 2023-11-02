@@ -132,14 +132,14 @@ namespace Soup.View.ViewModels
 			var graph = evaluateGraph.Operations
 				.ToDictionary(kvp => kvp.Key.value, kvp => (IList<uint>)kvp.Value.Children.Select(value => value.value).ToList());
 
-			var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(graph, rootNodes);
+			//var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(graph);
 
-			var graphNodes = BuildGraphNodes(evaluateGraph, operationResults);
-			var activeGraph = graphView
-				.Select(column => (IList<GraphNodeViewModel>)column.Select(nodeId => graphNodes[nodeId]).ToList())
-				.ToList();
+			//var graphNodes = BuildGraphNodes(evaluateGraph, operationResults);
+			//var activeGraph = graphView
+			//	.Select(column => (IList<GraphNodeViewModel>)column.Select(nodeId => graphNodes[nodeId]).ToList())
+			//	.ToList();
 
-			return activeGraph;
+			return new List<IList<GraphNodeViewModel>>();
 		}
 
 		private IDictionary<uint, GraphNodeViewModel> BuildGraphNodes(
@@ -150,9 +150,13 @@ namespace Soup.View.ViewModels
 			foreach (var (operationId, operation) in evaluateGraph.Operations)
 			{
 				var toolTop = operation.Title;
-				var node = new GraphNodeViewModel(operation.Title, toolTop, operationId.value)
+				var node = new GraphNodeViewModel()
 				{
+					Title = operation.Title,
+					ToolTip = toolTop,
+					Id = operationId.value,
 					ChildNodes = operation.Children.Select(value => value.value).ToList(),
+					Position = new GraphShape.Point(),
 				};
 
 				result.Add(operationId.value, node);

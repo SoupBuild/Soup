@@ -2,12 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Avalonia.Threading;
+using GraphShape;
 using Opal;
-using Opal.System;
 using ReactiveUI;
-using Soup.Build;
-using Soup.Build.Utilities;
+using Soup.View.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +20,7 @@ namespace Soup.View.ViewModels
 		private ProjectDetailsViewModel? selectedProject = null;
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNodeViewModel>>? graph = null;
+		private IList<GraphNodeViewModel>? graph = null;
 		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
 
 		public string ErrorBarMessage
@@ -31,7 +29,7 @@ namespace Soup.View.ViewModels
 			set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
 		}
 
-		public IList<IList<GraphNodeViewModel>>? Graph
+		public IList<GraphNodeViewModel>? Graph
 		{
 			get => graph;
 			set => this.RaiseAndSetIfChanged(ref graph, value);
@@ -85,7 +83,7 @@ namespace Soup.View.ViewModels
 				return activeGraph;
 			});
 
-			var rootNode = activeGraph.FirstOrDefault()?.FirstOrDefault();
+			var rootNode = activeGraph.FirstOrDefault();
 
 			Graph = activeGraph;
 			SelectedNode = rootNode;
@@ -100,49 +98,74 @@ namespace Soup.View.ViewModels
 			IsErrorBarOpen = true;
 		}
 
-		private IList<IList<GraphNodeViewModel>> BuildGraph(
+		private IList<GraphNodeViewModel> BuildGraph(
 			PackageProvider packageProvider)
 		{
 			this.projectDetailsLookup.Clear();
 
-			var rootNodes = new List<uint>()
-			{
-				(uint)packageProvider.RootPackageGraphId,
-			};
+			var currentGraphSet = GetCurrentGraphSet(packageProvider);
+
+			// Filter to only the current sub graph
 			var graph = packageProvider.PackageLookup
-				.ToDictionary(
-					kvp => (uint)kvp.Key,
-					kvp => GetChildren(kvp.Value.Dependencies, packageProvider));
+				.Where(value => currentGraphSet.Contains(value.Key))
+				.Select(value => (value.Value, GetChildren(value.Value.Dependencies, packageProvider)));
 
-			var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(graph, rootNodes);
+			// TODO: Should the layout be a visual aspect of the view? Yes, yes it should.
+			var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(
+				graph,
+				new Size(GraphViewer.NodeWidth, GraphViewer.NodeHeight));
 
-			var graphNodes = BuildGraphNodes(packageProvider);
-			var activeGraph = graphView
-				.Select(column => (IList<GraphNodeViewModel>)column.Select(nodeId => graphNodes[nodeId]).ToList())
-				.ToList();
+			var graphNodes = BuildGraphNodes(graphView, packageProvider);
 
-			return activeGraph;
+			return graphNodes;
 		}
 
-		private IDictionary<uint, GraphNodeViewModel> BuildGraphNodes(
+		private ISet<int> GetCurrentGraphSet(PackageProvider packageProvider)
+		{
+			var result = new HashSet<int>();
+
+			var activeNodes = new Stack<int>();
+			activeNodes.Push(packageProvider.RootPackageGraphId);
+
+			while (activeNodes.Count > 0)
+			{
+				var currentNodeId = activeNodes.Pop();
+				result.Add(currentNodeId);
+
+				foreach (var child in GetChildren(packageProvider.GetPackageInfo(currentNodeId).Dependencies, packageProvider))
+				{
+					if (!result.Contains(child.Id))
+						activeNodes.Push(child.Id);
+				}
+			}
+
+			return result;
+		}
+
+		private IList<GraphNodeViewModel> BuildGraphNodes(
+			IDictionary<PackageInfo, Point> nodePositions,
 			PackageProvider packageProvider)
 		{
-			var result = new Dictionary<uint, GraphNodeViewModel>();
-			foreach (var (packageId, package) in packageProvider.PackageLookup)
+			var result = new List<GraphNodeViewModel>();
+			foreach (var (package, position) in nodePositions)
 			{
 				string title = package.Name;
 				string toolTip = package.PackageRoot;
 				var packageFolder = new Path(package.PackageRoot);
 
-				var node = new GraphNodeViewModel(title, toolTip, (uint)packageId)
+				var node = new GraphNodeViewModel()
 				{
-					ChildNodes = GetChildren(package.Dependencies, packageProvider),
+					Title = title,
+					ToolTip = toolTip,
+					Id = (uint)package.Id,
+					ChildNodes = GetChildren(package.Dependencies, packageProvider).Select(value => (uint)value.Id).ToList(),
+					Position = nodePositions[package],
 				};
 
-				result.Add((uint)packageId, node);
+				result.Add(node);
 
 				this.projectDetailsLookup.Add(
-					(uint)packageId,
+					(uint)package.Id,
 					new ProjectDetailsViewModel(
 						package.Name,
 						packageFolder));
@@ -151,11 +174,11 @@ namespace Soup.View.ViewModels
 			return result;
 		}
 
-		private static IList<uint> GetChildren(
+		private static IEnumerable<PackageInfo> GetChildren(
 			IDictionary<string, IList<PackageChildInfo>> dependencies,
 			PackageProvider packageProvider)
 		{
-			var result = new List<uint>();
+			var result = new List<PackageInfo>();
 			foreach (var (dependencyType, children) in dependencies)
 			{
 				foreach (var child in children)
@@ -165,12 +188,12 @@ namespace Soup.View.ViewModels
 						var subGraph = packageProvider.GetPackageGraph(child.PackageGraphId ??
 							throw new InvalidOperationException("SubGraph child does not have package graph id"));
 
-						// TODO: result.Add((uint)subGraph.RootPackageId);
+						// TODO: result.Add(packageProvider.GetPackageInfo(subGraph.RootPackageId));
 					}
 					else
 					{
-						result.Add((uint?)child.PackageId ??
-							throw new InvalidOperationException("Package child does not have package id"));
+						result.Add(packageProvider.GetPackageInfo(child.PackageId ??
+							throw new InvalidOperationException("Package child does not have package id")));
 					}
 				}
 			}

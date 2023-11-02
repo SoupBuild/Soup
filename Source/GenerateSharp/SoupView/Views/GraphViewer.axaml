@@ -20,7 +20,8 @@
 			<ControlTemplate>
 				<ScrollViewer
 					HorizontalScrollBarVisibility="Visible"
-					VerticalScrollBarVisibility="Visible">
+					VerticalScrollBarVisibility="Visible"
+					x:Name="Scroller">
 					<Canvas x:Name="RootCanvas" />
 				</ScrollViewer>
 			</ControlTemplate>

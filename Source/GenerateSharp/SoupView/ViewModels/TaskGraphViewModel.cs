@@ -151,7 +151,13 @@ namespace Soup.View.ViewModels
 				var taskName = taskNameValue.AsString();
 				var taskToolTip = taskName;
 
-				var node = new GraphNodeViewModel(taskName, taskToolTip, this.uniqueId++);
+				var node = new GraphNodeViewModel()
+				{
+					Title = taskName,
+					 ToolTip = taskToolTip,
+					 Id = this.uniqueId++,
+					 Position = new GraphShape.Point(),
+				};
 
 				// Find the Task Info
 				var taskInfo = taskInfoTable[taskName].AsTable();
