@@ -3,9 +3,11 @@
 // </copyright>
 
 using Avalonia.Threading;
+using GraphShape;
 using Opal;
 using ReactiveUI;
 using Soup.Build.Utilities;
+using Soup.View.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +23,7 @@ namespace Soup.View.ViewModels
 		private OperationDetailsViewModel? selectedOperation = null;
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNodeViewModel>>? graph = null;
+		private IList<GraphNodeViewModel>? graph = null;
 		private Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = new Dictionary<uint, OperationDetailsViewModel>();
 
 		public string ErrorBarMessage
@@ -30,7 +32,7 @@ namespace Soup.View.ViewModels
 			set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
 		}
 
-		public IList<IList<GraphNodeViewModel>>? Graph
+		public IList<GraphNodeViewModel>? Graph
 		{
 			get => graph;
 			set => this.RaiseAndSetIfChanged(ref graph, value);
@@ -122,57 +124,56 @@ namespace Soup.View.ViewModels
 			IsErrorBarOpen = true;
 		}
 
-		private IList<IList<GraphNodeViewModel>> BuildGraph(
+		private IList<GraphNodeViewModel> BuildGraph(
 			OperationGraph evaluateGraph,
 			OperationResults? operationResults)
 		{
 			this.operationDetailsLookup.Clear();
 
-			var rootNodes = evaluateGraph.RootOperationIds.Select(value => value.value).ToList();
 			var graph = evaluateGraph.Operations
-				.ToDictionary(kvp => kvp.Key.value, kvp => (IList<uint>)kvp.Value.Children.Select(value => value.value).ToList());
+				.Select(value => (value.Value, value.Value.Children.Select(value => evaluateGraph.Operations[value])));
 
-			//var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(graph);
+			// TODO: Should the layout be a visual aspect of the view? Yes, yes it should.
+			var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(
+				graph,
+				new Size(GraphViewer.NodeWidth, GraphViewer.NodeHeight));
 
-			//var graphNodes = BuildGraphNodes(evaluateGraph, operationResults);
-			//var activeGraph = graphView
-			//	.Select(column => (IList<GraphNodeViewModel>)column.Select(nodeId => graphNodes[nodeId]).ToList())
-			//	.ToList();
+			var graphNodes = BuildGraphNodes(graphView, operationResults);
 
-			return new List<IList<GraphNodeViewModel>>();
+			return graphNodes;
 		}
 
-		private IDictionary<uint, GraphNodeViewModel> BuildGraphNodes(
-			OperationGraph evaluateGraph,
+		private IList<GraphNodeViewModel> BuildGraphNodes(
+			IDictionary<OperationInfo, Point> nodePositions,
 			OperationResults? operationResults)
 		{
-			var result = new Dictionary<uint, GraphNodeViewModel>();
-			foreach (var (operationId, operation) in evaluateGraph.Operations)
+			var result = new List<GraphNodeViewModel>();
+			foreach (var (operation, position) in nodePositions)
 			{
 				var toolTop = operation.Title;
 				var node = new GraphNodeViewModel()
 				{
 					Title = operation.Title,
 					ToolTip = toolTop,
-					Id = operationId.value,
+					Id = operation.Id.value,
 					ChildNodes = operation.Children.Select(value => value.value).ToList(),
-					Position = new GraphShape.Point(),
+					Position = position,
 				};
 
-				result.Add(operationId.value, node);
+				result.Add(node);
 
 				// Check if there is a matching result
 				OperationResult? operationResult = null;
 				if (operationResults != null)
 				{
-					if (operationResults.TryFindResult(operationId, out var operationResultValue))
+					if (operationResults.TryFindResult(operation.Id, out var operationResultValue))
 					{
 						operationResult = operationResultValue;
 					}
 				}
 
 				this.operationDetailsLookup.Add(
-					operationId.value,
+					operation.Id.value,
 					new OperationDetailsViewModel(fileSystemState, operation, operationResult));
 			}
 

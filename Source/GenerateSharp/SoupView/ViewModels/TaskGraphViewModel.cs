@@ -21,7 +21,7 @@ namespace Soup.View.ViewModels
 		private string errorBarMessage = string.Empty;
 		private uint uniqueId = 0;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNodeViewModel>>? graph = null;
+		private IList<GraphNodeViewModel>? graph = null;
 		private Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = new Dictionary<uint, TaskDetailsViewModel>();
 
 		public string ErrorBarMessage
@@ -30,7 +30,7 @@ namespace Soup.View.ViewModels
 			set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
 		}
 
-		public IList<IList<GraphNodeViewModel>>? Graph
+		public IList<GraphNodeViewModel>? Graph
 		{
 			get => graph;
 			set => this.RaiseAndSetIfChanged(ref graph, value);
@@ -110,9 +110,9 @@ namespace Soup.View.ViewModels
 			IsErrorBarOpen = true;
 		}
 
-		private IList<IList<GraphNodeViewModel>> BuildGraph(ValueTable generateInfoTable)
+		private IList<GraphNodeViewModel> BuildGraph(ValueTable generateInfoTable)
 		{
-			var activeGraph = new List<IList<GraphNodeViewModel>>();
+			var activeGraph = new List<GraphNodeViewModel>();
 			this.taskDetailsLookup.Clear();
 			this.uniqueId = 1;
 
@@ -143,7 +143,7 @@ namespace Soup.View.ViewModels
 			ValueList runtimeOrderList,
 			ValueTable taskInfoTable,
 			ValueTable globalStateTable,
-			IList<IList<GraphNodeViewModel>> activeGraph)
+			IList<GraphNodeViewModel> activeGraph)
 		{
 			// Add each task to its own column
 			foreach (var taskNameValue in runtimeOrderList)
@@ -154,9 +154,9 @@ namespace Soup.View.ViewModels
 				var node = new GraphNodeViewModel()
 				{
 					Title = taskName,
-					 ToolTip = taskToolTip,
-					 Id = this.uniqueId++,
-					 Position = new GraphShape.Point(),
+					ToolTip = taskToolTip,
+					Id = this.uniqueId++,
+					Position = new GraphShape.Point(),
 				};
 
 				// Find the Task Info
@@ -167,12 +167,7 @@ namespace Soup.View.ViewModels
 
 				this.taskDetailsLookup.Add(node.Id, new TaskDetailsViewModel(taskInfo));
 
-				// Add the new column at the start
-				var column = new List<GraphNodeViewModel>()
-				{
-					node
-				};
-				activeGraph.Add(column);
+				activeGraph.Add(node);
 			}
 		}
 

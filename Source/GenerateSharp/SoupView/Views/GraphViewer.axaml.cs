@@ -45,6 +45,7 @@ namespace Soup.View.Views
 		public GraphViewer()
 		{
 			this.PropertyChanged += GraphViewer_PropertyChanged;
+			this.SizeChanged += GraphViewer_SizeChanged;
 		}
 
 		/// <summary>
@@ -89,6 +90,11 @@ namespace Soup.View.Views
 
 					break;
 			}
+		}
+
+		private void GraphViewer_SizeChanged(object? sender, SizeChangedEventArgs e)
+		{
+			this.LayoutGraph();
 		}
 
 		protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -181,7 +187,7 @@ namespace Soup.View.Views
 			if (scroller is not null)
 			{
 				// TODO: Pick a better X offset
-				scroller.Offset = new Vector(size.Width / 3, scroller.Offset.Y);
+				// scroller.Offset = new Vector(size.Width / 3, scroller.Offset.Y);
 			}
 		}
 
