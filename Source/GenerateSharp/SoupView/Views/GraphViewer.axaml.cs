@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -16,22 +17,23 @@ namespace Soup.View.Views
 {
 	public sealed class GraphViewer : TemplatedControl
 	{
-		private static int NodeWidth = 200;
-		private static int NodeHeight = 50;
+		public static int NodeWidth => 200;
+		public static int NodeHeight => 50;
 
-		private static int NodeSpacingHorizontal = 80;
-		private static int NodeSpacingVertical = 50;
+		private static int NodeSpacingHorizontal => 80;
+		private static int NodeSpacingVertical => 50;
 
-		private static int InternalPadding = 20;
+		private static int InternalPadding => 20;
 
+		private ScrollViewer? scroller;
 		private Canvas? root;
 		private IDictionary<uint, GraphViewerItem> itemLookup = new Dictionary<uint, GraphViewerItem>();
 
 		/// <summary>
 		/// Identifies the <see cref="Graph"/> property.
 		/// </summary>
-		public static readonly StyledProperty<IList<IList<GraphNodeViewModel>>> GraphProperty =
-			AvaloniaProperty.Register<GraphViewer, IList<IList<GraphNodeViewModel>>>(nameof(Graph));
+		public static readonly StyledProperty<IList<GraphNodeViewModel>> GraphProperty =
+			AvaloniaProperty.Register<GraphViewer, IList<GraphNodeViewModel>>(nameof(Graph));
 
 		/// <summary>
 		/// Identifies the <see cref="SelectedNode"/> property.
@@ -49,7 +51,7 @@ namespace Soup.View.Views
 		/// <summary>
 		/// Gets or sets the Graph
 		/// </summary>
-		public IList<IList<GraphNodeViewModel>> Graph
+		public IList<GraphNodeViewModel> Graph
 		{
 			get => GetValue(GraphProperty);
 			set => SetValue(GraphProperty, value);
@@ -99,6 +101,7 @@ namespace Soup.View.Views
 		{
 			this.LayoutGraph();
 
+			scroller = e.NameScope.Find<ScrollViewer>("Scroller");
 			root = e.NameScope.Find<Canvas>("RootCanvas");
 
 			base.OnApplyTemplate(e);
@@ -114,92 +117,77 @@ namespace Soup.View.Views
 			if (this.Graph is null)
 				return;
 
-			int maxHeight = 0;
-			int currentOffsetX = 0;
-			int currentOffsetY;
+			var minPosition = new GraphShape.Point(
+				this.Graph.Min(node => node.Position.X),
+				this.Graph.Min(node => node.Position.Y));
+
+			var maxPosition = new GraphShape.Point(
+				this.Graph.Max(node => node.Position.X),
+				this.Graph.Max(node => node.Position.Y));
+
+			var size = new GraphShape.Size(
+				maxPosition.X - minPosition.X + NodeWidth + InternalPadding + InternalPadding,
+				maxPosition.Y - minPosition.Y + NodeHeight + InternalPadding + InternalPadding);
+
 			var nodeState = new Dictionary<uint, (GraphViewerItem Item, Point InConnect, Point OutConnect)>();
 			itemLookup.Clear();
-			foreach (var column in this.Graph)
+
+			foreach (var node in this.Graph)
 			{
-				// Reset vertical offset for each column
-				currentOffsetY = 0;
-
-				// Update X offset for the current column location
-				if (currentOffsetX == 0)
-					currentOffsetX += InternalPadding;
-				else
-					currentOffsetX += NodeSpacingHorizontal;
-
-				foreach (var value in column)
+				var nodeItem = new GraphViewerItem()
 				{
-					// Update Y for the current row location
-					if (currentOffsetY == 0)
-						currentOffsetY += InternalPadding;
-					else
-						currentOffsetY += NodeSpacingVertical;
+					Title = node.Title,
+					ToolTip = node.ToolTip,
+					Width = NodeWidth,
+					Height = NodeHeight,
+				};
+				nodeItem.DataContext = node;
+				nodeItem.Click += Node_Click;
 
-					if (value is not null)
-					{
-						var node = new GraphViewerItem()
-						{
-							Title = value.Title,
-							ToolTip = value.ToolTip,
-							Width = NodeWidth,
-							Height = NodeHeight,
-						};
-						node.DataContext = value;
-						node.Click += Node_Click;
+				var normalizedPosition = node.Position - minPosition;
+				normalizedPosition.X += InternalPadding;
+				normalizedPosition.Y += InternalPadding;
 
-						Canvas.SetLeft(node, currentOffsetX);
-						Canvas.SetTop(node, currentOffsetY);
+				Canvas.SetLeft(nodeItem, normalizedPosition.X);
+				Canvas.SetTop(nodeItem, normalizedPosition.Y);
 
-						root.Children.Add(node);
+				root.Children.Add(nodeItem);
 
-						// Save the node state
-						var inConnect = new Point(currentOffsetX, currentOffsetY + (NodeHeight / 2));
-						var outConnect = new Point(currentOffsetX + NodeWidth, currentOffsetY + (NodeHeight / 2));
-						nodeState.Add(value.Id, (node, inConnect, outConnect));
+				// Save the node state
+				var inConnect = new Point(normalizedPosition.X + (NodeWidth / 2), normalizedPosition.Y);
+				var outConnect = new Point(normalizedPosition.X + +(NodeWidth / 2), normalizedPosition.Y + NodeHeight);
+				nodeState.Add(node.Id, (nodeItem, inConnect, outConnect));
 
-						itemLookup.Add(value.Id, node);
-					}
-
-					// Update for the next row location
-					currentOffsetY += NodeHeight;
-				}
-
-				// Update for the next column location
-				currentOffsetX += NodeWidth;
-
-				// Check the max height
-				maxHeight = Math.Max(maxHeight, currentOffsetY);
+				itemLookup.Add(node.Id, nodeItem);
 			}
 
 			// Connect all the known nodes
-			foreach (var column in Graph)
+			foreach (var node in Graph)
 			{
-				foreach (var value in column)
+				var startNode = nodeState[node.Id];
+				foreach (var child in node.ChildNodes)
 				{
-					if (value is not null)
-					{
-						var startNode = nodeState[value.Id];
-						foreach (var child in value.ChildNodes)
-						{
-							var endNode = nodeState[child];
-							var path = ConnectNodes(startNode.OutConnect, endNode.InConnect);
-							root.Children.Add(path);
-						}
-					}
+					var endNode = nodeState[child];
+					var path = ConnectNodes(startNode.OutConnect, endNode.InConnect);
+					root.Children.Add(path);
 				}
 			}
 
 			// Add the final internal padding to get the total size
-			root.Width = currentOffsetX + InternalPadding;
-			root.Height = maxHeight + InternalPadding;
+			root.Width = size.Width;
+			root.Height = size.Height;
 
 			// Ensure the current selected item is notified
 			if (SelectedNode is not null && itemLookup.TryGetValue(SelectedNode.Id, out var selectedItem))
 			{
 				selectedItem.IsSelected = true;
+			}
+
+			// Center the view
+			if (scroller is not null)
+			{
+				// TODO: Pick a better X offset
+				// scroller.Offset = new Vector(size.Width / 3, scroller.Offset.Y);
 			}
 		}
 
@@ -215,11 +203,11 @@ namespace Soup.View.Views
 		private Path ConnectNodes(Point start, Point end)
 		{
 			var control1 = new Point(
-				start.X + (NodeSpacingHorizontal / 2),
-				start.Y);
+				start.X,
+				start.Y + (NodeSpacingVertical / 2));
 			var control2 = new Point(
-				end.X - (NodeSpacingHorizontal / 2),
-				end.Y);
+				end.X,
+				end.Y - (NodeSpacingVertical / 2));
 
 			return CreateBezier(start, control1, control2, end);
 		}
