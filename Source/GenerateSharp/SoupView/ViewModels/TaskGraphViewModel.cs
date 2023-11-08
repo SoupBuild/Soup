@@ -2,13 +2,15 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Avalonia.Threading;
+using GraphShape;
 using Opal;
 using ReactiveUI;
 using Soup.Build.Utilities;
+using Soup.View.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using ValueType = Soup.Build.Utilities.ValueType;
 
@@ -16,6 +18,14 @@ namespace Soup.View.ViewModels
 {
 	public class TaskGraphViewModel : ViewModelBase
 	{
+		private class TaskDetails
+		{
+			public required string Name { get; set; }
+			public required uint Id { get; set; }
+			public required ValueTable TaskInfo { get; set; }
+			public required IList<TaskDetails> Children { get; set; }
+		}
+
 		private GraphNodeViewModel? selectedNode = null;
 		private TaskDetailsViewModel? selectedTask = null;
 		private string errorBarMessage = string.Empty;
@@ -110,54 +120,45 @@ namespace Soup.View.ViewModels
 			IsErrorBarOpen = true;
 		}
 
-		private IList<GraphNodeViewModel> BuildGraph(ValueTable generateInfoTable)
+		private IList<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)
 		{
-			var activeGraph = new List<GraphNodeViewModel>();
 			this.taskDetailsLookup.Clear();
 			this.uniqueId = 1;
 
 			if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != ValueType.List)
 			{
 				NotifyError($"Generate Info Table missing RuntimeOrder List");
-				return activeGraph;
+				return null;
 			}
 
 			if (!generateInfoTable.TryGetValue("TaskInfo", out var taskInfoTable) || taskInfoTable.Type != ValueType.Table)
 			{
 				NotifyError($"Generate Info Table missing TaskInfo Table");
-				return activeGraph;
+				return null;
 			}
 
 			if (!generateInfoTable.TryGetValue("GlobalState", out var globalStateTable) || globalStateTable.Type != ValueType.Table)
 			{
 				NotifyError($"Generate Info Table missing GlobalState Table");
-				return activeGraph;
+				return null;
 			}
 
-			BuildGraph(runtimeOrderList.AsList(), taskInfoTable.AsTable(), globalStateTable.AsTable(), activeGraph);
+			var activeGraph = BuildGraph(runtimeOrderList.AsList(), taskInfoTable.AsTable(), globalStateTable.AsTable());
 
 			return activeGraph;
 		}
 
-		private void BuildGraph(
+		private IList<GraphNodeViewModel> BuildGraph(
 			ValueList runtimeOrderList,
 			ValueTable taskInfoTable,
-			ValueTable globalStateTable,
-			IList<GraphNodeViewModel> activeGraph)
+			ValueTable globalStateTable)
 		{
+			var tasks = new Dictionary<string, TaskDetails>();
+
 			// Add each task to its own column
 			foreach (var taskNameValue in runtimeOrderList)
 			{
 				var taskName = taskNameValue.AsString();
-				var taskToolTip = taskName;
-
-				var node = new GraphNodeViewModel()
-				{
-					Title = taskName,
-					ToolTip = taskToolTip,
-					Id = this.uniqueId++,
-					Position = new GraphShape.Point(),
-				};
 
 				// Find the Task Info
 				var taskInfo = taskInfoTable[taskName].AsTable();
@@ -165,10 +166,71 @@ namespace Soup.View.ViewModels
 				// TODO: Have a custom view for the global state
 				taskInfo["GlobalState"] = new Value(globalStateTable);
 
-				this.taskDetailsLookup.Add(node.Id, new TaskDetailsViewModel(taskInfo));
-
-				activeGraph.Add(node);
+				tasks.Add(
+					taskName,
+					new TaskDetails()
+					{
+						Name = taskName,
+						TaskInfo = taskInfo,
+						Id = this.uniqueId++,
+						Children = new List<TaskDetails>(),
+					});
 			}
+
+			// Build up the children
+			foreach (var (taskName, task) in tasks)
+			{
+				// Build up the children set
+				var runAfterClosure = task.TaskInfo["RunAfterClosureList"].AsList();
+
+				foreach (var parent in runAfterClosure)
+				{
+					tasks[parent.AsString()].Children.Add(task);
+				}
+			}
+
+			var graph = new List<(TaskDetails Node, IEnumerable<TaskDetails> Children)>();
+
+			// Add each task to its own column
+			foreach (var (_, task) in tasks)
+			{
+				graph.Add((task, task.Children));
+			}
+
+			// TODO: Should the layout be a visual aspect of the view? Yes, yes it should.
+			var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(
+				graph,
+				new Size(GraphViewer.NodeWidth, GraphViewer.NodeHeight));
+
+			var graphNodes = BuildGraphNodes(graphView);
+			return graphNodes;
+		}
+
+
+		private IList<GraphNodeViewModel> BuildGraphNodes(
+			IDictionary<TaskDetails, Point> nodePositions)
+		{
+			var result = new List<GraphNodeViewModel>();
+			foreach (var (task, position) in nodePositions)
+			{
+				var toolTop = task.Name;
+				var node = new GraphNodeViewModel()
+				{
+					Title = task.Name,
+					ToolTip = toolTop,
+					Id = task.Id,
+					ChildNodes = task.Children.Select(value => value.Id).ToList(),
+					Position = position,
+				};
+
+				result.Add(node);
+
+				this.taskDetailsLookup.Add(
+					task.Id,
+					new TaskDetailsViewModel(task.TaskInfo));
+			}
+
+			return result;
 		}
 
 		private async Task<Path> GetTargetPathAsync(Path packageDirectory)
