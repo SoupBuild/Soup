@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<PublishSingleFile>true</PublishSingleFile>
 		<SelfContained>true</SelfContained>
-		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
 	<ItemGroup>

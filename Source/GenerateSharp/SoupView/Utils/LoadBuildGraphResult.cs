@@ -8,14 +8,14 @@ namespace Soup.View;
 
 public class LoadBuildGraph
 {
-	public required int RootPackageGraphId { get; init; }
-	public required IList<PackageGraph> PackageGraphs { get; init; }
-	public required IList<PackageInfo> Packages { get; init; }
+	public int RootPackageGraphId { get; set; }
+	public IList<PackageGraph> PackageGraphs { get; set; } = new List<PackageGraph>();
+	public IList<PackageInfo> Packages { get; set; } = new List<PackageInfo>();
 }
 
 public class LoadBuildGraphResult
 {
 	public bool IsSuccess { get; set; } = false;
 	public string? Message { get; set; }
-	public required LoadBuildGraph? Graph { get; set; }
+	public LoadBuildGraph? Graph { get; set; }
 }

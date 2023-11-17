@@ -3,6 +3,7 @@ using Opal;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 
 namespace Soup.View;
@@ -15,7 +16,11 @@ public static class SoupTools
 	public static PackageProvider LoadBuildGraph(Path workingDirectory)
 	{
 		var loadResult = LoadBuildGraph(workingDirectory.ToString());
-		var result = JsonSerializer.Deserialize<LoadBuildGraphResult>(loadResult) ??
+
+		var byteArray = Encoding.UTF8.GetBytes(loadResult);
+		var memoryStream = new System.IO.MemoryStream(byteArray);
+
+		var result = JsonSerializer.Deserialize(memoryStream, LoadBuildGraphResultContext.Default.LoadBuildGraphResult) ??
 			throw new InvalidOperationException("Failed to deserialize the result");
 
 		if (!result.IsSuccess)

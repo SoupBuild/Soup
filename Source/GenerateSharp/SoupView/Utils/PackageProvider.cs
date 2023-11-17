@@ -17,7 +17,7 @@ using PackageLookupMap = IDictionary<int, PackageInfo>;
 
 public class PackageChildInfo
 {
-	public required string OriginalReference { get; set; }
+	public string OriginalReference { get; set; } = string.Empty;
 	public bool IsSubGraph { get; set; } = false;
 	public PackageId? PackageId { get; set; }
 	public PackageGraphId? PackageGraphId { get; set; }
@@ -26,11 +26,11 @@ public class PackageChildInfo
 public class PackageInfo
 {
 	public PackageId Id { get; set; }
-	public required string Name { get; set; }
-	public required bool IsPrebuilt { get; set; }
-	public required string PackageRoot { get; set; }
-	public required string TargetDirectory { get; set; }
-	public required PackageChildrenMap Dependencies { get; set; }
+	public string Name { get; set; } = string.Empty;
+	public bool IsPrebuilt { get; set; }
+	public string PackageRoot { get; set; } = string.Empty;
+	public string TargetDirectory { get; set; } = string.Empty;
+	public PackageChildrenMap Dependencies { get; set; } = new Dictionary<string, IList<PackageChildInfo>>();
 }
 
 public class PackageGraph
@@ -45,9 +45,9 @@ public class PackageGraph
 /// </summary>
 public class PackageProvider
 {
-	public required PackageGraphId RootPackageGraphId { get; init; }
-	public required PackageGraphLookupMap PackageGraphLookup { get; init; }
-	public required PackageLookupMap PackageLookup { get; init; }
+	public PackageGraphId RootPackageGraphId { get; set; }
+	public PackageGraphLookupMap PackageGraphLookup { get; set; } = new Dictionary<int, PackageGraph>();
+	public PackageLookupMap PackageLookup { get; set; } = new Dictionary<int, PackageInfo>();
 
 	public PackageGraph GetRootPackageGraph()
 	{
