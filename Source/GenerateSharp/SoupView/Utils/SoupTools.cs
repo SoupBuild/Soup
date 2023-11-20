@@ -9,7 +9,7 @@ namespace Soup.View;
 
 public static class SoupTools
 {
-	[DllImport("SoupTools", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+	[DllImport("SoupTools", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 	private static extern string LoadBuildGraph(string workingDirectory);
 
 	public static PackageProvider LoadBuildGraph(Path workingDirectory)
