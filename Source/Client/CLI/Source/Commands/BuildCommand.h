@@ -74,7 +74,28 @@ namespace Soup::Client
 			// Now build the current project
 			Log::Info("Begin Build:");
 
-			Core::BuildEngine::Execute(std::move(arguments));
+			// Find the built in folder root
+			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+			auto processDirectory = processFilename.GetParent();
+			auto builtInPackageDirectory = processDirectory + Path("BuiltIn/");
+
+			// Load user config state
+			auto userDataPath = Core::BuildEngine::GetSoupUserDataPath();
+			
+			auto recipeCache = Core::RecipeCache();
+
+			auto packageProvider = Core::BuildEngine::LoadBuildGraph(
+				builtInPackageDirectory,
+				arguments.WorkingDirectory,
+				arguments.GlobalParameters,
+				userDataPath,
+				recipeCache);
+
+			Core::BuildEngine::Execute(
+				packageProvider,
+				std::move(arguments),
+				userDataPath,
+				recipeCache);
 
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime -startTime);

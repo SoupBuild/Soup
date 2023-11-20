@@ -14,7 +14,7 @@ namespace Soup.Build.Utilities
 	internal static class OperationGraphReader
 	{
 		// Binary Operation Graph file format
-		private static uint FileVersion => 5;
+		private static uint FileVersion => 6;
 
 		public static OperationGraph Deserialize(System.IO.BinaryReader reader)
 		{
@@ -112,7 +112,7 @@ namespace Soup.Build.Utilities
 			var executable = ReadString(reader);
 
 			// Read the command arguments
-			var arguments = ReadString(reader);
+			var arguments = ReadStringList(reader);
 
 			// Read the declared input files
 			var declaredInput = ReadFileIdList(reader);
@@ -159,6 +159,18 @@ namespace Soup.Build.Utilities
 			var result = reader.ReadChars((int)size);
 
 			return new string(result);
+		}
+
+		static List<string> ReadStringList(System.IO.BinaryReader reader)
+		{
+			var size = reader.ReadUInt32();
+			var result = new List<string>((int)size);
+			for (var i = 0; i < size; i++)
+			{
+				result.Add(ReadString(reader));
+			}
+
+			return result;
 		}
 
 		private static List<FileId> ReadFileIdList(System.IO.BinaryReader reader)

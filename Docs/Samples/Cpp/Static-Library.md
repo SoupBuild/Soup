@@ -25,14 +25,14 @@ export module Samples.Cpp.StaticLibrary.Library;
 // Note: The namespace does not have to match the module name
 export namespace Samples.Cpp.StaticLibrary.Library
 {
-    class Helper
+  class Helper
+  {
+  public:
+    static std::string GetName()
     {
-    public:
-        static std::string GetName()
-        {
-            return "Soup";
-        }
-    };
+      return "Soup";
+    }
+  };
 }
 ```
 
@@ -59,23 +59,23 @@ The package lock that was generated to capture the unique dependencies required 
 ```
 Version: 4
 Closures: {
-	Root: {
-		"C++": [
-			{ Name: "Samples.Cpp.StaticLibrary.Application", Version: "../Application", Build: "Build0", Tool: "Tool0" }
-			{ Name: "Samples.Cpp.StaticLibrary.Library", Version: "../Library/", Build: "Build0", Tool: "Tool0" }
-		]
-	}
-	Build0: {
-		Wren: [
-			{ Name: "Soup.Cpp", Version: "0.8.2" }
-		]
-	}
-	Tool0: {
-		"C++": [
-			{ Name: "copy", Version: "1.0.0" }
-			{ Name: "mkdir", Version: "1.0.0" }
-		]
-	}
+  Root: {
+    "C++": [
+      { Name: "Samples.Cpp.StaticLibrary.Application", Version: "../Application", Build: "Build0", Tool: "Tool0" }
+      { Name: "Samples.Cpp.StaticLibrary.Library", Version: "../Library/", Build: "Build0", Tool: "Tool0" }
+    ]
+  }
+  Build0: {
+    Wren: [
+      { Name: "Soup.Cpp", Version: "0.10.1" }
+    ]
+  }
+  Tool0: {
+    "C++": [
+      { Name: "copy", Version: "1.0.0" }
+      { Name: "mkdir", Version: "1.0.0" }
+    ]
+  }
 }
 ```
 
@@ -89,8 +89,8 @@ using namespace Samples.Cpp.StaticLibrary.Library;
 
 int main()
 {
-    std::cout << "Hello World, " << Helper::GetName() << " Style!" << std::endl;
-    return 0;
+  std::cout << "Hello World, " << Helper::GetName() << " Style!" << std::endl;
+  return 0;
 }
 ```
 

@@ -181,6 +181,21 @@ namespace Soup::Core
 		{
 		}
 
+		PackageGraphId GetRootPackageGraphId()
+		{
+			return _rootPackageGraphId;
+		}
+
+		const PackageGraphLookupMap& GetPackageGraphLookup()
+		{
+			return _packageGraphLookup;
+		}
+
+		const PackageLookupMap& GetPackageLookup()
+		{
+			return _packageLookup;
+		}
+
 		const PackageGraph& GetRootPackageGraph()
 		{
 			return GetPackageGraph(_rootPackageGraphId);

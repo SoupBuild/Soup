@@ -17,7 +17,7 @@ namespace Soup.Build.Utilities
 		/// Initializes a new instance of the <see cref="CommandInfo"/> class.
 		/// </summary>
 		public CommandInfo() :
-			this(new Path(), new Path(), string.Empty)
+			this(new Path(), new Path(), new List<string>())
 		{
 		}
 
@@ -27,7 +27,7 @@ namespace Soup.Build.Utilities
 		public CommandInfo(
 			Path workingDirectory,
 			Path executable,
-			string arguments)
+			IReadOnlyList<string> arguments)
 		{
 			WorkingDirectory = workingDirectory;
 			Executable = executable;
@@ -70,7 +70,7 @@ namespace Soup.Build.Utilities
 
 		public Path WorkingDirectory { get; init; }
 		public Path Executable { get; init; }
-		public string Arguments { get; init; }
+		public IReadOnlyList<string> Arguments { get; init; }
 	}
 
 	public class OperationInfo : IEquatable<OperationInfo>

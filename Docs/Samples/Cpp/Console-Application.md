@@ -11,7 +11,7 @@ Language: "C++|0"
 Type: "Executable"
 Version: "1.0.0"
 Source: [
-    "Main.cpp"
+  "Main.cpp"
 ]
 ```
 
@@ -20,22 +20,22 @@ The package lock that was generated to capture the unique dependencies required 
 ```
 Version: 4
 Closures: {
-    Root: {
-        "C++": [
-            { Name: "Samples.Cpp.ConsoleApplication", Version: "./", Build: "Build0", Tool: "Tool0" }
-        ]
-    }
-    Build0: {
-        Wren: [
-            { Name: "Soup.Cpp", Version: "0.7.0" }
-        ]
-    }
-    Tool0: {
-        "C++": [
-            { Name: "copy", Version: "1.0.0" }
-            { Name: "mkdir", Version: "1.0.0" }
-        ]
-    }
+  Root: {
+    "C++": [
+      { Name: "Samples.Cpp.ConsoleApplication", Version: "./", Build: "Build0", Tool: "Tool0" }
+    ]
+  }
+  Build0: {
+    Wren: [
+      { Name: "Soup.Cpp", Version: "0.10.1" }
+    ]
+  }
+  Tool0: {
+    "C++": [
+      { Name: "copy", Version: "1.0.0" }
+      { Name: "mkdir", Version: "1.0.0" }
+    ]
+  }
 }
 ```
 
@@ -46,8 +46,8 @@ A simple main method that prints our "Hello World, Soup Style!" and returns a su
 
 int main()
 {
-    std::cout << "Hello World, Soup Style!" << std::endl;
-    return 0;
+  std::cout << "Hello World, Soup Style!" << std::endl;
+  return 0;
 }
 ```
 

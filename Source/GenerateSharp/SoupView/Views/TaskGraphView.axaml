@@ -1,0 +1,30 @@
+﻿<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Soup.View.ViewModels"
+	xmlns:v="using:Soup.View.Views"
+	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+	x:Class="Soup.View.Views.TaskGraphView"
+	x:CompileBindings="True"
+	x:DataType="vm:TaskGraphViewModel"
+	d:DataContext="{x:Static vm:DesignData.ExampleTaskGraph}">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="3*" MinWidth="150" />
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" MinWidth="150" />
+		</Grid.ColumnDefinitions>
+		<v:GraphViewer
+			Graph="{Binding Graph}"
+			SelectedNode="{Binding SelectedNode, Mode=TwoWay}" />
+		<GridSplitter
+			Grid.Column="1"
+			Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
+		<TreeDataGrid
+			Grid.Column="2"
+			DataContext="{Binding SelectedTask}"
+			Source="{Binding Properties}" />
+	</Grid>
+</UserControl>
