@@ -8,7 +8,7 @@ namespace Soup.View;
 
 [JsonSourceGenerationOptions(
 	WriteIndented = false,
-	PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+	PropertyNamingPolicy = JsonKnownNamingPolicy.Unspecified,
 	GenerationMode = JsonSourceGenerationMode.Metadata)]
 [JsonSerializable(typeof(LoadBuildGraphResult))]
 internal partial class LoadBuildGraphResultContext : JsonSerializerContext
