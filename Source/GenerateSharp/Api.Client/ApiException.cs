@@ -4,9 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Soup.Build.Api.Client
 {
+	[SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "Required parameters")]
 	public class ApiException : Exception
 	{
 		public int StatusCode { get; private set; }
@@ -25,6 +27,7 @@ namespace Soup.Build.Api.Client
 		}
 	}
 
+	[SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "Required parameters")]
 	public class ApiException<TResult> : ApiException
 	{
 		public TResult Result { get; private set; }

@@ -36,10 +36,10 @@ robocopy %GlobalOutDir%\Wren\Soup.CSharp\%SOUP_CSHARP_VERSION%\%ConfigHash%\ %Ru
 robocopy %GlobalPackagesDir%\Wren\Soup.Wren\%SOUP_WREN_VERSION%\ %RunDir%\Soup\BuiltIn\Soup.Wren\%SOUP_WREN_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy %GlobalOutDir%\Wren\Soup.Wren\%SOUP_WREN_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\Soup.Wren\%SOUP_WREN_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\msbuild\bin\Soup.Build.PackageManager\Release\net7.0\win-x64\publish\ %RunDir%\Soup\PackageManager\ /MIR /NJH /NJS /NDL > NUL
+robocopy %OutDir%\msbuild\bin\Soup.Build.PackageManager\Release\net8.0\win-x64\publish\ %RunDir%\Soup\PackageManager\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\msbuild\bin\SoupView\Release\net7.0\win-x64\publish\ %RunDir%\Soup\View\ /MIR /NJH /NJS /NDL > NUL
+robocopy %OutDir%\msbuild\bin\SoupView\Release\net8.0\win-x64\publish\ %RunDir%\Soup\View\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\msbuild\bin\Swhere\Release\net7.0\win-x64\publish\ %RunDir%\ swhere.exe /NJH /NJS /NDL > NUL
+robocopy %OutDir%\msbuild\bin\Swhere\Release\net8.0\win-x64\publish\ %RunDir%\ swhere.exe /NJH /NJS /NDL > NUL
 
 %RunDir%\Soup.cmd %*
