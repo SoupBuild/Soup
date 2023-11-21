@@ -16,11 +16,11 @@ namespace Soup.Build.Discover
 			try
 			{
 				var traceFlags =
-					TraceEventFlag.Information |
-					TraceEventFlag.HighPriority |
-					TraceEventFlag.Critical |
-					TraceEventFlag.Warning |
-					TraceEventFlag.Error;
+					TraceEvents.Information |
+					TraceEvents.HighPriority |
+					TraceEvents.Critical |
+					TraceEvents.Warning |
+					TraceEvents.Error;
 				Log.RegisterListener(new ConsoleTraceListener("", new EventTypeFilter(traceFlags), false, false));
 				LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
 

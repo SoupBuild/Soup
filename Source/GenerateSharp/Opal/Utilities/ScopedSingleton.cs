@@ -2,32 +2,31 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Opal.System
+using System;
+
+namespace Opal.System;
+
+/// <summary>
+/// A scoped process manager registration helper.
+/// </summary>
+/// <typeparam name="TInterface">The interface type.</typeparam>
+public class ScopedSingleton<TInterface> : IDisposable
+	where TInterface : notnull
 {
-	using global::System;
+	/// <summary>
+	/// Initializes a new instance of the <see cref='ScopedSingleton{TInterface}'/> class.
+	/// </summary>
+	/// <param name="listener">The listener.</param>
+	public ScopedSingleton(TInterface listener)
+	{
+		LifetimeManager.RegisterSingleton(listener);
+	}
 
 	/// <summary>
-	/// A scopped process manager registration helper.
+	/// Finalizes an instance of the <see cref='ScopedSingleton{TInterface}'/> class.
 	/// </summary>
-	/// <typeparam name="TInterface">The interface type.</typeparam>
-	public class ScopedSingleton<TInterface> : IDisposable
-		where TInterface : notnull
+	public void Dispose()
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref='ScopedSingleton{TInterface}'/> class.
-		/// </summary>
-		/// <param name="listener">The listener.</param>
-		public ScopedSingleton(TInterface listener)
-		{
-			LifetimeManager.RegisterSingleton(listener);
-		}
-
-		/// <summary>
-		/// Finalizes an instance of the <see cref='ScopedSingleton{TInterface}'/> class.
-		/// </summary>
-		public void Dispose()
-		{
-			LifetimeManager.ClearSingleton<TInterface>();
-		}
+		LifetimeManager.ClearSingleton<TInterface>();
 	}
 }

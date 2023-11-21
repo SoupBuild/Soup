@@ -2,20 +2,19 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Opal.System
-{
-	using global::System;
-	using global::System.IO;
+using System;
+using System.IO;
 
+namespace Opal.System;
+
+/// <summary>
+/// The input file interface
+/// Interface mainly used to allow for unit testing client code.
+/// </summary>
+public interface IInputFile : IDisposable
+{
 	/// <summary>
-	/// The input file interface
-	/// Interface mainly used to allow for unit testing client code.
+	/// Gets the input stream.
 	/// </summary>
-	public interface IInputFile : IDisposable
-	{
-		/// <summary>
-		/// Gets the input stream.
-		/// </summary>
-		Stream GetInStream();
-	}
+	Stream GetInStream();
 }

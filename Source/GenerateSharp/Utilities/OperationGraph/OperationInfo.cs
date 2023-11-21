@@ -37,18 +37,18 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Equality operator
 		/// </summary>
-		public bool Equals(CommandInfo? rhs)
+		public bool Equals(CommandInfo? other)
 		{
-			if (ReferenceEquals(rhs, null))
+			if (ReferenceEquals(other, null))
 				return false;
-			return WorkingDirectory == rhs.WorkingDirectory &&
-				Executable == rhs.Executable &&
-				Arguments == rhs.Arguments;
+			return WorkingDirectory == other.WorkingDirectory &&
+				Executable == other.Executable &&
+				Arguments == other.Arguments;
 		}
 
-		public override bool Equals(object? rhs)
+		public override bool Equals(object? obj)
 		{
-			return Equals(rhs as CommandInfo);
+			return Equals(obj as CommandInfo);
 		}
 
 		public override int GetHashCode()
@@ -56,16 +56,16 @@ namespace Soup.Build.Utilities
 			return (WorkingDirectory.GetHashCode() * 0x100000) + (Executable.GetHashCode() * 0x1000) + Arguments.GetHashCode();
 		}
 
-		public static bool operator ==(CommandInfo lhs, CommandInfo rhs)
+		public static bool operator ==(CommandInfo lhs, CommandInfo other)
 		{
 			if (ReferenceEquals(lhs, null))
-				return ReferenceEquals(rhs, null);
-			return lhs.Equals(rhs);
+				return ReferenceEquals(other, null);
+			return lhs.Equals(other);
 		}
 
-		public static bool operator !=(CommandInfo lhs, CommandInfo rhs)
+		public static bool operator !=(CommandInfo lhs, CommandInfo other)
 		{
-			return !(lhs == rhs);
+			return !(lhs == other);
 		}
 
 		public Path WorkingDirectory { get; init; }
@@ -141,27 +141,27 @@ namespace Soup.Build.Utilities
 			DependencyCount = dependencyCount;
 		}
 
-		public bool Equals(OperationInfo? rhs)
+		public bool Equals(OperationInfo? other)
 		{
-			if (ReferenceEquals(rhs, null))
+			if (ReferenceEquals(other, null))
 				return false;
 
-			var result = Id == rhs.Id &&
-				Title == rhs.Title &&
-				Command == rhs.Command &&
-				Enumerable.SequenceEqual(DeclaredInput, rhs.DeclaredInput) &&
-				Enumerable.SequenceEqual(DeclaredOutput, rhs.DeclaredOutput) &&
-				Enumerable.SequenceEqual(ReadAccess, rhs.ReadAccess) &&
-				Enumerable.SequenceEqual(WriteAccess, rhs.WriteAccess) &&
-				Enumerable.SequenceEqual(Children, rhs.Children) &&
-				DependencyCount == rhs.DependencyCount;
+			var result = Id == other.Id &&
+				Title == other.Title &&
+				Command == other.Command &&
+				Enumerable.SequenceEqual(DeclaredInput, other.DeclaredInput) &&
+				Enumerable.SequenceEqual(DeclaredOutput, other.DeclaredOutput) &&
+				Enumerable.SequenceEqual(ReadAccess, other.ReadAccess) &&
+				Enumerable.SequenceEqual(WriteAccess, other.WriteAccess) &&
+				Enumerable.SequenceEqual(Children, other.Children) &&
+				DependencyCount == other.DependencyCount;
 
 			return result;
 		}
 
-		public override bool Equals(object? rhs)
+		public override bool Equals(object? obj)
 		{
-			return Equals(rhs as OperationInfo);
+			return Equals(obj as OperationInfo);
 		}
 
 		public override int GetHashCode()
@@ -169,16 +169,16 @@ namespace Soup.Build.Utilities
 			return (Id.GetHashCode() * 0x100000) + (Title.GetHashCode() * 0x1000) + Command.GetHashCode();
 		}
 
-		public static bool operator ==(OperationInfo lhs, OperationInfo rhs)
+		public static bool operator ==(OperationInfo lhs, OperationInfo other)
 		{
 			if (ReferenceEquals(lhs, null))
-				return ReferenceEquals(rhs, null);
-			return lhs.Equals(rhs);
+				return ReferenceEquals(other, null);
+			return lhs.Equals(other);
 		}
 
-		public static bool operator !=(OperationInfo lhs, OperationInfo rhs)
+		public static bool operator !=(OperationInfo lhs, OperationInfo other)
 		{
-			return !(lhs == rhs);
+			return !(lhs == other);
 		}
 
 		public OperationId Id { get; init; }

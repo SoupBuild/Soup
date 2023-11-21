@@ -2,40 +2,39 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Opal
+namespace Opal;
+
+public class EventTypeFilter : IEventFilter
 {
-	public class EventTypeFilter : IEventFilter
+	private TraceEvents types;
+
+	public EventTypeFilter(TraceEvents eventTypes)
 	{
-		private TraceEventFlag types;
+		this.types = eventTypes;
+	}
 
-		public EventTypeFilter(TraceEventFlag eventTypes)
-		{
-			this.types = eventTypes;
-		}
+	public void Set(TraceEvents eventType)
+	{
+		this.types = eventType;
+	}
 
-		public void Set(TraceEventFlag eventType)
-		{
-			this.types = eventType;
-		}
+	public void Disable(TraceEvents eventType)
+	{
+		this.types &= ~eventType;
+	}
 
-		public void Disable(TraceEventFlag eventType)
-		{
-			this.types &= ~eventType;
-		}
+	public void Enable(TraceEvents eventType)
+	{
+		this.types |= eventType;
+	}
 
-		public void Enable(TraceEventFlag eventType)
-		{
-			this.types |= eventType;
-		}
+	public bool IsEnabled(TraceEvents eventType)
+	{
+		return (this.types & eventType) == eventType;
+	}
 
-		public bool IsEnabled(TraceEventFlag eventType)
-		{
-			return (this.types & eventType) == eventType;
-		}
-
-		public virtual bool ShouldTrace(TraceEventFlag eventType)
-		{
-			return this.IsEnabled(eventType);
-		}
+	public virtual bool ShouldTrace(TraceEvents eventType)
+	{
+		return this.IsEnabled(eventType);
 	}
 }
