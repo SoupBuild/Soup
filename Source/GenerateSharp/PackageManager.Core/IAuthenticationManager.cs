@@ -4,17 +4,16 @@
 
 using System.Threading.Tasks;
 
-namespace Soup.Build.PackageManager
+namespace Soup.Build.PackageManager;
+
+/// <summary>
+/// The authentication manager interface
+/// Interface mainly used to allow for unit testing client code.
+/// </summary>
+public interface IAuthenticationManager
 {
 	/// <summary>
-	/// The authentication manager interface
-	/// Interface mainly used to allow for unit testing client code.
+	/// Get the authentication token for the user
 	/// </summary>
-	public interface IAuthenticationManager
-	{
-		/// <summary>
-		/// Get the authentication token for the user
-		/// </summary>
-		public Task<string> EnsureSignInAsync();
-	}
+	public Task<string> EnsureSignInAsync();
 }

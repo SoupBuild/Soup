@@ -5,94 +5,93 @@
 using System;
 using System.Collections.Generic;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build.Utilities;
+
+/// <summary>
+/// The local user config container
+/// </summary>
+public class LocalUserConfig
 {
+	public static string Property_SDKs => "SDKs";
+
+	private SMLDocument _table;
+
 	/// <summary>
-	/// The local user config container
+	/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
 	/// </summary>
-	public class LocalUserConfig
+	public LocalUserConfig()
 	{
-		public static string Property_SDKs => "SDKs";
+		_table = new SMLDocument();
+	}
 
-		private SMLDocument _table;
+	/// <summary>
+	/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
+	/// </summary>
+	public LocalUserConfig(SMLDocument table)
+	{
+		_table = table;
+	}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
-		/// </summary>
-		public LocalUserConfig()
+	/// <summary>
+	/// Gets or sets the list of SDKs
+	/// </summary>
+	public bool HasSDKs()
+	{
+		return _table.Values.ContainsKey(Property_SDKs);
+	}
+
+	public IList<SDKConfig> GetSDKs()
+	{
+		if (_table.Values.TryGetValue(Property_SDKs, out var sdksValue))
 		{
-			_table = new SMLDocument();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
-		/// </summary>
-		public LocalUserConfig(SMLDocument table)
-		{
-			_table = table;
-		}
-
-		/// <summary>
-		/// Gets or sets the list of SDKs
-		/// </summary>
-		public bool HasSDKs()
-		{
-			return _table.Values.ContainsKey(Property_SDKs);
-		}
-
-		public IList<SDKConfig> GetSDKs()
-		{
-			if (_table.Values.TryGetValue(Property_SDKs, out var sdksValue))
+			var values = sdksValue.Value.AsArray();
+			var result = new List<SDKConfig>();
+			foreach (var value in values.Values)
 			{
-				var values = sdksValue.Value.AsArray();
-				var result = new List<SDKConfig>();
-				foreach (var value in values.Values)
-				{
-					result.Add(new SDKConfig(value.Value.AsTable()));
-				}
-
-				return result;
-			}
-			else
-			{
-				throw new InvalidOperationException("No SDKs.");
-			}
-		}
-
-		public SDKConfig EnsureSDK(string name)
-		{
-			// Check the existing entries
-			SMLArray? values;
-			if (_table.Values.TryGetValue(Property_SDKs, out var sdksValue))
-			{
-				values = sdksValue.Value.AsArray();
-				foreach (var value in values.Values)
-				{
-					var config = new SDKConfig(value.Value.AsTable());
-					if (config.HasName() && config.Name == name)
-						return config;
-				}
-			}
-			else
-			{
-				values = _table.AddArrayWithSyntax(Property_SDKs);
+				result.Add(new SDKConfig(value.Value.AsTable()));
 			}
 
-			// No matching SDK as a table array entry
-			var sdkValueTable = values.AddTableWithSyntax(1);
-
-			return new SDKConfig(sdkValueTable)
-			{
-				Name = name,
-			};
+			return result;
 		}
-
-		/// <summary>
-		/// Raw access
-		/// </summary>
-		public SMLDocument GetDocument()
+		else
 		{
-			return _table;
+			throw new InvalidOperationException("No SDKs.");
 		}
+	}
+
+	public SDKConfig EnsureSDK(string name)
+	{
+		// Check the existing entries
+		SMLArray? values;
+		if (_table.Values.TryGetValue(Property_SDKs, out var sdksValue))
+		{
+			values = sdksValue.Value.AsArray();
+			foreach (var value in values.Values)
+			{
+				var config = new SDKConfig(value.Value.AsTable());
+				if (config.HasName() && config.Name == name)
+					return config;
+			}
+		}
+		else
+		{
+			values = _table.AddArrayWithSyntax(Property_SDKs);
+		}
+
+		// No matching SDK as a table array entry
+		var sdkValueTable = values.AddTableWithSyntax(1);
+
+		return new SDKConfig(sdkValueTable)
+		{
+			Name = name,
+		};
+	}
+
+	/// <summary>
+	/// Raw access
+	/// </summary>
+	public SMLDocument GetDocument()
+	{
+		return _table;
 	}
 }

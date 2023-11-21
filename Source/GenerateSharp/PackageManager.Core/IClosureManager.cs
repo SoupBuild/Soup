@@ -5,18 +5,17 @@
 using Opal;
 using System.Threading.Tasks;
 
-namespace Soup.Build.PackageManager
+namespace Soup.Build.PackageManager;
+
+/// <summary>
+/// The closure manager interface
+/// Interface mainly used to allow for unit testing client code.
+/// </summary>
+public interface IClosureManager
 {
-	/// <summary>
-	/// The closure manager interface
-	/// Interface mainly used to allow for unit testing client code.
-	/// </summary>
-	public interface IClosureManager
-	{
-		public Task GenerateAndRestoreRecursiveLocksAsync(
-			Path workingDirectory,
-			Path packageStoreDirectory,
-			Path packageLockStoreDirectory,
-			Path stagingDirectory);
-	}
+	public Task GenerateAndRestoreRecursiveLocksAsync(
+		Path workingDirectory,
+		Path packageStoreDirectory,
+		Path packageLockStoreDirectory,
+		Path stagingDirectory);
 }

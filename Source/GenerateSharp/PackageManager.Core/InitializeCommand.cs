@@ -2,65 +2,65 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
-namespace Soup.Build.PackageManager
+using System;
+using System.Threading.Tasks;
+using Opal;
+using Opal.System;
+using Soup.Build.Utilities;
+
+namespace Soup.Build.PackageManager;
+
+/// <summary>
+/// The initialize command
+/// </summary>
+public class InitializeCommand
 {
-	using System;
-	using System.Threading.Tasks;
-	using Opal;
-	using Opal.System;
-	using Soup.Build.Utilities;
+	private const string CppTypeExecutable = "Executable";
+	private const string BuiltInLanguageCpp = "C++";
+
+	private SemanticVersion _builtInLanguageVersionCpp;
+
+	public InitializeCommand(
+		SemanticVersion builtInLanguageVersionCpp)
+	{
+		_builtInLanguageVersionCpp = builtInLanguageVersionCpp;
+	}
 
 	/// <summary>
-	/// The initialize command
+	/// Initialize a package
 	/// </summary>
-	public class InitializeCommand
+	public async Task InitializePackageAsync(Path workingDirectory)
 	{
-		private const string CppTypeExecutable = "Executable";
-		private const string BuiltInLanguageCpp = "C++";
+		// Use the current directory as the default names
+		var recipePath =
+			workingDirectory +
+			BuildConstants.RecipeFileName;
 
-		private SemanticVersion _builtInLanguageVersionCpp;
+		// Todo: Opal path should have a way to get individual directories
+		var workingFolderValue = workingDirectory.ToString();
+		workingFolderValue = workingFolderValue.Remove(workingFolderValue.Length - 1, 1);
+		var workingFolder = new Path(workingFolderValue);
 
-		public InitializeCommand(
-			SemanticVersion builtInLanguageVersionCpp)
-		{
-			_builtInLanguageVersionCpp = builtInLanguageVersionCpp;
-		}
+		var recipe = new Recipe(
+			workingFolder.GetFileName(),
+			new LanguageReference(
+				BuiltInLanguageCpp,
+				new SemanticVersion(
+					_builtInLanguageVersionCpp.Major,
+					_builtInLanguageVersionCpp.Minor,
+					null)));
 
-		/// <summary>
-		/// Initialize a package
-		/// </summary>
-		public async Task InitializePackageAsync(Path workingDirectory)
-		{
-			// Use the current directory as the default names
-			var recipePath =
-				workingDirectory +
-				BuildConstants.RecipeFileName;
+		recipe.Type = CppTypeExecutable;
+		recipe.Version = new SemanticVersion(1, 0, 0);
+		recipe.AddSource("Main.cpp");
 
-			// Todo: Opal path should have a way to get individual directories
-			var workingFolderValue = workingDirectory.ToString();
-			workingFolderValue = workingFolderValue.Remove(workingFolderValue.Length - 1, 1);
-			var workingFolder = new Path(workingFolderValue);
+		UpdateDefaultValues(recipe);
 
-			var recipe = new Recipe(
-				workingFolder.GetFileName(),
-				new LanguageReference(
-					BuiltInLanguageCpp,
-					new SemanticVersion(
-						_builtInLanguageVersionCpp.Major,
-						_builtInLanguageVersionCpp.Minor,
-						null)));
+		// Save the state of the recipe if it has changed
+		await RecipeExtensions.SaveToFileAsync(recipePath, recipe);
 
-			recipe.Type = CppTypeExecutable;
-			recipe.Version = new SemanticVersion(1, 0, 0);
-			recipe.AddSource("Main.cpp");
-
-			UpdateDefaultValues(recipe);
-
-			// Save the state of the recipe if it has changed
-			await RecipeExtensions.SaveToFileAsync(recipePath, recipe);
-
-			// Save a simple main method
-			var mainFileContent =
+		// Save a simple main method
+		var mainFileContent =
 @"#include <iostream>
 int main()
 {
@@ -68,43 +68,42 @@ int main()
 	return 0;
 }";
 
-			var mainFilePath = workingDirectory + new Path("Main.cpp");
-			using var mainFile = LifetimeManager.Get<IFileSystem>().OpenWrite(mainFilePath, false);
-			using var mainFileWriter = new System.IO.StreamWriter(mainFile.GetOutStream(), null, -1, true);
+		var mainFilePath = workingDirectory + new Path("Main.cpp");
+		using var mainFile = LifetimeManager.Get<IFileSystem>().OpenWrite(mainFilePath, false);
+		using var mainFileWriter = new System.IO.StreamWriter(mainFile.GetOutStream(), null, -1, true);
 
-			await mainFileWriter.WriteAsync(mainFileContent);
+		await mainFileWriter.WriteAsync(mainFileContent);
+	}
+
+	private void UpdateDefaultValues(Recipe recipe)
+	{
+		Log.HighPriority($"Name: ({recipe.Name})");
+		var newName = Console.ReadLine();
+		if (!string.IsNullOrWhiteSpace(newName))
+		{
+			recipe.Name = newName;
 		}
 
-		private void UpdateDefaultValues(Recipe recipe)
+		bool setVersion = false;
+		while (!setVersion)
 		{
-			Log.HighPriority($"Name: ({recipe.Name})");
-			var newName = Console.ReadLine();
-			if (!string.IsNullOrWhiteSpace(newName))
+			Log.HighPriority($"Version: ({recipe.Version})");
+			var newVersion = Console.ReadLine();
+			if (string.IsNullOrWhiteSpace(newVersion))
 			{
-				recipe.Name = newName;
+				// Use the default
+				setVersion = true;
 			}
-
-			bool setVersion = false;
-			while (!setVersion)
+			else
 			{
-				Log.HighPriority($"Version: ({recipe.Version})");
-				var newVersion = Console.ReadLine();
-				if (string.IsNullOrWhiteSpace(newVersion))
+				if (SemanticVersion.TryParse(newVersion, out var value))
 				{
-					// Use the default
+					recipe.Version = value;
 					setVersion = true;
 				}
 				else
 				{
-					if (SemanticVersion.TryParse(newVersion, out var value))
-					{
-						recipe.Version = value;
-						setVersion = true;
-					}
-					else
-					{
-						Log.Warning($"Invalid version: \"{newVersion}\"");
-					}
+					Log.Warning($"Invalid version: \"{newVersion}\"");
 				}
 			}
 		}

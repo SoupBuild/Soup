@@ -5,115 +5,114 @@
 using Opal;
 using System.Collections.Generic;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build.Utilities;
+
+/// <summary>
+/// The cached operation graph that is used to track input/output mappings for previous build
+/// executions to support incremental builds
+/// </summary>
+public class OperationGraph
 {
+	private List<(FileId FileId, Path Path)> _referencedFiles;
+	private List<OperationId> _rootOperations;
+	private Dictionary<OperationId, OperationInfo> _operations;
+	private Dictionary<CommandInfo, OperationId> _operationLookup;
+
 	/// <summary>
-	/// The cached operation graph that is used to track input/output mappings for previous build
-	/// executions to support incremental builds
+	/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 	/// </summary>
-	public class OperationGraph
+	public OperationGraph()
 	{
-		private List<(FileId FileId, Path Path)> _referencedFiles;
-		private List<OperationId> _rootOperations;
-		private Dictionary<OperationId, OperationInfo> _operations;
-		private Dictionary<CommandInfo, OperationId> _operationLookup;
+		_referencedFiles = new List<(FileId FileId, Path Path)>();
+		_rootOperations = new List<OperationId>();
+		_operations = new Dictionary<OperationId, OperationInfo>();
+		_operationLookup = new Dictionary<CommandInfo, OperationId>();
+	}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
-		/// </summary>
-		public OperationGraph()
+	/// <summary>
+	/// Initializes a new instance of the <see cref="OperationGraph"/> class.
+	/// </summary>
+	public OperationGraph(
+		List<(FileId FileId, Path Path)> referencedFiles,
+		List<OperationId> rootOperations,
+		List<OperationInfo> operations)
+	{
+		_referencedFiles = referencedFiles;
+		_rootOperations = rootOperations;
+		_operations = new Dictionary<OperationId, OperationInfo>();
+		_operationLookup = new Dictionary<CommandInfo, OperationId>();
+
+		// Store the incoming vector of operations as a lookup for fast checks
+		foreach (var info in operations)
 		{
-			_referencedFiles = new List<(FileId FileId, Path Path)>();
-			_rootOperations = new List<OperationId>();
-			_operations = new Dictionary<OperationId, OperationInfo>();
-			_operationLookup = new Dictionary<CommandInfo, OperationId>();
+			AddOperation(info);
 		}
+	}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
-		/// </summary>
-		public OperationGraph(
-			List<(FileId FileId, Path Path)> referencedFiles,
-			List<OperationId> rootOperations,
-			List<OperationInfo> operations)
+	/// <summary>
+	/// Get the set of referenced file ids that map to their paths
+	/// </summary>
+	public List<(FileId FileId, Path Path)> ReferencedFiles
+	{
+		get { return _referencedFiles; }
+		set { _referencedFiles = value; }
+	}
+
+	/// <summary>
+	/// Get the list of root operation ids
+	/// </summary>
+	public List<OperationId> RootOperationIds
+	{
+		get { return _rootOperations; }
+		set { _rootOperations = value; }
+	}
+
+	/// <summary>
+	/// Get Operations
+	/// </summary>
+	public IReadOnlyDictionary<OperationId, OperationInfo> Operations => _operations;
+
+	/// <summary>
+	/// Find an operation info
+	/// </summary>
+	public bool HasCommand(CommandInfo command)
+	{
+		return _operationLookup.ContainsKey(command);
+	}
+
+	/// <summary>
+	/// Find an operation info
+	/// </summary>
+	public bool TryFindOperationInfo(
+		CommandInfo command,
+		out OperationInfo operation)
+	{
+		if (_operationLookup.TryGetValue(command, out var operationId))
 		{
-			_referencedFiles = referencedFiles;
-			_rootOperations = rootOperations;
-			_operations = new Dictionary<OperationId, OperationInfo>();
-			_operationLookup = new Dictionary<CommandInfo, OperationId>();
-
-			// Store the incoming vector of operations as a lookup for fast checks
-			foreach (var info in operations)
-			{
-				AddOperation(info);
-			}
+			operation = GetOperationInfo(operationId);
+			return true;
 		}
-
-		/// <summary>
-		/// Get the set of referenced file ids that map to their paths
-		/// </summary>
-		public List<(FileId FileId, Path Path)> ReferencedFiles
+		else
 		{
-			get { return _referencedFiles; }
-			set { _referencedFiles = value; }
+			operation = new OperationInfo();
+			return false;
 		}
+	}
 
-		/// <summary>
-		/// Get the list of root operation ids
-		/// </summary>
-		public List<OperationId> RootOperationIds
-		{
-			get { return _rootOperations; }
-			set { _rootOperations = value; }
-		}
+	/// <summary>
+	/// Get an operation info
+	/// </summary>
+	public OperationInfo GetOperationInfo(OperationId operationId)
+	{
+		return _operations[operationId];
+	}
 
-		/// <summary>
-		/// Get Operations
-		/// </summary>
-		public IReadOnlyDictionary<OperationId, OperationInfo> Operations => _operations;
-
-		/// <summary>
-		/// Find an operation info
-		/// </summary>
-		public bool HasCommand(CommandInfo command)
-		{
-			return _operationLookup.ContainsKey(command);
-		}
-
-		/// <summary>
-		/// Find an operation info
-		/// </summary>
-		public bool TryFindOperationInfo(
-			CommandInfo command,
-			out OperationInfo operation)
-		{
-			if (_operationLookup.TryGetValue(command, out var operationId))
-			{
-				operation = GetOperationInfo(operationId);
-				return true;
-			}
-			else
-			{
-				operation = new OperationInfo();
-				return false;
-			}
-		}
-
-		/// <summary>
-		/// Get an operation info
-		/// </summary>
-		public OperationInfo GetOperationInfo(OperationId operationId)
-		{
-			return _operations[operationId];
-		}
-
-		/// <summary>
-		/// Add an operation info
-		/// </summary>
-		public void AddOperation(OperationInfo info)
-		{
-			_operationLookup.Add(info.Command, info.Id);
-			_operations.Add(info.Id, info);
-		}
+	/// <summary>
+	/// Add an operation info
+	/// </summary>
+	public void AddOperation(OperationInfo info)
+	{
+		_operationLookup.Add(info.Command, info.Id);
+		_operations.Add(info.Id, info);
 	}
 }

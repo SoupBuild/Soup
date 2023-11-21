@@ -10,37 +10,36 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Soup.Build.PackageManager.UnitTests
+namespace Soup.Build.PackageManager.UnitTests;
+
+public class ShimHttpMessageHandler : HttpMessageHandler
 {
-	public class ShimHttpMessageHandler : HttpMessageHandler
+	private IHttpMessageHandler _handler;
+
+	public ShimHttpMessageHandler(IHttpMessageHandler handler)
 	{
-		private IHttpMessageHandler _handler;
+		_handler = handler;
+	}
 
-		public ShimHttpMessageHandler(IHttpMessageHandler handler)
+	public virtual HttpResponseMessage Send(HttpMethod method, Uri requestUri, string headers, string content)
+	{
+		return _handler.Send(method, requestUri, headers, content);
+	}
+
+	protected override async Task<HttpResponseMessage> SendAsync(
+		HttpRequestMessage request, CancellationToken cancellationToken)
+	{
+		string? content = null;
+		if (request.Content != null)
 		{
-			_handler = handler;
+			using var memoryStream = new MemoryStream();
+			await request.Content.CopyToAsync(memoryStream);
+			byte[] byteInput = memoryStream.ToArray();
+			content = Encoding.UTF8.GetString(byteInput);
 		}
 
-		public virtual HttpResponseMessage Send(HttpMethod method, Uri requestUri, string headers, string content)
-		{
-			return _handler.Send(method, requestUri, headers, content);
-		}
+		var headers = string.Join(", ", request.Headers.Select(value => $"{{{value.Key}: [{string.Join(", ", value.Value)}]}}"));
 
-		protected override async Task<HttpResponseMessage> SendAsync(
-			HttpRequestMessage request, CancellationToken cancellationToken)
-		{
-			string? content = null;
-			if (request.Content != null)
-			{
-				using var memoryStream = new MemoryStream();
-				await request.Content.CopyToAsync(memoryStream);
-				byte[] byteInput = memoryStream.ToArray();
-				content = Encoding.UTF8.GetString(byteInput);
-			}
-
-			var headers = string.Join(", ", request.Headers.Select(value => $"{{{value.Key}: [{string.Join(", ", value.Value)}]}}"));
-
-			return _handler.SendAsync(request.Method, request.RequestUri, headers, content);
-		}
+		return _handler.SendAsync(request.Method, request.RequestUri, headers, content);
 	}
 }

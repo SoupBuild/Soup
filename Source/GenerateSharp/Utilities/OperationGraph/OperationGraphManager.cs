@@ -8,114 +8,113 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build.Utilities;
+
+/// <summary>
+/// The operation state manager
+/// </summary>
+public static class OperationGraphManager
 {
 	/// <summary>
-	/// The operation state manager
+	/// Load the operation state from the provided directory
 	/// </summary>
-	public static class OperationGraphManager
+	public static bool TryLoadState(
+		Path operationGraphFile,
+		FileSystemState fileSystemState,
+		[MaybeNullWhen(false)] out OperationGraph result)
 	{
-		/// <summary>
-		/// Load the operation state from the provided directory
-		/// </summary>
-		public static bool TryLoadState(
-			Path operationGraphFile,
-			FileSystemState fileSystemState,
-			[MaybeNullWhen(false)] out OperationGraph result)
+		// Verify the requested file exists
+		if (!LifetimeManager.Get<IFileSystem>().Exists(operationGraphFile))
 		{
-			// Verify the requested file exists
-			if (!LifetimeManager.Get<IFileSystem>().Exists(operationGraphFile))
-			{
-				Log.Info("Operation graph file does not exist");
-				result = null;
-				return false;
-			}
-
-			// Open the file to read from
-			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(operationGraphFile);
-			using var reader = new System.IO.BinaryReader(file.GetInStream(), Encoding.UTF8, true);
-
-			// Read the contents of the build state file
-			try
-			{
-				var loadedResult = OperationGraphReader.Deserialize(reader);
-
-				// Map up the incoming file ids to the active file system state ids
-				var activeFileIdMap = new Dictionary<FileId, FileId>();
-				for (var i = 0; i < loadedResult.ReferencedFiles.Count; i++)
-				{
-					var fileReference = loadedResult.ReferencedFiles[i];
-					var activeFileId = fileSystemState.ToFileId(fileReference.Path);
-					activeFileIdMap.Add(fileReference.FileId, activeFileId);
-
-					// Update the referenced id
-					fileReference.FileId = activeFileId;
-				}
-
-				// Update all of the operations
-				foreach (var operationReference in loadedResult.Operations)
-				{
-					var operation = operationReference.Value;
-					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
-					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
-				}
-
-				result = loadedResult;
-				return true;
-			}
-			catch
-			{
-				Log.Error("Failed to parse operation graph");
-				result = null;
-				return false;
-			}
+			Log.Info("Operation graph file does not exist");
+			result = null;
+			return false;
 		}
 
-		/// <summary>
-		/// Save the operation state for the provided directory
-		/// </summary>
-		public static void SaveState(
-			Path operationGraphFile,
-			OperationGraph state,
-			FileSystemState fileSystemState)
+		// Open the file to read from
+		using var file = LifetimeManager.Get<IFileSystem>().OpenRead(operationGraphFile);
+		using var reader = new System.IO.BinaryReader(file.GetInStream(), Encoding.UTF8, true);
+
+		// Read the contents of the build state file
+		try
 		{
-			// Update the operation graph referenced files
-			var files = new HashSet<FileId>();
-			foreach (var operationReference in state.Operations)
+			var loadedResult = OperationGraphReader.Deserialize(reader);
+
+			// Map up the incoming file ids to the active file system state ids
+			var activeFileIdMap = new Dictionary<FileId, FileId>();
+			for (var i = 0; i < loadedResult.ReferencedFiles.Count; i++)
+			{
+				var fileReference = loadedResult.ReferencedFiles[i];
+				var activeFileId = fileSystemState.ToFileId(fileReference.Path);
+				activeFileIdMap.Add(fileReference.FileId, activeFileId);
+
+				// Update the referenced id
+				fileReference.FileId = activeFileId;
+			}
+
+			// Update all of the operations
+			foreach (var operationReference in loadedResult.Operations)
 			{
 				var operation = operationReference.Value;
-				files.UnionWith(operation.DeclaredInput);
-				files.UnionWith(operation.DeclaredOutput);
-				files.UnionWith(operation.ReadAccess);
-				files.UnionWith(operation.WriteAccess);
+				UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
+				UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
 			}
 
-			var referencedFiles = new List<(FileId FileId, Path Path)>();
-			foreach (var fileId in files)
-			{
-				referencedFiles.Add((fileId, fileSystemState.GetFilePath(fileId)));
-			}
+			result = loadedResult;
+			return true;
+		}
+		catch
+		{
+			Log.Error("Failed to parse operation graph");
+			result = null;
+			return false;
+		}
+	}
 
-			state.ReferencedFiles = referencedFiles;
-
-			// Open the file to write to
-			using var fileStream = System.IO.File.Open(
-				operationGraphFile.ToString(),
-				System.IO.FileMode.Create,
-				System.IO.FileAccess.Write);
-			using var writer = new System.IO.BinaryWriter(fileStream);
-
-			// Write the build state to the file stream
-			OperationGraphWriter.Serialize(state, writer);
+	/// <summary>
+	/// Save the operation state for the provided directory
+	/// </summary>
+	public static void SaveState(
+		Path operationGraphFile,
+		OperationGraph state,
+		FileSystemState fileSystemState)
+	{
+		// Update the operation graph referenced files
+		var files = new HashSet<FileId>();
+		foreach (var operationReference in state.Operations)
+		{
+			var operation = operationReference.Value;
+			files.UnionWith(operation.DeclaredInput);
+			files.UnionWith(operation.DeclaredOutput);
+			files.UnionWith(operation.ReadAccess);
+			files.UnionWith(operation.WriteAccess);
 		}
 
-		private static void UpdateFileIds(IList<FileId> fileIds, IDictionary<FileId, FileId> activeFileIdMap)
+		var referencedFiles = new List<(FileId FileId, Path Path)>();
+		foreach (var fileId in files)
 		{
-			for (var i = 0; i < fileIds.Count; i++)
-			{
-				var findActiveFileId = activeFileIdMap[fileIds[i]];
-				fileIds[i] = findActiveFileId;
-			}
+			referencedFiles.Add((fileId, fileSystemState.GetFilePath(fileId)));
+		}
+
+		state.ReferencedFiles = referencedFiles;
+
+		// Open the file to write to
+		using var fileStream = System.IO.File.Open(
+			operationGraphFile.ToString(),
+			System.IO.FileMode.Create,
+			System.IO.FileAccess.Write);
+		using var writer = new System.IO.BinaryWriter(fileStream);
+
+		// Write the build state to the file stream
+		OperationGraphWriter.Serialize(state, writer);
+	}
+
+	private static void UpdateFileIds(IList<FileId> fileIds, IDictionary<FileId, FileId> activeFileIdMap)
+	{
+		for (var i = 0; i < fileIds.Count; i++)
+		{
+			var findActiveFileId = activeFileIdMap[fileIds[i]];
+			fileIds[i] = findActiveFileId;
 		}
 	}
 }

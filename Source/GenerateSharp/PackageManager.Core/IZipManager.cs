@@ -4,16 +4,15 @@
 
 using Opal;
 
-namespace Soup.Build.PackageManager
-{
-	/// <summary>
-	/// The zip manager interface
-	/// Interface mainly used to allow for unit testing client code.
-	/// </summary>
-	public interface IZipManager
-	{
-		public void ExtractToDirectory(Path sourceArchiveFileName, Path destinationDirectoryName);
+namespace Soup.Build.PackageManager;
 
-		public IZipArchive OpenCreate(Path archivePath);
-	}
+/// <summary>
+/// The zip manager interface
+/// Interface mainly used to allow for unit testing client code.
+/// </summary>
+public interface IZipManager
+{
+	public void ExtractToDirectory(Path sourceArchiveFileName, Path destinationDirectoryName);
+
+	public IZipArchive OpenCreate(Path archivePath);
 }

@@ -6,63 +6,62 @@ using Opal;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build.Utilities;
+
+/// <summary>
+/// The cached operation results that is used to track input/output mappings for previous build
+/// executions to support incremental builds
+/// </summary>
+public class OperationResults
 {
+	private Dictionary<OperationId, OperationResult> _results;
+
 	/// <summary>
-	/// The cached operation results that is used to track input/output mappings for previous build
-	/// executions to support incremental builds
+	/// Initializes a new instance of the <see cref="OperationResults"/> class.
 	/// </summary>
-	public class OperationResults
+	public OperationResults()
 	{
-		private Dictionary<OperationId, OperationResult> _results;
+		ReferencedFiles = new List<(FileId FileId, Path Path)>();
+		_results = new Dictionary<OperationId, OperationResult>();
+	}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OperationResults"/> class.
-		/// </summary>
-		public OperationResults()
+	/// <summary>
+	/// Initializes a new instance of the <see cref="OperationResults"/> class.
+	/// </summary>
+	public OperationResults(
+		IList<(FileId FileId, Path Path)> referencedFiles,
+		Dictionary<OperationId, OperationResult> results)
+	{
+		ReferencedFiles = referencedFiles;
+		_results = results;
+	}
+
+	/// <summary>
+	/// Get the set of referenced file ids that map to their paths
+	/// </summary>
+	public IList<(FileId FileId, Path Path)> ReferencedFiles { get; set; }
+
+	/// <summary>
+	/// Get Results
+	/// </summary>
+	public IDictionary<OperationId, OperationResult> Results => _results;
+
+	/// <summary>
+	/// Find an operation result
+	/// </summary>
+	public bool TryFindResult(
+		OperationId operationId,
+		[MaybeNullWhen(false)] out OperationResult result)
+	{
+		if (_results.TryGetValue(operationId, out var operationResult))
 		{
-			ReferencedFiles = new List<(FileId FileId, Path Path)>();
-			_results = new Dictionary<OperationId, OperationResult>();
+			result = operationResult;
+			return true;
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OperationResults"/> class.
-		/// </summary>
-		public OperationResults(
-			IList<(FileId FileId, Path Path)> referencedFiles,
-			Dictionary<OperationId, OperationResult> results)
+		else
 		{
-			ReferencedFiles = referencedFiles;
-			_results = results;
-		}
-
-		/// <summary>
-		/// Get the set of referenced file ids that map to their paths
-		/// </summary>
-		public IList<(FileId FileId, Path Path)> ReferencedFiles { get; set; }
-
-		/// <summary>
-		/// Get Results
-		/// </summary>
-		public IDictionary<OperationId, OperationResult> Results => _results;
-
-		/// <summary>
-		/// Find an operation result
-		/// </summary>
-		public bool TryFindResult(
-			OperationId operationId,
-			[MaybeNullWhen(false)] out OperationResult result)
-		{
-			if (_results.TryGetValue(operationId, out var operationResult))
-			{
-				result = operationResult;
-				return true;
-			}
-			else
-			{
-				result = null;
-				return false;
-			}
+			result = null;
+			return false;
 		}
 	}
 }

@@ -4,64 +4,63 @@
 
 using System;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build.Utilities;
+
+public class SMLFloatValue : IEquatable<SMLFloatValue>
 {
-	public class SMLFloatValue : IEquatable<SMLFloatValue>
+	public double Value { get; set; }
+
+	public SMLToken Content { get; set; }
+
+	public SMLFloatValue()
 	{
-		public double Value { get; set; }
+		Value = 0;
+		Content = SMLToken.Empty;
+	}
 
-		public SMLToken Content { get; set; }
+	public SMLFloatValue(double value)
+	{
+		Value = value;
+		Content = new SMLToken(value.ToString());
+	}
 
-		public SMLFloatValue()
-		{
-			Value = 0;
-			Content = SMLToken.Empty;
-		}
+	public SMLFloatValue(
+		double value,
+		SMLToken content)
+	{
+		Value = value;
+		Content = content;
+	}
 
-		public SMLFloatValue(double value)
-		{
-			Value = value;
-			Content = new SMLToken(value.ToString());
-		}
+	public override bool Equals(object? obj) => this.Equals(obj as SMLFloatValue);
 
-		public SMLFloatValue(
-			double value,
-			SMLToken content)
-		{
-			Value = value;
-			Content = content;
-		}
+	public bool Equals(SMLFloatValue? rhs)
+	{
+		if (rhs is null)
+			return false;
 
-		public override bool Equals(object? obj) => this.Equals(obj as SMLFloatValue);
+		// Optimization for a common success case.
+		if (object.ReferenceEquals(this, rhs))
+			return true;
 
-		public bool Equals(SMLFloatValue? rhs)
+		// Return true if the fields match.
+		return this.Value == rhs.Value;
+	}
+
+	public override int GetHashCode() => (Value).GetHashCode();
+
+	public static bool operator ==(SMLFloatValue? lhs, SMLFloatValue? rhs)
+	{
+		if (lhs is null)
 		{
 			if (rhs is null)
-				return false;
-
-			// Optimization for a common success case.
-			if (object.ReferenceEquals(this, rhs))
 				return true;
-
-			// Return true if the fields match.
-			return this.Value == rhs.Value;
+			else
+				return false;
 		}
 
-		public override int GetHashCode() => (Value).GetHashCode();
-
-		public static bool operator ==(SMLFloatValue? lhs, SMLFloatValue? rhs)
-		{
-			if (lhs is null)
-			{
-				if (rhs is null)
-					return true;
-				else
-					return false;
-			}
-
-			return lhs.Equals(rhs);
-		}
-
-		public static bool operator !=(SMLFloatValue? lhs, SMLFloatValue? rhs) => !(lhs == rhs);
+		return lhs.Equals(rhs);
 	}
+
+	public static bool operator !=(SMLFloatValue? lhs, SMLFloatValue? rhs) => !(lhs == rhs);
 }
