@@ -1,12 +1,11 @@
 ﻿using Avalonia.Controls;
 
-namespace Soup.View.Views
+namespace Soup.View.Views;
+
+public partial class TaskGraphView : UserControl
 {
-	public partial class TaskGraphView : UserControl
+	public TaskGraphView()
 	{
-		public TaskGraphView()
-		{
-			InitializeComponent();
-		}
+		InitializeComponent();
 	}
 }

@@ -4,19 +4,18 @@
 
 using System.Collections.ObjectModel;
 
-namespace Soup.View.ViewModels
+namespace Soup.View.ViewModels;
+
+public class PropertyValueViewModel
 {
-	public class PropertyValueViewModel
+	public PropertyValueViewModel(string name, string? value)
 	{
-		public PropertyValueViewModel(string name, string? value)
-		{
-			Name = name;
-			Value = value;
-		}
-
-		public string Name { get; set; }
-		public string? Value { get; set; }
-
-		public ObservableCollection<PropertyValueViewModel>? Children { get; init; }
+		Name = name;
+		Value = value;
 	}
+
+	public string Name { get; set; }
+	public string? Value { get; set; }
+
+	public ObservableCollection<PropertyValueViewModel>? Children { get; init; }
 }

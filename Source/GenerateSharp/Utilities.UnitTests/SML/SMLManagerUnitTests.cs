@@ -2,38 +2,37 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Opal;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Soup.Build.Utilities.UnitTests
+namespace Soup.Build.Utilities.UnitTests;
+
+public class SMLManagerUnitTests
 {
-	public class SMLManagerUnitTests
+	[Fact]
+	public void Deserialize_GarbageThrows()
 	{
-		[Fact]
-		public void Deserialize_GarbageThrows()
+		var recipe = "garbage";
+		Assert.Throws<InvalidOperationException>(() =>
 		{
-			var recipe = "garbage";
-			Assert.Throws<InvalidOperationException>(() =>
-			{
-				var actual = SMLManager.Deserialize(recipe);
-			});
-		}
-
-		[Fact]
-		public void Deserialize_Simple_Flat()
-		{
-			var recipe =
-				@"Name: ""MyPackage""
-				Language: ""C++|1""";
 			var actual = SMLManager.Deserialize(recipe);
+		});
+	}
 
-			var expected = new SMLDocument(
-				new Dictionary<string, SMLTableValue>()
-				{
+	[Fact]
+	public void Deserialize_Simple_Flat()
+	{
+		var recipe =
+			@"Name: ""MyPackage""
+				Language: ""C++|1""";
+		var actual = SMLManager.Deserialize(recipe);
+
+		var expected = new SMLDocument(
+			new Dictionary<string, SMLTableValue>()
+			{
 					{
 						"Name",
 						new SMLTableValue(
@@ -50,21 +49,21 @@ namespace Soup.Build.Utilities.UnitTests
 							new SMLToken(":"),
 							new SMLValue(new SMLStringValue("C++|1")))
 					},
-				});
+			});
 
-			Assert.Equal(expected, actual);
-		}
+		Assert.Equal(expected, actual);
+	}
 
-		[Fact]
-		public void Deserialize_ComplexKey()
-		{
-			var recipe =
-				@"""#1%^`"": ""ComplexValue""";
-			var actual = SMLManager.Deserialize(recipe);
+	[Fact]
+	public void Deserialize_ComplexKey()
+	{
+		var recipe =
+			@"""#1%^`"": ""ComplexValue""";
+		var actual = SMLManager.Deserialize(recipe);
 
-			var expected = new SMLDocument(
-				new Dictionary<string, SMLTableValue>()
-				{
+		var expected = new SMLDocument(
+			new Dictionary<string, SMLTableValue>()
+			{
 					{
 						"#1%^`",
 						new SMLTableValue(
@@ -73,21 +72,21 @@ namespace Soup.Build.Utilities.UnitTests
 							new SMLToken(":"),
 							new SMLValue(new SMLStringValue("ComplexValue")))
 					},
-				});
+			});
 
-			Assert.Equal(expected, actual);
-		}
+		Assert.Equal(expected, actual);
+	}
 
-		[Fact]
-		public void Deserialize_Simple_Inline()
-		{
-			var recipe =
-				@"Name: ""MyPackage"", Language: ""C++|1""";
-			var actual = SMLManager.Deserialize(recipe);
+	[Fact]
+	public void Deserialize_Simple_Inline()
+	{
+		var recipe =
+			@"Name: ""MyPackage"", Language: ""C++|1""";
+		var actual = SMLManager.Deserialize(recipe);
 
-			var expected = new SMLDocument(
-				new Dictionary<string, SMLTableValue>()
-				{
+		var expected = new SMLDocument(
+			new Dictionary<string, SMLTableValue>()
+			{
 					{
 						"Name",
 						new SMLTableValue(
@@ -104,16 +103,16 @@ namespace Soup.Build.Utilities.UnitTests
 							new SMLToken(":"),
 							new SMLValue(new SMLStringValue("C++|1")))
 					},
-				});
+			});
 
-			Assert.Equal(expected, actual);
-		}
+		Assert.Equal(expected, actual);
+	}
 
-		[Fact]
-		public void Deserialize_AllProperties()
-		{
-			var recipe =
-				@"Name: ""MyPackage""
+	[Fact]
+	public void Deserialize_AllProperties()
+	{
+		var recipe =
+			@"Name: ""MyPackage""
 
 				# A Comment in the file
 				Language: ""C++|1""
@@ -127,11 +126,11 @@ namespace Soup.Build.Utilities.UnitTests
 						123
 						false, ""string"" ]
 				}";
-			var actual = SMLManager.Deserialize(recipe);
+		var actual = SMLManager.Deserialize(recipe);
 
-			var expected = new SMLDocument(
-				new Dictionary<string, SMLTableValue>()
-				{
+		var expected = new SMLDocument(
+			new Dictionary<string, SMLTableValue>()
+			{
 					{
 						"Name",
 						new SMLTableValue(
@@ -211,16 +210,16 @@ namespace Soup.Build.Utilities.UnitTests
 								},
 							})))
 					},
-				});
+			});
 
-			Assert.Equal(expected, actual);
-		}
+		Assert.Equal(expected, actual);
+	}
 
-		[Fact]
-		public async Task RoundTrip_AllProperties()
-		{
-			var expected =
-				@"Name: ""MyPackage""
+	[Fact]
+	public async Task RoundTrip_AllProperties()
+	{
+		var expected =
+			@"Name: ""MyPackage""
 
 				# A Comment in the file
 				Language: ""C++|1""
@@ -235,24 +234,23 @@ namespace Soup.Build.Utilities.UnitTests
 						123
 						false, ""string"" ]
 				}";
-			var document = SMLManager.Deserialize(expected);
+		var document = SMLManager.Deserialize(expected);
 
-			var actual = await SerializeAsync(document);
+		var actual = await SerializeAsync(document);
 
-			Assert.Equal(expected, actual);
-		}
+		Assert.Equal(expected, actual);
+	}
 
-		private async Task<string> SerializeAsync(SMLDocument document)
-		{
-			using var stream = new MemoryStream();
-			await SMLManager.SerializeAsync(
-				document,
-				stream);
+	private async Task<string> SerializeAsync(SMLDocument document)
+	{
+		using var stream = new MemoryStream();
+		await SMLManager.SerializeAsync(
+			document,
+			stream);
 
-			stream.Seek(0, SeekOrigin.Begin);
-			using var reader = new StreamReader(stream);
+		stream.Seek(0, SeekOrigin.Begin);
+		using var reader = new StreamReader(stream);
 
-			return await reader.ReadToEndAsync();
-		}
+		return await reader.ReadToEndAsync();
 	}
 }

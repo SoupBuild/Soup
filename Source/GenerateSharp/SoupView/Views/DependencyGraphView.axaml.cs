@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace Soup.View.Views
+namespace Soup.View.Views;
+
+public partial class DependencyGraphView : UserControl
 {
-	public partial class DependencyGraphView : UserControl
+	public DependencyGraphView()
 	{
-		public DependencyGraphView()
-		{
-			InitializeComponent();
-		}
+		InitializeComponent();
 	}
 }

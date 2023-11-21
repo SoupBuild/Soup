@@ -5,15 +5,14 @@
 using GraphShape;
 using System.Collections.Generic;
 
-namespace Soup.View.ViewModels
-{
-	public class GraphNodeViewModel
-	{
-		public required string Title { get; set; }
-		public required string ToolTip { get; set; }
-		public required uint Id { get; set; }
-		public IList<uint> ChildNodes { get; set; } = new List<uint>();
+namespace Soup.View.ViewModels;
 
-		public required Point Position { get; set; }
-	}
+public class GraphNodeViewModel
+{
+	public required string Title { get; set; }
+	public required string ToolTip { get; set; }
+	public required uint Id { get; set; }
+	public IList<uint> ChildNodes { get; set; } = new List<uint>();
+
+	public required Point Position { get; set; }
 }
