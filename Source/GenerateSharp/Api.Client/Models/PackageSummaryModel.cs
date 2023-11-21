@@ -5,26 +5,25 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Soup.Build.Api.Client
+namespace Soup.Build.Api.Client;
+
+/// <summary>
+/// A container for the package summary result.
+/// </summary>
+public class PackageSummaryModel
 {
 	/// <summary>
-	/// A container for the package summary result.
+	/// Gets or sets the name.
 	/// </summary>
-	public class PackageSummaryModel
-	{
-		/// <summary>
-		/// Gets or sets the name.
-		/// </summary>
-		[JsonPropertyName("name")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		[Required(AllowEmptyStrings = true)]
-		public string Name { get; set; }
+	[JsonPropertyName("name")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required(AllowEmptyStrings = true)]
+	public string Name { get; set; }
 
-		/// <summary>
-		/// Gets or sets the description.
-		/// </summary>
-		[JsonPropertyName("description")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-		public string Description { get; set; }
-	}
+	/// <summary>
+	/// Gets or sets the description.
+	/// </summary>
+	[JsonPropertyName("description")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	public string Description { get; set; }
 }

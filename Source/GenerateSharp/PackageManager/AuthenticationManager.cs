@@ -2,46 +2,45 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
-namespace Soup.Build.PackageManager
+using System.Threading.Tasks;
+using IdentityModel.OidcClient;
+
+namespace Soup.Build.PackageManager;
+
+internal class AuthenticationManager : IAuthenticationManager
 {
-	using System.Threading.Tasks;
-	using IdentityModel.OidcClient;
+	static string _authority = "https://auth.soupbuild.com/";
+	// static string _authority = "https://localhost:5001/";
 
-	internal class AuthenticationManager : IAuthenticationManager
+	/// <summary>
+	/// Ensure the user is logged in
+	/// </summary>
+	/// <returns>The access token</returns>
+	public async Task<string> EnsureSignInAsync()
 	{
-		static string _authority = "https://auth.soupbuild.com/";
-		// static string _authority = "https://localhost:5001/";
+		var token = await Login();
+		return token;
+	}
 
-		/// <summary>
-		/// Ensure the user is logged in
-		/// </summary>
-		/// <returns>The access token</returns>
-		public async Task<string> EnsureSignInAsync()
+	private async Task<string> Login()
+	{
+		// Create a redirect URI using an available port on the loopback address
+		var browser = new SystemBrowser();
+		string redirectUri = string.Format($"http://127.0.0.1:{browser.Port}");
+
+		var options = new OidcClientOptions()
 		{
-			var token = await Login();
-			return token;
-		}
+			Authority = _authority,
+			ClientId = "Soup.Native",
+			RedirectUri = redirectUri,
+			Scope = "openid profile soup_api",
+			FilterClaims = false,
+			Browser = browser,
+		};
 
-		private async Task<string> Login()
-		{
-			// Create a redirect URI using an available port on the loopback address
-			var browser = new SystemBrowser();
-			string redirectUri = string.Format($"http://127.0.0.1:{browser.Port}");
+		var oidcClient = new OidcClient(options);
+		var result = await oidcClient.LoginAsync(new LoginRequest());
 
-			var options = new OidcClientOptions()
-			{
-				Authority = _authority,
-				ClientId = "Soup.Native",
-				RedirectUri = redirectUri,
-				Scope = "openid profile soup_api",
-				FilterClaims = false,
-				Browser = browser,
-			};
-
-			var oidcClient = new OidcClient(options);
-			var result = await oidcClient.LoginAsync(new LoginRequest());
-
-			return result.AccessToken;
-		}
+		return result.AccessToken;
 	}
 }

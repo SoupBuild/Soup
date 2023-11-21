@@ -7,33 +7,32 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Soup.Build.Api.Client
+namespace Soup.Build.Api.Client;
+
+/// <summary>
+/// A container for the search result.
+/// </summary>
+public class SearchPackagesModel
 {
 	/// <summary>
-	/// A container for the search result.
+	/// Gets or sets the total packages that match the query.
 	/// </summary>
-	public class SearchPackagesModel
-	{
-		/// <summary>
-		/// Gets or sets the total packages that match the query.
-		/// </summary>
-		[JsonPropertyName("total")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		public int Total { get; set; }
+	[JsonPropertyName("total")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	public int Total { get; set; }
 
-		/// <summary>
-		/// Gets or sets the start offset for this set of packages.
-		/// </summary>
-		[JsonPropertyName("offset")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		public int Offset { get; set; }
+	/// <summary>
+	/// Gets or sets the start offset for this set of packages.
+	/// </summary>
+	[JsonPropertyName("offset")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	public int Offset { get; set; }
 
-		/// <summary>
-		/// Gets or sets the list of packages.
-		/// </summary>
-		[JsonPropertyName("packages")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		[Required]
-		public ICollection<PackageSummaryModel> Packages { get; set; } = new Collection<PackageSummaryModel>();
-	}
+	/// <summary>
+	/// Gets or sets the list of packages.
+	/// </summary>
+	[JsonPropertyName("packages")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required]
+	public ICollection<PackageSummaryModel> Packages { get; set; } = new Collection<PackageSummaryModel>();
 }

@@ -4,32 +4,31 @@
 
 using System.Text.Json.Serialization;
 
-namespace Soup.Build.Api.Client
+namespace Soup.Build.Api.Client;
+
+/// <summary>
+/// A class representing the semantic version fully qualified model
+/// </summary>
+public class SemanticVersionExactModel
 {
 	/// <summary>
-	/// A class representing the semantic version fully qualified model
+	/// Gets or sets the version major.
 	/// </summary>
-	public class SemanticVersionExactModel
-	{
-		/// <summary>
-		/// Gets or sets the version major.
-		/// </summary>
-		[JsonPropertyName("major")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		public int Major { get; set; }
+	[JsonPropertyName("major")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	public int Major { get; set; }
 
-		/// <summary>
-		/// Gets or sets the version minor.
-		/// </summary>
-		[JsonPropertyName("minor")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		public int Minor { get; set; }
+	/// <summary>
+	/// Gets or sets the version minor.
+	/// </summary>
+	[JsonPropertyName("minor")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	public int Minor { get; set; }
 
-		/// <summary>
-		/// Gets or sets the version patch.
-		/// </summary>
-		[JsonPropertyName("patch")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		public int Patch { get; set; }
-	}
+	/// <summary>
+	/// Gets or sets the version patch.
+	/// </summary>
+	[JsonPropertyName("patch")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	public int Patch { get; set; }
 }
