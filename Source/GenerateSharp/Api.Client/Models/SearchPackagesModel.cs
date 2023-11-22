@@ -34,5 +34,5 @@ public class SearchPackagesModel
 	[JsonPropertyName("packages")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public ICollection<PackageSummaryModel> Packages { get; set; } = new Collection<PackageSummaryModel>();
+	public ICollection<PackageSummaryModel> Packages { get; init; } = new Collection<PackageSummaryModel>();
 }

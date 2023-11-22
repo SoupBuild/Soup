@@ -61,7 +61,7 @@ public class PackageManagerUnitTests
 					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 					"DIAG: Deleting staging directory",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -72,7 +72,7 @@ public class PackageManagerUnitTests
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify http requests
 		mockMessageHandler.VerifyNoOtherCalls();
@@ -152,7 +152,7 @@ public class PackageManagerUnitTests
 					"INFO: Adding reference to recipe",
 					"INFO: Deleting staging directory",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -166,7 +166,7 @@ public class PackageManagerUnitTests
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify http requests
 		mockMessageHandler.VerifyNoOtherCalls();
@@ -288,7 +288,7 @@ public class PackageManagerUnitTests
 					"INFO: Adding reference to recipe",
 					"INFO: Deleting staging directory",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -302,7 +302,7 @@ public class PackageManagerUnitTests
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify http requests
 		mockMessageHandler.Verify(messageHandler =>
@@ -440,7 +440,7 @@ public class PackageManagerUnitTests
 					"INFO: Package published",
 					"INFO: Cleanup staging directory",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -455,7 +455,7 @@ public class PackageManagerUnitTests
 					"OpenRead: C:/Users/Me/.soup/packages/.staging/MyPackage.zip",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify authentication requests
 		mockAuthenticationManager.Verify(auth => auth.EnsureSignInAsync(), Times.Once());

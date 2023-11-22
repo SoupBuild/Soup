@@ -139,7 +139,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests());
 
 		// Verify http requests
 		var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
@@ -315,7 +315,7 @@ public class ClosureManagerUnitTests
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests());
 
 		// Verify http requests
 		var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
@@ -579,7 +579,7 @@ public class ClosureManagerUnitTests
 					"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/Cpp/Package2/3.2.1/]",
 
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify zip requests
 		mockZipManager.Verify(zip => zip.ExtractToDirectory(
@@ -996,7 +996,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests());
 
 		// Verify zip requests
 		mockZipManager.Verify(zip => zip.ExtractToDirectory(
@@ -1649,7 +1649,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests());
 
 		// Verify zip requests
 		mockZipManager.Verify(zip => zip.ExtractToDirectory(
@@ -2222,7 +2222,7 @@ public class ClosureManagerUnitTests
 					"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
 
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests());
 
 		// Verify http requests
 		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
@@ -2648,7 +2648,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/Root/Package2/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/Package2/PackageLock.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests());
 
 		// Verify http requests
 		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
@@ -3141,7 +3141,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Wren/Soup.Cpp/3.2.2/PackageLock.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests());
 
 		// Verify zip requests
 		mockZipManager.Verify(zip => zip.ExtractToDirectory(
@@ -3320,7 +3320,7 @@ public class ClosureManagerUnitTests
 					"Exists: C:/PackageStore/Cpp/Package1/1.2.4/",
 					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests());
 
 		// Verify http requests
 		mockMessageHandler.VerifyNoOtherCalls();

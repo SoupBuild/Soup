@@ -33,5 +33,5 @@ public class PackageLocalReferenceModel
 	/// </summary>
 	[JsonPropertyName("dependencies")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public IDictionary<string, ICollection<int>>? Dependencies { get; set; }
+	public IDictionary<string, ICollection<int>>? Dependencies { get; init; }
 }

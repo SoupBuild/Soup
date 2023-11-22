@@ -8,7 +8,7 @@ using System.IO;
 
 namespace Soup.Build.Api.Client;
 
-public partial class FileResponse : IDisposable
+public sealed class FileResponse : IDisposable
 {
 	private IDisposable? _client;
 	private IDisposable _response;

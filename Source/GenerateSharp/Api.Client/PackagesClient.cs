@@ -30,7 +30,7 @@ public class PackagesClient
 		_bearerToken = bearerToken;
 	}
 
-	public string BaseUrl { get; init; } = "http://localhost:7070";
+	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
 
 	/// <summary>
 	/// Get a package by unique name.
@@ -55,7 +55,7 @@ public class PackagesClient
 	public virtual async Task<PackageModel> GetPackageAsync(string languageName, string packageName, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
+		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
 		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
 		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 
@@ -133,11 +133,8 @@ public class PackagesClient
 	public virtual async Task<PackageModel> CreateOrUpdatePackageAsync(
 		string languageName, string packageName, PackageCreateOrUpdateModel model, CancellationToken cancellationToken)
 	{
-		if (model == null)
-			throw new ArgumentNullException(nameof(model));
-
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
+		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
 		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
 		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 

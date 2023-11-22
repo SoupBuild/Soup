@@ -29,7 +29,7 @@ public class LanguagesClient
 		_bearerToken = bearerToken;
 	}
 
-	public string BaseUrl { get; init; } = "http://localhost:7070";
+	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
 
 	/// <summary>
 	/// Get a language by unique name.
@@ -52,7 +52,7 @@ public class LanguagesClient
 	public virtual async Task<LanguageModel> GetLanguageAsync(string languageName, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/languages/{languageName}");
+		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}");
 		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
 
 		var client_ = _httpClient;

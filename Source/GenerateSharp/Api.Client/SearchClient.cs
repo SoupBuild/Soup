@@ -29,7 +29,7 @@ public class SearchClient
 		_bearerToken = bearerToken;
 	}
 
-	public string BaseUrl { get; init; } = "http://localhost:7070";
+	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
 
 	/// <summary>
 	/// Search for packages.
@@ -57,7 +57,7 @@ public class SearchClient
 		string q, int? skip, int? take, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/search/packages?");
+		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/search/packages?");
 		if (q is not null)
 		{
 			urlBuilder_

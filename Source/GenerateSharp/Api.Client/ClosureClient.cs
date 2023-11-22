@@ -29,7 +29,7 @@ public class ClosureClient
 		_bearerToken = bearerToken;
 	}
 
-	public string BaseUrl { get; init; } = "http://localhost:7070";
+	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
 
 	/// <summary>
 	/// Generate a package closure.
@@ -51,11 +51,8 @@ public class ClosureClient
 	public virtual async Task<GenerateClosureResultModel> GenerateClosureAsync(
 		GenerateClosureRequestModel request, CancellationToken cancellationToken)
 	{
-		if (request == null)
-			throw new ArgumentNullException(nameof(request));
-
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/closure/generate");
+		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/closure/generate");
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;

@@ -30,7 +30,7 @@ public class PackageVersionsClient
 		_bearerToken = bearerToken;
 	}
 
-	public string BaseUrl { get; init; } = "http://localhost:7070";
+	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
 
 	/// <summary>
 	/// Get a package version.
@@ -59,7 +59,7 @@ public class PackageVersionsClient
 	{
 		var urlBuilder_ = new StringBuilder();
 		urlBuilder_
-			.Append(BaseUrl.TrimEnd('/'))
+			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
 		urlBuilder_.Replace(
 			"{languageName}",
@@ -148,11 +148,8 @@ public class PackageVersionsClient
 	public virtual async Task PublishPackageVersionAsync(
 		string languageName, string packageName, string packageVersion, FileParameter file, CancellationToken cancellationToken)
 	{
-		if (file == null)
-			throw new ArgumentNullException(nameof(file));
-
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
+		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
 		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
 		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 		urlBuilder_.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
@@ -232,7 +229,7 @@ public class PackageVersionsClient
 		string languageName, string packageName, string packageVersion, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}/download");
+		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}/download");
 		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
 		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 		urlBuilder_.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));

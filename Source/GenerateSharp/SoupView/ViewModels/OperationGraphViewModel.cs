@@ -19,11 +19,11 @@ namespace Soup.View.ViewModels;
 public class OperationGraphViewModel : ViewModelBase
 {
 	private FileSystemState fileSystemState = new FileSystemState();
-	private GraphNodeViewModel? selectedNode = null;
-	private OperationDetailsViewModel? selectedOperation = null;
+	private GraphNodeViewModel? selectedNode;
+	private OperationDetailsViewModel? selectedOperation;
 	private string errorBarMessage = string.Empty;
-	private bool isErrorBarOpen = false;
-	private IList<GraphNodeViewModel>? graph = null;
+	private bool isErrorBarOpen;
+	private IList<GraphNodeViewModel>? graph;
 	private Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = new Dictionary<uint, OperationDetailsViewModel>();
 
 	public string ErrorBarMessage
@@ -187,7 +187,7 @@ public class OperationGraphViewModel : ViewModelBase
 			RedirectStandardOutput = true,
 			CreateNoWindow = true,
 		};
-		var process = new Process()
+		using var process = new Process()
 		{
 			StartInfo = processInfo,
 		};
