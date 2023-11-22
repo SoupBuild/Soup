@@ -35,7 +35,7 @@ public class ConsoleTraceListener : TraceListener
 	{
 	}
 
-	public void SetConsoleColor()
+	public static void SetConsoleColor()
 	{
 		//// TODO
 		//// switch (_currentEvent)
@@ -60,7 +60,7 @@ public class ConsoleTraceListener : TraceListener
 		////	 WriteIndent();
 		//// }
 
-		this.SetConsoleColor();
+		SetConsoleColor();
 		Console.WriteLine(message);
 
 		// TODO: restore color

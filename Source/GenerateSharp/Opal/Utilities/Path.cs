@@ -341,22 +341,22 @@ public class Path : IEquatable<Path>
 	/// <summary>
 	/// Equality operator.
 	/// </summary>
-	/// <param name="rhs">The right hand side.</param>
-	public bool Equals(Path? rhs)
+	/// <param name="other">The right hand side.</param>
+	public bool Equals(Path? other)
 	{
-		if (ReferenceEquals(rhs, null))
+		if (ReferenceEquals(other, null))
 			return false;
-		return this.value == rhs.value;
+		return this.value == other.value;
 	}
 
-	public override bool Equals(object? rhs)
+	public override bool Equals(object? obj)
 	{
-		return this.Equals(rhs as Path);
+		return this.Equals(obj as Path);
 	}
 
 	public override int GetHashCode()
 	{
-		return this.value.GetHashCode();
+		return value.GetHashCode(StringComparison.Ordinal);
 	}
 
 	/// <summary>
@@ -427,7 +427,7 @@ public class Path : IEquatable<Path>
 	/// Resolve any up directory tokens or empty (double separator) directories that are inside a path.
 	/// </summary>
 	private static void NormalizeDirectories(
-		IList<string> directories,
+		List<string> directories,
 		bool hasRoot)
 	{
 		// Remove as many up directories as we can
@@ -473,7 +473,7 @@ public class Path : IEquatable<Path>
 	{
 		// Break out the individual components of the path
 		var directories = new List<string>();
-		this.DecomposeRawPathString(
+		DecomposeRawPathString(
 			value,
 			directories,
 			out var root,
@@ -490,9 +490,9 @@ public class Path : IEquatable<Path>
 			fileName);
 	}
 
-	private void DecomposeRawPathString(
+	private static void DecomposeRawPathString(
 		string value,
-		IList<string> directories,
+		List<string> directories,
 		out string? root,
 		out string? fileName)
 	{

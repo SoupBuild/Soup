@@ -71,7 +71,7 @@ public class PathUnitTests
 	[Fact]
 	public void RelativePath_Complex()
 	{
-		var uut = new Path("myfolder/anotherfolder/file.txt");
+		var uut = new Path("myfolder/anotherFolder/file.txt");
 		Assert.False(uut.HasRoot);
 		Assert.True(uut.HasFileName);
 		Assert.Equal("file.txt", uut.GetFileName());
@@ -79,8 +79,8 @@ public class PathUnitTests
 		Assert.Equal("file", uut.GetFileStem());
 		Assert.True(uut.HasFileExtension);
 		Assert.Equal(".txt", uut.GetFileExtension());
-		Assert.Equal("./myfolder/anotherfolder/file.txt", uut.ToString());
-		Assert.Equal(".\\myfolder\\anotherfolder\\file.txt", uut.ToAlternateString());
+		Assert.Equal("./myfolder/anotherFolder/file.txt", uut.ToString());
+		Assert.Equal(".\\myfolder\\anotherFolder\\file.txt", uut.ToAlternateString());
 	}
 
 	[Fact]
@@ -102,7 +102,7 @@ public class PathUnitTests
 	[Fact]
 	public void SimpleAbsolutePath()
 	{
-		var uut = new Path("C:/myfolder/anotherfolder/file.txt");
+		var uut = new Path("C:/myfolder/anotherFolder/file.txt");
 		Assert.True(uut.HasRoot, "Verify is root.");
 		Assert.Equal("C:", uut.GetRoot());
 		Assert.True(uut.HasFileName);
@@ -111,13 +111,13 @@ public class PathUnitTests
 		Assert.Equal("file", uut.GetFileStem());
 		Assert.True(uut.HasFileExtension);
 		Assert.Equal(".txt", uut.GetFileExtension());
-		Assert.Equal("C:/myfolder/anotherfolder/file.txt", uut.ToString());
+		Assert.Equal("C:/myfolder/anotherFolder/file.txt", uut.ToString());
 	}
 
 	[Fact]
 	public void AlternativeDirectoriesPath()
 	{
-		var uut = new Path("C:\\myfolder/anotherfolder\\file.txt");
+		var uut = new Path("C:\\myfolder/anotherFolder\\file.txt");
 		Assert.True(uut.HasRoot, "Verify is root.");
 		Assert.Equal("C:", uut.GetRoot());
 		Assert.True(uut.HasFileName);
@@ -126,7 +126,7 @@ public class PathUnitTests
 		Assert.Equal("file", uut.GetFileStem());
 		Assert.True(uut.HasFileExtension);
 		Assert.Equal(".txt", uut.GetFileExtension());
-		Assert.Equal("C:/myfolder/anotherfolder/file.txt", uut.ToString());
+		Assert.Equal("C:/myfolder/anotherFolder/file.txt", uut.ToString());
 	}
 
 	[Fact]

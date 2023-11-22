@@ -11,7 +11,7 @@ namespace Opal.IO;
 /// </summary>
 public class MockConsoleInput : IConsoleInput
 {
-	private List<string> _parentRequests;
+	private IList<string> _parentRequests;
 	private string _readPasswordResponse;
 	private string _readLineResponse;
 
@@ -19,7 +19,7 @@ public class MockConsoleInput : IConsoleInput
 	/// Initializes a new instance of the <see cref='MockConsoleInput'/> class.
 	/// </summary>
 	/// <param name="parentRequests">The parent requests.</param>
-	public MockConsoleInput(List<string> parentRequests)
+	public MockConsoleInput(IList<string> parentRequests)
 	{
 		this._parentRequests = parentRequests;
 		this._readPasswordResponse = string.Empty;

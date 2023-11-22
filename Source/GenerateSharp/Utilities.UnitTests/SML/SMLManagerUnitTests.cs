@@ -241,7 +241,7 @@ public class SMLManagerUnitTests
 		Assert.Equal(expected, actual);
 	}
 
-	private async Task<string> SerializeAsync(SMLDocument document)
+	private static async Task<string> SerializeAsync(SMLDocument document)
 	{
 		using var stream = new MemoryStream();
 		await SMLManager.SerializeAsync(

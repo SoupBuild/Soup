@@ -91,17 +91,23 @@ public class SemanticVersionUnitTests
 	}
 
 	[Theory]
-	[InlineData("1.2.3", true, 1, 2, 3)] // Success
-	[InlineData("0.0.0", true, 0, 0, 0)] // All zeros success
-	[InlineData("", false, 0, null, null)] // Empty fails
-	[InlineData("1", true, 1, null, null)] // Major only success
-	[InlineData("1.2", true, 1, 2, null)] // Major/Minor only success
-	public void TryParseValues(string value, bool expectedResult, int major, int? minor, int? patch)
+	[InlineData("")] // Empty fails
+	public void TryParseInvalidValues(string value)
 	{
 		var result = SemanticVersion.TryParse(value, out var uut);
-		Assert.Equal(
-			expectedResult,
-			result);
+		Assert.False(result);
+		Assert.Null(uut);
+	}
+
+	[Theory]
+	[InlineData("1.2.3", 1, 2, 3)] // Success
+	[InlineData("0.0.0", 0, 0, 0)] // All zeros success
+	[InlineData("1", 1, null, null)] // Major only success
+	[InlineData("1.2", 1, 2, null)] // Major/Minor only success
+	public void TryParseValidValues(string value, int major, int? minor, int? patch)
+	{
+		var result = SemanticVersion.TryParse(value, out var uut);
+		Assert.True(result);
 		Assert.Equal(
 			new SemanticVersion(major, minor, patch),
 			uut);

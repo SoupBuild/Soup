@@ -36,14 +36,10 @@ public static class Log
 	/// <summary>
 	/// Set the active ids to use for each event.
 	/// </summary>
-	public static int GetActiveId()
+	public static int ActiveId
 	{
-		return activeId;
-	}
-
-	public static void SetActiveId(int value)
-	{
-		activeId = value;
+		get => activeId;
+		set => activeId = value;
 	}
 
 	/// <summary>

@@ -15,7 +15,7 @@ public class MockProcess : IProcess
 {
 	// Input
 	private int id;
-	private List<string> requests;
+	private IList<string> requests;
 
 	// Result
 	private bool isFinished;
@@ -33,7 +33,7 @@ public class MockProcess : IProcess
 	/// <param name="stdErr">The standard error.</param>
 	public MockProcess(
 		int id,
-		List<string> requests,
+		IList<string> requests,
 		int exitCode,
 		string stdOut,
 		string stdErr)

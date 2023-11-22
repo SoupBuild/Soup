@@ -10,7 +10,7 @@ namespace Opal.System;
 /// <summary>
 /// The standard library output file implementation.
 /// </summary>
-internal class RuntimeOutputFile : IOutputFile
+internal sealed class RuntimeOutputFile : IOutputFile
 {
 	private FileStream stream;
 	private bool isDisposed;
@@ -36,7 +36,7 @@ internal class RuntimeOutputFile : IOutputFile
 		GC.SuppressFinalize(this);
 	}
 
-	protected virtual void Dispose(bool disposing)
+	private void Dispose(bool disposing)
 	{
 		if (!this.isDisposed)
 		{

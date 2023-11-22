@@ -53,10 +53,7 @@ public class MockProcessManager : IProcessManager
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> GetRequests()
-	{
-		return this.requests;
-	}
+	public IReadOnlyList<string> Requests =>this.requests;
 
 	/// <summary>
 	/// Gets the process file name.

@@ -27,18 +27,12 @@ public class MockConsoleManager : IConsoleManager
 	/// <summary>
 	/// Get the requests.
 	/// </summary>
-	public IReadOnlyList<string> GetRequests()
-	{
-		return this._requests;
-	}
+	public IReadOnlyList<string> Requests => this._requests;
 
 	/// <summary>
 	/// Get the mock input stream.
 	/// </summary>
-	public MockConsoleInput GetMockInputStream()
-	{
-		return this._standardInput;
-	}
+	public MockConsoleInput MockInputStream => this._standardInput;
 
 	/// <summary>
 	/// Get the standard input stream.

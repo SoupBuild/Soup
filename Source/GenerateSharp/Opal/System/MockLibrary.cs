@@ -13,7 +13,7 @@ public class MockLibrary : ILibrary
 {
 	// Input
 	private string name;
-	private List<string> requests;
+	private IList<string> requests;
 
 	// std::map<std::string, void*> _functions;
 
@@ -24,7 +24,7 @@ public class MockLibrary : ILibrary
 	/// <param name="requests">The requests.</param>
 	public MockLibrary(
 		string name,
-		List<string> requests)
+		IList<string> requests)
 	{
 		this.name = name;
 		this.requests = requests;

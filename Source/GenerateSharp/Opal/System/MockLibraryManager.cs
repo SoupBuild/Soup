@@ -40,26 +40,23 @@ public class MockLibraryManager : ILibraryManager
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> GetRequests()
-	{
-		return this._requests;
-	}
+	public IReadOnlyList<string> Requests => this._requests;
 
 	/// <summary>
 	/// Creates a Library for the provided executable path.
 	/// </summary>
-	/// <param name="path">The path.</param>
-	public ILibrary LoadDynamicLibrary(Path path)
+	/// <param name="library">The path.</param>
+	public ILibrary LoadDynamicLibrary(Path library)
 	{
-		this._requests.Add($"LoadDynamicLibrary: {path}");
+		this._requests.Add($"LoadDynamicLibrary: {library}");
 
-		if (this._libraries.TryGetValue(path, out var library))
+		if (this._libraries.TryGetValue(library, out var libraryValue))
 		{
-			return library;
+			return libraryValue;
 		}
 		else
 		{
-			throw new InvalidOperationException($"Cannot load library: {path}");
+			throw new InvalidOperationException($"Cannot load library: {library}");
 		}
 	}
 }

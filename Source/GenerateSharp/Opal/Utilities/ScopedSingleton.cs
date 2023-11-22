@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Opal.System;
 
@@ -10,6 +11,7 @@ namespace Opal.System;
 /// A scoped process manager registration helper.
 /// </summary>
 /// <typeparam name="TInterface">The interface type.</typeparam>
+[SuppressMessage("Design", "CA1063:Implement IDisposable Correctly", Justification = "RAII")]
 public class ScopedSingleton<TInterface> : IDisposable
 	where TInterface : notnull
 {
@@ -25,6 +27,7 @@ public class ScopedSingleton<TInterface> : IDisposable
 	/// <summary>
 	/// Finalizes an instance of the <see cref='ScopedSingleton{TInterface}'/> class.
 	/// </summary>
+	[SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "RAII")]
 	public void Dispose()
 	{
 		LifetimeManager.ClearSingleton<TInterface>();

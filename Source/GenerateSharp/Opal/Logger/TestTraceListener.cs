@@ -25,10 +25,7 @@ public class TestTraceListener : TraceListener
 	/// <summary>
 	/// Get the messages.
 	/// </summary>
-	public IReadOnlyList<string> GetMessages()
-	{
-		return this._messages;
-	}
+	public IReadOnlyList<string> Messages => this._messages;
 
 	/// <summary>
 	/// Writes a message and newline terminator.

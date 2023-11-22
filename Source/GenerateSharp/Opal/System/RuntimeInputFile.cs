@@ -10,9 +10,9 @@ namespace Opal.System;
 /// <summary>
 /// The standard library input file implementation.
 /// </summary>
-internal class RuntimeInputFile : IInputFile
+internal sealed class RuntimeInputFile : IInputFile
 {
-	private FileStream stream;
+	private readonly FileStream stream;
 	private bool isDisposed;
 
 	public RuntimeInputFile(FileStream stream)
@@ -36,7 +36,7 @@ internal class RuntimeInputFile : IInputFile
 		GC.SuppressFinalize(this);
 	}
 
-	protected virtual void Dispose(bool disposing)
+	private void Dispose(bool disposing)
 	{
 		if (!this.isDisposed)
 		{

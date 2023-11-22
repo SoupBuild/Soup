@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Globalization;
 using System.Text;
 
 namespace Opal;
@@ -55,22 +56,15 @@ public abstract class TraceListener
 	/// <summary>
 	/// Gets or sets a value indicating whether to show or hide the event type.
 	/// </summary>
-	public bool GetShowEventType()
-	{
-		return this.showEventType;
-	}
+	public bool ShowEventType => this.showEventType;
 
 	/// <summary>
 	/// Gets or sets a value indicating whether to show or hide the event id.
 	/// </summary>
-	public bool GetShowEventId()
+	public bool ShowEventId
 	{
-		return this.showEventId;
-	}
-
-	public void SetShowEventId(bool value)
-	{
-		this.showEventId = value;
+		get => this.showEventId;
+		set => this.showEventId = value;
 	}
 
 	/// <summary>
@@ -141,7 +135,7 @@ public abstract class TraceListener
 		TraceEvents eventType,
 		int id)
 	{
-		if (this.GetShowEventType())
+		if (this.ShowEventType)
 		{
 			switch (eventType)
 			{
@@ -171,9 +165,9 @@ public abstract class TraceListener
 			builder.Append(": ");
 		}
 
-		if (this.GetShowEventId())
+		if (this.ShowEventId)
 		{
-			builder.Append($"{id}>");
+			_ = builder.Append(CultureInfo.InvariantCulture, $"{id}>");
 		}
 	}
 }

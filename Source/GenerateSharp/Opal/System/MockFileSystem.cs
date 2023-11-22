@@ -31,10 +31,7 @@ public class MockFileSystem : IFileSystem
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> GetRequests()
-	{
-		return this.requests;
-	}
+	public IReadOnlyList<string> Requests => this.requests;
 
 	/// <summary>
 	/// Create a test file.
@@ -95,7 +92,7 @@ public class MockFileSystem : IFileSystem
 	{
 		this.requests.Add($"Exists: {path}");
 
-		return this.files.ContainsKey(path) || this.directoryChildren.Keys.Contains(path);
+		return this.files.ContainsKey(path) || this.directoryChildren.ContainsKey(path);
 	}
 
 	/// <summary>
