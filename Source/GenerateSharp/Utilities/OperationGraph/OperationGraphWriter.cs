@@ -14,15 +14,20 @@ internal static class OperationGraphWriter
 	// Binary Operation graph file format
 	private static uint FileVersion => 6;
 
+	internal static readonly char[] FIS = new char[] { 'F', 'I', 'S', '\0' };
+	internal static readonly char[] BOG = new char[] { 'B', 'O', 'G', '\0' };
+	internal static readonly char[] ROP = new char[] { 'R', 'O', 'P', '\0' };
+	internal static readonly char[] OPS = new char[] { 'O', 'P', 'S', '\0' };
+
 	public static void Serialize(OperationGraph state, System.IO.BinaryWriter writer)
 	{
 		// Write the File Header with version
-		writer.Write(new char[] { 'B', 'O', 'G', '\0' });
+		writer.Write(BOG);
 		writer.Write(FileVersion);
 
 		// Write out the set of files
 		var files = state.ReferencedFiles;
-		writer.Write(new char[] { 'F', 'I', 'S', '\0' });
+		writer.Write(FIS);
 		writer.Write((uint)files.Count);
 		foreach (var file in files)
 		{
@@ -32,11 +37,11 @@ internal static class OperationGraphWriter
 		}
 
 		// Write out the root operation ids
-		writer.Write(new char[] { 'R', 'O', 'P', '\0' });
+		writer.Write(ROP);
 		WriteValues(writer, state.RootOperationIds);
 
 		// Write out the set of operations
-		writer.Write(new char[] { 'O', 'P', 'S', '\0' });
+		writer.Write(OPS);
 		writer.Write((uint)state.Operations.Count);
 		foreach (var operationValue in state.Operations)
 		{

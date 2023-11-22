@@ -150,8 +150,5 @@ public class SDKConfig
 	/// <summary>
 	/// Raw access
 	/// </summary>
-	public SMLTable GetTable()
-	{
-		return _table;
-	}
+	public SMLTable Table => _table;
 }

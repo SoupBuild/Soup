@@ -2,8 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Soup.Build.Utilities;
 
+[SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "Is type")]
 public enum ValueType : uint
 {
 	/// <summary>

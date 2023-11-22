@@ -199,7 +199,7 @@ public class PackageManager
 			Log.Info("Publish package");
 			var packageClient = new Api.Client.PackagesClient(_httpClient, accessToken)
 			{
-				BaseUrl = _apiEndpoint.ToString(),
+				BaseUrl = _apiEndpoint,
 			};
 
 			// Check if the package exists
@@ -235,7 +235,7 @@ public class PackageManager
 
 			var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient, accessToken)
 			{
-				BaseUrl = _apiEndpoint.ToString(),
+				BaseUrl = _apiEndpoint,
 			};
 
 			using (var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath))
@@ -289,7 +289,7 @@ public class PackageManager
 	{
 		var client = new Api.Client.PackagesClient(_httpClient, null)
 		{
-			BaseUrl = _apiEndpoint.ToString(),
+			BaseUrl = _apiEndpoint,
 		};
 
 		return await client.GetPackageAsync(languageName, packageName);

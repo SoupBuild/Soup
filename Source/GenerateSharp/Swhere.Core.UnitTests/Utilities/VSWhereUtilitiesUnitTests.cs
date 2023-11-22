@@ -53,7 +53,7 @@ public class VSWhereUtilitiesUnitTests
 				"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 				"HIGH: Using VC Version: 14.33.31629",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -63,7 +63,7 @@ public class VSWhereUtilitiesUnitTests
 				"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
@@ -76,7 +76,7 @@ public class VSWhereUtilitiesUnitTests
 				"GetStandardError: 1",
 				"GetExitCode: 1",
 			},
-			mockProcessManager.GetRequests());
+			mockProcessManager.Requests);
 	}
 
 	[Fact]
@@ -118,7 +118,7 @@ public class VSWhereUtilitiesUnitTests
 				"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
 				"HIGH: Using VC Version: 14.34.31823",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -128,7 +128,7 @@ public class VSWhereUtilitiesUnitTests
 				"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
@@ -141,6 +141,6 @@ public class VSWhereUtilitiesUnitTests
 				"GetStandardError: 1",
 				"GetExitCode: 1",
 			},
-			mockProcessManager.GetRequests());
+			mockProcessManager.Requests);
 	}
 }

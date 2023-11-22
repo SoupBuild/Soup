@@ -128,7 +128,7 @@ public class ClosureManagerUnitTests
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -139,7 +139,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
 			},
-			mockFileSystem.Requests());
+			mockFileSystem.Requests);
 
 		// Verify http requests
 		var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
@@ -305,7 +305,7 @@ public class ClosureManagerUnitTests
 					"INFO: Generate final service closure",
 					"ERRO: Unable to create closure: Something went horribly wrong!",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -315,7 +315,7 @@ public class ClosureManagerUnitTests
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 			},
-			mockFileSystem.Requests());
+			mockFileSystem.Requests);
 
 		// Verify http requests
 		var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
@@ -553,7 +553,7 @@ public class ClosureManagerUnitTests
 					"HIGH: Skip built in language version in build closure",
 
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -959,7 +959,7 @@ public class ClosureManagerUnitTests
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -996,7 +996,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
 			},
-			mockFileSystem.Requests());
+			mockFileSystem.Requests);
 
 		// Verify zip requests
 		mockZipManager.Verify(zip => zip.ExtractToDirectory(
@@ -1599,7 +1599,7 @@ public class ClosureManagerUnitTests
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -1649,7 +1649,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml",
 			},
-			mockFileSystem.Requests());
+			mockFileSystem.Requests);
 
 		// Verify zip requests
 		mockZipManager.Verify(zip => zip.ExtractToDirectory(
@@ -2204,7 +2204,7 @@ public class ClosureManagerUnitTests
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -2222,7 +2222,7 @@ public class ClosureManagerUnitTests
 					"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
 
 			},
-			mockFileSystem.Requests());
+			mockFileSystem.Requests);
 
 		// Verify http requests
 		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
@@ -2623,7 +2623,7 @@ public class ClosureManagerUnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Closure Tool0",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -2648,7 +2648,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/Root/Package2/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/Package2/PackageLock.sml",
 			},
-			mockFileSystem.Requests());
+			mockFileSystem.Requests);
 
 		// Verify http requests
 		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
@@ -3105,7 +3105,7 @@ public class ClosureManagerUnitTests
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -3141,7 +3141,7 @@ public class ClosureManagerUnitTests
 					"OpenRead: C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Wren/Soup.Cpp/3.2.2/PackageLock.sml",
 			},
-			mockFileSystem.Requests());
+			mockFileSystem.Requests);
 
 		// Verify zip requests
 		mockZipManager.Verify(zip => zip.ExtractToDirectory(
@@ -3309,7 +3309,7 @@ public class ClosureManagerUnitTests
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -3320,7 +3320,7 @@ public class ClosureManagerUnitTests
 					"Exists: C:/PackageStore/Cpp/Package1/1.2.4/",
 					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
 			},
-			mockFileSystem.Requests());
+			mockFileSystem.Requests);
 
 		// Verify http requests
 		mockMessageHandler.VerifyNoOtherCalls();

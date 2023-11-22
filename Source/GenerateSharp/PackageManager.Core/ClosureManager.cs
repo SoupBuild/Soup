@@ -36,9 +36,9 @@ public class ClosureManager : IClosureManager
 
 	private HttpClient _httpClient;
 
-	private SemanticVersion _builtInLanguageVersionCSharp;
-	private SemanticVersion _builtInLanguageVersionCpp;
-	private SemanticVersion _builtInLanguageVersionWren;
+	private readonly SemanticVersion _builtInLanguageVersionCSharp;
+	private readonly SemanticVersion _builtInLanguageVersionCpp;
+	private readonly SemanticVersion _builtInLanguageVersionWren;
 
 	public ClosureManager(
 		Uri apiEndpoint,
@@ -253,7 +253,7 @@ public class ClosureManager : IClosureManager
 		// Publish the archive
 		var packageClient = new Api.Client.ClosureClient(_httpClient, null)
 		{
-			BaseUrl = _apiEndpoint.ToString(),
+			BaseUrl = _apiEndpoint,
 		};
 
 		// Pull out the root package
@@ -795,7 +795,7 @@ public class ClosureManager : IClosureManager
 
 			var client = new Api.Client.PackageVersionsClient(_httpClient, null)
 			{
-				BaseUrl = _apiEndpoint.ToString(),
+				BaseUrl = _apiEndpoint,
 			};
 
 			try

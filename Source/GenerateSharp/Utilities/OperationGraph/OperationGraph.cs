@@ -55,7 +55,7 @@ public class OperationGraph
 	public List<(FileId FileId, Path Path)> ReferencedFiles
 	{
 		get { return _referencedFiles; }
-		set { _referencedFiles = value; }
+		init { _referencedFiles = value; }
 	}
 
 	/// <summary>
@@ -64,7 +64,7 @@ public class OperationGraph
 	public List<OperationId> RootOperationIds
 	{
 		get { return _rootOperations; }
-		set { _rootOperations = value; }
+		init { _rootOperations = value; }
 	}
 
 	/// <summary>

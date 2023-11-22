@@ -42,7 +42,7 @@ public class NugetSDKUtilitiesUnitTests
 			{
 					"INFO: Nuget not found",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -51,7 +51,7 @@ public class NugetSDKUtilitiesUnitTests
 					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.nuget/packages",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 	}
 
 	[Fact]
@@ -97,7 +97,7 @@ public class NugetSDKUtilitiesUnitTests
 					"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages",
 					"WARN: Missing Nuspec file: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -109,7 +109,7 @@ public class NugetSDKUtilitiesUnitTests
 					"GetChildDirectories: C:/Users/Me/.nuget/packages/Package1",
 					"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 	}
 
 	[Fact]
@@ -235,7 +235,7 @@ public class NugetSDKUtilitiesUnitTests
 			{
 					"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -253,6 +253,6 @@ public class NugetSDKUtilitiesUnitTests
 				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/net6.0/",
 				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/netstandard2.0/",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 	}
 }

@@ -33,7 +33,7 @@ public class ShimHttpMessageHandler : HttpMessageHandler
 		if (request.Content != null)
 		{
 			using var memoryStream = new MemoryStream();
-			await request.Content.CopyToAsync(memoryStream);
+			await request.Content.CopyToAsync(memoryStream, cancellationToken);
 			byte[] byteInput = memoryStream.ToArray();
 			content = Encoding.UTF8.GetString(byteInput);
 		}

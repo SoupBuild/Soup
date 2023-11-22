@@ -125,7 +125,7 @@ public class SwhereManagerUnitTests
 				"INFO: Nuget not found",
 				"INFO: Creating directory C:/Users/Me/.soup/",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -145,7 +145,7 @@ public class SwhereManagerUnitTests
 				"CreateDirectory: C:/Users/Me/.soup/",
 				"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
@@ -176,7 +176,7 @@ public class SwhereManagerUnitTests
 				"GetStandardError: 4",
 				"GetExitCode: 4",
 			},
-			mockProcessManager.GetRequests());
+			mockProcessManager.Requests);
 
 		// Verify the contents of the local user config file
 		var localUserConfig = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/LocalUserConfig.sml"));
@@ -391,7 +391,7 @@ public class SwhereManagerUnitTests
 				"INFO: Nuget not found",
 				"INFO: Creating directory C:/Users/Me/.soup/",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -411,7 +411,7 @@ public class SwhereManagerUnitTests
 				"CreateDirectory: C:/Users/Me/.soup/",
 				"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
@@ -443,7 +443,7 @@ public class SwhereManagerUnitTests
 				"GetExitCode: 4",
 
 			},
-			mockProcessManager.GetRequests());
+			mockProcessManager.Requests);
 
 		// Verify the contents of the local user config file
 		var localUserConfig = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/LocalUserConfig.sml"));
@@ -716,7 +716,7 @@ public class SwhereManagerUnitTests
 				"INFO: Nuget not found",
 				"INFO: Creating directory C:/Users/Me/.soup/",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -737,7 +737,7 @@ public class SwhereManagerUnitTests
 				"CreateDirectory: C:/Users/Me/.soup/",
 				"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
@@ -768,7 +768,7 @@ public class SwhereManagerUnitTests
 				"GetStandardError: 4",
 				"GetExitCode: 4",
 			},
-			mockProcessManager.GetRequests());
+			mockProcessManager.Requests);
 
 		// Verify the contents of the local user config file
 		var localUserConfig = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/LocalUserConfig.sml"));

@@ -257,9 +257,8 @@ public class Recipe
 
 	private static void EnsureHasValue(SMLDocument document, string name, string value)
 	{
-		if (document.Values.ContainsKey(name))
+		if (document.Values.TryGetValue(name, out var existingValue))
 		{
-			var existingValue = document.Values[name];
 			if (existingValue.Value.Type != SMLValueType.String)
 				throw new InvalidOperationException("The recipe already has a non-string property");
 
@@ -277,9 +276,8 @@ public class Recipe
 
 	private static SMLTable EnsureHasTable(SMLDocument document, string name)
 	{
-		if (document.Values.ContainsKey(name))
+		if (document.Values.TryGetValue(name, out var value))
 		{
-			var value = document.Values[name];
 			if (value.Value.Type != SMLValueType.Table)
 				throw new InvalidOperationException("The recipe already has a non-table dependencies property");
 
@@ -295,9 +293,8 @@ public class Recipe
 
 	private static SMLArray EnsureHasList(SMLTable table, string name)
 	{
-		if (table.Values.ContainsKey(name))
+		if (table.Values.TryGetValue(name, out var value))
 		{
-			var value = table.Values[name];
 			if (value.Value.Type != SMLValueType.Array)
 				throw new InvalidOperationException("The recipe already has a non-list dependencies property");
 
@@ -313,9 +310,8 @@ public class Recipe
 
 	private static SMLArray EnsureHasList(SMLDocument document, string name)
 	{
-		if (document.Values.ContainsKey(name))
+		if (document.Values.TryGetValue(name, out var value))
 		{
-			var value = document.Values[name];
 			if (value.Value.Type != SMLValueType.Array)
 				throw new InvalidOperationException("The recipe already has a non-list dependencies property");
 

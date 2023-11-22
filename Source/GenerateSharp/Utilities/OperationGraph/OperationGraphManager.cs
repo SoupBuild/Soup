@@ -96,7 +96,8 @@ public static class OperationGraphManager
 			referencedFiles.Add((fileId, fileSystemState.GetFilePath(fileId)));
 		}
 
-		state.ReferencedFiles = referencedFiles;
+		state.ReferencedFiles.Clear();
+		state.ReferencedFiles.AddRange(referencedFiles);
 
 		// Open the file to write to
 		using var fileStream = System.IO.File.Open(

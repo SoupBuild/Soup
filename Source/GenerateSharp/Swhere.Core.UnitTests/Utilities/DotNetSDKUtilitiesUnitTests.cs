@@ -175,7 +175,7 @@ public class DotNetSDKUtilitiesUnitTests
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 				"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 			},
-			testListener.GetMessages());
+			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
@@ -184,7 +184,7 @@ public class DotNetSDKUtilitiesUnitTests
 				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 				"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 			},
-			mockFileSystem.GetRequests());
+			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
@@ -209,6 +209,6 @@ public class DotNetSDKUtilitiesUnitTests
 				"GetStandardError: 3",
 				"GetExitCode: 3",
 			},
-			mockProcessManager.GetRequests());
+			mockProcessManager.Requests);
 	}
 }

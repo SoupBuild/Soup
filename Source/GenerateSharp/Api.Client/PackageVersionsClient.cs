@@ -75,43 +75,41 @@ public class PackageVersionsClient
 		var disposeClient_ = false;
 		try
 		{
-			using (var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false))
+			using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			request_.Method = new HttpMethod("GET");
+			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+			var url_ = urlBuilder_.ToString();
+			request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
+
+			var response_ = await client.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+			var disposeResponse_ = true;
+			try
 			{
-				request_.Method = new HttpMethod("GET");
-				request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-				var url_ = urlBuilder_.ToString();
-				request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-				var response_ = await client.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-				var disposeResponse_ = true;
-				try
+				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+				if (response_.Content != null && response_.Content.Headers != null)
 				{
-					var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-					if (response_.Content != null && response_.Content.Headers != null)
-					{
-						foreach (var item_ in response_.Content.Headers)
-							headers_[item_.Key] = item_.Value;
-					}
+					foreach (var item_ in response_.Content.Headers)
+						headers_[item_.Key] = item_.Value;
+				}
 
-					var status_ = (int)response_.StatusCode;
-					if (status_ == 200)
-					{
-						var objectResponse = await ReadObjectResponseAsync<PackageVersionModel>(
-							response_, headers_, SourceGenerationContext.Default.PackageVersionModel, cancellationToken).ConfigureAwait(false);
-						return objectResponse;
-					}
-					else
-					{
-						throw new ApiException(
-							"The HTTP status code of the response was not expected.", status_, headers_, null);
-					}
-				}
-				finally
+				var status_ = (int)response_.StatusCode;
+				if (status_ == 200)
 				{
-					if (disposeResponse_)
-						response_.Dispose();
+					var objectResponse = await ReadObjectResponseAsync<PackageVersionModel>(
+						response_, headers_, SourceGenerationContext.Default.PackageVersionModel, cancellationToken).ConfigureAwait(false);
+					return objectResponse;
 				}
+				else
+				{
+					throw new ApiException(
+						"The HTTP status code of the response was not expected.", status_, headers_, null);
+				}
+			}
+			finally
+			{
+				if (disposeResponse_)
+					response_.Dispose();
 			}
 		}
 		finally
@@ -238,50 +236,48 @@ public class PackageVersionsClient
 		var disposeClient_ = false;
 		try
 		{
-			using (var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false))
+			using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			request_.Method = new HttpMethod("GET");
+			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+			var url_ = urlBuilder_.ToString();
+			request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
+
+			var response_ = await client_.SendAsync(
+				request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+			var disposeResponse_ = true;
+			try
 			{
-				request_.Method = new HttpMethod("GET");
-				request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-				var url_ = urlBuilder_.ToString();
-				request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-				var response_ = await client_.SendAsync(
-					request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-				var disposeResponse_ = true;
-				try
+				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+				if (response_.Content != null && response_.Content.Headers != null)
 				{
-					var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-					if (response_.Content != null && response_.Content.Headers != null)
-					{
-						foreach (var item_ in response_.Content.Headers)
-							headers_[item_.Key] = item_.Value;
-					}
-
-					var status_ = (int)response_.StatusCode;
-					if (status_ == 200 || status_ == 206)
-					{
-						var responseStream_ = response_.Content == null ?
-							Stream.Null :
-							await response_.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-						var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-
-						// response and client are disposed by FileResponse
-						disposeClient_ = false;
-						disposeResponse_ = false;
-
-						return fileResponse_;
-					}
-					else
-					{
-						throw new ApiException("The HTTP status code of the response was not expected.", status_, headers_, null);
-					}
+					foreach (var item_ in response_.Content.Headers)
+						headers_[item_.Key] = item_.Value;
 				}
-				finally
+
+				var status_ = (int)response_.StatusCode;
+				if (status_ == 200 || status_ == 206)
 				{
-					if (disposeResponse_)
-						response_.Dispose();
+					var responseStream_ = response_.Content == null ?
+						Stream.Null :
+						await response_.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+					var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+
+					// response and client are disposed by FileResponse
+					disposeClient_ = false;
+					disposeResponse_ = false;
+
+					return fileResponse_;
 				}
+				else
+				{
+					throw new ApiException("The HTTP status code of the response was not expected.", status_, headers_, null);
+				}
+			}
+			finally
+			{
+				if (disposeResponse_)
+					response_.Dispose();
 			}
 		}
 		finally
@@ -299,18 +295,16 @@ public class PackageVersionsClient
 	{
 		try
 		{
-			using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
+			using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+			var typedBody = await JsonSerializer.DeserializeAsync<T>(
+				responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
+			if (typedBody is null)
 			{
-				var typedBody = await JsonSerializer.DeserializeAsync<T>(
-					responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
-				if (typedBody is null)
-				{
-					var message = "Response body was empty.";
-					throw new ApiException(message, (int)response.StatusCode, headers, null);
-				}
-
-				return typedBody;
+				var message = "Response body was empty.";
+				throw new ApiException(message, (int)response.StatusCode, headers, null);
 			}
+
+			return typedBody;
 		}
 		catch (JsonException exception)
 		{

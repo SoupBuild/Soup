@@ -11,9 +11,9 @@ namespace Soup.Build.Utilities;
 public class SMLArray : IEquatable<SMLArray>
 {
 	public SMLToken OpenBracket { get; set; }
-	public List<SMLToken> LeadingNewlines { get; set; }
-	public List<SMLArrayValue> Values { get; set; }
-	public List<SMLToken> TrailingNewlines { get; set; }
+	public IList<SMLToken> LeadingNewlines { get; init; }
+	public IList<SMLArrayValue> Values { get; init; }
+	public IList<SMLToken> TrailingNewlines { get; init; }
 	public SMLToken CloseBracket { get; set; }
 
 	public SMLArray()
@@ -25,7 +25,7 @@ public class SMLArray : IEquatable<SMLArray>
 		CloseBracket = SMLToken.Empty;
 	}
 
-	public SMLArray(List<SMLArrayValue> values)
+	public SMLArray(IList<SMLArrayValue> values)
 	{
 		OpenBracket = SMLToken.Empty;
 		LeadingNewlines = new List<SMLToken>();
@@ -36,7 +36,7 @@ public class SMLArray : IEquatable<SMLArray>
 
 	public SMLArray(
 		SMLToken openBracket,
-		List<SMLArrayValue> values,
+		IList<SMLArrayValue> values,
 		SMLToken closeBracket)
 	{
 		OpenBracket = openBracket;
@@ -48,9 +48,9 @@ public class SMLArray : IEquatable<SMLArray>
 
 	public SMLArray(
 		SMLToken openBracket,
-		List<SMLToken> leadingNewlines,
-		List<SMLArrayValue> values,
-		List<SMLToken> trailingNewlines,
+		IList<SMLToken> leadingNewlines,
+		IList<SMLArrayValue> values,
+		IList<SMLToken> trailingNewlines,
 		SMLToken closeBracket)
 	{
 		OpenBracket = openBracket;
@@ -62,17 +62,17 @@ public class SMLArray : IEquatable<SMLArray>
 
 	public override bool Equals(object? obj) => this.Equals(obj as SMLArray);
 
-	public bool Equals(SMLArray? rhs)
+	public bool Equals(SMLArray? other)
 	{
-		if (rhs is null)
+		if (other is null)
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, rhs))
+		if (object.ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return Enumerable.SequenceEqual(this.Values, rhs.Values);
+		return Enumerable.SequenceEqual(this.Values, other.Values);
 	}
 
 	public override int GetHashCode() => (Values).GetHashCode();
