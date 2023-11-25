@@ -18,3 +18,7 @@ dotnet_diagnostic.CA1062.severity = none
 
 # IDE0290: Use primary constructor
 dotnet_diagnostic.IDE0290.severity = none
+
+# IDE0090: Use 'new(...)'
+# Not a fan since it makes it harder to understand the type, use var instead
+dotnet_diagnostic.IDE0090.severity = none

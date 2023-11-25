@@ -32,7 +32,7 @@ public class LanguageReference : IEquatable<LanguageReference>
 					SemanticVersion.Parse(matchName.Groups["Version"].Value) :
 					new SemanticVersion();
 			result = new LanguageReference(name, version);
-			return false;
+			return true;
 		}
 		else
 		{

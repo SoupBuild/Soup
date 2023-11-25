@@ -44,11 +44,11 @@ public static class SwhereManager
 		var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories) =
 			await DotNetSDKUtilities.FindDotNetAsync();
 		var dotnetSDK = userConfig.EnsureSDK("DotNet");
-		dotnetSDK.SourceDirectories.AddRange(sourceDirectories);
+		dotnetSDK.SourceDirectories = sourceDirectories;
 		dotnetSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-					{ "DotNetExecutable", dotNetExecutable.ToString() },
+				{ "DotNetExecutable", dotNetExecutable.ToString() },
 			});
 
 		var sdksTable = dotnetSDK.Properties.EnsureTableWithSyntax("SDKs", 3);
@@ -82,10 +82,10 @@ public static class SwhereManager
 	{
 		var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
 		var msvcSDK = userConfig.EnsureSDK("MSVC");
-		msvcSDK.SourceDirectories.AddRange(new List<Path>()
+		msvcSDK.SourceDirectories = new List<Path>()
 			{
 				msvcInstallPath,
-			});
+			};
 		msvcSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
@@ -95,10 +95,10 @@ public static class SwhereManager
 
 		var (windowsSDKVersion, windowsSDKInstallPath) = WindowsSDKUtilities.FindWindows10Kit();
 		var windowsSDK = userConfig.EnsureSDK("Windows");
-		windowsSDK.SourceDirectories.AddRange(new List<Path>()
+		windowsSDK.SourceDirectories = new List<Path>()
 			{
 				windowsSDKInstallPath,
-			});
+			};
 		windowsSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
@@ -108,10 +108,10 @@ public static class SwhereManager
 
 		var netFXToolsPath = WindowsSDKUtilities.FindNetFXTools();
 		var netFXToolsSDK = userConfig.EnsureSDK("NetFXTools");
-		netFXToolsSDK.SourceDirectories.AddRange(new List<Path>()
+		netFXToolsSDK.SourceDirectories = new List<Path>()
 			{
 				netFXToolsPath,
-			});
+			};
 		netFXToolsSDK.SetProperties(
 			new Dictionary<string, string>()
 			{

@@ -82,7 +82,7 @@ public class SDKConfig
 				throw new InvalidOperationException("No SDKs.");
 			}
 		}
-		init
+		set
 		{
 			SMLArray? values;
 			if (_table.Values.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
