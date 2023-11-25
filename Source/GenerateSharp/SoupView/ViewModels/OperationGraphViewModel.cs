@@ -35,7 +35,7 @@ public class OperationGraphViewModel : ViewModelBase
 	public IList<GraphNodeViewModel>? Graph
 	{
 		get => graph;
-		set => this.RaiseAndSetIfChanged(ref graph, value);
+		private set => this.RaiseAndSetIfChanged(ref graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
@@ -124,7 +124,7 @@ public class OperationGraphViewModel : ViewModelBase
 		IsErrorBarOpen = true;
 	}
 
-	private IList<GraphNodeViewModel> BuildGraph(
+	private List<GraphNodeViewModel> BuildGraph(
 		OperationGraph evaluateGraph,
 		OperationResults? operationResults)
 	{
@@ -143,7 +143,7 @@ public class OperationGraphViewModel : ViewModelBase
 		return graphNodes;
 	}
 
-	private IList<GraphNodeViewModel> BuildGraphNodes(
+	private List<GraphNodeViewModel> BuildGraphNodes(
 		IDictionary<OperationInfo, Point> nodePositions,
 		OperationResults? operationResults)
 	{

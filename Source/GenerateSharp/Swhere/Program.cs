@@ -9,7 +9,7 @@ using Opal.System;
 
 namespace Soup.Build.Discover;
 
-public class Program
+public static class Program
 {
 	public static async Task<int> Main(string[] args)
 	{
@@ -47,11 +47,6 @@ public class Program
 		catch (HandledException)
 		{
 			return -1;
-		}
-		catch (Exception ex)
-		{
-			Log.HighPriority($"Unhandled Error: {ex}");
-			return -2;
 		}
 	}
 

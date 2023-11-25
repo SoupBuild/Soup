@@ -26,7 +26,7 @@ public sealed class GraphViewer : TemplatedControl
 
 	private ScrollViewer? scroller;
 	private Canvas? root;
-	private IDictionary<uint, GraphViewerItem> itemLookup = new Dictionary<uint, GraphViewerItem>();
+	private readonly Dictionary<uint, GraphViewerItem> itemLookup = new Dictionary<uint, GraphViewerItem>();
 
 	/// <summary>
 	/// Identifies the <see cref="Graph"/> property.
@@ -53,7 +53,7 @@ public sealed class GraphViewer : TemplatedControl
 	public IList<GraphNodeViewModel> Graph
 	{
 		get => GetValue(GraphProperty);
-		set => SetValue(GraphProperty, value);
+		private set => SetValue(GraphProperty, value);
 	}
 
 	/// <summary>
@@ -199,7 +199,7 @@ public sealed class GraphViewer : TemplatedControl
 		}
 	}
 
-	private Path ConnectNodes(Point start, Point end)
+	private static Path ConnectNodes(Point start, Point end)
 	{
 		var control1 = new Point(
 			start.X,
@@ -211,7 +211,7 @@ public sealed class GraphViewer : TemplatedControl
 		return CreateBezier(start, control1, control2, end);
 	}
 
-	private Path CreateBezier(Point start, Point control1, Point control2, Point end)
+	private static Path CreateBezier(Point start, Point control1, Point control2, Point end)
 	{
 		var path = new Path()
 		{

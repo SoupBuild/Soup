@@ -16,11 +16,11 @@ namespace Soup.View.ViewModels;
 
 public class DependencyGraphViewModel : ViewModelBase
 {
-	private GraphNodeViewModel? selectedNode = null;
-	private ProjectDetailsViewModel? selectedProject = null;
+	private GraphNodeViewModel? selectedNode;
+	private ProjectDetailsViewModel? selectedProject;
 	private string errorBarMessage = string.Empty;
-	private bool isErrorBarOpen = false;
-	private IList<GraphNodeViewModel>? graph = null;
+	private bool isErrorBarOpen;
+	private IList<GraphNodeViewModel>? graph;
 	private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
 
 	public string ErrorBarMessage
@@ -32,7 +32,7 @@ public class DependencyGraphViewModel : ViewModelBase
 	public IList<GraphNodeViewModel>? Graph
 	{
 		get => graph;
-		set => this.RaiseAndSetIfChanged(ref graph, value);
+		private set => this.RaiseAndSetIfChanged(ref graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
@@ -98,7 +98,7 @@ public class DependencyGraphViewModel : ViewModelBase
 		IsErrorBarOpen = true;
 	}
 
-	private IList<GraphNodeViewModel> BuildGraph(
+	private List<GraphNodeViewModel> BuildGraph(
 		PackageProvider packageProvider)
 	{
 		this.projectDetailsLookup.Clear();
@@ -108,7 +108,7 @@ public class DependencyGraphViewModel : ViewModelBase
 		// Filter to only the current sub graph
 		var graph = packageProvider.PackageLookup
 			.Where(value => currentGraphSet.Contains(value.Key))
-			.Select(value => (value.Value, GetChildren(value.Value.Dependencies, packageProvider)));
+			.Select(value => (value.Value, (IEnumerable<PackageInfo>)GetChildren(value.Value.Dependencies, packageProvider)));
 
 		// TODO: Should the layout be a visual aspect of the view? Yes, yes it should.
 		var graphView = GraphBuilder.BuildDirectedAcyclicGraphView(
@@ -120,7 +120,7 @@ public class DependencyGraphViewModel : ViewModelBase
 		return graphNodes;
 	}
 
-	private ISet<int> GetCurrentGraphSet(PackageProvider packageProvider)
+	private static HashSet<int> GetCurrentGraphSet(PackageProvider packageProvider)
 	{
 		var result = new HashSet<int>();
 
@@ -142,7 +142,7 @@ public class DependencyGraphViewModel : ViewModelBase
 		return result;
 	}
 
-	private IList<GraphNodeViewModel> BuildGraphNodes(
+	private List<GraphNodeViewModel> BuildGraphNodes(
 		IDictionary<PackageInfo, Point> nodePositions,
 		PackageProvider packageProvider)
 	{
@@ -174,7 +174,7 @@ public class DependencyGraphViewModel : ViewModelBase
 		return result;
 	}
 
-	private static IEnumerable<PackageInfo> GetChildren(
+	private static List<PackageInfo> GetChildren(
 		IDictionary<string, IList<PackageChildInfo>> dependencies,
 		PackageProvider packageProvider)
 	{

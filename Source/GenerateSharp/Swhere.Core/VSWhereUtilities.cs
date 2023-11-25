@@ -93,7 +93,7 @@ public static class VSWhereUtilities
 		// The first line is the path
 		using (var reader = new System.IO.StringReader(stdOut))
 		{
-			var path = reader.ReadLine();
+			var path = await reader.ReadLineAsync();
 			if (path is null)
 			{
 				Log.Error("Failed to parse vswhere output.");
@@ -139,7 +139,7 @@ public static class VSWhereUtilities
 		foreach (var arg in args)
 		{
 			if (!isFirst)
-				argumentString.Append(" ");
+				argumentString.Append(' ');
 
 			argumentString.Append(arg);
 			isFirst = false;

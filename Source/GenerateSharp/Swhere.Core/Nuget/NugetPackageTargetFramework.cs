@@ -10,7 +10,7 @@ public class NugetPackageTargetFramework
 {
 	public string Name { get; set; } = string.Empty;
 
-	public IList<NugetPackageDependency> Dependencies { get; set; } = new List<NugetPackageDependency>();
+	public IList<NugetPackageDependency> Dependencies { get; init; } = new List<NugetPackageDependency>();
 
-	public IList<string> Libraries { get; set; } = new List<string>();
+	public IList<string> Libraries { get; init; } = new List<string>();
 }

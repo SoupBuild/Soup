@@ -15,7 +15,7 @@ public class NuspecDependencyGroup : NuspecDependencyBase
 	public string TargetFramework { get; set; } = string.Empty;
 
 	[XmlElement("dependency")]
-	public List<NuspecDependency> Dependencies { get; set; } = new List<NuspecDependency>();
+	public IList<NuspecDependency> Dependencies { get; init; } = new List<NuspecDependency>();
 
 	internal static NuspecDependencyGroup Deserialize(XmlNode node)
 	{

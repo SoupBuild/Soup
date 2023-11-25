@@ -38,7 +38,7 @@ public class PackageManager
 	/// <summary>
 	/// Restore packages
 	/// </summary>
-	public async Task RestorePackagesAsync(Path workingDirectory, bool forceRestore)
+	public async Task RestorePackagesAsync(Path workingDirectory)
 	{
 		var userProfileDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory();
 		var packageStore = userProfileDirectory + new Path(".soup/packages/");
@@ -322,7 +322,7 @@ public class PackageManager
 				if (!ignoreFileList.Contains(child.Path.GetFileName()))
 				{
 					var relativePath = child.Path.GetRelativeTo(workingDirectory);
-					var relativeName = relativePath.ToString().Substring(2);
+					var relativeName = relativePath.ToString()[2..];
 					archive.CreateEntryFromFile(child.Path, relativeName);
 				}
 			}

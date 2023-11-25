@@ -135,7 +135,7 @@ public static class NugetSDKUtilities
 	private static string? GetTFM(string targetFramework)
 	{
 		var targetFrameworkMoniker = default(string);
-		if (targetFramework.StartsWith("net"))
+		if (targetFramework.StartsWith("net", StringComparison.InvariantCulture))
 		{
 			targetFrameworkMoniker = targetFramework;
 		}
@@ -171,7 +171,7 @@ public static class NugetSDKUtilities
 		return targetFrameworkMoniker;
 	}
 
-	private static IList<string> DiscoverLibraries(Path directory, string targetFrameworkMoniker)
+	private static List<string> DiscoverLibraries(Path directory, string targetFrameworkMoniker)
 	{
 		var fileSystem = LifetimeManager.Get<IFileSystem>();
 

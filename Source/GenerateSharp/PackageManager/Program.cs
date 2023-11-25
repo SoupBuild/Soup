@@ -65,18 +65,13 @@ public static class Program
 					break;
 				case "restore-packages":
 					{
-						bool forceRestore = false;
-						if (args.Length == 3 && args[2] == "--force")
-						{
-							forceRestore = true;
-						}
-						else if (args.Length != 2)
+						if (args.Length != 2)
 						{
 							PrintUsage();
 							return -1;
 						}
 
-						await packageManager.RestorePackagesAsync(workingDirectory, forceRestore);
+						await packageManager.RestorePackagesAsync(workingDirectory);
 					}
 					break;
 				case "install-package":

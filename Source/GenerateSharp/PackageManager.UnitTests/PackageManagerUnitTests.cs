@@ -51,8 +51,7 @@ public class PackageManagerUnitTests
 			mockClosureManager.Object);
 
 		var workingDirectory = new Path("C:/Root/MyPackage/");
-		bool forceRestore = false;
-		await uut.RestorePackagesAsync(workingDirectory, forceRestore);
+		await uut.RestorePackagesAsync(workingDirectory);
 
 		// Verify expected logs
 		Assert.Equal(

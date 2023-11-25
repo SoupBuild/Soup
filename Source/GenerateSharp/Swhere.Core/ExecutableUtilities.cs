@@ -54,7 +54,7 @@ public static class ExecutableUtilities
 		foreach (var arg in args)
 		{
 			if (!isFirst)
-				argumentString.Append(" ");
+				argumentString.Append(' ');
 
 			argumentString.Append(arg);
 			isFirst = false;

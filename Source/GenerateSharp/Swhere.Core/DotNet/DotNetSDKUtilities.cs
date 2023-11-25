@@ -62,7 +62,7 @@ public static class DotNetSDKUtilities
 		var sdks = new List<(string, Path)>();
 		foreach (var sdkValue in sdksOutput.Split(Environment.NewLine).SkipLast(1))
 		{
-			var splitIndex = sdkValue.IndexOf(' ');
+			var splitIndex = sdkValue.IndexOf(' ', StringComparison.InvariantCulture);
 			if (splitIndex == -1)
 			{
 				Log.Error($"DotNet SDK format invalid: {sdkValue}");
@@ -91,7 +91,7 @@ public static class DotNetSDKUtilities
 		var runtimes = new Dictionary<string, IList<(string, Path)>>();
 		foreach (var runtimeValue in runtimesOutput.Split(Environment.NewLine).SkipLast(1))
 		{
-			var split1Index = runtimeValue.IndexOf(' ');
+			var split1Index = runtimeValue.IndexOf(' ', StringComparison.InvariantCulture);
 			var split2Index = runtimeValue.IndexOf(' ', split1Index + 1);
 			if (split1Index == -1 || split2Index == -1)
 			{
@@ -119,7 +119,7 @@ public static class DotNetSDKUtilities
 		return runtimes;
 	}
 
-	private static IDictionary<string, IList<(string Version, Path InstallDirectory)>> FindDotNetTargetingPacksVersions(
+	private static Dictionary<string, IList<(string Version, Path InstallDirectory)>> FindDotNetTargetingPacksVersions(
 		Path dotnetInstallPath)
 	{
 		var knownPacks = new List<string>()
@@ -137,7 +137,7 @@ public static class DotNetSDKUtilities
 		return result;
 	}
 
-	private static IList<(string Version, Path InstallDirectory)> FindDotNetTargetingPackVersions(
+	private static List<(string Version, Path InstallDirectory)> FindDotNetTargetingPackVersions(
 		Path dotnetInstallPath,
 		string packageName)
 	{

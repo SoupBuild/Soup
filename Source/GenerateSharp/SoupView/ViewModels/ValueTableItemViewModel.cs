@@ -24,7 +24,7 @@ public class ValueTableItemViewModel : ViewModelBase
 	public ObservableCollection<ValueTableItemViewModel> Children
 	{
 		get => m_children;
-		set => m_children = value;
+		init => m_children = value;
 	}
 
 	private bool m_isExpanded;

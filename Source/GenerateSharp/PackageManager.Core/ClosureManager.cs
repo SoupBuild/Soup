@@ -86,14 +86,12 @@ public class ClosureManager : IClosureManager
 		Path stagingDirectory,
 		HashSet<Path> processedLocks)
 	{
-		if (processedLocks.Contains(packageLockPath))
+		if (!processedLocks.Add(packageLockPath))
 		{
 			Log.Info("Root already processed");
 		}
 		else
 		{
-			processedLocks.Add(packageLockPath);
-
 			var packageLock = await EnsurePackageLockAsync(
 				workingDirectory,
 				packageLockPath);
@@ -447,7 +445,7 @@ public class ClosureManager : IClosureManager
 		return (runtimeClosure, buildClosures, toolClosures);
 	}
 
-	private PackageLock BuildPackageLock(
+	private static PackageLock BuildPackageLock(
 		Path workingDirectory,
 		IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure, string ToolClosure)>> runtimeClosure,
 		IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures,

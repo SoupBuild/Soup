@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Soup.Build.Utilities;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 
 namespace Soup.View.ViewModels;
@@ -22,7 +23,7 @@ public class OperationDetailsViewModel : ViewModelBase
 		properties.Clear();
 		properties.Add(new PropertyValueViewModel("Title", operation.Title));
 		properties.Add(new PropertyValueViewModel("Id", operation.Id.ToString()));
-		properties.Add(new PropertyValueViewModel("DependencyCount", operation.DependencyCount.ToString()));
+		properties.Add(new PropertyValueViewModel("DependencyCount", operation.DependencyCount.ToString(CultureInfo.InvariantCulture)));
 		properties.Add(new PropertyValueViewModel("Executable", operation.Command.Executable.ToString()));
 		properties.Add(new PropertyValueViewModel("WorkingDirectory", operation.Command.WorkingDirectory.ToString()));
 		properties.Add(new PropertyValueViewModel("Arguments", null)
@@ -60,7 +61,7 @@ public class OperationDetailsViewModel : ViewModelBase
 		if (operationResult != null)
 		{
 			properties.Add(new PropertyValueViewModel("WasSuccessfulRun", operationResult.WasSuccessfulRun.ToString()));
-			properties.Add(new PropertyValueViewModel("EvaluateTime", operationResult.EvaluateTime.ToString()));
+			properties.Add(new PropertyValueViewModel("EvaluateTime", operationResult.EvaluateTime.ToString(CultureInfo.InvariantCulture)));
 			var observedInputFiles = fileSystemState.GetFilePaths(operationResult.ObservedInput);
 			var observedOutputFiles = fileSystemState.GetFilePaths(operationResult.ObservedOutput);
 			properties.Add(new PropertyValueViewModel("ObservedInput", null)

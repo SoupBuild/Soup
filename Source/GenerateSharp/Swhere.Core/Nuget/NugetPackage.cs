@@ -10,5 +10,5 @@ public class NugetPackage
 {
 	public string Id { get; set; } = string.Empty;
 
-	public IList<NugetPackageVersion> Versions { get; set; } = new List<NugetPackageVersion>();
+	public IList<NugetPackageVersion> Versions { get; init; } = new List<NugetPackageVersion>();
 }

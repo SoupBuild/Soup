@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup;
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -35,11 +36,18 @@ public class NuspecMetadata
 	[XmlArray("dependencies")]
 	[XmlArrayItem("group", typeof(NuspecDependencyGroup))]
 	[XmlArrayItem("dependency", typeof(NuspecDependency))]
-	public List<NuspecDependencyBase>? Dependencies { get; set; }
+	public IList<NuspecDependencyBase>? Dependencies { get; init; }
 
 	internal static NuspecMetadata Deserialize(XmlNode node)
 	{
-		var result = new NuspecMetadata();
+		string id = string.Empty;
+		string version = string.Empty;
+		string description = string.Empty;
+		string authors = string.Empty;
+		string? releaseNotes = null;
+		string? copyright = null;
+		string? tags = null;
+		IList<NuspecDependencyBase>? dependencies = null;
 		if (node.HasChildNodes)
 		{
 			for (int i = 0; i < node.ChildNodes.Count; i++)
@@ -48,34 +56,44 @@ public class NuspecMetadata
 				switch (child.Name)
 				{
 					case "id":
-						result.Id = child.InnerText ?? string.Empty;
+						id = child.InnerText ?? string.Empty;
 						break;
 					case "version":
-						result.Version = child.InnerText ?? string.Empty;
+						version = child.InnerText ?? string.Empty;
 						break;
 					case "description":
-						result.Description = child.InnerText ?? string.Empty;
+						description = child.InnerText ?? string.Empty;
 						break;
 					case "authors":
-						result.Authors = child.InnerText ?? string.Empty;
+						authors = child.InnerText ?? string.Empty;
 						break;
 					case "releaseNotes":
-						result.ReleaseNotes = child.InnerText ?? string.Empty;
+						releaseNotes = child.InnerText ?? string.Empty;
 						break;
 					case "copyright":
-						result.Copyright = child.InnerText ?? string.Empty;
+						copyright = child.InnerText ?? string.Empty;
 						break;
 					case "tags":
-						result.Tags = child.InnerText ?? string.Empty;
+						tags = child.InnerText ?? string.Empty;
 						break;
 					case "dependencies":
-						result.Dependencies = DeserializeDependencies(child);
+						dependencies = DeserializeDependencies(child);
 						break;
 				}
 			}
 		}
 
-		return result;
+		return new NuspecMetadata()
+		{
+			Id = id,
+			Version = version,
+			Description = description,
+			Authors = authors,
+			ReleaseNotes = releaseNotes,
+			Copyright = copyright,
+			Tags = tags,
+			Dependencies = dependencies,
+		};
 	}
 
 	private static List<NuspecDependencyBase> DeserializeDependencies(XmlNode node)

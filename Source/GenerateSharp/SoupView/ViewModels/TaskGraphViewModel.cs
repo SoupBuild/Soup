@@ -23,15 +23,15 @@ public class TaskGraphViewModel : ViewModelBase
 		public required string Name { get; set; }
 		public required uint Id { get; set; }
 		public required ValueTable TaskInfo { get; set; }
-		public required IList<TaskDetails> Children { get; set; }
+		public required List<TaskDetails> Children { get; init; }
 	}
 
-	private GraphNodeViewModel? selectedNode = null;
-	private TaskDetailsViewModel? selectedTask = null;
+	private GraphNodeViewModel? selectedNode;
+	private TaskDetailsViewModel? selectedTask;
 	private string errorBarMessage = string.Empty;
-	private uint uniqueId = 0;
-	private bool isErrorBarOpen = false;
-	private IList<GraphNodeViewModel>? graph = null;
+	private uint uniqueId;
+	private bool isErrorBarOpen;
+	private IList<GraphNodeViewModel>? graph;
 	private Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = new Dictionary<uint, TaskDetailsViewModel>();
 
 	public string ErrorBarMessage
@@ -43,7 +43,7 @@ public class TaskGraphViewModel : ViewModelBase
 	public IList<GraphNodeViewModel>? Graph
 	{
 		get => graph;
-		set => this.RaiseAndSetIfChanged(ref graph, value);
+		private set => this.RaiseAndSetIfChanged(ref graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
@@ -120,7 +120,7 @@ public class TaskGraphViewModel : ViewModelBase
 		IsErrorBarOpen = true;
 	}
 
-	private IList<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)
+	private List<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)
 	{
 		this.taskDetailsLookup.Clear();
 		this.uniqueId = 1;
@@ -148,7 +148,7 @@ public class TaskGraphViewModel : ViewModelBase
 		return activeGraph;
 	}
 
-	private IList<GraphNodeViewModel> BuildGraph(
+	private List<GraphNodeViewModel> BuildGraph(
 		ValueList runtimeOrderList,
 		ValueTable taskInfoTable,
 		ValueTable globalStateTable)
@@ -206,8 +206,7 @@ public class TaskGraphViewModel : ViewModelBase
 		return graphNodes;
 	}
 
-
-	private IList<GraphNodeViewModel> BuildGraphNodes(
+	private List<GraphNodeViewModel> BuildGraphNodes(
 		IDictionary<TaskDetails, Point> nodePositions)
 	{
 		var result = new List<GraphNodeViewModel>();
@@ -240,7 +239,7 @@ public class TaskGraphViewModel : ViewModelBase
 			RedirectStandardOutput = true,
 			CreateNoWindow = true,
 		};
-		var process = new Process()
+		using var process = new Process()
 		{
 			StartInfo = processInfo,
 		};

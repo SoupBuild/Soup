@@ -21,7 +21,7 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class PackageVersionsClient
 {
-	private HttpClient _httpClient;
+	private readonly HttpClient _httpClient;
 	private readonly string? _bearerToken;
 
 	public PackageVersionsClient(HttpClient httpClient, string? bearerToken)

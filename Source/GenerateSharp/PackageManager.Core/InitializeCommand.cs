@@ -75,7 +75,7 @@ int main()
 		await mainFileWriter.WriteAsync(mainFileContent);
 	}
 
-	private void UpdateDefaultValues(Recipe recipe)
+	private static void UpdateDefaultValues(Recipe recipe)
 	{
 		Log.HighPriority($"Name: ({recipe.Name})");
 		var newName = Console.ReadLine();

@@ -12,7 +12,7 @@ namespace Opal.System;
 /// </summary>
 internal sealed class RuntimeOutputFile : IOutputFile
 {
-	private FileStream stream;
+	private readonly FileStream stream;
 	private bool isDisposed;
 
 	public RuntimeOutputFile(FileStream stream)

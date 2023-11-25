@@ -278,7 +278,7 @@ ANewTable2: {
 		Assert.Equal(expected, content);
 	}
 
-	private async Task<string> SerializeAsync(SMLDocument document)
+	private static async Task<string> SerializeAsync(SMLDocument document)
 	{
 		using var stream = new MemoryStream();
 		await SMLManager.SerializeAsync(

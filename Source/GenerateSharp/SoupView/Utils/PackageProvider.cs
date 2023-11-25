@@ -30,7 +30,7 @@ public class PackageInfo
 	public bool IsPrebuilt { get; set; }
 	public string PackageRoot { get; set; } = string.Empty;
 	public string TargetDirectory { get; set; } = string.Empty;
-	public PackageChildrenMap Dependencies { get; set; } = new Dictionary<string, IList<PackageChildInfo>>();
+	public PackageChildrenMap Dependencies { get; init; } = new Dictionary<string, IList<PackageChildInfo>>();
 }
 
 public class PackageGraph
@@ -46,8 +46,8 @@ public class PackageGraph
 public class PackageProvider
 {
 	public PackageGraphId RootPackageGraphId { get; set; }
-	public PackageGraphLookupMap PackageGraphLookup { get; set; } = new Dictionary<int, PackageGraph>();
-	public PackageLookupMap PackageLookup { get; set; } = new Dictionary<int, PackageInfo>();
+	public PackageGraphLookupMap PackageGraphLookup { get; init; } = new Dictionary<int, PackageGraph>();
+	public PackageLookupMap PackageLookup { get; init; } = new Dictionary<int, PackageInfo>();
 
 	public PackageGraph GetRootPackageGraph()
 	{
