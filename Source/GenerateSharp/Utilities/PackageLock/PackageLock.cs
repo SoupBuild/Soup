@@ -111,12 +111,12 @@ public class PackageLock
 	/// </summary>
 	public SMLDocument Document => _document;
 
-	private bool HasValue(SMLDocument document, string key)
+	private static bool HasValue(SMLDocument document, string key)
 	{
 		return document.Values.ContainsKey(key);
 	}
 
-	private SMLValue GetValue(SMLDocument document, string key)
+	private static SMLValue GetValue(SMLDocument document, string key)
 	{
 		if (document.Values.TryGetValue(key, out var value))
 		{
@@ -128,11 +128,10 @@ public class PackageLock
 		}
 	}
 
-	private SMLTable EnsureHasTable(SMLDocument document, string name)
+	private static SMLTable EnsureHasTable(SMLDocument document, string name)
 	{
-		if (document.Values.ContainsKey(name))
+		if (document.Values.TryGetValue(name, out var value))
 		{
-			var value = document.Values[name];
 			if (value.Value.Type != SMLValueType.Table)
 				throw new InvalidOperationException($"The package lock already has a non-table dependencies property: {name}");
 
@@ -146,11 +145,10 @@ public class PackageLock
 		}
 	}
 
-	private SMLTable EnsureHasTable(SMLTable table, string name, int indentLevel)
+	private static SMLTable EnsureHasTable(SMLTable table, string name, int indentLevel)
 	{
-		if (table.Values.ContainsKey(name))
+		if (table.Values.TryGetValue(name, out var value))
 		{
-			var value = table.Values[name];
 			if (value.Value.Type != SMLValueType.Table)
 				throw new InvalidOperationException($"The package lock already has a non-table dependencies property: {name}");
 
@@ -164,11 +162,10 @@ public class PackageLock
 		}
 	}
 
-	private SMLArray EnsureHasList(SMLTable table, string name, int indentLevel)
+	private static SMLArray EnsureHasList(SMLTable table, string name, int indentLevel)
 	{
-		if (table.Values.ContainsKey(name))
+		if (table.Values.TryGetValue(name, out var value))
 		{
-			var value = table.Values[name];
 			if (value.Value.Type != SMLValueType.Array)
 				throw new InvalidOperationException($"The package lock already has a non-list {name} property");
 

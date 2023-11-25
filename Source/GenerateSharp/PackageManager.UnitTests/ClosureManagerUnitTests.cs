@@ -42,7 +42,8 @@ public class ClosureManagerUnitTests
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
-		using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
 		var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 		{

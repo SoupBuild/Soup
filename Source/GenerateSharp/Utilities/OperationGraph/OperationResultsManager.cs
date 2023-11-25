@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
@@ -63,7 +64,7 @@ public static class OperationResultsManager
 			result = loadedResult;
 			return true;
 		}
-		catch
+		catch (InvalidOperationException)
 		{
 			Log.Error("Failed to parse operation results");
 			result = null;
@@ -79,8 +80,6 @@ public static class OperationResultsManager
 		OperationGraph state,
 		FileSystemState fileSystemState)
 	{
-		var targetFolder = operationGraphFile.GetParent();
-
 		// Update the operation graph referenced files
 		var files = new HashSet<FileId>();
 		foreach (var operationReference in state.Operations)

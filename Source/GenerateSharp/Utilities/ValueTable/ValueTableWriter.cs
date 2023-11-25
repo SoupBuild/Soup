@@ -10,19 +10,22 @@ namespace Soup.Build.Utilities;
 /// <summary>
 /// The value table state writer
 /// </summary>
-internal class ValueTableWriter
+public sealed class ValueTableWriter
 {
 	// Binary Value Table file format
 	private static uint FileVersion => 2;
 
+	internal static readonly char[] BVT = new char[] { 'B', 'V', 'T', '\0' };
+	internal static readonly char[] TBL = new char[] { 'T', 'B', 'L', '\0' };
+
 	public static void Serialize(ValueTable state, BinaryWriter writer)
 	{
 		// Write the File Header with version
-		writer.Write(new char[] { 'B', 'V', 'T', '\0' });
+		writer.Write(BVT);
 		writer.Write(FileVersion);
 
 		// Write out the root table
-		writer.Write(new char[] { 'T', 'B', 'L', '\0' });
+		writer.Write(TBL);
 		WriteValue(writer, state);
 	}
 

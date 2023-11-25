@@ -49,23 +49,17 @@ public class FileSystemState
 	/// <summary>
 	/// Get Files
 	/// </summary>
-	public IReadOnlyDictionary<FileId, Path> GetFiles()
-	{
-		return _files;
-	}
+	public IReadOnlyDictionary<FileId, Path> Files => _files;
 
 	/// <summary>
 	/// Get the max unique file id
 	/// </summary>
-	public FileId GetMaxFileId()
-	{
-		return _maxFileId;
-	}
+	public FileId MaxFileId => _maxFileId;
 
 	/// <summary>
 	/// Convert a set of file paths to file ids
 	/// </summary>
-	public List<FileId> ToFileIds(IReadOnlyList<Path> files, Path workingDirectory)
+	public IList<FileId> ToFileIds(IReadOnlyList<Path> files, Path workingDirectory)
 	{
 		var result = new List<FileId>();
 		foreach (var file in files)
@@ -132,7 +126,7 @@ public class FileSystemState
 	/// <summary>
 	/// Find a file paths
 	/// </summary>
-	public List<Path> GetFilePaths(IEnumerable<FileId> fileIds)
+	public IList<Path> GetFilePaths(IEnumerable<FileId> fileIds)
 	{
 		var result = new List<Path>();
 		foreach (var fileId in fileIds)

@@ -90,8 +90,5 @@ public class LocalUserConfig
 	/// <summary>
 	/// Raw access
 	/// </summary>
-	public SMLDocument GetDocument()
-	{
-		return _table;
-	}
+	public SMLDocument Document => _table;
 }

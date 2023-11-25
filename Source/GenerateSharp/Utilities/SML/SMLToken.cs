@@ -10,9 +10,9 @@ namespace Soup.Build.Utilities;
 
 public class SMLToken : IEquatable<SMLToken>
 {
-	public List<string> LeadingTrivia { get; set; }
+	public IList<string> LeadingTrivia { get; init; }
 	public string Text { get; set; }
-	public List<string> TrailingTrivia { get; set; }
+	public IList<string> TrailingTrivia { get; init; }
 
 	public static SMLToken Empty => new SMLToken(string.Empty);
 
@@ -23,7 +23,7 @@ public class SMLToken : IEquatable<SMLToken>
 		TrailingTrivia = new List<string>();
 	}
 
-	public SMLToken(List<string> leadingTrivia, string text, List<string> trailingTrivia)
+	public SMLToken(IList<string> leadingTrivia, string text, IList<string> trailingTrivia)
 	{
 		LeadingTrivia = leadingTrivia;
 		Text = text;
@@ -32,23 +32,23 @@ public class SMLToken : IEquatable<SMLToken>
 
 	public override bool Equals(object? obj) => this.Equals(obj as SMLToken);
 
-	public bool Equals(SMLToken? rhs)
+	public bool Equals(SMLToken? other)
 	{
-		if (rhs is null)
+		if (other is null)
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, rhs))
+		if (object.ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return this.Text == rhs.Text &&
-			Enumerable.SequenceEqual(LeadingTrivia, rhs.LeadingTrivia) &&
-			Enumerable.SequenceEqual(TrailingTrivia, rhs.TrailingTrivia);
+		return this.Text == other.Text &&
+			Enumerable.SequenceEqual(LeadingTrivia, other.LeadingTrivia) &&
+			Enumerable.SequenceEqual(TrailingTrivia, other.TrailingTrivia);
 	}
 
 	// Only use the text to allow for mapping to same bins
-	public override int GetHashCode() => (Text).GetHashCode();
+	public override int GetHashCode() => (Text).GetHashCode(StringComparison.Ordinal);
 
 	public static bool operator ==(SMLToken? lhs, SMLToken? rhs)
 	{

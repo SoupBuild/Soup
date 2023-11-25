@@ -39,7 +39,7 @@ public static class ValueTableManager
 			result = ValueTableReader.Deserialize(reader);
 			return true;
 		}
-		catch (Exception ex)
+		catch (InvalidOperationException ex)
 		{
 			Log.Error($"Failed to parse value table: {ex.Message}");
 			result = new ValueTable();

@@ -3,9 +3,11 @@
 // </copyright>
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Soup.Build.Utilities;
 
+[SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "Enum of types")]
 public enum SMLValueType
 {
 	Empty,
@@ -127,17 +129,17 @@ public class SMLValue : IEquatable<SMLValue>
 
 	public override bool Equals(object? obj) => this.Equals(obj as SMLValue);
 
-	public bool Equals(SMLValue? rhs)
+	public bool Equals(SMLValue? other)
 	{
-		if (rhs is null)
+		if (other is null)
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, rhs))
+		if (object.ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		if (this.Type != rhs.Type)
+		if (this.Type != other.Type)
 			return false;
 
 		switch (this.Type)
@@ -145,19 +147,19 @@ public class SMLValue : IEquatable<SMLValue>
 			case SMLValueType.Empty:
 				return true;
 			case SMLValueType.Boolean:
-				return this.AsBoolean() == rhs.AsBoolean();
+				return this.AsBoolean() == other.AsBoolean();
 			case SMLValueType.Integer:
-				return this.AsInteger() == rhs.AsInteger();
+				return this.AsInteger() == other.AsInteger();
 			case SMLValueType.Float:
-				return this.AsFloat() == rhs.AsFloat();
+				return this.AsFloat() == other.AsFloat();
 			case SMLValueType.String:
-				return this.AsString() == rhs.AsString();
+				return this.AsString() == other.AsString();
 			case SMLValueType.Table:
-				return this.AsTable() == rhs.AsTable();
+				return this.AsTable() == other.AsTable();
 			case SMLValueType.Array:
-				return this.AsArray() == rhs.AsArray();
+				return this.AsArray() == other.AsArray();
 			default:
-				throw new InvalidOperationException("Unknown SMLValueType");
+				return false;
 		}
 	}
 

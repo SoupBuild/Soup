@@ -32,7 +32,8 @@ public class PackageManagerUnitTests
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
-		using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
 		// Mock out the closure manager
 		var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
@@ -121,7 +122,8 @@ public class PackageManagerUnitTests
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
-		using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
 		// Mock out the closure manager
 		var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
@@ -234,7 +236,8 @@ public class PackageManagerUnitTests
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
-		using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
 		// Mock out the closure manager
 		var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
@@ -395,7 +398,8 @@ public class PackageManagerUnitTests
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
-		using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
 		// Mock out the closure manager
 		var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);

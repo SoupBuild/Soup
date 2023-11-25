@@ -39,7 +39,7 @@ public class OperationResults
 	/// <summary>
 	/// Get the set of referenced file ids that map to their paths
 	/// </summary>
-	public IList<(FileId FileId, Path Path)> ReferencedFiles { get; set; }
+	public IList<(FileId FileId, Path Path)> ReferencedFiles { get; init; }
 
 	/// <summary>
 	/// Get Results

@@ -845,17 +845,13 @@ public class ClosureManager : IClosureManager
 
 	private static string GetLanguageSafeName(string language)
 	{
-		switch (language)
+		return language switch
 		{
-			case BuiltInLanguageCSharp:
-				return BuiltInLanguageSafeNameCSharp;
-			case BuiltInLanguageCpp:
-				return BuiltInLanguageSafeNameCpp;
-			case BuiltInLanguageWren:
-				return BuiltInLanguageSafeNameWren;
-			default:
-				throw new InvalidOperationException($"Unknown language name: {language}");
-		}
+			BuiltInLanguageCSharp => BuiltInLanguageSafeNameCSharp,
+			BuiltInLanguageCpp => BuiltInLanguageSafeNameCpp,
+			BuiltInLanguageWren => BuiltInLanguageSafeNameWren,
+			_ => throw new InvalidOperationException($"Unknown language name: {language}"),
+		};
 	}
 
 	/// <summary>

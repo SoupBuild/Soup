@@ -25,22 +25,22 @@ public class OperationResult : IEquatable<OperationResult>
 		ObservedOutput = observedOutput;
 	}
 
-	public bool Equals(OperationResult? rhs)
+	public bool Equals(OperationResult? other)
 	{
-		if (ReferenceEquals(rhs, null))
+		if (ReferenceEquals(other, null))
 			return false;
 
-		var result = WasSuccessfulRun == rhs.WasSuccessfulRun &&
-			EvaluateTime == rhs.EvaluateTime &&
-			Enumerable.SequenceEqual(ObservedInput, rhs.ObservedInput) &&
-			Enumerable.SequenceEqual(ObservedOutput, rhs.ObservedOutput);
+		var result = WasSuccessfulRun == other.WasSuccessfulRun &&
+			EvaluateTime == other.EvaluateTime &&
+			Enumerable.SequenceEqual(ObservedInput, other.ObservedInput) &&
+			Enumerable.SequenceEqual(ObservedOutput, other.ObservedOutput);
 
 		return result;
 	}
 
-	public override bool Equals(object? rhs)
+	public override bool Equals(object? obj)
 	{
-		return Equals(rhs as OperationResult);
+		return Equals(obj as OperationResult);
 	}
 
 	public override int GetHashCode()

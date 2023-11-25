@@ -12,7 +12,7 @@ namespace Soup.Build.Utilities;
 /// <summary>
 /// The local user config extensions
 /// </summary>
-public class LocalUserConfigExtensions
+public static class LocalUserConfigExtensions
 {
 	/// <summary>
 	/// Attempt to load from file
@@ -39,7 +39,7 @@ public class LocalUserConfigExtensions
 				await reader.ReadToEndAsync());
 			return (true, new LocalUserConfig(result));
 		}
-		catch (Exception ex)
+		catch (InvalidOperationException ex)
 		{
 			Log.Error("Deserialize Threw: " + ex.Message);
 			Log.Info("Failed to parse local user config.");
@@ -67,7 +67,7 @@ public class LocalUserConfigExtensions
 
 		// Write the recipe to the file stream
 		await SMLManager.SerializeAsync(
-			config.GetDocument(),
+			config.			Document,
 			file.GetOutStream());
 	}
 }

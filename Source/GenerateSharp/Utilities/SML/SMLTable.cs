@@ -10,11 +10,11 @@ namespace Soup.Build.Utilities;
 
 public class SMLTable : IEquatable<SMLTable>
 {
-	public SMLToken OpenBrace { get; set; }
-	public List<SMLToken> LeadingNewlines { get; set; }
-	public Dictionary<string, SMLTableValue> Values { get; set; }
-	public List<SMLToken> TrailingNewlines { get; set; }
-	public SMLToken CloseBrace { get; set; }
+	public SMLToken OpenBrace { get; init; }
+	public IList<SMLToken> LeadingNewlines { get; init; }
+	public Dictionary<string, SMLTableValue> Values { get; init; }
+	public IList<SMLToken> TrailingNewlines { get; init; }
+	public SMLToken CloseBrace { get; init; }
 
 	public SMLTable()
 	{
@@ -49,9 +49,9 @@ public class SMLTable : IEquatable<SMLTable>
 
 	public SMLTable(
 		SMLToken openBrace,
-		List<SMLToken> leadingNewlines,
+		IList<SMLToken> leadingNewlines,
 		Dictionary<string, SMLTableValue> values,
-		List<SMLToken> trailingNewlines,
+		IList<SMLToken> trailingNewlines,
 		SMLToken closeBrace)
 	{
 		OpenBrace = openBrace;
@@ -63,17 +63,17 @@ public class SMLTable : IEquatable<SMLTable>
 
 	public override bool Equals(object? obj) => this.Equals(obj as SMLTable);
 
-	public bool Equals(SMLTable? rhs)
+	public bool Equals(SMLTable? other)
 	{
-		if (rhs is null)
+		if (other is null)
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, rhs))
+		if (object.ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return Enumerable.SequenceEqual(this.Values, rhs.Values);
+		return Enumerable.SequenceEqual(this.Values, other.Values);
 	}
 
 	public override int GetHashCode() => (Values).GetHashCode();

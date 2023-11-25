@@ -37,9 +37,9 @@ public class SystemBrowser : IBrowser
 		}
 	}
 
-	private int GetRandomUnusedPort()
+	private static int GetRandomUnusedPort()
 	{
-		var listener = new TcpListener(IPAddress.Loopback, 0);
+		using var listener = new TcpListener(IPAddress.Loopback, 0);
 		listener.Start();
 		var port = ((IPEndPoint)listener.LocalEndpoint).Port;
 		listener.Stop();
@@ -84,7 +84,7 @@ public class SystemBrowser : IBrowser
 			// hack because of this: https://github.com/dotnet/corefx/issues/10361
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				url = url.Replace("&", "^&");
+				url = url.Replace("&", "^&", StringComparison.InvariantCulture);
 				Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -116,7 +116,8 @@ public class LoopbackHttpListener : IDisposable
 	public LoopbackHttpListener(int port, string? path = null)
 	{
 		path = path ?? String.Empty;
-		if (path.StartsWith("/")) path = path.Substring(1);
+		if (path.StartsWith("/", StringComparison.Ordinal))
+			path = path.Substring(1);
 
 		_url = $"http://127.0.0.1:{port}/{path}";
 

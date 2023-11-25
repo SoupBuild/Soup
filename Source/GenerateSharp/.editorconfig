@@ -15,3 +15,6 @@ dotnet_diagnostic.CA2225.severity = none
 # CA1062: Validate arguments of public methods
 # We have Nullable enabled
 dotnet_diagnostic.CA1062.severity = none
+
+# IDE0290: Use primary constructor
+dotnet_diagnostic.IDE0290.severity = none

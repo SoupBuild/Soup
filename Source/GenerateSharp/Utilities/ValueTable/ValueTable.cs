@@ -9,7 +9,8 @@ using System.Text;
 
 namespace Soup.Build.Utilities;
 
-public class ValueTable : IEnumerable
+[SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "Disagree")]
+public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 {
 	private Dictionary<string, Value> _impl;
 
@@ -76,17 +77,17 @@ public class ValueTable : IEnumerable
 	{
 		var builder = new StringBuilder();
 
-		builder.Append("{ ");
+		_ = builder.Append("{ ");
 		foreach (var value in this)
 		{
-			builder.Append("\"");
-			builder.Append(value.Key);
-			builder.Append("\": ");
-			builder.Append(value.Value);
-			builder.Append(", ");
+			_ = builder.Append('\"');
+			_ = builder.Append(value.Key);
+			_ = builder.Append("\": ");
+			_ = builder.Append(value.Value);
+			_ = builder.Append(", ");
 		}
 
-		builder.Append("}");
+		_ = builder.Append('}');
 
 		return builder.ToString();
 	}

@@ -4,11 +4,13 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Soup.Build.Utilities;
 
-public class ValueList : IEnumerable
+[SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "Disagree")]
+public class ValueList : IEnumerable, IEnumerable<Value>
 {
 	private List<Value> _impl;
 
@@ -62,7 +64,7 @@ public class ValueList : IEnumerable
 			builder.Append(", ");
 		}
 
-		builder.Append("]");
+		builder.Append(']');
 
 		return builder.ToString();
 	}

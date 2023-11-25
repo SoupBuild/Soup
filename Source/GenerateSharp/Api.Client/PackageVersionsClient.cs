@@ -22,7 +22,7 @@ namespace Soup.Build.Api.Client;
 public class PackageVersionsClient
 {
 	private HttpClient _httpClient;
-	private string? _bearerToken;
+	private readonly string? _bearerToken;
 
 	public PackageVersionsClient(HttpClient httpClient, string? bearerToken)
 	{

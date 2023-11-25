@@ -4,6 +4,7 @@
 
 using Opal;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace Soup.Build;
@@ -19,27 +20,7 @@ public class LanguageReference : IEquatable<LanguageReference>
 	/// <summary>
 	/// Try parse a language reference from the provided string
 	/// </summary>
-	public static bool TryParse(string value, out LanguageReference result)
-	{
-		// TODO: Invert try parse to be the default and parse to add the exception
-		// Way faster on the failed case and this could eat OOM
-		try
-		{
-			result = Parse(value);
-			return true;
-		}
-		catch
-		{
-		}
-
-		result = new LanguageReference();
-		return false;
-	}
-
-	/// <summary>
-	/// Parse a language reference from the provided string.
-	/// </summary>
-	public static LanguageReference Parse(string value)
+	public static bool TryParse(string value, [MaybeNullWhen(false)] out LanguageReference result)
 	{
 		var nameRegex = new Regex(@"^(?<Name>[A-Za-z][\w#+.]*)(?:\|(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$");
 		var matchName = nameRegex.Match(value);
@@ -50,7 +31,24 @@ public class LanguageReference : IEquatable<LanguageReference>
 			var version = matchName.Groups.ContainsKey("Version") && matchName.Groups["Version"].Success ?
 					SemanticVersion.Parse(matchName.Groups["Version"].Value) :
 					new SemanticVersion();
-			return new LanguageReference(name, version);
+			result = new LanguageReference(name, version);
+			return false;
+		}
+		else
+		{
+			result = null;
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// Parse a language reference from the provided string.
+	/// </summary>
+	public static LanguageReference Parse(string value)
+	{
+		if (TryParse(value, out var result))
+		{
+			return result;
 		}
 		else
 		{
@@ -101,22 +99,22 @@ public class LanguageReference : IEquatable<LanguageReference>
 	/// <summary>
 	/// Equality operator
 	/// </summary>
-	public bool Equals(LanguageReference? rhs)
+	public bool Equals(LanguageReference? other)
 	{
-		if (ReferenceEquals(rhs, null))
+		if (ReferenceEquals(other, null))
 			return false;
-		return _name == rhs._name &&
-			_version == rhs._version;
+		return _name == other._name &&
+			_version == other._version;
 	}
 
-	public override bool Equals(object? rhs)
+	public override bool Equals(object? obj)
 	{
-		return Equals(rhs as LanguageReference);
+		return Equals(obj as LanguageReference);
 	}
 
 	public override int GetHashCode()
 	{
-		var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode() * 0x1000;
+		var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode(StringComparison.Ordinal) * 0x1000;
 		var versionHash = ReferenceEquals(_version, null) ? 0 : _version.GetHashCode();
 		return nameHash + versionHash;
 	}

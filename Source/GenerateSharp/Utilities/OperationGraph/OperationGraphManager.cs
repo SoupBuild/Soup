@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
@@ -63,7 +64,7 @@ public static class OperationGraphManager
 			result = loadedResult;
 			return true;
 		}
-		catch
+		catch (InvalidOperationException)
 		{
 			Log.Error("Failed to parse operation graph");
 			result = null;

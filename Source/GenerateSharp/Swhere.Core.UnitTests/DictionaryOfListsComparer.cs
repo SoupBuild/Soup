@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -48,7 +49,7 @@ public class DictionaryOfListsComparer<T> : IEqualityComparer<IDictionary<string
 			var hash = 445566;
 			foreach (var key in obj.Keys)
 			{
-				hash = hash * 123 + key.GetHashCode();
+				hash = hash * 123 + key.GetHashCode(StringComparison.InvariantCulture);
 			}
 
 			return hash;

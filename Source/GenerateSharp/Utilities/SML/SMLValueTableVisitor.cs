@@ -5,6 +5,7 @@
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Soup.Build.Utilities;
@@ -15,7 +16,7 @@ namespace Soup.Build.Utilities;
 /// </summary>
 public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisitor<object>
 {
-	private CommonTokenStream _tokens;
+	private readonly CommonTokenStream _tokens;
 
 	private SMLToken? _lastToken;
 
@@ -35,7 +36,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		if (_lastToken != null)
 		{
 			var endTrailingContent = GetLeadingTrivia(context.Eof());
-			_lastToken.TrailingTrivia = endTrailingContent;
+			_lastToken.TrailingTrivia.AddRange(endTrailingContent);
 		}
 
 		return new SMLDocument(
@@ -73,11 +74,11 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 			var value = tableValues[i];
 			var tableValue = (SMLTableValue)value.Accept(this);
 
-			// Check for optional demimilter
+			// Check for optional delimiter
 			if (delimiters.Length > i)
 			{
 				var delimiter = (List<SMLToken>)delimiters[i].Accept(this);
-				tableValue.Delimiter = delimiter;
+				tableValue.Delimiter.AddRange(delimiter);
 			}
 
 			tableContent.Add(tableValue.KeyContent, tableValue);
@@ -141,11 +142,11 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 			var value = arrayValues[i];
 			var arrayValue = new SMLArrayValue((SMLValue)value.Accept(this));
 
-			// Check for optional demimilter
+			// Check for optional delimiter
 			if (delimiters.Length > i)
 			{
 				var delimiter = (List<SMLToken>)delimiters[i].Accept(this);
-				arrayValue.Delimiter = delimiter;
+				arrayValue.Delimiter.AddRange(delimiter);
 			}
 
 			arrayContent.Add(arrayValue);
@@ -157,7 +158,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 	public virtual object VisitValueInteger(SMLParser.ValueIntegerContext context)
 	{
 		var integerNode = context.INTEGER();
-		var value = long.Parse(integerNode.Symbol.Text);
+		var value = long.Parse(integerNode.Symbol.Text, CultureInfo.InvariantCulture);
 		var integerToken = BuildToken(integerNode);
 
 		// Cache the last seen token

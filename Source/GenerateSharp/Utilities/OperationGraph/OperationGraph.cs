@@ -4,6 +4,7 @@
 
 using Opal;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Soup.Build.Utilities;
 
@@ -13,8 +14,8 @@ namespace Soup.Build.Utilities;
 /// </summary>
 public class OperationGraph
 {
-	private List<(FileId FileId, Path Path)> _referencedFiles;
-	private List<OperationId> _rootOperations;
+	private IList<(FileId FileId, Path Path)> _referencedFiles;
+	private IList<OperationId> _rootOperations;
 	private Dictionary<OperationId, OperationInfo> _operations;
 	private Dictionary<CommandInfo, OperationId> _operationLookup;
 
@@ -33,9 +34,9 @@ public class OperationGraph
 	/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 	/// </summary>
 	public OperationGraph(
-		List<(FileId FileId, Path Path)> referencedFiles,
-		List<OperationId> rootOperations,
-		List<OperationInfo> operations)
+		IList<(FileId FileId, Path Path)> referencedFiles,
+		IList<OperationId> rootOperations,
+		IList<OperationInfo> operations)
 	{
 		_referencedFiles = referencedFiles;
 		_rootOperations = rootOperations;
@@ -52,7 +53,7 @@ public class OperationGraph
 	/// <summary>
 	/// Get the set of referenced file ids that map to their paths
 	/// </summary>
-	public List<(FileId FileId, Path Path)> ReferencedFiles
+	public IList<(FileId FileId, Path Path)> ReferencedFiles
 	{
 		get { return _referencedFiles; }
 		init { _referencedFiles = value; }
@@ -61,7 +62,7 @@ public class OperationGraph
 	/// <summary>
 	/// Get the list of root operation ids
 	/// </summary>
-	public List<OperationId> RootOperationIds
+	public IList<OperationId> RootOperationIds
 	{
 		get { return _rootOperations; }
 		init { _rootOperations = value; }

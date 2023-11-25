@@ -48,7 +48,7 @@ public static class PackageLockExtensions
 
 			return (true, packageLock);
 		}
-		catch (Exception ex)
+		catch (InvalidOperationException ex)
 		{
 			Log.Error($"Deserialize Threw: {ex.Message}");
 			Log.Info("Failed to parse Package Lock.");

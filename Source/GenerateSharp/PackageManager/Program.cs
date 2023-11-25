@@ -10,7 +10,7 @@ using Opal.System;
 
 namespace Soup.Build.PackageManager;
 
-public class Program
+public static class Program
 {
 	//// private static Uri SoupApiEndpoint => new Uri("http://localhost:7070");
 	private static Uri SoupApiEndpoint => new Uri("https://api.soupbuild.com");
@@ -112,11 +112,6 @@ public class Program
 		catch (HandledException)
 		{
 			return -1;
-		}
-		catch (Exception ex)
-		{
-			Log.HighPriority($"Unhandled Error: {ex}");
-			return -2;
 		}
 	}
 

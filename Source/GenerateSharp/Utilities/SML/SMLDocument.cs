@@ -10,11 +10,11 @@ namespace Soup.Build.Utilities;
 
 public class SMLDocument : IEquatable<SMLDocument>
 {
-	public List<SMLToken> LeadingNewlines { get; set; }
+	public IList<SMLToken> LeadingNewlines { get; init; }
 
-	public Dictionary<string, SMLTableValue> Values { get; set; }
+	public Dictionary<string, SMLTableValue> Values { get; init; }
 
-	public List<SMLToken> TrailingNewlines { get; set; }
+	public IList<SMLToken> TrailingNewlines { get; init; }
 
 	public SMLDocument()
 	{
@@ -32,9 +32,9 @@ public class SMLDocument : IEquatable<SMLDocument>
 	}
 
 	public SMLDocument(
-		List<SMLToken> leadingNewlines,
+		IList<SMLToken> leadingNewlines,
 		Dictionary<string, SMLTableValue> values,
-		List<SMLToken> trailingNewlines)
+		IList<SMLToken> trailingNewlines)
 	{
 		LeadingNewlines = leadingNewlines;
 		Values = values;
@@ -43,17 +43,17 @@ public class SMLDocument : IEquatable<SMLDocument>
 
 	public override bool Equals(object? obj) => this.Equals(obj as SMLDocument);
 
-	public bool Equals(SMLDocument? rhs)
+	public bool Equals(SMLDocument? other)
 	{
-		if (rhs is null)
+		if (other is null)
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, rhs))
+		if (object.ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return Enumerable.SequenceEqual(this.Values, rhs.Values);
+		return Enumerable.SequenceEqual(this.Values, other.Values);
 	}
 
 	public override int GetHashCode() => (Values).GetHashCode();

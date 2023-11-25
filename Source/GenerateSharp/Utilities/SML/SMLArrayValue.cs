@@ -10,7 +10,7 @@ namespace Soup.Build.Utilities;
 public class SMLArrayValue : IEquatable<SMLArrayValue>
 {
 	public SMLValue Value { get; set; }
-	public List<SMLToken> Delimiter { get; set; }
+	public IList<SMLToken> Delimiter { get; init; }
 
 	public SMLArrayValue(SMLValue value)
 	{
@@ -20,7 +20,7 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 
 	public SMLArrayValue(
 		SMLValue value,
-		List<SMLToken> delimiter)
+		IList<SMLToken> delimiter)
 	{
 		Value = value;
 		Delimiter = delimiter;
@@ -28,17 +28,17 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 
 	public override bool Equals(object? obj) => this.Equals(obj as SMLArrayValue);
 
-	public bool Equals(SMLArrayValue? rhs)
+	public bool Equals(SMLArrayValue? other)
 	{
-		if (rhs is null)
+		if (other is null)
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, rhs))
+		if (object.ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return this.Value == rhs.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode() => (Value).GetHashCode();

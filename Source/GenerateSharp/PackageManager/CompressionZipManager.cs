@@ -7,7 +7,7 @@ using System.IO.Compression;
 
 namespace Soup.Build.PackageManager;
 
-internal class CompressionZipManager : IZipManager
+internal sealed class CompressionZipManager : IZipManager
 {
 	public void ExtractToDirectory(Path sourceArchiveFileName, Path destinationDirectoryName)
 	{

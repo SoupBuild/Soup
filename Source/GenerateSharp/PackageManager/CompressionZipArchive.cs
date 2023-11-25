@@ -7,7 +7,7 @@ using System.IO.Compression;
 
 namespace Soup.Build.PackageManager;
 
-internal class CompressionZipArchive : IZipArchive
+internal sealed class CompressionZipArchive : IZipArchive
 {
 	ZipArchive _archive;
 

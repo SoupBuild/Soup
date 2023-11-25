@@ -34,17 +34,17 @@ public class SMLBooleanValue : IEquatable<SMLBooleanValue>
 
 	public override bool Equals(object? obj) => this.Equals(obj as SMLBooleanValue);
 
-	public bool Equals(SMLBooleanValue? rhs)
+	public bool Equals(SMLBooleanValue? other)
 	{
-		if (rhs is null)
+		if (other is null)
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, rhs))
+		if (object.ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return this.Value == rhs.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode() => (Value).GetHashCode();

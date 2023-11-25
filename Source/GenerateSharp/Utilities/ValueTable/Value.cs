@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Globalization;
 
 namespace Soup.Build.Utilities;
 
@@ -154,9 +155,9 @@ public class Value
 			case ValueType.String:
 				return $"\"{this.AsString()}\"";
 			case ValueType.Integer:
-				return this.AsInteger().ToString();
+				return this.AsInteger().ToString(CultureInfo.InvariantCulture);
 			case ValueType.Float:
-				return this.AsFloat().ToString();
+				return this.AsFloat().ToString(CultureInfo.InvariantCulture);
 			case ValueType.Boolean:
 				return this.AsBoolean().ToString();
 			default:

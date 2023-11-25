@@ -2,12 +2,14 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
+using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using IdentityModel.OidcClient;
 
 namespace Soup.Build.PackageManager;
 
-internal class AuthenticationManager : IAuthenticationManager
+internal sealed class AuthenticationManager : IAuthenticationManager
 {
 	static string _authority = "https://auth.soupbuild.com/";
 	// static string _authority = "https://localhost:5001/";
@@ -22,11 +24,11 @@ internal class AuthenticationManager : IAuthenticationManager
 		return token;
 	}
 
-	private async Task<string> Login()
+	private static async Task<string> Login()
 	{
 		// Create a redirect URI using an available port on the loopback address
 		var browser = new SystemBrowser();
-		string redirectUri = string.Format($"http://127.0.0.1:{browser.Port}");
+		string redirectUri = string.Format(CultureInfo.InvariantCulture, $"http://127.0.0.1:{browser.Port}");
 
 		var options = new OidcClientOptions()
 		{

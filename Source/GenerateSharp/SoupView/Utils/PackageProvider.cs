@@ -18,7 +18,7 @@ using PackageLookupMap = IDictionary<int, PackageInfo>;
 public class PackageChildInfo
 {
 	public string OriginalReference { get; set; } = string.Empty;
-	public bool IsSubGraph { get; set; } = false;
+	public bool IsSubGraph { get; set; }
 	public PackageId? PackageId { get; set; }
 	public PackageGraphId? PackageGraphId { get; set; }
 }

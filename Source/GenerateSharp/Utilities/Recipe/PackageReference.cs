@@ -24,26 +24,6 @@ public class PackageReference : IEquatable<PackageReference>
 	/// </summary>
 	public static bool TryParse(string value, out PackageReference result)
 	{
-		// TODO: Invert try parse to be the default and parse to add the exception
-		// Way faster on the failed case and this could eat OOM
-		try
-		{
-			result = Parse(value);
-			return true;
-		}
-		catch
-		{
-		}
-
-		result = new PackageReference();
-		return false;
-	}
-
-	/// <summary>
-	/// Parse a package reference from the provided string.
-	/// </summary>
-	public static PackageReference Parse(string value)
-	{
 		var nameRegex = new Regex(@"^(?:(?<Language>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$");
 		var matchName = nameRegex.Match(value);
 		if (matchName.Success)
@@ -54,12 +34,29 @@ public class PackageReference : IEquatable<PackageReference>
 			var version = matchName.Groups.ContainsKey("Version") && matchName.Groups["Version"].Success ?
 					SemanticVersion.Parse(matchName.Groups["Version"].Value) :
 					null;
-			return new PackageReference(language, name, version);
+			result = new PackageReference(language, name, version);
+			return true;
 		}
 		else
 		{
 			// Assume that this package is a relative path reference
-			return new PackageReference(new Path(value));
+			result = new PackageReference(new Path(value));
+			return true;
+		}
+	}
+
+	/// <summary>
+	/// Parse a package reference from the provided string.
+	/// </summary>
+	public static PackageReference Parse(string value)
+	{
+		if (TryParse(value, out var result))
+		{
+			return result;
+		}
+		else
+		{
+			throw new ArgumentException("Invalid package reference");
 		}
 	}
 
@@ -156,23 +153,23 @@ public class PackageReference : IEquatable<PackageReference>
 	/// <summary>
 	/// Equality operator
 	/// </summary>
-	public bool Equals(PackageReference? rhs)
+	public bool Equals(PackageReference? other)
 	{
-		if (ReferenceEquals(rhs, null))
+		if (ReferenceEquals(other, null))
 			return false;
-		return _name == rhs._name &&
-			_version == rhs._version &&
-			_path == rhs._path;
+		return _name == other._name &&
+			_version == other._version &&
+			_path == other._path;
 	}
 
-	public override bool Equals(object? rhs)
+	public override bool Equals(object? obj)
 	{
-		return Equals(rhs as PackageReference);
+		return Equals(obj as PackageReference);
 	}
 
 	public override int GetHashCode()
 	{
-		var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode() * 0x100000;
+		var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode(StringComparison.Ordinal) * 0x100000;
 		var versionHash = ReferenceEquals(_version, null) ? 0 : _version.GetHashCode() * 0x1000;
 		var pathHash = ReferenceEquals(_path, null) ? 0 : _path.GetHashCode();
 		return nameHash + versionHash + pathHash;

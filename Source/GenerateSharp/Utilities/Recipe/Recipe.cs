@@ -24,7 +24,7 @@ public class Recipe
 	private static string Property_Type => "Type";
 	private static string Property_Source => "Source";
 
-	private SMLDocument _document;
+	private readonly SMLDocument _document;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Recipe"/> class.

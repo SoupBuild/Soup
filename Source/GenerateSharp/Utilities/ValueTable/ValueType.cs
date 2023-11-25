@@ -7,7 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace Soup.Build.Utilities;
 
 [SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "Is type")]
-public enum ValueType : uint
+[SuppressMessage("Design", "CA1008:Enums should have zero value", Justification = "NA")]
+public enum ValueType
 {
 	/// <summary>
 	/// Table

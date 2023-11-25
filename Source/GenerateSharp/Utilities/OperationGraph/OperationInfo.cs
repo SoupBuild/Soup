@@ -39,7 +39,7 @@ public class CommandInfo : IEquatable<CommandInfo>
 	/// </summary>
 	public bool Equals(CommandInfo? other)
 	{
-		if (ReferenceEquals(other, null))
+		if (other is null)
 			return false;
 		return WorkingDirectory == other.WorkingDirectory &&
 			Executable == other.Executable &&
@@ -58,8 +58,8 @@ public class CommandInfo : IEquatable<CommandInfo>
 
 	public static bool operator ==(CommandInfo lhs, CommandInfo other)
 	{
-		if (ReferenceEquals(lhs, null))
-			return ReferenceEquals(other, null);
+		if (lhs is null)
+			return other is null;
 		return lhs.Equals(other);
 	}
 
@@ -143,7 +143,7 @@ public class OperationInfo : IEquatable<OperationInfo>
 
 	public bool Equals(OperationInfo? other)
 	{
-		if (ReferenceEquals(other, null))
+		if (other is null)
 			return false;
 
 		var result = Id == other.Id &&
@@ -166,13 +166,13 @@ public class OperationInfo : IEquatable<OperationInfo>
 
 	public override int GetHashCode()
 	{
-		return (Id.GetHashCode() * 0x100000) + (Title.GetHashCode() * 0x1000) + Command.GetHashCode();
+		return (Id.GetHashCode() * 0x100000) + (Title.GetHashCode(StringComparison.InvariantCulture) * 0x1000) + Command.GetHashCode();
 	}
 
 	public static bool operator ==(OperationInfo lhs, OperationInfo other)
 	{
-		if (ReferenceEquals(lhs, null))
-			return ReferenceEquals(other, null);
+		if (lhs is null)
+			return other is null;
 		return lhs.Equals(other);
 	}
 

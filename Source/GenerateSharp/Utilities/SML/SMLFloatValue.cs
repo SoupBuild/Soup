@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Globalization;
 
 namespace Soup.Build.Utilities;
 
@@ -21,7 +22,7 @@ public class SMLFloatValue : IEquatable<SMLFloatValue>
 	public SMLFloatValue(double value)
 	{
 		Value = value;
-		Content = new SMLToken(value.ToString());
+		Content = new SMLToken(value.ToString(CultureInfo.InvariantCulture));
 	}
 
 	public SMLFloatValue(
@@ -34,17 +35,17 @@ public class SMLFloatValue : IEquatable<SMLFloatValue>
 
 	public override bool Equals(object? obj) => this.Equals(obj as SMLFloatValue);
 
-	public bool Equals(SMLFloatValue? rhs)
+	public bool Equals(SMLFloatValue? other)
 	{
-		if (rhs is null)
+		if (other is null)
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, rhs))
+		if (object.ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return this.Value == rhs.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode() => (Value).GetHashCode();

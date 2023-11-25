@@ -9,7 +9,7 @@ namespace Soup.Build.Utilities;
 /// <summary>
 /// The value table state reader
 /// </summary>
-internal class ValueTableReader
+public sealed class ValueTableReader
 {
 	// Binary Value Table file format
 	private static uint FileVersion => 2;

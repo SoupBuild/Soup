@@ -39,7 +39,7 @@ public static class RecipeExtensions
 
 			return (true, new Recipe(result));
 		}
-		catch (Exception ex)
+		catch (InvalidOperationException ex)
 		{
 			Log.Error($"Deserialize Threw: {ex.Message}");
 			Log.Info("Failed to parse Recipe.");
