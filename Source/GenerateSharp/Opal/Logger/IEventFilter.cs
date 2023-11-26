@@ -4,49 +4,48 @@
 
 using System;
 
-namespace Opal
+namespace Opal;
+
+[Flags]
+public enum TraceEvents
 {
-	[Flags]
-	public enum TraceEventFlag
-	{
-		/// <summary>
-		/// None.
-		/// </summary>
-		None = 0,
+	/// <summary>
+	/// None.
+	/// </summary>
+	None = 0,
 
-		/// <summary>
-		/// High Priority message.
-		/// </summary>
-		HighPriority = 1 << 0,
+	/// <summary>
+	/// High Priority message.
+	/// </summary>
+	HighPriority = 1 << 0,
 
-		/// <summary>
-		/// Informational message.
-		/// </summary>
-		Information = 1 << 1,
+	/// <summary>
+	/// Informational message.
+	/// </summary>
+	Information = 1 << 1,
 
-		/// <summary>
-		/// Diagnostic trace.
-		/// </summary>
-		Diagnostic = 1 << 2,
+	/// <summary>
+	/// Diagnostic trace.
+	/// </summary>
+	Diagnostic = 1 << 2,
 
-		/// <summary>
-		/// Noncritical problem.
-		/// </summary>
-		Warning = 1 << 3,
+	/// <summary>
+	/// Noncritical problem.
+	/// </summary>
+	Warning = 1 << 3,
 
-		/// <summary>
-		/// Recoverable error.
-		/// </summary>
-		Error = 1 << 4,
+	/// <summary>
+	/// Recoverable error.
+	/// </summary>
+	Error = 1 << 4,
 
-		/// <summary>
-		/// Fatal error or application crash.
-		/// </summary>
-		Critical = 1 << 5,
-	}
+	/// <summary>
+	/// Fatal error or application crash.
+	/// </summary>
+	Critical = 1 << 5,
+}
 
-	public interface IEventFilter
-	{
-		bool ShouldTrace(TraceEventFlag eventType);
-	}
+public interface IEventFilter
+{
+	bool ShouldTrace(TraceEvents eventType);
 }

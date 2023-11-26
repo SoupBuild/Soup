@@ -8,7 +8,7 @@ using System;
 
 namespace Soup.View;
 
-class Program
+public static class Program
 {
 	/// <summary>
 	/// Initialization code. Don't use any Avalonia, third-party APIs or any

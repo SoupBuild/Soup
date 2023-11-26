@@ -5,37 +5,36 @@
 using Avalonia;
 using Avalonia.Controls;
 
-namespace Soup.View.Views
+namespace Soup.View.Views;
+
+public class SelectedButton : Button
 {
-	public class SelectedButton : Button
+	/// <summary>
+	/// Identifies the <see cref="IsSelected"/> property.
+	/// </summary>
+	public static readonly StyledProperty<bool> IsSelectedProperty =
+		AvaloniaProperty.Register<SelectedButton, bool>(nameof(IsSelected));
+
+	public SelectedButton()
 	{
-		/// <summary>
-		/// Identifies the <see cref="IsSelected"/> property.
-		/// </summary>
-		public static readonly StyledProperty<bool> IsSelectedProperty =
-			AvaloniaProperty.Register<SelectedButton, bool>(nameof(IsSelected));
+	}
 
-		public SelectedButton()
+	/// <summary>
+	/// Gets or sets the is selected value
+	/// </summary>
+	public bool IsSelected
+	{
+		get => GetValue(IsSelectedProperty);
+		set => SetValue(IsSelectedProperty, value);
+	}
+
+	protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+	{
+		if (change.Property.Name == nameof(IsSelected) && change.NewValue is bool boolValue)
 		{
+			PseudoClasses.Set(":selected", boolValue);
 		}
 
-		/// <summary>
-		/// Gets or sets the is selected value
-		/// </summary>
-		public bool IsSelected
-		{
-			get => GetValue(IsSelectedProperty);
-			set => SetValue(IsSelectedProperty, value);
-		}
-
-		protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
-		{
-			if (change.Property.Name == nameof(IsSelected) && change.NewValue is bool boolValue)
-			{
-				PseudoClasses.Set(":selected", boolValue);
-			}
-
-			base.OnPropertyChanged(change);
-		}
+		base.OnPropertyChanged(change);
 	}
 }

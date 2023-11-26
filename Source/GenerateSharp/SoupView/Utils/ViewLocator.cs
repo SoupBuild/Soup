@@ -8,9 +8,9 @@ namespace Soup.View;
 
 public class ViewLocator : IDataTemplate
 {
-	public Control Build(object? data)
+	public Control Build(object? param)
 	{
-		switch (data)
+		switch (param)
 		{
 			case DependencyGraphViewModel:
 				return new DependencyGraphView();

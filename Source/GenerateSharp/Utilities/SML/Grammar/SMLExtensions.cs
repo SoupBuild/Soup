@@ -16,7 +16,7 @@ namespace Soup.Build.Utilities
 
 		private static readonly SMLToken NewlineToken = new SMLToken("\r\n");
 
-		private static readonly string Indent = "\t";
+		private const string Indent = "\t";
 
 		public static void AddItemWithSyntax(this SMLArray array, string value, int indentLevel)
 		{
@@ -403,7 +403,7 @@ namespace Soup.Build.Utilities
 		}
 
 		private static SMLTable AddInlineTableWithSyntax(
-			this IDictionary<string, SMLTableValue> values,
+			this Dictionary<string, SMLTableValue> values,
 			string name,
 			int indentLevel)
 		{
@@ -434,7 +434,7 @@ namespace Soup.Build.Utilities
 		}
 
 		private static SMLArray AddArrayWithSyntax(
-			this IDictionary<string, SMLTableValue> values,
+			this Dictionary<string, SMLTableValue> values,
 			string name,
 			int indentLevel)
 		{

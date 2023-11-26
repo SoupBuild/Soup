@@ -4,20 +4,19 @@
 
 using System.Text.Json.Serialization;
 
-namespace Soup.Build.Api.Client
+namespace Soup.Build.Api.Client;
+
+[JsonSourceGenerationOptions(
+	WriteIndented = false,
+	PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+	GenerationMode = JsonSourceGenerationMode.Metadata)]
+[JsonSerializable(typeof(GenerateClosureRequestModel))]
+[JsonSerializable(typeof(GenerateClosureResultModel))]
+[JsonSerializable(typeof(LanguageModel))]
+[JsonSerializable(typeof(PackageCreateOrUpdateModel))]
+[JsonSerializable(typeof(PackageModel))]
+[JsonSerializable(typeof(PackageVersionModel))]
+[JsonSerializable(typeof(SearchPackagesModel))]
+internal sealed partial class SourceGenerationContext : JsonSerializerContext
 {
-	[JsonSourceGenerationOptions(
-		WriteIndented = false,
-		PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
-		GenerationMode = JsonSourceGenerationMode.Metadata)]
-	[JsonSerializable(typeof(GenerateClosureRequestModel))]
-	[JsonSerializable(typeof(GenerateClosureResultModel))]
-	[JsonSerializable(typeof(LanguageModel))]
-	[JsonSerializable(typeof(PackageCreateOrUpdateModel))]
-	[JsonSerializable(typeof(PackageModel))]
-	[JsonSerializable(typeof(PackageVersionModel))]
-	[JsonSerializable(typeof(SearchPackagesModel))]
-	internal partial class SourceGenerationContext : JsonSerializerContext
-	{
-	}
 }

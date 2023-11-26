@@ -5,29 +5,28 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Opal;
-using Soup.Build.Utilities;
 using System.Collections.ObjectModel;
 
-namespace Soup.View.ViewModels
+namespace Soup.View.ViewModels;
+
+public class ProjectDetailsViewModel : ViewModelBase
 {
-	public class ProjectDetailsViewModel : ViewModelBase
+	private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
+
+	public ProjectDetailsViewModel(string name, Path path)
 	{
-		private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
+		Name = name;
 
-		public ProjectDetailsViewModel(string name, Path path)
+		properties.Clear();
+
+		properties.Add(new PropertyValueViewModel("Name", name));
+		properties.Add(new PropertyValueViewModel("Path", path.ToString()));
+
+		Path = path;
+
+		Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(properties)
 		{
-			Name = name;
-
-			properties.Clear();
-
-			properties.Add(new PropertyValueViewModel("Name", name));
-			properties.Add(new PropertyValueViewModel("Path", path.ToString()));
-
-			Path = path;
-
-			Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(properties)
-			{
-				Columns =
+			Columns =
 				{
 					new TextColumn<PropertyValueViewModel, string>(
 						"Name",
@@ -36,13 +35,12 @@ namespace Soup.View.ViewModels
 						"Value",
 						x => x.Value),
 				},
-			};
-		}
-
-		public FlatTreeDataGridSource<PropertyValueViewModel>? Properties { get; }
-
-		public string? Name { get; private set; }
-
-		public Path Path { get; private set; }
+		};
 	}
+
+	public FlatTreeDataGridSource<PropertyValueViewModel>? Properties { get; }
+
+	public string? Name { get; private set; }
+
+	public Path Path { get; private set; }
 }

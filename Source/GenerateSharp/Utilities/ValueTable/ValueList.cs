@@ -4,67 +4,68 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build.Utilities;
+
+[SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "Disagree")]
+public class ValueList : IEnumerable, IEnumerable<Value>
 {
-	public class ValueList : IEnumerable
+	private List<Value> _impl;
+
+	public ValueList()
 	{
-		private List<Value> _impl;
+		_impl = new List<Value>();
+	}
 
-		public ValueList()
+	public ValueList(IEnumerable<Value> collection)
+	{
+		_impl = new List<Value>(collection);
+	}
+
+	public Value this[int index] => this._impl[index];
+
+	public int Count => this._impl.Count;
+
+	public void Add(Value item)
+	{
+		this._impl.Add(item);
+	}
+
+	public void Clear()
+	{
+		this._impl.Clear();
+	}
+
+	public ValueList Clone()
+	{
+		return new ValueList(_impl);
+	}
+
+	public IEnumerator<Value> GetEnumerator()
+	{
+		return this._impl.GetEnumerator();
+	}
+
+	IEnumerator IEnumerable.GetEnumerator()
+	{
+		return this._impl.GetEnumerator();
+	}
+
+	public override string ToString()
+	{
+		var builder = new StringBuilder();
+
+		builder.Append("[ ");
+		foreach (var value in this)
 		{
-			_impl = new List<Value>();
+			builder.Append(value);
+			builder.Append(", ");
 		}
 
-		public ValueList(IEnumerable<Value> collection)
-		{
-			_impl = new List<Value>(collection);
-		}
+		builder.Append(']');
 
-		public Value this[int index] => this._impl[index];
-
-		public int Count => this._impl.Count;
-
-		public void Add(Value item)
-		{
-			this._impl.Add(item);
-		}
-
-		public void Clear()
-		{
-			this._impl.Clear();
-		}
-
-		public ValueList Clone()
-		{
-			return new ValueList(_impl);
-		}
-
-		public IEnumerator<Value> GetEnumerator()
-		{
-			return this._impl.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return this._impl.GetEnumerator();
-		}
-
-		public override string ToString()
-		{
-			var builder = new StringBuilder();
-
-			builder.Append("[ ");
-			foreach (var value in this)
-			{
-				builder.Append(value);
-				builder.Append(", ");
-			}
-
-			builder.Append("]");
-
-			return builder.ToString();
-		}
+		return builder.ToString();
 	}
 }

@@ -2,11 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Build.Api.Client
+namespace Soup.Build.Api.Client;
+
+public enum GenerateClosureResult
 {
-	public enum GenerateClosureResult
-	{
-		Success,
-		Failure,
-	}
+	Success,
+	Failure,
 }

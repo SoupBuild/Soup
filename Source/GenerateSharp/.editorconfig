@@ -2,3 +2,23 @@
 
 # CS1591: Missing XML comment for publicly visible type or member
 dotnet_diagnostic.CS1591.severity = none
+
+# CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA2007.severity = none
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+
+# CA2225: Operator overloads have named alternates
+dotnet_diagnostic.CA2225.severity = none
+
+# CA1062: Validate arguments of public methods
+# We have Nullable enabled
+dotnet_diagnostic.CA1062.severity = none
+
+# IDE0290: Use primary constructor
+dotnet_diagnostic.IDE0290.severity = none
+
+# IDE0090: Use 'new(...)'
+# Not a fan since it makes it harder to understand the type, use var instead
+dotnet_diagnostic.IDE0090.severity = none

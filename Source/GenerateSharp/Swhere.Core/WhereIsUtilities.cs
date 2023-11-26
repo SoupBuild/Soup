@@ -9,54 +9,53 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Opal;
 
-namespace Soup.Build.Discover
+namespace Soup.Build.Discover;
+
+public static class WhereIsUtilities
 {
-	public static class WhereIsUtilities
+	public static async Task<Path> FindExecutableAsync(string name)
 	{
-		public static async Task<Path> FindExecutableAsync(string name)
+		Path executablePath;
+		string separator;
+		int skipCount;
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 		{
-			Path executablePath;
-			string separator;
-			int skipCount;
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				executablePath = new Path("C:/Windows/System32/where.exe");
-				separator = "\r\n";
-				skipCount = 0;
-			}
-			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-			{
-				executablePath = new Path("/usr/bin/whereis");
-				separator = " ";
+			executablePath = new Path("C:/Windows/System32/where.exe");
+			separator = "\r\n";
+			skipCount = 0;
+		}
+		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+		{
+			executablePath = new Path("/usr/bin/whereis");
+			separator = " ";
 
-				// Whereis sets the name as the first entry
-				skipCount = 1;
-			}
-			else
-			{
-				throw new InvalidOperationException("Unsupported operating system");
-			}
+			// Whereis sets the name as the first entry
+			skipCount = 1;
+		}
+		else
+		{
+			throw new InvalidOperationException("Unsupported operating system");
+		}
 
-			var arguments = new List<string>()
+		var arguments = new List<string>()
 			{
 				name,
 			};
 
-			var stdOut = await ExecutableUtilities.RunExecutableAsync(executablePath, arguments);
+		var stdOut = await ExecutableUtilities.RunExecutableAsync(executablePath, arguments);
 
-			// The first line is the path
-			var values = stdOut
-				.Substring(0, stdOut.Length - Environment.NewLine.Length)
-				.Split(separator)
-				.Skip(skipCount)
-				.ToList();
-			if (values.Count == 0)
-			{
-				Log.Error("Failed to parse where output.");
-				throw new HandledException();
-			}
-
-			return new Path(values.First());
+		// The first line is the path
+		var values = stdOut
+			.Substring(0, stdOut.Length - Environment.NewLine.Length)
+			.Split(separator)
+			.Skip(skipCount)
+			.ToList();
+		if (values.Count == 0)
+		{
+			Log.Error("Failed to parse where output.");
+			throw new HandledException();
 		}
+
+		return new Path(values.First());
 	}
 }

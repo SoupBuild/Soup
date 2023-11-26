@@ -4,16 +4,15 @@
 
 using Avalonia.Controls;
 
-namespace Soup.View.Views
+namespace Soup.View.Views;
+
+/// <summary>
+/// The operation graph page that can be used on its own or navigated to within a Frame.
+/// </summary>
+public sealed partial class OperationGraphView : UserControl
 {
-	/// <summary>
-	/// The operation graph page that can be used on its own or navigated to within a Frame.
-	/// </summary>
-	public sealed partial class OperationGraphView : UserControl
+	public OperationGraphView()
 	{
-		public OperationGraphView()
-		{
-			this.InitializeComponent();
-		}
+		this.InitializeComponent();
 	}
 }

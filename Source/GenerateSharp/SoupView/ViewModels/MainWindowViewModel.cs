@@ -134,7 +134,7 @@ public class MainWindowViewModel : ViewModelBase
 			});
 
 		// Use file picker like normal!
-		var file = filePickerResult.FirstOrDefault();
+		var file = filePickerResult.Count > 0 ? filePickerResult[0] : null;
 
 		if (file != null)
 		{

@@ -5,27 +5,26 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Soup.Build.Api.Client
+namespace Soup.Build.Api.Client;
+
+/// <summary>
+/// A class representing the language version reference.
+/// </summary>
+public class LanguageReferenceModel
 {
 	/// <summary>
-	/// A class representing the language version reference.
+	/// Gets or sets the name.
 	/// </summary>
-	public class LanguageReferenceModel
-	{
-		/// <summary>
-		/// Gets or sets the name.
-		/// </summary>
-		[JsonPropertyName("name")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		[Required(AllowEmptyStrings = true)]
-		public string Name { get; set; }
+	[JsonPropertyName("name")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required(AllowEmptyStrings = true)]
+	public string Name { get; set; }
 
-		/// <summary>
-		/// Gets or sets the version.
-		/// </summary>
-		[JsonPropertyName("version")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		[Required]
-		public SemanticVersionModel Version { get; set; } = new SemanticVersionModel();
-	}
+	/// <summary>
+	/// Gets or sets the version.
+	/// </summary>
+	[JsonPropertyName("version")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required]
+	public SemanticVersionModel Version { get; set; } = new SemanticVersionModel();
 }

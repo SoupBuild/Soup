@@ -15,39 +15,40 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Soup.Build.PackageManager.UnitTests
+namespace Soup.Build.PackageManager.UnitTests;
+
+[Collection("Opal")]
+public class ClosureManagerUnitTests
 {
-	[Collection("Opal")]
-	public class ClosureManagerUnitTests
+	[Fact]
+	public async Task RestorePackagesAsync_NoDependencies()
 	{
-		[Fact]
-		public async Task RestorePackagesAsync_NoDependencies()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "MyPackage"
 					Language: "C++|3.2.1"
 					Version: "1.0.0"
 					"""))));
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -56,7 +57,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					}
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -74,42 +75,42 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					}
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					}
 				},
-			};
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					It.IsAny<string>(),
-					It.IsAny<string>()))
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
-				});
+		};
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				It.IsAny<string>(),
+				It.IsAny<string>()))
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
+			});
 
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
 
-			await uut.GenerateAndRestoreRecursiveLocksAsync(
-				new Path("C:/Root/MyPackage/"),
-				new Path("C:/PackageStore/"),
-				new Path("C:/LockStore/"),
-				new Path("C:/Staging/"));
+		await uut.GenerateAndRestoreRecursiveLocksAsync(
+			new Path("C:/Root/MyPackage/"),
+			new Path("C:/PackageStore/"),
+			new Path("C:/LockStore/"),
+			new Path("C:/Staging/"));
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
@@ -127,36 +128,36 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Skip built in language version in build closure",
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify http requests
-			var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+		// Verify http requests
+		var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 1,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 1,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, }
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>(),
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, }
 				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+				Dependencies = new Dictionary<string, ICollection<int>>(),
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -177,25 +178,25 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequestValue),
-				Times.Once());
+		};
+		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequestValue),
+			Times.Once());
 
-			mockMessageHandler.VerifyNoOtherCalls();
+		mockMessageHandler.VerifyNoOtherCalls();
 
-			// Verify the contents of the package lock file
-			var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-			packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var reader = new System.IO.StreamReader(packageLock.Content);
-			var packageLockContent = await reader.ReadToEndAsync();
-			var expected =
-				"""
+		// Verify the contents of the package lock file
+		var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
+		packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var reader = new System.IO.StreamReader(packageLock.Content);
+		var packageLockContent = await reader.ReadToEndAsync();
+		var expected =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -214,24 +215,24 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expected, packageLockContent);
-		}
+		Assert.Equal(expected, packageLockContent);
+	}
 
-		[Fact]
-		public async Task RestorePackagesAsync_HasDependencies_GenerateClosureRequestFailure()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+	[Fact]
+	public async Task RestorePackagesAsync_HasDependencies_GenerateClosureRequestFailure()
+	{
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "MyPackage"
 					Language: "C++|3.2.1"
 					Version: "1.0.0"
@@ -243,60 +244,61 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 					"""))));
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+		var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Failure,
+			Message = "Something went horribly wrong!",
+		};
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				It.IsAny<string>(),
+				It.IsAny<string>()))
+			.Returns(() => new HttpResponseMessage()
 			{
-				Result = Api.Client.GenerateClosureResult.Failure,
-				Message = "Something went horribly wrong!",
-			};
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					It.IsAny<string>(),
-					It.IsAny<string>()))
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
-				});
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
-
-			_ = await Assert.ThrowsAsync<HandledException>(async () =>
-			{
-				await uut.GenerateAndRestoreRecursiveLocksAsync(
-					new Path("C:/Root/MyPackage/"),
-					new Path("C:/PackageStore/"),
-					new Path("C:/LockStore/"),
-					new Path("C:/Staging/"));
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
 			});
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
+
+		_ = await Assert.ThrowsAsync<HandledException>(async () =>
+		{
+			await uut.GenerateAndRestoreRecursiveLocksAsync(
+				new Path("C:/Root/MyPackage/"),
+				new Path("C:/PackageStore/"),
+				new Path("C:/LockStore/"),
+				new Path("C:/Staging/"));
+		});
+
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
@@ -304,31 +306,31 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 					"INFO: Generate final service closure",
 					"ERRO: Unable to create closure: Something went horribly wrong!",
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify http requests
-			var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+		// Verify http requests
+		var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 3,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 3,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1,}
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>()
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, }
+				},
+				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
 							"Runtime",
@@ -339,9 +341,9 @@ namespace Soup.Build.PackageManager.UnitTests
 							}
 						},
 					},
-				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
 				{
 					new Api.Client.PackagePublicReferenceModel()
 					{
@@ -358,7 +360,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 					},
 				},
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -379,34 +381,34 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequestValue),
-				Times.Once());
+		};
+		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequestValue),
+			Times.Once());
 
-			mockMessageHandler.VerifyNoOtherCalls();
-		}
+		mockMessageHandler.VerifyNoOtherCalls();
+	}
 
-		[Fact]
-		public async Task RestorePackagesAsync_HasDependencies()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+	[Fact]
+	public async Task RestorePackagesAsync_HasDependencies()
+	{
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "MyPackage"
 					Language: "C++|3.2.1"
 					Version: "1.0.0"
@@ -418,18 +420,19 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 					"""))));
 
-			// Setup the mock zip manager
-			var mockZipManager = new Mock<IZipManager>();
-			using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
+		// Setup the mock zip manager
+		var mockZipManager = new Mock<IZipManager>();
+		using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -460,7 +463,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					},
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -478,56 +481,56 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					},
 				},
-			};
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					It.IsAny<string>(),
-					It.IsAny<string>()))
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
-				});
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
+		};
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				It.IsAny<string>(),
+				It.IsAny<string>()))
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
+			});
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
 
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
 
-			await uut.GenerateAndRestoreRecursiveLocksAsync(
-				new Path("C:/Root/MyPackage/"),
-				new Path("C:/PackageStore/"),
-				new Path("C:/LockStore/"),
-				new Path("C:/Staging/"));
+		await uut.GenerateAndRestoreRecursiveLocksAsync(
+			new Path("C:/Root/MyPackage/"),
+			new Path("C:/PackageStore/"),
+			new Path("C:/LockStore/"),
+			new Path("C:/Staging/"));
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
@@ -552,13 +555,13 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
 
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -578,32 +581,32 @@ namespace Soup.Build.PackageManager.UnitTests
 					"CreateDirectory: C:/PackageStore/Cpp/Package2",
 					"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/Cpp/Package2/3.2.1/]",
 
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify zip requests
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Package1.zip"),
-				new Path("C:/Staging/C++_Package1_1.2.3/")),
-				Times.Once());
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Package2.zip"),
-				new Path("C:/Staging/C++_Package2_3.2.1/")),
-				Times.Once());
-			mockZipManager.VerifyNoOtherCalls();
+		// Verify zip requests
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Package1.zip"),
+			new Path("C:/Staging/C++_Package1_1.2.3/")),
+			Times.Once());
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Package2.zip"),
+			new Path("C:/Staging/C++_Package2_3.2.1/")),
+			Times.Once());
+		mockZipManager.VerifyNoOtherCalls();
 
-			// Verify http requests
-			var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+		// Verify http requests
+		var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 3,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 3,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>()
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
 							"Runtime",
@@ -614,9 +617,9 @@ namespace Soup.Build.PackageManager.UnitTests
 							}
 						},
 					}
-				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
 				{
 					new Api.Client.PackagePublicReferenceModel()
 					{
@@ -633,7 +636,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 					},
 				},
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -654,39 +657,39 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
-			mockMessageHandler.Verify(messageHandler =>
-					messageHandler.SendAsync(
-						HttpMethod.Get,
-						new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-						"{Accept: [application/json]}",
-						expectedGenerateRequestValue),
-					Times.Once());
-			mockMessageHandler.Verify(messageHandler =>
+		};
+		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
+		mockMessageHandler.Verify(messageHandler =>
 				messageHandler.SendAsync(
 					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					null),
+					expectedGenerateRequestValue),
 				Times.Once());
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
 
-			mockMessageHandler.VerifyNoOtherCalls();
+		mockMessageHandler.VerifyNoOtherCalls();
 
-			// Verify the contents of the package lock file
-			var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-			packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var reader = new System.IO.StreamReader(packageLock.Content);
-			var packageLockContent = await reader.ReadToEndAsync();
-			var expected =
-				"""
+		// Verify the contents of the package lock file
+		var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
+		packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var reader = new System.IO.StreamReader(packageLock.Content);
+		var packageLockContent = await reader.ReadToEndAsync();
+		var expected =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -707,24 +710,24 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expected, packageLockContent);
-		}
+		Assert.Equal(expected, packageLockContent);
+	}
 
-		[Fact]
-		public async Task RestorePackagesAsync_HasPublicBuildDependencies()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+	[Fact]
+	public async Task RestorePackagesAsync_HasPublicBuildDependencies()
+	{
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "MyPackage"
 					Language: "C++|5"
 					Version: "1.0.0"
@@ -735,36 +738,37 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 					"""))));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Package1"
 					Language: "Wren|4"
 					Version: "1.2.3"
 					"""))));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Soup.Cpp"
 					Language: "Wren|4"
 					Version: "5.0.0"
 					"""))));
 
-			// Setup the mock zip manager
-			var mockZipManager = new Mock<IZipManager>();
-			using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
+		// Setup the mock zip manager
+		var mockZipManager = new Mock<IZipManager>();
+		using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -773,7 +777,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					},
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -800,18 +804,18 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					},
 				},
-			};
-			var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		};
+		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -820,7 +824,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					},
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -838,71 +842,71 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					},
 				},
-			};
-			mockMessageHandler
-				.SetupSequence(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					It.IsAny<string>(),
-					It.IsAny<string>()))
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
-				})
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
-				})
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
-				});
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
+		};
+		mockMessageHandler
+			.SetupSequence(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				It.IsAny<string>(),
+				It.IsAny<string>()))
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
+			})
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
+			})
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
+			});
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
 
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
 
-			await uut.GenerateAndRestoreRecursiveLocksAsync(
-				new Path("C:/Root/MyPackage/"),
-				new Path("C:/PackageStore/"),
-				new Path("C:/LockStore/"),
-				new Path("C:/Staging/"));
+		await uut.GenerateAndRestoreRecursiveLocksAsync(
+			new Path("C:/Root/MyPackage/"),
+			new Path("C:/PackageStore/"),
+			new Path("C:/LockStore/"),
+			new Path("C:/Staging/"));
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
@@ -958,13 +962,13 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Skip built in language version in build closure",
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -995,32 +999,32 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
 					"OpenRead: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify zip requests
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Soup.Cpp.zip"),
-				new Path("C:/Staging/Wren_Soup.Cpp_5.0.0/")),
-				Times.Once());
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Package1.zip"),
-				new Path("C:/Staging/Wren_Package1_1.2.3/")),
-				Times.Once());
-			mockZipManager.VerifyNoOtherCalls();
+		// Verify zip requests
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Soup.Cpp.zip"),
+			new Path("C:/Staging/Wren_Soup.Cpp_5.0.0/")),
+			Times.Once());
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Package1.zip"),
+			new Path("C:/Staging/Wren_Package1_1.2.3/")),
+			Times.Once());
+		mockZipManager.VerifyNoOtherCalls();
 
-			// Verify http requests
-			var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		// Verify http requests
+		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 2,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 2,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 5, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>()
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 5, },
+				},
+				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
 							"Build",
@@ -1030,9 +1034,9 @@ namespace Soup.Build.PackageManager.UnitTests
 							}
 						},
 					}
-				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
 				{
 					new Api.Client.PackagePublicReferenceModel()
 					{
@@ -1042,7 +1046,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 				},
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -1063,31 +1067,31 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest1Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest1Value),
+			Times.Once());
 
-			var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+		var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 1,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 1,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "Wren",
-						Version = new Api.Client.SemanticVersionModel() { Major = 4, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>(),
+					Name = "Wren",
+					Version = new Api.Client.SemanticVersionModel() { Major = 4, },
 				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+				Dependencies = new Dictionary<string, ICollection<int>>(),
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -1108,40 +1112,40 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest2Value),
-				Times.Exactly(2));
+		};
+		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest2Value),
+			Times.Exactly(2));
 
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
 
-			mockMessageHandler.VerifyNoOtherCalls();
+		mockMessageHandler.VerifyNoOtherCalls();
 
-			// Verify the contents of the package lock file
-			var myPackageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-			myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var myPackageLockReader = new System.IO.StreamReader(myPackageLock.Content);
-			var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
-			var expectedMyPackageLock =
-				"""
+		// Verify the contents of the package lock file
+		var myPackageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
+		myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var myPackageLockReader = new System.IO.StreamReader(myPackageLock.Content);
+		var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
+		var expectedMyPackageLock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -1161,14 +1165,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedMyPackageLock, myPackageLockContent);
+		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
-			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
-			package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
-			var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
-			var expectedPackage1Lock =
-				"""
+		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
+		package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
+		var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
+		var expectedPackage1Lock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -1187,14 +1191,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedPackage1Lock, package1LockContent);
+		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-			var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml"));
-			soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
-			var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
-			var expectedSoupCppLock =
-				"""
+		var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml"));
+		soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
+		var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
+		var expectedSoupCppLock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -1213,24 +1217,24 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedSoupCppLock, soupCppLockContent);
-		}
+		Assert.Equal(expectedSoupCppLock, soupCppLockContent);
+	}
 
-		[Fact]
-		public async Task RestorePackagesAsync_HasPublicBuildDependencies_WithToolDependency()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+	[Fact]
+	public async Task RestorePackagesAsync_HasPublicBuildDependencies_WithToolDependency()
+	{
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "MyPackage"
 					Language: "C++|5"
 					Version: "1.0.0"
@@ -1241,10 +1245,10 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 					"""))));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Package1"
 					Language: "Wren|6"
 					Version: "1.2.3"
@@ -1255,36 +1259,37 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 					"""))));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Package2"
 					Language: "C++|5"
 					Version: "2.3.4"
 					"""))));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Soup.Cpp"
 					Language: "Wren|4.5.6"
 					Version: "5.0.0"
 					"""))));
 
-			// Setup the mock zip manager
-			var mockZipManager = new Mock<IZipManager>();
-			using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
+		// Setup the mock zip manager
+		var mockZipManager = new Mock<IZipManager>();
+		using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -1293,7 +1298,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					},
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -1320,18 +1325,18 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					},
 				},
-			};
-			var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		};
+		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -1340,7 +1345,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					},
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -1358,18 +1363,18 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					},
 				},
-			};
-			var generateClosureResult3 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		};
+		var generateClosureResult3 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -1378,7 +1383,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					},
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -1396,7 +1401,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
@@ -1414,11 +1419,11 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-			};
-			var generateClosureResult4 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		};
+		var generateClosureResult4 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -1427,7 +1432,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					},
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -1445,82 +1450,82 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					},
 				},
-			};
-			mockMessageHandler
-				.SetupSequence(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					It.IsAny<string>(),
-					It.IsAny<string>()))
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
-				})
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
-				})
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult3)),
-				})
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult4)),
-				});
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/2.3.4/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
+		};
+		mockMessageHandler
+			.SetupSequence(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				It.IsAny<string>(),
+				It.IsAny<string>()))
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
+			})
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
+			})
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult3)),
+			})
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult4)),
+			});
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/2.3.4/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
 
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
 
-			await uut.GenerateAndRestoreRecursiveLocksAsync(
-				new Path("C:/Root/MyPackage/"),
-				new Path("C:/PackageStore/"),
-				new Path("C:/LockStore/"),
-				new Path("C:/Staging/"));
+		await uut.GenerateAndRestoreRecursiveLocksAsync(
+			new Path("C:/Root/MyPackage/"),
+			new Path("C:/PackageStore/"),
+			new Path("C:/LockStore/"),
+			new Path("C:/Staging/"));
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
@@ -1598,13 +1603,13 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Skip built in language version in build closure",
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -1648,36 +1653,36 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml",
 					"OpenRead: C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml",
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify zip requests
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Soup.Cpp.zip"),
-				new Path("C:/Staging/Wren_Soup.Cpp_5.0.0/")),
-				Times.Once());
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Package1.zip"),
-				new Path("C:/Staging/Wren_Package1_1.2.3/")),
-				Times.Once());
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Package2.zip"),
-				new Path("C:/Staging/C++_Package2_2.3.4/")),
-				Times.Once());
-			mockZipManager.VerifyNoOtherCalls();
+		// Verify zip requests
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Soup.Cpp.zip"),
+			new Path("C:/Staging/Wren_Soup.Cpp_5.0.0/")),
+			Times.Once());
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Package1.zip"),
+			new Path("C:/Staging/Wren_Package1_1.2.3/")),
+			Times.Once());
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Package2.zip"),
+			new Path("C:/Staging/C++_Package2_2.3.4/")),
+			Times.Once());
+		mockZipManager.VerifyNoOtherCalls();
 
-			// Verify http requests
-			var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		// Verify http requests
+		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 2,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 2,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 5, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>()
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 5, },
+				},
+				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
 							"Build",
@@ -1687,9 +1692,9 @@ namespace Soup.Build.PackageManager.UnitTests
 							}
 						},
 					}
-				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
 				{
 					new Api.Client.PackagePublicReferenceModel()
 					{
@@ -1699,7 +1704,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 				},
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -1720,31 +1725,31 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest1Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest1Value),
+			Times.Once());
 
-			var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+		var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 1,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 1,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "Wren",
-						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>(),
+					Name = "Wren",
+					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+				Dependencies = new Dictionary<string, ICollection<int>>(),
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -1765,27 +1770,27 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest2Value),
-				Times.Exactly(1));
+		};
+		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest2Value),
+			Times.Exactly(1));
 
-			var expectedGenerateRequest3 = new Api.Client.GenerateClosureRequestModel()
+		var expectedGenerateRequest3 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 2,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 2,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "Wren",
-						Version = new Api.Client.SemanticVersionModel() { Major = 6, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>()
+					Name = "Wren",
+					Version = new Api.Client.SemanticVersionModel() { Major = 6, },
+				},
+				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
 							"Tool",
@@ -1795,9 +1800,9 @@ namespace Soup.Build.PackageManager.UnitTests
 							}
 						},
 					}
-				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
 				{
 					new Api.Client.PackagePublicReferenceModel()
 					{
@@ -1807,7 +1812,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionModel() { Major = 2, Minor = 3, Patch = 4, },
 					},
 				},
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -1828,31 +1833,31 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest3Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest3Value),
+			Times.Once());
 
-			var expectedGenerateRequest4 = new Api.Client.GenerateClosureRequestModel()
+		var expectedGenerateRequest4 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 1,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 1,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 5, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>(),
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 5, },
 				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+				Dependencies = new Dictionary<string, ICollection<int>>(),
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -1873,47 +1878,47 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest4Value = JsonSerializer.Serialize(expectedGenerateRequest4);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest4Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest4Value = JsonSerializer.Serialize(expectedGenerateRequest4);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest4Value),
+			Times.Once());
 
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/2.3.4/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/2.3.4/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
 
-			mockMessageHandler.VerifyNoOtherCalls();
+		mockMessageHandler.VerifyNoOtherCalls();
 
-			// Verify the contents of the package lock file
-			var myPackageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-			myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var readerMyPackageLock = new System.IO.StreamReader(myPackageLock.Content);
-			var myPackageLockContent = await readerMyPackageLock.ReadToEndAsync();
-			var expectedMyPackageLock =
-				"""
+		// Verify the contents of the package lock file
+		var myPackageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
+		myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var readerMyPackageLock = new System.IO.StreamReader(myPackageLock.Content);
+		var myPackageLockContent = await readerMyPackageLock.ReadToEndAsync();
+		var expectedMyPackageLock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -1933,14 +1938,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedMyPackageLock, myPackageLockContent);
+		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
-			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
-			package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
-			var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
-			var expectedPackage1Lock =
-				"""
+		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
+		package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
+		var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
+		var expectedPackage1Lock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -1961,14 +1966,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedPackage1Lock, package1LockContent);
+		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-			var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml"));
-			package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var readerPackage2Lock = new System.IO.StreamReader(package2Lock.Content);
-			var package2LockContent = await readerPackage2Lock.ReadToEndAsync();
-			var expectedPackage2Lock =
-				"""
+		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml"));
+		package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var readerPackage2Lock = new System.IO.StreamReader(package2Lock.Content);
+		var package2LockContent = await readerPackage2Lock.ReadToEndAsync();
+		var expectedPackage2Lock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -1987,14 +1992,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedPackage2Lock, package2LockContent);
+		Assert.Equal(expectedPackage2Lock, package2LockContent);
 
-			var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml"));
-			soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
-			var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
-			var expectedSoupCppLock =
-				"""
+		var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml"));
+		soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
+		var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
+		var expectedSoupCppLock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -2013,24 +2018,24 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedSoupCppLock, soupCppLockContent);
-		}
+		Assert.Equal(expectedSoupCppLock, soupCppLockContent);
+	}
 
-		[Fact]
-		public async Task RestorePackagesAsync_HasLocalBuildDependency()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+	[Fact]
+	public async Task RestorePackagesAsync_HasLocalBuildDependency()
+	{
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "MyPackage"
 					Language: "C++|3.2.1"
 					Version: "1.0.0"
@@ -2041,23 +2046,24 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 					"""))));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/Package1/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/Package1/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Package1"
 					Language: "Wren|4.5.6"
 					Version: "1.2.3"
 					"""))));
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -2066,7 +2072,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					}
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -2088,18 +2094,18 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					}
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					}
 				},
-			};
-			var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		};
+		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -2108,7 +2114,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					}
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -2126,46 +2132,46 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					}
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					}
 				},
-			};
-			mockMessageHandler
-				.SetupSequence(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					It.IsAny<string>(),
-					It.IsAny<string>()))
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
-				})
-				.Returns(() => new HttpResponseMessage()
-				 {
-					 Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
-				 });
+		};
+		mockMessageHandler
+			.SetupSequence(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				It.IsAny<string>(),
+				It.IsAny<string>()))
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
+			})
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
+			});
 
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
 
-			await uut.GenerateAndRestoreRecursiveLocksAsync(
-				new Path("C:/Root/MyPackage/"),
-				new Path("C:/PackageStore/"),
-				new Path("C:/LockStore/"),
-				new Path("C:/Staging/"));
+		await uut.GenerateAndRestoreRecursiveLocksAsync(
+			new Path("C:/Root/MyPackage/"),
+			new Path("C:/PackageStore/"),
+			new Path("C:/LockStore/"),
+			new Path("C:/Staging/"));
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
@@ -2203,13 +2209,13 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Skip built in language version in build closure",
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -2221,21 +2227,21 @@ namespace Soup.Build.PackageManager.UnitTests
 					"OpenRead: C:/Root/Package1/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
 
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify http requests
-			var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		// Verify http requests
+		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 2,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 2,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>()
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
 							"Build",
@@ -2245,8 +2251,8 @@ namespace Soup.Build.PackageManager.UnitTests
 							}
 						},
 					}
-				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
 				{
 					new Api.Client.PackageLocalReferenceModel()
 					{
@@ -2259,8 +2265,8 @@ namespace Soup.Build.PackageManager.UnitTests
 						Dependencies = new Dictionary<string, ICollection<int>>(),
 					},
 				},
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -2281,31 +2287,31 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest1Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest1Value),
+			Times.Once());
 
-			var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+		var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 1,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 1,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "Wren",
-						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>(),
+					Name = "Wren",
+					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+				Dependencies = new Dictionary<string, ICollection<int>>(),
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -2326,25 +2332,25 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest2Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest2Value),
+			Times.Once());
 
-			mockMessageHandler.VerifyNoOtherCalls();
+		mockMessageHandler.VerifyNoOtherCalls();
 
-			// Verify the contents of the package lock file
-			var packageLock1 = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-			packageLock1.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var reader1 = new System.IO.StreamReader(packageLock1.Content);
-			var packageLockContent1 = await reader1.ReadToEndAsync();
-			var expectedPackageLock1 =
-				"""
+		// Verify the contents of the package lock file
+		var packageLock1 = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
+		packageLock1.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var reader1 = new System.IO.StreamReader(packageLock1.Content);
+		var packageLockContent1 = await reader1.ReadToEndAsync();
+		var expectedPackageLock1 =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -2364,14 +2370,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedPackageLock1, packageLockContent1);
+		Assert.Equal(expectedPackageLock1, packageLockContent1);
 
-			var packageLock2 = mockFileSystem.GetMockFile(new Path("C:/Root/Package1/PackageLock.sml"));
-			packageLock2.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var reader2 = new System.IO.StreamReader(packageLock2.Content);
-			var packageLockContent2 = await reader2.ReadToEndAsync();
-			var expectedPackageLock2 =
-				"""
+		var packageLock2 = mockFileSystem.GetMockFile(new Path("C:/Root/Package1/PackageLock.sml"));
+		packageLock2.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var reader2 = new System.IO.StreamReader(packageLock2.Content);
+		var packageLockContent2 = await reader2.ReadToEndAsync();
+		var expectedPackageLock2 =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -2390,24 +2396,24 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedPackageLock2, packageLockContent2);
-		}
+		Assert.Equal(expectedPackageLock2, packageLockContent2);
+	}
 
-		[Fact]
-		public async Task RestorePackagesAsync_HasLocalBuildDependency_WithToolDependency()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+	[Fact]
+	public async Task RestorePackagesAsync_HasLocalBuildDependency_WithToolDependency()
+	{
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "MyPackage"
 					Language: "C++|3.2.1"
 					Version: "1.0.0"
@@ -2418,10 +2424,10 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 					"""))));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/Package1/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/Package1/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Package1"
 					Language: "Wren|4.5.6"
 					Version: "1.2.3"
@@ -2432,23 +2438,24 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 					"""))));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/Package2/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/Package2/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Package2"
 					Language: "C++|3.2.1"
 					Version: "2.3.4"
 					"""))));
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -2457,7 +2464,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					}
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -2470,7 +2477,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					}
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
@@ -2483,12 +2490,12 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					}
 				},
-			};
+		};
 
-			var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -2497,26 +2504,26 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					}
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					}
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					}
 				},
-			};
+		};
 
-			var generateClosureResult3 = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult3 = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -2525,58 +2532,58 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					}
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					}
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					}
 				},
-			};
+		};
 
-			mockMessageHandler
-				.SetupSequence(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					It.IsAny<string>(),
-					It.IsAny<string>()))
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
-				})
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
-				})
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult3)),
-				});
+		mockMessageHandler
+			.SetupSequence(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				It.IsAny<string>(),
+				It.IsAny<string>()))
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
+			})
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
+			})
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult3)),
+			});
 
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
 
-			await uut.GenerateAndRestoreRecursiveLocksAsync(
-				new Path("C:/Root/MyPackage/"),
-				new Path("C:/PackageStore/"),
-				new Path("C:/LockStore/"),
-				new Path("C:/Staging/"));
+		await uut.GenerateAndRestoreRecursiveLocksAsync(
+			new Path("C:/Root/MyPackage/"),
+			new Path("C:/PackageStore/"),
+			new Path("C:/LockStore/"),
+			new Path("C:/Staging/"));
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
@@ -2622,13 +2629,13 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Skip Package: Package2 -> ./",
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Closure Tool0",
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -2647,21 +2654,21 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/Root/Package2/Recipe.sml",
 					"OpenRead: C:/Root/Package2/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/Package2/PackageLock.sml",
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify http requests
-			var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		// Verify http requests
+		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 3,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 3,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>()
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
 							"Build",
@@ -2671,8 +2678,8 @@ namespace Soup.Build.PackageManager.UnitTests
 							}
 						},
 					},
-				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
 				{
 					new Api.Client.PackageLocalReferenceModel()
 					{
@@ -2704,8 +2711,8 @@ namespace Soup.Build.PackageManager.UnitTests
 						},
 					},
 				},
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -2726,27 +2733,27 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest1Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest1Value),
+			Times.Once());
 
-			var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+		var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 2,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 2,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "Wren",
-						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>()
+					Name = "Wren",
+					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
 							"Tool",
@@ -2756,8 +2763,8 @@ namespace Soup.Build.PackageManager.UnitTests
 							}
 						}
 					},
-				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
 				{
 					new Api.Client.PackageLocalReferenceModel()
 					{
@@ -2770,8 +2777,8 @@ namespace Soup.Build.PackageManager.UnitTests
 						Dependencies = new Dictionary<string, ICollection<int>>(),
 					},
 				},
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -2792,31 +2799,31 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest2Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest2Value),
+			Times.Once());
 
-			var expectedGenerateRequest3 = new Api.Client.GenerateClosureRequestModel()
+		var expectedGenerateRequest3 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 1,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 1,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>(),
+					Name = "C++",
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+				Dependencies = new Dictionary<string, ICollection<int>>(),
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -2837,25 +2844,25 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest3Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest3Value),
+			Times.Once());
 
-			mockMessageHandler.VerifyNoOtherCalls();
+		mockMessageHandler.VerifyNoOtherCalls();
 
-			// Verify the contents of the package lock file
-			var myPackageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-			myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var myPackageLockReader = new System.IO.StreamReader(myPackageLock.Content);
-			var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
-			var expectedMyPackageLock =
-				"""
+		// Verify the contents of the package lock file
+		var myPackageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
+		myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var myPackageLockReader = new System.IO.StreamReader(myPackageLock.Content);
+		var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
+		var expectedMyPackageLock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -2876,14 +2883,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedMyPackageLock, myPackageLockContent);
+		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
-			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/Root/Package1/PackageLock.sml"));
-			package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var package1LockReader = new System.IO.StreamReader(package1Lock.Content);
-			var packageLock1Content = await package1LockReader.ReadToEndAsync();
-			var expectedPackage1Lock =
-				"""
+		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/Root/Package1/PackageLock.sml"));
+		package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var package1LockReader = new System.IO.StreamReader(package1Lock.Content);
+		var packageLock1Content = await package1LockReader.ReadToEndAsync();
+		var expectedPackage1Lock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -2900,14 +2907,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedPackage1Lock, packageLock1Content);
+		Assert.Equal(expectedPackage1Lock, packageLock1Content);
 
-			var package2Lock = mockFileSystem.GetMockFile(new Path("C:/Root/Package2/PackageLock.sml"));
-			package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
-			using var package2LockReader = new System.IO.StreamReader(package2Lock.Content);
-			var packageLock2Content = await package2LockReader.ReadToEndAsync();
-			var expectedPackage2Lock =
-				"""
+		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/Root/Package2/PackageLock.sml"));
+		package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		using var package2LockReader = new System.IO.StreamReader(package2Lock.Content);
+		var packageLock2Content = await package2LockReader.ReadToEndAsync();
+		var expectedPackage2Lock =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -2924,23 +2931,23 @@ namespace Soup.Build.PackageManager.UnitTests
 				}
 				""";
 
-			Assert.Equal(expectedPackage2Lock, packageLock2Content);
-		}
+		Assert.Equal(expectedPackage2Lock, packageLock2Content);
+	}
 
-		[Fact]
-		public async Task RestorePackagesAsync_HasDependencies_HasPackageLock_OneOverride()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+	[Fact]
+	public async Task RestorePackagesAsync_HasDependencies_HasPackageLock_OneOverride()
+	{
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			// Create the original file
-			var original =
-				"""
+		// Create the original file
+		var original =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -2959,56 +2966,57 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 				}
 				""";
-			using var originalContent = new System.IO.MemoryStream();
-			await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
-			originalContent.Seek(0, System.IO.SeekOrigin.Begin);
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/PackageLock.sml"),
-				new MockFile(originalContent));
+		using var originalContent = new System.IO.MemoryStream();
+		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
+		originalContent.Seek(0, System.IO.SeekOrigin.Begin);
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/PackageLock.sml"),
+			new MockFile(originalContent));
 
-			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					"""
+		mockFileSystem.CreateMockFile(
+			new Path("C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml"),
+			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+				"""
 					Name: "Soup.Cpp"
 					Language: "Wren|1.2.3"
 					Version: "3.2.2"
 					"""))));
 
-			// Setup the mock zip manager
-			var mockZipManager = new Mock<IZipManager>();
-			using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
+		// Setup the mock zip manager
+		var mockZipManager = new Mock<IZipManager>();
+		using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/3.2.2/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/3.2.2/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
-			{
-				Result = Api.Client.GenerateClosureResult.Success,
-				RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+		var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+		{
+			Result = Api.Client.GenerateClosureResult.Success,
+			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
 				{
 					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 					{
@@ -3017,7 +3025,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						Tool = "Tool0",
 					},
 				},
-				BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Build0",
@@ -3035,42 +3043,42 @@ namespace Soup.Build.PackageManager.UnitTests
 						}
 					},
 				},
-				ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 				{
 					{
 						"Tool0",
 						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					},
 				},
-			};
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					It.IsAny<string>(),
-					It.IsAny<string>()))
-				.Returns(() => new HttpResponseMessage()
-				{
-					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
-				});
+		};
+		mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				It.IsAny<string>(),
+				It.IsAny<string>()))
+			.Returns(() => new HttpResponseMessage()
+			{
+				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
+			});
 
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
 
-			await uut.GenerateAndRestoreRecursiveLocksAsync(
-				new Path("C:/Root/MyPackage/"),
-				new Path("C:/PackageStore/"),
-				new Path("C:/LockStore/"),
-				new Path("C:/Staging/"));
+		await uut.GenerateAndRestoreRecursiveLocksAsync(
+			new Path("C:/Root/MyPackage/"),
+			new Path("C:/PackageStore/"),
+			new Path("C:/LockStore/"),
+			new Path("C:/Staging/"));
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Restore from package lock",
@@ -3104,13 +3112,13 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Skip built in language version in build closure",
 					"INFO: Restore Packages for Closure Tool0",
 					"HIGH: Skip built in language version in build closure",
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"OpenRead: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/PackageStore/Cpp/Package1/1.2.4/",
@@ -3140,39 +3148,39 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml",
 					"OpenRead: C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml",
 					"OpenWriteTruncate: C:/LockStore/Wren/Soup.Cpp/3.2.2/PackageLock.sml",
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify zip requests
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Package1.zip"),
-				new Path("C:/Staging/C++_Package1_1.2.4/")),
-				Times.Once());
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Package2.zip"),
-				new Path("C:/Staging/C++_Package2_3.2.1/")),
-				Times.Once());
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Soup.Cpp.zip"), new Path("C:/Staging/Wren_Soup.Cpp_3.2.2/")),
-				Times.Once());
-			mockZipManager.VerifyNoOtherCalls();
+		// Verify zip requests
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Package1.zip"),
+			new Path("C:/Staging/C++_Package1_1.2.4/")),
+			Times.Once());
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Package2.zip"),
+			new Path("C:/Staging/C++_Package2_3.2.1/")),
+			Times.Once());
+		mockZipManager.Verify(zip => zip.ExtractToDirectory(
+			new Path("C:/Staging/Soup.Cpp.zip"), new Path("C:/Staging/Wren_Soup.Cpp_3.2.2/")),
+			Times.Once());
+		mockZipManager.VerifyNoOtherCalls();
 
-			// Verify http requests
-			var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		// Verify http requests
+		var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+		{
+			RootPackage = new Api.Client.PackageLocalReferenceModel()
 			{
-				RootPackage = new Api.Client.PackageLocalReferenceModel()
+				Id = 1,
+				Language = new Api.Client.LanguageReferenceModel()
 				{
-					Id = 1,
-					Language = new Api.Client.LanguageReferenceModel()
-					{
-						Name = "Wren",
-						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					Dependencies = new Dictionary<string, ICollection<int>>(),
+					Name = "Wren",
+					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
-				LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-				PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-				PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+				Dependencies = new Dictionary<string, ICollection<int>>(),
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
+			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
+			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 				{
 					new Api.Client.PackagePublicExactReferenceModel()
 					{
@@ -3193,62 +3201,62 @@ namespace Soup.Build.PackageManager.UnitTests
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
-			};
-			var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequest1Value),
-				Times.Once());
+		};
+		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequest1Value),
+			Times.Once());
 
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/3.2.2/download"),
-					"{Accept: [application/json]}",
-					null),
-				Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
+		mockMessageHandler.Verify(messageHandler =>
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/3.2.2/download"),
+				"{Accept: [application/json]}",
+				null),
+			Times.Once());
 
-			mockMessageHandler.VerifyNoOtherCalls();
-		}
+		mockMessageHandler.VerifyNoOtherCalls();
+	}
 
-		[Fact]
-		public async Task RestorePackagesAsync_HasDependencies_HasPackageLock_AllLocal()
-		{
-			// Register the test listener
-			var testListener = new TestTraceListener();
-			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+	[Fact]
+	public async Task RestorePackagesAsync_HasDependencies_HasPackageLock_AllLocal()
+	{
+		// Register the test listener
+		var testListener = new TestTraceListener();
+		using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
 
-			// Setup the mock file system
-			var mockFileSystem = new MockFileSystem();
-			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+		// Setup the mock file system
+		var mockFileSystem = new MockFileSystem();
+		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.RegisterChildren(
-				new Path("C:/PackageStore/Cpp/Package1/1.2.4/"),
-				new List<DirectoryEntry>());
-			mockFileSystem.RegisterChildren(
-				new Path("C:/PackageStore/Cpp/Package2/3.2.1/"),
-				new List<DirectoryEntry>());
+		mockFileSystem.RegisterChildren(
+			new Path("C:/PackageStore/Cpp/Package1/1.2.4/"),
+			new List<DirectoryEntry>());
+		mockFileSystem.RegisterChildren(
+			new Path("C:/PackageStore/Cpp/Package2/3.2.1/"),
+			new List<DirectoryEntry>());
 
-			// Create the original file
-			var original =
-				"""
+		// Create the original file
+		var original =
+			"""
 				Version: 4
 				Closures: {
 					Root: {
@@ -3265,34 +3273,35 @@ namespace Soup.Build.PackageManager.UnitTests
 					}
 				}
 				""";
-			using var originalContent = new System.IO.MemoryStream();
-			await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
-			originalContent.Seek(0, System.IO.SeekOrigin.Begin);
-			mockFileSystem.CreateMockFile(
-				new Path("C:/Root/MyPackage/PackageLock.sml"),
-				new MockFile(originalContent));
+		using var originalContent = new System.IO.MemoryStream();
+		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
+		originalContent.Seek(0, System.IO.SeekOrigin.Begin);
+		mockFileSystem.CreateMockFile(
+			new Path("C:/Root/MyPackage/PackageLock.sml"),
+			new MockFile(originalContent));
 
-			// Mock out the http
-			var mockMessageHandler = new Mock<IHttpMessageHandler>();
-			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
+		// Mock out the http
+		var mockMessageHandler = new Mock<IHttpMessageHandler>();
+		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
+		using var httpClient = new HttpClient(shimHandler);
 
-			var uut = new ClosureManager(
-				new Uri("https://test.api.soupbuild.com/"),
-				httpClient,
-				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1),
-				new SemanticVersion(4, 5, 6));
+		var uut = new ClosureManager(
+			new Uri("https://test.api.soupbuild.com/"),
+			httpClient,
+			new SemanticVersion(1, 2, 3),
+			new SemanticVersion(3, 2, 1),
+			new SemanticVersion(4, 5, 6));
 
-			await uut.GenerateAndRestoreRecursiveLocksAsync(
-				new Path("C:/Root/MyPackage/"),
-				new Path("C:/PackageStore/"),
-				new Path("C:/LockStore/"),
-				new Path("C:/Staging/"));
+		await uut.GenerateAndRestoreRecursiveLocksAsync(
+			new Path("C:/Root/MyPackage/"),
+			new Path("C:/PackageStore/"),
+			new Path("C:/LockStore/"),
+			new Path("C:/Staging/"));
 
-			// Verify expected logs
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected logs
+		Assert.Equal(
+			new List<string>()
+			{
 					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Restore from package lock",
@@ -3308,22 +3317,21 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
-				},
-				testListener.GetMessages());
+			},
+			testListener.Messages);
 
-			// Verify expected file system requests
-			Assert.Equal(
-				new List<string>()
-				{
+		// Verify expected file system requests
+		Assert.Equal(
+			new List<string>()
+			{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"OpenRead: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/PackageStore/Cpp/Package1/1.2.4/",
 					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
-				},
-				mockFileSystem.GetRequests());
+			},
+			mockFileSystem.Requests);
 
-			// Verify http requests
-			mockMessageHandler.VerifyNoOtherCalls();
-		}
+		// Verify http requests
+		mockMessageHandler.VerifyNoOtherCalls();
 	}
 }

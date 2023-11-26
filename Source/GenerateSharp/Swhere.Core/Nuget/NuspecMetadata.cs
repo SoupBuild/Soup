@@ -2,101 +2,118 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup;
 using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Swhere.Core.Nuget
+namespace Swhere.Core.Nuget;
+
+public class NuspecMetadata
 {
-	public class NuspecMetadata
+	[XmlElement("id")]
+	public string Id { get; set; } = string.Empty;
+
+	[XmlElement("version")]
+	public string Version { get; set; } = string.Empty;
+
+	[XmlElement("description")]
+	public string Description { get; set; } = string.Empty;
+
+	[XmlElement("authors")]
+	public string Authors { get; set; } = string.Empty;
+
+	[XmlElement("releaseNotes")]
+	public string? ReleaseNotes { get; set; }
+
+	[XmlElement("copyright")]
+	public string? Copyright { get; set; }
+
+	[XmlElement("tags")]
+	public string? Tags { get; set; }
+
+	[XmlArray("dependencies")]
+	[XmlArrayItem("group", typeof(NuspecDependencyGroup))]
+	[XmlArrayItem("dependency", typeof(NuspecDependency))]
+	public IList<NuspecDependencyBase>? Dependencies { get; init; }
+
+	internal static NuspecMetadata Deserialize(XmlNode node)
 	{
-		[XmlElement("id")]
-		public string Id { get; set; } = string.Empty;
-
-		[XmlElement("version")]
-		public string Version { get; set; } = string.Empty;
-
-		[XmlElement("description")]
-		public string Description { get; set; } = string.Empty;
-
-		[XmlElement("authors")]
-		public string Authors { get; set; } = string.Empty;
-
-		[XmlElement("releaseNotes")]
-		public string? ReleaseNotes { get; set; }
-
-		[XmlElement("copyright")]
-		public string? Copyright { get; set; }
-
-		[XmlElement("tags")]
-		public string? Tags { get; set; }
-
-		[XmlArray("dependencies")]
-		[XmlArrayItem("group", typeof(NuspecDependencyGroup))]
-		[XmlArrayItem("dependency", typeof(NuspecDependency))]
-		public List<NuspecDependencyBase>? Dependencies { get; set; }
-
-		internal static NuspecMetadata Deserialize(XmlNode node)
+		string id = string.Empty;
+		string version = string.Empty;
+		string description = string.Empty;
+		string authors = string.Empty;
+		string? releaseNotes = null;
+		string? copyright = null;
+		string? tags = null;
+		IList<NuspecDependencyBase>? dependencies = null;
+		if (node.HasChildNodes)
 		{
-			var result = new NuspecMetadata();
-			if (node.HasChildNodes)
+			for (int i = 0; i < node.ChildNodes.Count; i++)
 			{
-				for (int i = 0; i < node.ChildNodes.Count; i++)
+				var child = node.ChildNodes[i] ?? throw new InvalidOperationException("Null child");
+				switch (child.Name)
 				{
-					var child = node.ChildNodes[i] ?? throw new InvalidOperationException("Null child");
-					switch (child.Name)
-					{
-						case "id":
-							result.Id = child.InnerText ?? string.Empty;
-							break;
-						case "version":
-							result.Version = child.InnerText ?? string.Empty;
-							break;
-						case "description":
-							result.Description = child.InnerText ?? string.Empty;
-							break;
-						case "authors":
-							result.Authors = child.InnerText ?? string.Empty;
-							break;
-						case "releaseNotes":
-							result.ReleaseNotes = child.InnerText ?? string.Empty;
-							break;
-						case "copyright":
-							result.Copyright = child.InnerText ?? string.Empty;
-							break;
-						case "tags":
-							result.Tags = child.InnerText ?? string.Empty;
-							break;
-						case "dependencies":
-							result.Dependencies = DeserializeDependencies(child);
-							break;
-					}
+					case "id":
+						id = child.InnerText ?? string.Empty;
+						break;
+					case "version":
+						version = child.InnerText ?? string.Empty;
+						break;
+					case "description":
+						description = child.InnerText ?? string.Empty;
+						break;
+					case "authors":
+						authors = child.InnerText ?? string.Empty;
+						break;
+					case "releaseNotes":
+						releaseNotes = child.InnerText ?? string.Empty;
+						break;
+					case "copyright":
+						copyright = child.InnerText ?? string.Empty;
+						break;
+					case "tags":
+						tags = child.InnerText ?? string.Empty;
+						break;
+					case "dependencies":
+						dependencies = DeserializeDependencies(child);
+						break;
 				}
 			}
-
-			return result;
 		}
 
-		private static List<NuspecDependencyBase> DeserializeDependencies(XmlNode node)
+		return new NuspecMetadata()
 		{
-			var result = new List<NuspecDependencyBase>();
-			if (node.HasChildNodes)
+			Id = id,
+			Version = version,
+			Description = description,
+			Authors = authors,
+			ReleaseNotes = releaseNotes,
+			Copyright = copyright,
+			Tags = tags,
+			Dependencies = dependencies,
+		};
+	}
+
+	private static List<NuspecDependencyBase> DeserializeDependencies(XmlNode node)
+	{
+		var result = new List<NuspecDependencyBase>();
+		if (node.HasChildNodes)
+		{
+			for (int i = 0; i < node.ChildNodes.Count; i++)
 			{
-				for (int i = 0; i < node.ChildNodes.Count; i++)
+				var child = node.ChildNodes[i] ?? throw new InvalidOperationException("Null child");
+				switch (child.Name)
 				{
-					var child = node.ChildNodes[i] ?? throw new InvalidOperationException("Null child");
-					switch (child.Name)
-					{
-						case "group":
-							var group = NuspecDependencyGroup.Deserialize(child);
-							result.Add(group);
-							break;
-					}
+					case "group":
+						var group = NuspecDependencyGroup.Deserialize(child);
+						result.Add(group);
+						break;
 				}
 			}
-
-			return result;
 		}
+
+		return result;
 	}
 }
