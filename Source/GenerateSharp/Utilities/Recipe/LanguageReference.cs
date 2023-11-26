@@ -12,17 +12,17 @@ namespace Soup.Build;
 /// <summary>
 /// A language reference object which will consist of a name version pair
 /// </summary>
-public class LanguageReference : IEquatable<LanguageReference>
+public partial class LanguageReference : IEquatable<LanguageReference>
 {
-	private string _name;
-	private SemanticVersion _version;
+	private readonly string _name;
+	private readonly SemanticVersion _version;
 
 	/// <summary>
 	/// Try parse a language reference from the provided string
 	/// </summary>
 	public static bool TryParse(string value, [MaybeNullWhen(false)] out LanguageReference result)
 	{
-		var nameRegex = new Regex(@"^(?<Name>[A-Za-z][\w#+.]*)(?:\|(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$");
+		var nameRegex = ParseRegex();
 		var matchName = nameRegex.Match(value);
 		if (matchName.Success)
 		{
@@ -101,7 +101,7 @@ public class LanguageReference : IEquatable<LanguageReference>
 	/// </summary>
 	public bool Equals(LanguageReference? other)
 	{
-		if (ReferenceEquals(other, null))
+		if (other is null)
 			return false;
 		return _name == other._name &&
 			_version == other._version;
@@ -115,14 +115,14 @@ public class LanguageReference : IEquatable<LanguageReference>
 	public override int GetHashCode()
 	{
 		var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode(StringComparison.Ordinal) * 0x1000;
-		var versionHash = ReferenceEquals(_version, null) ? 0 : _version.GetHashCode();
+		var versionHash = _version is null ? 0 : _version.GetHashCode();
 		return nameHash + versionHash;
 	}
 
 	public static bool operator ==(LanguageReference? lhs, LanguageReference? rhs)
 	{
-		if (ReferenceEquals(lhs, null))
-			return ReferenceEquals(rhs, null);
+		if (lhs is null)
+			return rhs is null;
 		return lhs.Equals(rhs);
 	}
 
@@ -139,4 +139,7 @@ public class LanguageReference : IEquatable<LanguageReference>
 		// Build up the name/version reference
 		return $"{_name}|{_version}";
 	}
+
+	[GeneratedRegex(@"^(?<Name>[A-Za-z][\w#+.]*)(?:\|(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$")]
+	private static partial Regex ParseRegex();
 }

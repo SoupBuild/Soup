@@ -75,7 +75,7 @@ public class PackageVersionsClient
 		var disposeClient_ = false;
 		try
 		{
-			using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 			request_.Method = new HttpMethod("GET");
 			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -156,7 +156,7 @@ public class PackageVersionsClient
 		var disposeClient_ = false;
 		try
 		{
-			using var request = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 			using var content = new StreamContent(file.Data);
 
 			content.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
@@ -236,7 +236,7 @@ public class PackageVersionsClient
 		var disposeClient_ = false;
 		try
 		{
-			using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 			request_.Method = new HttpMethod("GET");
 			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -316,8 +316,7 @@ public class PackageVersionsClient
 	/// <summary>
 	/// Called by implementing swagger client classes.
 	/// </summary>
-	/// <param name="cancellationToken">The cancellation token.</param>
-	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)
+	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
 		if (!string.IsNullOrEmpty(_bearerToken))

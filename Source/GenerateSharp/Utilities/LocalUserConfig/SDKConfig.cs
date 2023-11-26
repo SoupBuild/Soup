@@ -5,6 +5,7 @@
 using Opal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Soup.Build.Utilities;
 
@@ -62,6 +63,7 @@ public class SDKConfig
 		return _table.Values.ContainsKey(Property_SourceDirectories);
 	}
 
+	[SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Setter ensures format")]
 	public IList<Path> SourceDirectories
 	{
 		get

@@ -3,6 +3,7 @@
 // </copyright
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,15 +16,16 @@ namespace Soup.Build.PackageManager;
 /// <summary>
 /// The package manager
 /// </summary>
+[SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification = "Primary class")]
 public class PackageManager
 {
 	private const string StagingFolderName = ".staging/";
 
-	private Uri _apiEndpoint;
+	private readonly Uri _apiEndpoint;
 
-	private HttpClient _httpClient;
+	private readonly HttpClient _httpClient;
 
-	private IClosureManager _closureManager;
+	private readonly IClosureManager _closureManager;
 
 	public PackageManager(
 		Uri apiEndpoint,
@@ -340,7 +342,7 @@ public class PackageManager
 			else
 			{
 				var relativePath = child.Path.GetRelativeTo(workingDirectory);
-				var relativeName = relativePath.ToString().Substring(2);
+				var relativeName = relativePath.ToString()[2..];
 				archive.CreateEntryFromFile(child.Path, relativeName);
 			}
 		}

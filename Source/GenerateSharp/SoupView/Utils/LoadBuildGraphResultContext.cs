@@ -11,6 +11,6 @@ namespace Soup.View;
 	PropertyNamingPolicy = JsonKnownNamingPolicy.Unspecified,
 	GenerationMode = JsonSourceGenerationMode.Metadata)]
 [JsonSerializable(typeof(LoadBuildGraphResult))]
-internal partial class LoadBuildGraphResultContext : JsonSerializerContext
+internal sealed partial class LoadBuildGraphResultContext : JsonSerializerContext
 {
 }

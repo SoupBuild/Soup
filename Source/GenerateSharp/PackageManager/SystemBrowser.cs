@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Soup.Build.PackageManager;
 
+[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "TODO: Handle generic unknown errors")]
 public class SystemBrowser : IBrowser
 {
 	public int Port { get; }
@@ -46,33 +48,33 @@ public class SystemBrowser : IBrowser
 		return port;
 	}
 
-	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default(CancellationToken))
+	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
 	{
-		using (var listener = new LoopbackHttpListener(Port, _path))
+		using var listener = new LoopbackHttpListener(Port, _path);
+
+		OpenBrowser(options.StartUrl);
+
+		try
 		{
-			OpenBrowser(options.StartUrl);
+			var result = await listener.WaitForCallbackAsync();
+			if (string.IsNullOrWhiteSpace(result))
+			{
+				return new BrowserResult { ResultType = BrowserResultType.UnknownError, Error = "Empty response." };
+			}
 
-			try
-			{
-				var result = await listener.WaitForCallbackAsync();
-				if (String.IsNullOrWhiteSpace(result))
-				{
-					return new BrowserResult { ResultType = BrowserResultType.UnknownError, Error = "Empty response." };
-				}
-
-				return new BrowserResult { Response = result, ResultType = BrowserResultType.Success };
-			}
-			catch (TaskCanceledException ex)
-			{
-				return new BrowserResult { ResultType = BrowserResultType.Timeout, Error = ex.Message };
-			}
-			catch (Exception ex)
-			{
-				return new BrowserResult { ResultType = BrowserResultType.UnknownError, Error = ex.Message };
-			}
+			return new BrowserResult { Response = result, ResultType = BrowserResultType.Success };
+		}
+		catch (TaskCanceledException ex)
+		{
+			return new BrowserResult { ResultType = BrowserResultType.Timeout, Error = ex.Message };
+		}
+		catch (Exception ex)
+		{
+			return new BrowserResult { ResultType = BrowserResultType.UnknownError, Error = ex.Message };
 		}
 	}
 
+	[SuppressMessage("Design", "CA1054:URI-like parameters should not be strings", Justification = "Need string manipulation")]
 	public static void OpenBrowser(string url)
 	{
 		try
@@ -103,32 +105,36 @@ public class SystemBrowser : IBrowser
 	}
 }
 
+[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "TODO: Handle generic unknown errors")]
+[SuppressMessage("Design", "CA1063:Implement IDisposable Correctly", Justification = "Special case")]
 public class LoopbackHttpListener : IDisposable
 {
-	const int DefaultTimeout = 60 * 5; // 5 mins (in seconds)
+	private const int DefaultTimeout = 60 * 5; // 5 mins (in seconds)
 
-	IWebHost _host;
-	TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
-	string _url;
+	[SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Disposed in async task")]
+	private readonly IWebHost _host;
+	private TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
+	private Uri _url;
 
-	public string Url => _url;
+	public Uri Url => _url;
 
 	public LoopbackHttpListener(int port, string? path = null)
 	{
-		path = path ?? String.Empty;
-		if (path.StartsWith("/", StringComparison.Ordinal))
+		path = path ?? string.Empty;
+		if (path.StartsWith('/'))
 			path = path.Substring(1);
 
-		_url = $"http://127.0.0.1:{port}/{path}";
+		_url = new Uri($"http://127.0.0.1:{port}/{path}");
 
 		_host = new WebHostBuilder()
 			.UseKestrel()
-			.UseUrls(_url)
+			.UseUrls(_url.ToString())
 			.Configure(Configure)
 			.Build();
 		_host.Start();
 	}
 
+	[SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "Special case")]
 	public void Dispose()
 	{
 		Task.Run(async () =>

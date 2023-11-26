@@ -2,15 +2,19 @@
 using Opal;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text.Json;
 
 namespace Soup.View;
 
-public static class SoupTools
+public static partial class SoupTools
 {
-	[DllImport("SoupTools", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-	private static extern string LoadBuildGraph(string workingDirectory);
+	[LibraryImport("SoupTools", StringMarshalling = StringMarshalling.Custom, StringMarshallingCustomType = typeof(AnsiStringMarshaller))]
+	[UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+	[DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+	private static partial string LoadBuildGraph(string workingDirectory);
 
 	public static PackageProvider LoadBuildGraph(Path workingDirectory)
 	{

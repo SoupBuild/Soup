@@ -18,7 +18,7 @@ namespace Soup.View.ViewModels;
 
 public class TaskGraphViewModel : ViewModelBase
 {
-	private class TaskDetails
+	private sealed class TaskDetails
 	{
 		public required string Name { get; set; }
 		public required uint Id { get; set; }
@@ -32,7 +32,7 @@ public class TaskGraphViewModel : ViewModelBase
 	private uint uniqueId;
 	private bool isErrorBarOpen;
 	private IList<GraphNodeViewModel>? graph;
-	private Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = new Dictionary<uint, TaskDetailsViewModel>();
+	private readonly Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = [];
 
 	public string ErrorBarMessage
 	{
@@ -86,8 +86,8 @@ public class TaskGraphViewModel : ViewModelBase
 			if (packageFolder is not null)
 			{
 				var recipeFile = packageFolder + BuildConstants.RecipeFileName;
-				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
-				if (loadResult.IsSuccess)
+				var (isSuccess, result) = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
+				if (isSuccess)
 				{
 					var targetPath = await GetTargetPathAsync(packageFolder);
 
@@ -173,7 +173,7 @@ public class TaskGraphViewModel : ViewModelBase
 					Name = taskName,
 					TaskInfo = taskInfo,
 					Id = this.uniqueId++,
-					Children = new List<TaskDetails>(),
+					Children = [],
 				});
 		}
 

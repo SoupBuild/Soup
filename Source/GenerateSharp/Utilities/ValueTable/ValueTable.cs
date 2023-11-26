@@ -12,7 +12,7 @@ namespace Soup.Build.Utilities;
 [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "Disagree")]
 public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 {
-	private Dictionary<string, Value> _impl;
+	private readonly Dictionary<string, Value> _impl;
 
 	public ValueTable(IDictionary<string, Value> values)
 	{
@@ -21,7 +21,7 @@ public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 
 	public ValueTable()
 	{
-		_impl = new Dictionary<string, Value>();
+		_impl = [];
 	}
 
 	public Value this[string key]
