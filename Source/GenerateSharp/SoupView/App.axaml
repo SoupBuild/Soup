@@ -1,0 +1,19 @@
+<Application
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Class="Soup.View.App"
+	xmlns:local="using:Soup.View"
+	RequestedThemeVariant="Default">
+
+	<Application.DataTemplates>
+		<local:ViewLocator/>
+	</Application.DataTemplates>
+
+	<!-- Use system theme -->
+	<Application.Styles>
+		<FluentTheme />
+		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
+		<StyleInclude Source="/Views/GraphViewer.axaml"/>
+		<StyleInclude Source="/Views/SelectedButton.axaml"/>
+	</Application.Styles>
+</Application>

@@ -7,45 +7,44 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Soup.Build.Api.Client
+namespace Soup.Build.Api.Client;
+
+/// <summary>
+/// A container for the generate closure request.
+/// </summary>
+public class GenerateClosureRequestModel
 {
 	/// <summary>
-	/// A container for the generate closure request.
+	/// Gets or sets the roots package.
 	/// </summary>
-	public class GenerateClosureRequestModel
-	{
-		/// <summary>
-		/// Gets or sets the roots package.
-		/// </summary>
-		[JsonPropertyName("rootPackage")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		[Required]
-		public PackageLocalReferenceModel RootPackage { get; set; } = new PackageLocalReferenceModel();
+	[JsonPropertyName("rootPackage")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required]
+	public PackageLocalReferenceModel RootPackage { get; set; } = new PackageLocalReferenceModel();
 
-		/// <summary>
-		/// Gets or sets the collection of local packages that will be resolved.
-		/// </summary>
-		[JsonPropertyName("localPackages")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		[Required]
-		public ICollection<PackageLocalReferenceModel> LocalPackages { get; set; } = new Collection<PackageLocalReferenceModel>();
+	/// <summary>
+	/// Gets or sets the collection of local packages that will be resolved.
+	/// </summary>
+	[JsonPropertyName("localPackages")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required]
+	public ICollection<PackageLocalReferenceModel> LocalPackages { get; init; } = new Collection<PackageLocalReferenceModel>();
 
-		/// <summary>
-		/// Gets or sets the collection of known public packages that will be resolved.
-		/// </summary>
+	/// <summary>
+	/// Gets or sets the collection of known public packages that will be resolved.
+	/// </summary>
 
-		[JsonPropertyName("publicPackages")]
+	[JsonPropertyName("publicPackages")]
 
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		[Required]
-		public ICollection<PackagePublicReferenceModel> PublicPackages { get; set; } = new Collection<PackagePublicReferenceModel>();
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required]
+	public ICollection<PackagePublicReferenceModel> PublicPackages { get; init; } = new Collection<PackagePublicReferenceModel>();
 
-		/// <summary>
-		/// Gets or sets the collection of preferred versions for public packages.
-		/// </summary>
-		[JsonPropertyName("preferredVersions")]
-		[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-		[Required]
-		public ICollection<PackagePublicExactReferenceModel> PreferredVersions { get; set; } = new Collection<PackagePublicExactReferenceModel>();
-	}
+	/// <summary>
+	/// Gets or sets the collection of preferred versions for public packages.
+	/// </summary>
+	[JsonPropertyName("preferredVersions")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required]
+	public ICollection<PackagePublicExactReferenceModel> PreferredVersions { get; init; } = new Collection<PackagePublicExactReferenceModel>();
 }

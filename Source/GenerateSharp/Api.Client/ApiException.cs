@@ -4,40 +4,42 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Soup.Build.Api.Client
+namespace Soup.Build.Api.Client;
+
+[SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "Required parameters")]
+public class ApiException : Exception
 {
-	public class ApiException : Exception
+	public int StatusCode { get; private set; }
+
+	public IReadOnlyDictionary<string, IEnumerable<string>> Headers { get; private set; }
+
+	public ApiException(
+		string message,
+		int statusCode,
+		IReadOnlyDictionary<string, IEnumerable<string>> headers,
+		Exception? innerException)
+		: base($"{message} - StatusCode {statusCode}", innerException)
 	{
-		public int StatusCode { get; private set; }
-
-		public IReadOnlyDictionary<string, IEnumerable<string>> Headers { get; private set; }
-
-		public ApiException(
-			string message,
-			int statusCode,
-			IReadOnlyDictionary<string, IEnumerable<string>> headers,
-			Exception? innerException)
-			: base($"{message} - StatusCode {statusCode}", innerException)
-		{
-			StatusCode = statusCode;
-			Headers = headers;
-		}
+		StatusCode = statusCode;
+		Headers = headers;
 	}
+}
 
-	public class ApiException<TResult> : ApiException
+[SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "Required parameters")]
+public class ApiException<TResult> : ApiException
+{
+	public TResult Result { get; private set; }
+
+	public ApiException(
+		string message,
+		int statusCode,
+		IReadOnlyDictionary<string, IEnumerable<string>> headers,
+		TResult result,
+		Exception? innerException)
+		: base(message, statusCode, headers, innerException)
 	{
-		public TResult Result { get; private set; }
-
-		public ApiException(
-			string message,
-			int statusCode,
-			IReadOnlyDictionary<string, IEnumerable<string>> headers,
-			TResult result,
-			Exception? innerException)
-			: base(message, statusCode, headers, innerException)
-		{
-			Result = result;
-		}
+		Result = result;
 	}
 }

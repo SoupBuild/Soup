@@ -127,10 +127,25 @@ namespace Soup::Core::Generate
 				auto updatedActiveState = host->GetUpdatedActiveState();
 				auto updatedSharedState = host->GetUpdatedSharedState();
 
+				auto runBeforeList = ValueList();
+				for (const auto& value : currentTask->RunBeforeList)
+					runBeforeList.push_back(Value(value));
+
+				auto runAfterList = ValueList();
+				for (const auto& value : currentTask->RunAfterList)
+					runAfterList.push_back(Value(value));
+
+				auto runAfterClosureList = ValueList();
+				for (const auto& value : currentTask->RunAfterClosureList)
+					runAfterClosureList.push_back(Value(value));
+
 				// Build the extension task info
 				auto extensionTaskInfo = ValueTable();
 				extensionTaskInfo.emplace("ActiveState", Value(updatedActiveState));
 				extensionTaskInfo.emplace("SharedState", Value(updatedSharedState));
+				extensionTaskInfo.emplace("RunBeforeList", Value(std::move(runBeforeList)));
+				extensionTaskInfo.emplace("RunAfterList", Value(std::move(runAfterList)));
+				extensionTaskInfo.emplace("RunAfterClosureList", Value(std::move(runAfterClosureList)));
 
 				extensionTaskInfoTable.emplace(currentTask->Name, Value(std::move(extensionTaskInfo)));
 				runtimeOrderList.push_back(Value(currentTask->Name));

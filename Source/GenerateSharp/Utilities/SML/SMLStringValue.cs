@@ -4,76 +4,75 @@
 
 using System;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build.Utilities;
+
+public class SMLStringValue : IEquatable<SMLStringValue>
 {
-	public class SMLStringValue : IEquatable<SMLStringValue>
+	public string Value { get; set; }
+
+	public SMLToken OpenQuote { get; set; }
+
+	public SMLToken Content { get; set; }
+
+	public SMLToken CloseQuote { get; set; }
+
+	public SMLStringValue()
 	{
-		public string Value { get; set; }
+		Value = string.Empty;
+		OpenQuote = SMLToken.Empty;
+		Content = SMLToken.Empty;
+		CloseQuote = SMLToken.Empty;
+	}
 
-		public SMLToken OpenQuote { get; set; }
+	public SMLStringValue(string content)
+	{
+		Value = content;
+		OpenQuote = SMLToken.Empty;
+		Content = new SMLToken(content);
+		CloseQuote = SMLToken.Empty;
+	}
 
-		public SMLToken Content { get; set; }
+	public SMLStringValue(
+		string value,
+		SMLToken openQuote,
+		SMLToken content,
+		SMLToken closeQuote)
+	{
+		Value = value;
+		OpenQuote = openQuote;
+		Content = content;
+		CloseQuote = closeQuote;
+	}
 
-		public SMLToken CloseQuote { get; set; }
+	public override bool Equals(object? obj) => this.Equals(obj as SMLStringValue);
 
-		public SMLStringValue()
-		{
-			Value = string.Empty;
-			OpenQuote = SMLToken.Empty;
-			Content = SMLToken.Empty;
-			CloseQuote = SMLToken.Empty;
-		}
+	public bool Equals(SMLStringValue? other)
+	{
+		if (other is null)
+			return false;
 
-		public SMLStringValue(string content)
-		{
-			Value = content;
-			OpenQuote = SMLToken.Empty;
-			Content = new SMLToken(content);
-			CloseQuote = SMLToken.Empty;
-		}
+		// Optimization for a common success case.
+		if (object.ReferenceEquals(this, other))
+			return true;
 
-		public SMLStringValue(
-			string value,
-			SMLToken openQuote,
-			SMLToken content,
-			SMLToken closeQuote)
-		{
-			Value = value;
-			OpenQuote = openQuote;
-			Content = content;
-			CloseQuote = closeQuote;
-		}
+		// Return true if the fields match.
+		return this.Value == other.Value;
+	}
 
-		public override bool Equals(object? obj) => this.Equals(obj as SMLStringValue);
+	public override int GetHashCode() => (Value).GetHashCode(StringComparison.InvariantCulture);
 
-		public bool Equals(SMLStringValue? rhs)
+	public static bool operator ==(SMLStringValue? lhs, SMLStringValue? rhs)
+	{
+		if (lhs is null)
 		{
 			if (rhs is null)
-				return false;
-
-			// Optimization for a common success case.
-			if (object.ReferenceEquals(this, rhs))
 				return true;
-
-			// Return true if the fields match.
-			return this.Value == rhs.Value;
+			else
+				return false;
 		}
 
-		public override int GetHashCode() => (Value).GetHashCode();
-
-		public static bool operator ==(SMLStringValue? lhs, SMLStringValue? rhs)
-		{
-			if (lhs is null)
-			{
-				if (rhs is null)
-					return true;
-				else
-					return false;
-			}
-
-			return lhs.Equals(rhs);
-		}
-
-		public static bool operator !=(SMLStringValue? lhs, SMLStringValue? rhs) => !(lhs == rhs);
+		return lhs.Equals(rhs);
 	}
+
+	public static bool operator !=(SMLStringValue? lhs, SMLStringValue? rhs) => !(lhs == rhs);
 }

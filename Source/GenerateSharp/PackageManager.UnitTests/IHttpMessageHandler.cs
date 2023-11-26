@@ -5,11 +5,10 @@
 using System;
 using System.Net.Http;
 
-namespace Soup.Build.PackageManager.UnitTests
+namespace Soup.Build.PackageManager.UnitTests;
+
+public interface IHttpMessageHandler
 {
-	public interface IHttpMessageHandler
-	{
-		public HttpResponseMessage Send(HttpMethod method, Uri requestUri, string headers, string? content);
-		public HttpResponseMessage SendAsync(HttpMethod method, Uri? requestUri, string headers, string? content);
-	}
+	public HttpResponseMessage Send(HttpMethod method, Uri requestUri, string headers, string? content);
+	public HttpResponseMessage SendAsync(HttpMethod method, Uri? requestUri, string headers, string? content);
 }

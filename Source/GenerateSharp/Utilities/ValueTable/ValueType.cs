@@ -2,43 +2,46 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Build.Utilities
+using System.Diagnostics.CodeAnalysis;
+
+namespace Soup.Build.Utilities;
+
+[SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "Is type")]
+[SuppressMessage("Design", "CA1008:Enums should have zero value", Justification = "NA")]
+public enum ValueType
 {
-	public enum ValueType : uint
-	{
-		/// <summary>
-		/// Table
-		/// </summary>
-		Table = 1,
+	/// <summary>
+	/// Table
+	/// </summary>
+	Table = 1,
 
-		/// <summary>
-		/// List
-		/// </summary>
-		List = 2,
+	/// <summary>
+	/// List
+	/// </summary>
+	List = 2,
 
-		/// <summary>
-		/// String
-		/// </summary>
-		String = 3,
+	/// <summary>
+	/// String
+	/// </summary>
+	String = 3,
 
-		/// <summary>
-		/// Integer
-		/// </summary>
-		Integer = 4,
+	/// <summary>
+	/// Integer
+	/// </summary>
+	Integer = 4,
 
-		/// <summary>
-		/// Float
-		/// </summary>
-		Float = 5,
+	/// <summary>
+	/// Float
+	/// </summary>
+	Float = 5,
 
-		/// <summary>
-		/// Boolean
-		/// </summary>
-		Boolean = 6,
+	/// <summary>
+	/// Boolean
+	/// </summary>
+	Boolean = 6,
 
-		/// <summary>
-		/// Empty
-		/// </summary>
-		Empty = 7,
-	}
+	/// <summary>
+	/// Empty
+	/// </summary>
+	Empty = 7,
 }

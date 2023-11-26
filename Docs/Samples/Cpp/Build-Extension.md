@@ -10,13 +10,13 @@ Name: "Samples.Cpp.BuildExtension.Extension"
 Language: "Wren|0.1"
 Version: "1.0.0"
 Source: [
-    "CustomBuildTask.wren"
+  "CustomBuildTask.wren"
 ]
 
 Dependencies: {
-    Runtime: [
-        "Soup.Build.Utils@0.4.0"
-    ]
+  Runtime: [
+    "Soup.Build.Utils@0.4.0"
+  ]
 }
 ```
 
@@ -25,23 +25,23 @@ The package lock that was generated to capture the unique dependencies required 
 ```
 Version: 4
 Closures: {
-    Root: {
-        Wren: [
-            { Name: "Samples.Cpp.BuildExtension.Extension", Version: "./", Build: "Build0", Tool: "Tool0" }
-            { Name: "Soup.Build.Utils", Version: "0.5.0", Build: "Build0", Tool: "Tool0" }
-        ]
-    }
-    Build0: {
-        Wren: [
-            { Name: "Soup.Wren", Version: "0.2.0" }
-        ]
-    }
-    Tool0: {
-        "C++": [
-            { Name: "copy", Version: "1.0.0" }
-            { Name: "mkdir", Version: "1.0.0" }
-        ]
-    }
+  Root: {
+    Wren: [
+      { Name: "Samples.Cpp.BuildExtension.Extension", Version: "./", Build: "Build0", Tool: "Tool0" }
+      { Name: "Soup.Build.Utils", Version: "0.5.0", Build: "Build0", Tool: "Tool0" }
+    ]
+  }
+  Build0: {
+    Wren: [
+      { Name: "Soup.Wren", Version: "0.2.0" }
+    ]
+  }
+  Tool0: {
+    "C++": [
+      { Name: "copy", Version: "1.0.0" }
+      { Name: "mkdir", Version: "1.0.0" }
+    ]
+  }
 }
 ```
 
@@ -57,37 +57,37 @@ import "Soup.Build.Utils:./ListExtensions" for ListExtensions
 import "Soup.Build.Utils:./MapExtensions" for MapExtensions
 
 class CustomBuildTask is SoupTask {
-    /// <summary>
-    /// Get the run before list
-    /// </summary>
-    static runBefore { [
-        "BuildTask"
-    ] }
+  /// <summary>
+  /// Get the run before list
+  /// </summary>
+  static runBefore { [
+    "BuildTask"
+  ] }
 
-    /// <summary>
-    /// Get the run after list
-    /// </summary>
-    static runAfter { [] }
+  /// <summary>
+  /// Get the run after list
+  /// </summary>
+  static runAfter { [] }
 
-    /// <summary>
-    /// Core Evaluate
-    /// </summary>
-    static evaluate() {
-        Soup.info("Running Before Build!")
+  /// <summary>
+  /// Core Evaluate
+  /// </summary>
+  static evaluate() {
+    Soup.info("Running Before Build!")
 
-        // Get the build table
-        var buildTable = MapExtensions.EnsureTable(Soup.activeState, "Build")
+    // Get the build table
+    var buildTable = MapExtensions.EnsureTable(Soup.activeState, "Build")
 
-        // As a sample of what a build extension can do we set a new
-        // preprocessor definition to influence the build
-        var preprocessorDefinitions = [
-            "SPECIAL_BUILD",
-        ]
-        
-        ListExtensions.Append(
-            MapExtensions.EnsureList(buildTable, "PreprocessorDefinitions"),
-            preprocessorDefinitions)
-    }
+    // As a sample of what a build extension can do we set a new
+    // preprocessor definition to influence the build
+    var preprocessorDefinitions = [
+      "SPECIAL_BUILD",
+    ]
+    
+    ListExtensions.Append(
+      MapExtensions.EnsureList(buildTable, "PreprocessorDefinitions"),
+      preprocessorDefinitions)
+  }
 }
 ```
 
@@ -99,13 +99,13 @@ Language: "C++|0.1"
 Type: "Executable"
 Version: "1.0.0"
 Source: [
-    "Main.cpp"
+  "Main.cpp"
 ]
 
 Dependencies: {
-    Build: [
-        "../Extension/"
-    ]
+  Build: [
+    "../Extension/"
+  ]
 }
 ```
 
@@ -114,23 +114,23 @@ The package lock that was generated to capture the unique build dependencies req
 ```
 Version: 4
 Closures: {
-    Root: {
-        "C++": [
-            { Name: "Samples.SimpleBuildExtension.Executable", Version: "../Executable", Build: "Build0", Tool: "Tool0" }
-        ]
-    }
-    Build0: {
-        Wren: [
-            { Name: "Samples.Cpp.BuildExtension.Extension", Version: "../Extension/" }
-            { Name: "Soup.Cpp", Version: "0.8.2" }
-        ]
-    }
-    Tool0: {
-        "C++": [
-            { Name: "copy", Version: "1.0.0" }
-            { Name: "mkdir", Version: "1.0.0" }
-        ]
-    }
+  Root: {
+    "C++": [
+      { Name: "Samples.SimpleBuildExtension.Executable", Version: "../Executable", Build: "Build0", Tool: "Tool0" }
+    ]
+  }
+  Build0: {
+    Wren: [
+      { Name: "Samples.Cpp.BuildExtension.Extension", Version: "../Extension/" }
+      { Name: "Soup.Cpp", Version: "0.10.1" }
+    ]
+  }
+  Tool0: {
+    "C++": [
+      { Name: "copy", Version: "1.0.0" }
+      { Name: "mkdir", Version: "1.0.0" }
+    ]
+  }
 }
 ```
 
@@ -142,11 +142,11 @@ A simple main method that prints our "Hello World, Soup Style!" only if the buil
 int main()
 {
 #ifdef SPECIAL_BUILD
-    std::cout << "Hello World, Soup Style!" << std::endl;
+  std::cout << "Hello World, Soup Style!" << std::endl;
 #else
-    std::cout << "Hello World..." << std::endl;
+  std::cout << "Hello World..." << std::endl;
 #endif
-    return 0;
+  return 0;
 }
 ```
 

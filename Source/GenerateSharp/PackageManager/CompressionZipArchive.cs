@@ -5,27 +5,26 @@
 using Opal;
 using System.IO.Compression;
 
-namespace Soup.Build.PackageManager
+namespace Soup.Build.PackageManager;
+
+internal sealed class CompressionZipArchive : IZipArchive
 {
-	internal class CompressionZipArchive : IZipArchive
+	ZipArchive _archive;
+
+	public CompressionZipArchive(ZipArchive archive)
 	{
-		ZipArchive _archive;
+		_archive = archive;
+	}
 
-		public CompressionZipArchive(ZipArchive archive)
-		{
-			_archive = archive;
-		}
+	public void CreateEntryFromFile(Path sourceFileName, string entryName)
+	{
+		_ = _archive.CreateEntryFromFile(
+			sourceFileName.ToString(),
+			entryName);
+	}
 
-		public void CreateEntryFromFile(Path sourceFileName, string entryName)
-		{
-			_ = _archive.CreateEntryFromFile(
-				sourceFileName.ToString(),
-				entryName);
-		}
-
-		public void Dispose()
-		{
-			_archive.Dispose();
-		}
+	public void Dispose()
+	{
+		_archive.Dispose();
 	}
 }

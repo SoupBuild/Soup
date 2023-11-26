@@ -34,7 +34,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/BuiltIn/Soup.Cpp/0.8.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/Soup.Cpp/0.8.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
@@ -59,10 +59,27 @@ namespace Soup::Core::UnitTests
 			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
+			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
 			auto arguments = RecipeBuildArguments();
 			arguments.HostPlatform = "TestPlatform";
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			BuildEngine::Execute(std::move(arguments));
+
+			// Load user config state
+			auto userDataPath = BuildEngine::GetSoupUserDataPath();
+			auto recipeCache = RecipeCache();
+
+			auto packageProvider = BuildEngine::LoadBuildGraph(
+				builtInPackageDirectory,
+				arguments.WorkingDirectory,
+				arguments.GlobalParameters,
+				userDataPath,
+				recipeCache);
+
+			BuildEngine::Execute(
+				packageProvider,
+				std::move(arguments),
+				userDataPath,
+				recipeCache);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -70,7 +87,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/0.8.2/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/0.8.2/Recipe.sml",
 					"DIAG: 0>Package was prebuilt: Soup.Cpp",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
@@ -99,9 +116,9 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>C:/Users/Me/.soup/LocalUserConfig.sml",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
+					"DIAG: 1>C:/BuiltIn/Packages/Soup.Cpp/0.8.2/out/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
-					"DIAG: 1>C:/testlocation/BuiltIn/Soup.Cpp/0.8.2/out/",
 					"DIAG: 1>Allowed Write Access:",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"DIAG: 1>Build evaluation end",
@@ -130,8 +147,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/0.8.2/Recipe.sml",
-					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/0.8.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/Soup.Cpp/0.8.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/0.8.2/Recipe.sml",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
@@ -154,7 +171,6 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
@@ -190,7 +206,7 @@ namespace Soup::Core::UnitTests
 										"Soup.Cpp",
 										ValueTable(
 										{
-											{ "SoupTargetDirectory", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.8.2/out/.soup/") },
+											{ "SoupTargetDirectory", std::string("C:/BuiltIn/Packages/Soup.Cpp/0.8.2/out/.soup/") },
 										})
 									},
 								})
@@ -224,7 +240,7 @@ namespace Soup::Core::UnitTests
 						"GenerateMacros",
 						ValueTable(
 						{
-							{ "/(BUILD_TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.8.2/out/") },
+							{ "/(BUILD_TARGET_Soup.Cpp)/", std::string("C:/BuiltIn/Packages/Soup.Cpp/0.8.2/out/") },
 						})
 					},
 					{

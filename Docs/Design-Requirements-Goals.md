@@ -15,7 +15,7 @@ While the goals are not hard requirements, they are always kept at the forefront
 
 1. **Collaborative** - Writing code is very rarely done in isolation. The largest goal for this build system is to be able to work seamlessly within a team and with external dependencies.
 
-1. **Simple** - When fulfilling the above requirements the secondary priority is always simplicity and usability. This means that the standard user will get the best experience possibly for both setup and usage. Some extra complexity is allowed in exchange for performance gains in the internal implementation and the extensibility framework.
+1. **Simple** - When fulfilling the above requirements the secondary priority is always simplicity and usability. This means that the standard user will get the best experience possible for both setup and usage. Some extra complexity is allowed in exchange for performance gains in the internal implementation and the extensibility framework.
 
 1. **Fast** - The inner developer loop is very important to the productivity of an engineer. To this end, the build system should focus heavily on the performance of an incremental build and ensure the full build is as fast as possible.
 

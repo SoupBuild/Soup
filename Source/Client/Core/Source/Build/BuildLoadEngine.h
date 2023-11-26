@@ -1,4 +1,4 @@
-﻿// <copyright file="PackageProvider.h" company="Soup">
+﻿// <copyright file="BuildLoadEngine.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -33,7 +33,6 @@ namespace Soup::Core
 	{
 	private:
 		const int _packageLockVersion = 4;
-		const Path _builtInPackagePath = Path("BuiltIn/");
 		const Path _builtInPackageOutPath = Path("out/");
 		const std::string _builtInWrenLanguage = "Wren";
 		const std::string _dependencyTypeBuild = "Build";
@@ -41,11 +40,12 @@ namespace Soup::Core
 		const std::string _rootClosureName = "Root";
 
 		// Built ins
+		const Path& _builtInPackageDirectory;
 		const std::map<std::string, KnownLanguage>& _knownLanguageLookup;
 		const std::map<std::string, std::map<std::string, SemanticVersion>>& _builtInPackageLookup;
 
 		// Arguments
-		const RecipeBuildArguments& _arguments;
+		const ValueTable& _targetBuildGlobalParameters;
 
 		// System Parameters
 		Path _userDataPath;
@@ -69,15 +69,17 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="BuildLoadEngine"/> class.
 		/// </summary>
 		BuildLoadEngine(
+			const Path& builtInPackageDirectory,
 			const std::map<std::string, KnownLanguage>& knownLanguageLookup,
 			const std::map<std::string, std::map<std::string, SemanticVersion>>& builtInPackageLookup,
-			const RecipeBuildArguments& arguments,
+			const ValueTable& targetBuildGlobalParameters,
 			const ValueTable& hostBuildGlobalParameters,
 			Path userDataPath,
 			RecipeCache& recipeCache) :
+			_builtInPackageDirectory(builtInPackageDirectory),
 			_knownLanguageLookup(knownLanguageLookup),
 			_builtInPackageLookup(builtInPackageLookup),
-			_arguments(arguments),
+			_targetBuildGlobalParameters(targetBuildGlobalParameters),
 			_hostBuildGlobalParameters(hostBuildGlobalParameters),
 			_userDataPath(std::move(userDataPath)),
 			_recipeCache(recipeCache),
@@ -91,10 +93,8 @@ namespace Soup::Core
 		/// Load the package lock and using it recursively load up all packages that are a part of the build closure
 		/// Validates that there are no circular dependencies and all required packages are available
 		/// </summary>
-		PackageProvider Load()
+		PackageProvider Load(const Path& projectRoot)
 		{
-			const Path& projectRoot = _arguments.WorkingDirectory;
-
 			// Load the package lock if present from project folder
 			auto packageLockState = LoadPackageLockIfPresent(projectRoot);
 
@@ -121,7 +121,7 @@ namespace Soup::Core
 			// Save the package graph
 			_packageGraphLookup.emplace(
 				rootGraphId,
-				PackageGraph(rootGraphId, rootPackageId, _arguments.GlobalParameters));
+				PackageGraph(rootGraphId, rootPackageId, _targetBuildGlobalParameters));
 
 			auto languagePackageName = recipe->GetLanguage().GetName() + "|" + recipe->GetName();
 			auto parentSet = std::set<std::string>();
@@ -876,10 +876,7 @@ namespace Soup::Core
 			const PackageLockState& parentPackageLockState)
 		{
 			// Use the prebuilt version in the install folder
-			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
-			auto processDirectory = processFilename.GetParent();
-			auto packageRoot = processDirectory +
-				_builtInPackagePath +
+			auto packageRoot = _builtInPackageDirectory +
 				Path(activeReference.GetName()) +
 				Path(activeReference.GetVersion().ToString() + "/");
 

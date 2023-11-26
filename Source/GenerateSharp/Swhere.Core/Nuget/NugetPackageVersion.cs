@@ -4,12 +4,11 @@
 
 using System.Collections.Generic;
 
-namespace Swhere.Core.Nuget
-{
-	public class NugetPackageVersion
-	{
-		public string Version { get; set; } = string.Empty;
+namespace Swhere.Core.Nuget;
 
-		public IList<NugetPackageTargetFramework> TargetFrameworks { get; set; } = new List<NugetPackageTargetFramework>();
-	}
+public class NugetPackageVersion
+{
+	public string Version { get; set; } = string.Empty;
+
+	public IList<NugetPackageTargetFramework> TargetFrameworks { get; init; } = new List<NugetPackageTargetFramework>();
 }

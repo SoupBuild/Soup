@@ -19,22 +19,11 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: Setup Soup Build
       uses: soupbuild/setup-soup@v1
       with:
         version: latest
-
-    # Build DotNet
-    - name: DotNet Restore
-      if: matrix.os != 'ubuntu-22.04'
-      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
-    - name: DotNet Build
-      if: matrix.os != 'ubuntu-22.04'
-      run: dotnet build -c ${{matrix.config}} --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
-    - name: DotNet Test
-      if: matrix.os != 'ubuntu-22.04'
-      run: dotnet test -c ${{matrix.config}} --no-build --verbosity normal ./Soup/Source/GenerateSharp/GenerateSharp.sln
 
     # Build Soup
     - name: Soup Where
@@ -60,6 +49,22 @@ jobs:
     #   run: soup restore ./Soup/Source/GenerateSharp/PackageManager/
     # - name: Soup Build PackageManager
     #   run: soup build ./Soup/Source/GenerateSharp/PackageManager/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Restore Tools
+      run: soup restore ./Soup/Source/Client/Tools/ -v:d
+    - name: Soup Build Tools
+      if: matrix.os != 'ubuntu-22.04'
+      run: soup build ./Soup/Source/Client/Tools/ -v:d -flavor ${{matrix.config}}
+
+    # Build DotNet
+    - name: DotNet Restore
+      if: matrix.os != 'ubuntu-22.04'
+      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
+    - name: DotNet Build
+      if: matrix.os != 'ubuntu-22.04'
+      run: dotnet build -c ${{matrix.config}} --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
+    - name: DotNet Test
+      if: matrix.os != 'ubuntu-22.04'
+      run: dotnet test -c ${{matrix.config}} --no-build --verbosity normal ./Soup/Source/GenerateSharp/GenerateSharp.sln
 
     # Build Tools
     - name: Soup Restore PrintGraph

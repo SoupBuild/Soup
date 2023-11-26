@@ -2,51 +2,50 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Opal.System
+using System;
+using System.IO;
+
+namespace Opal.System;
+
+/// <summary>
+/// The standard library output file implementation.
+/// </summary>
+internal sealed class RuntimeOutputFile : IOutputFile
 {
-	using global::System;
-	using global::System.IO;
+	private readonly FileStream stream;
+	private bool isDisposed;
+
+	public RuntimeOutputFile(FileStream stream)
+	{
+		this.isDisposed = false;
+		this.stream = stream;
+	}
 
 	/// <summary>
-	/// The standard library output file implementation.
+	/// Get the file stream.
 	/// </summary>
-	internal class RuntimeOutputFile : IOutputFile
+	public Stream GetOutStream()
 	{
-		private FileStream stream;
-		private bool isDisposed;
+		return this.stream;
+	}
 
-		public RuntimeOutputFile(FileStream stream)
-		{
-			this.isDisposed = false;
-			this.stream = stream;
-		}
+	public void Dispose()
+	{
+		// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+		this.Dispose(disposing: true);
+		GC.SuppressFinalize(this);
+	}
 
-		/// <summary>
-		/// Get the file stream.
-		/// </summary>
-		public Stream GetOutStream()
+	private void Dispose(bool disposing)
+	{
+		if (!this.isDisposed)
 		{
-			return this.stream;
-		}
-
-		public void Dispose()
-		{
-			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-			this.Dispose(disposing: true);
-			GC.SuppressFinalize(this);
-		}
-
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!this.isDisposed)
+			if (disposing)
 			{
-				if (disposing)
-				{
-					this.stream.Dispose();
-				}
-
-				this.isDisposed = true;
+				this.stream.Dispose();
 			}
+
+			this.isDisposed = true;
 		}
 	}
 }

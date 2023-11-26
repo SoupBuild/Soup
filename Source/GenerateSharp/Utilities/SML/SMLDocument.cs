@@ -6,71 +6,70 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build.Utilities;
+
+public class SMLDocument : IEquatable<SMLDocument>
 {
-	public class SMLDocument : IEquatable<SMLDocument>
+	public IList<SMLToken> LeadingNewlines { get; init; }
+
+	public Dictionary<string, SMLTableValue> Values { get; init; }
+
+	public IList<SMLToken> TrailingNewlines { get; init; }
+
+	public SMLDocument()
 	{
-		public List<SMLToken> LeadingNewlines { get; set; }
+		LeadingNewlines = new List<SMLToken>();
+		Values = new Dictionary<string, SMLTableValue>();
+		TrailingNewlines = new List<SMLToken>();
+	}
 
-		public Dictionary<string, SMLTableValue> Values { get; set; }
+	public SMLDocument(
+		Dictionary<string, SMLTableValue> values)
+	{
+		LeadingNewlines = new List<SMLToken>();
+		Values = values;
+		TrailingNewlines = new List<SMLToken>();
+	}
 
-		public List<SMLToken> TrailingNewlines { get; set; }
+	public SMLDocument(
+		IList<SMLToken> leadingNewlines,
+		Dictionary<string, SMLTableValue> values,
+		IList<SMLToken> trailingNewlines)
+	{
+		LeadingNewlines = leadingNewlines;
+		Values = values;
+		TrailingNewlines = trailingNewlines;
+	}
 
-		public SMLDocument()
-		{
-			LeadingNewlines = new List<SMLToken>();
-			Values = new Dictionary<string, SMLTableValue>();
-			TrailingNewlines = new List<SMLToken>();
-		}
+	public override bool Equals(object? obj) => this.Equals(obj as SMLDocument);
 
-		public SMLDocument(
-			Dictionary<string, SMLTableValue> values)
-		{
-			LeadingNewlines = new List<SMLToken>();
-			Values = values;
-			TrailingNewlines = new List<SMLToken>();
-		}
+	public bool Equals(SMLDocument? other)
+	{
+		if (other is null)
+			return false;
 
-		public SMLDocument(
-			List<SMLToken> leadingNewlines,
-			Dictionary<string, SMLTableValue> values,
-			List<SMLToken> trailingNewlines)
-		{
-			LeadingNewlines = leadingNewlines;
-			Values = values;
-			TrailingNewlines = trailingNewlines;
-		}
+		// Optimization for a common success case.
+		if (object.ReferenceEquals(this, other))
+			return true;
 
-		public override bool Equals(object? obj) => this.Equals(obj as SMLDocument);
+		// Return true if the fields match.
+		return Enumerable.SequenceEqual(this.Values, other.Values);
+	}
 
-		public bool Equals(SMLDocument? rhs)
+	public override int GetHashCode() => (Values).GetHashCode();
+
+	public static bool operator ==(SMLDocument? lhs, SMLDocument? rhs)
+	{
+		if (lhs is null)
 		{
 			if (rhs is null)
-				return false;
-
-			// Optimization for a common success case.
-			if (object.ReferenceEquals(this, rhs))
 				return true;
-
-			// Return true if the fields match.
-			return Enumerable.SequenceEqual(this.Values, rhs.Values);
+			else
+				return false;
 		}
 
-		public override int GetHashCode() => (Values).GetHashCode();
-
-		public static bool operator ==(SMLDocument? lhs, SMLDocument? rhs)
-		{
-			if (lhs is null)
-			{
-				if (rhs is null)
-					return true;
-				else
-					return false;
-			}
-
-			return lhs.Equals(rhs);
-		}
-
-		public static bool operator !=(SMLDocument? lhs, SMLDocument? rhs) => !(lhs == rhs);
+		return lhs.Equals(rhs);
 	}
+
+	public static bool operator !=(SMLDocument? lhs, SMLDocument? rhs) => !(lhs == rhs);
 }

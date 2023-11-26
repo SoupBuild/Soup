@@ -2,9 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Swhere.Core.Nuget
+namespace Swhere.Core.Nuget;
+
+public class NuspecDependencyBase
 {
-	public class NuspecDependencyBase
-	{
-	}
 }

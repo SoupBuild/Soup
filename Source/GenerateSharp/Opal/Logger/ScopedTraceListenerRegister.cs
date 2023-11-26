@@ -3,25 +3,27 @@
 // </copyright>
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Opal
+namespace Opal;
+
+/// <summary>
+/// A scoped trace listener registration helper.
+/// </summary>
+[SuppressMessage("Design", "CA1063:Implement IDisposable Correctly", Justification = "RAII disposable")]
+public class ScopedTraceListenerRegister : IDisposable
 {
 	/// <summary>
-	/// A scopped trace listener registration helper.
+	/// Initializes a new instance of the <see cref='ScopedTraceListenerRegister'/> class.
 	/// </summary>
-	public class ScopedTraceListenerRegister : IDisposable
+	public ScopedTraceListenerRegister(TraceListener listener)
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref='ScopedTraceListenerRegister'/> class.
-		/// </summary>
-		public ScopedTraceListenerRegister(TraceListener listener)
-		{
-			Log.RegisterListener(listener);
-		}
+		Log.RegisterListener(listener);
+	}
 
-		public void Dispose()
-		{
-			Log.RegisterListener(null);
-		}
+	[SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "RAII disposable")]
+	public void Dispose()
+	{
+		Log.RegisterListener(null);
 	}
 }

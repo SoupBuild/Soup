@@ -12,6 +12,7 @@
 #include "RunCommand.h"
 #include "TargetCommand.h"
 #include "VersionCommand.h"
+#include "ViewCommand.h"
 
 namespace Soup::Client
 {
@@ -100,6 +101,8 @@ namespace Soup::Client
 					command = Setup(arguments.ExtractResult<TargetOptions>());
 				else if (arguments.IsA<VersionOptions>())
 					command = Setup(arguments.ExtractResult<VersionOptions>());
+				else if (arguments.IsA<ViewOptions>())
+					command = Setup(arguments.ExtractResult<ViewOptions>());
 				else
 					throw std::runtime_error("Unknown arguments");
 
@@ -138,6 +141,7 @@ namespace Soup::Client
 			Log::HighPriority("  publish - Publish the contents of a recipe to the public feed.");
 			Log::HighPriority("  restore - Install all dependencies required by the target recipe.");
 			Log::HighPriority("  version - Display the current version of this tool.");
+			Log::HighPriority("  view    - Launch the view tool.");
 		}
 
 		void SetupShared(SharedOptions& options)
@@ -207,6 +211,14 @@ namespace Soup::Client
 			Log::Diag("Setup VersionCommand");
 			SetupShared(options);
 			return std::make_shared<VersionCommand>(
+				std::move(options));
+		}
+
+		std::shared_ptr<ICommand> Setup(ViewOptions options)
+		{
+			Log::Diag("Setup ViewCommand");
+			SetupShared(options);
+			return std::make_shared<ViewCommand>(
 				std::move(options));
 		}
 
