@@ -27,7 +27,7 @@ public class OperationResult : IEquatable<OperationResult>
 
 	public bool Equals(OperationResult? other)
 	{
-		if (ReferenceEquals(other, null))
+		if (other is null)
 			return false;
 
 		var result = WasSuccessfulRun == other.WasSuccessfulRun &&
@@ -50,8 +50,8 @@ public class OperationResult : IEquatable<OperationResult>
 
 	public static bool operator ==(OperationResult? lhs, OperationResult? rhs)
 	{
-		if (ReferenceEquals(lhs, null))
-			return ReferenceEquals(rhs, null);
+		if (lhs is null)
+			return rhs is null;
 		return lhs.Equals(rhs);
 	}
 

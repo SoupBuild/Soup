@@ -9,7 +9,7 @@ namespace Soup.Build.PackageManager;
 
 internal sealed class CompressionZipArchive : IZipArchive
 {
-	ZipArchive _archive;
+	private ZipArchive _archive;
 
 	public CompressionZipArchive(ZipArchive archive)
 	{

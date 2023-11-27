@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Soup.Build.Utilities;
+using System;
+using System.Collections.ObjectModel;
 using ValueType = Soup.Build.Utilities.ValueType;
 
 namespace Soup.View.ViewModels;

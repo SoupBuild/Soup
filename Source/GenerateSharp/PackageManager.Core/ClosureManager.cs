@@ -2,14 +2,14 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
+using Opal;
+using Opal.System;
+using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Opal;
-using Opal.System;
-using Soup.Build.Utilities;
 
 namespace Soup.Build.PackageManager;
 
@@ -677,7 +677,7 @@ public class ClosureManager : IClosureManager
 				if (dependency.Version == null)
 					throw new ArgumentException("Local package version was null");
 
-				var language = dependency.Language != null ? dependency.Language : implicitLanguage;
+				var language = dependency.Language ?? implicitLanguage;
 				if (language is null)
 					throw new ArgumentException("Language required for Tool dependency");
 
@@ -801,10 +801,8 @@ public class ClosureManager : IClosureManager
 				var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
 
 				// Write the contents to disk, scope cleanup
-				using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
-				{
-					await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
-				}
+				using var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true);
+				await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
 			}
 			catch (Api.Client.ApiException ex)
 			{

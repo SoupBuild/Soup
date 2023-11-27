@@ -68,7 +68,7 @@ public class Path : IEquatable<Path>
 
 	public static bool operator ==(Path? lhs, Path? rhs)
 	{
-		return lhs is null ? ReferenceEquals(rhs, null) : lhs.Equals(rhs);
+		return lhs is null ? rhs is null : lhs.Equals(rhs);
 	}
 
 	public static bool operator !=(Path? lhs, Path? rhs)

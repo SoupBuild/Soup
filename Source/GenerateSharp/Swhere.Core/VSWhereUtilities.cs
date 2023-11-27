@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using Opal.System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Opal;
-using Opal.System;
 
 namespace Soup.Build.Discover;
 
@@ -91,17 +91,15 @@ public static class VSWhereUtilities
 		}
 
 		// The first line is the path
-		using (var reader = new System.IO.StringReader(stdOut))
+		using var reader = new System.IO.StringReader(stdOut);
+		var path = await reader.ReadLineAsync();
+		if (path is null)
 		{
-			var path = await reader.ReadLineAsync();
-			if (path is null)
-			{
-				Log.Error("Failed to parse vswhere output.");
-				throw new HandledException();
-			}
-
-			return new Path(path);
+			Log.Error("Failed to parse vswhere output.");
+			throw new HandledException();
 		}
+
+		return new Path(path);
 	}
 
 	private static async Task<string> FindDefaultVCToolsVersionAsync(
@@ -117,19 +115,17 @@ public static class VSWhereUtilities
 		}
 
 		// Read the entire file into a string
-		using (var file = LifetimeManager.Get<IFileSystem>().OpenRead(visualCompilerToolsDefaultVersionFile))
-		using (var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true))
+		using var file = LifetimeManager.Get<IFileSystem>().OpenRead(visualCompilerToolsDefaultVersionFile);
+		using var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true);
+		// The first line is the version
+		var version = await reader.ReadLineAsync();
+		if (version is null)
 		{
-			// The first line is the version
-			var version = await reader.ReadLineAsync();
-			if (version is null)
-			{
-				Log.Error("Failed to parse version from file.");
-				throw new HandledException();
-			}
-
-			return version;
+			Log.Error("Failed to parse version from file.");
+			throw new HandledException();
 		}
+
+		return version;
 	}
 
 	private static string CombineArguments(IList<string> args)

@@ -88,43 +88,41 @@ public class SearchClient
 		var disposeClient_ = false;
 		try
 		{
-			using (var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false))
+			using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			request_.Method = new HttpMethod("GET");
+			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+			var url_ = urlBuilder_.ToString();
+			request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
+
+			var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+			var disposeResponse_ = true;
+			try
 			{
-				request_.Method = new HttpMethod("GET");
-				request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-				var url_ = urlBuilder_.ToString();
-				request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-				var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-				var disposeResponse_ = true;
-				try
+				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+				if (response_.Content != null && response_.Content.Headers != null)
 				{
-					var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-					if (response_.Content != null && response_.Content.Headers != null)
-					{
-						foreach (var item_ in response_.Content.Headers)
-							headers_[item_.Key] = item_.Value;
-					}
+					foreach (var item_ in response_.Content.Headers)
+						headers_[item_.Key] = item_.Value;
+				}
 
-					var status_ = (int)response_.StatusCode;
-					if (status_ == 200)
-					{
-						var objectResponse = await ReadObjectResponseAsync<SearchPackagesModel>(
-							response_, headers_, SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
-						return objectResponse;
-					}
-					else
-					{
-						throw new ApiException(
-							"The HTTP status code of the response was not expected.", status_, headers_, null);
-					}
-				}
-				finally
+				var status_ = (int)response_.StatusCode;
+				if (status_ == 200)
 				{
-					if (disposeResponse_)
-						response_.Dispose();
+					var objectResponse = await ReadObjectResponseAsync<SearchPackagesModel>(
+						response_, headers_, SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
+					return objectResponse;
 				}
+				else
+				{
+					throw new ApiException(
+						"The HTTP status code of the response was not expected.", status_, headers_, null);
+				}
+			}
+			finally
+			{
+				if (disposeResponse_)
+					response_.Dispose();
 			}
 		}
 		finally

@@ -67,7 +67,7 @@ public static class LocalUserConfigExtensions
 
 		// Write the recipe to the file stream
 		await SMLManager.SerializeAsync(
-			config.			Document,
+			config.Document,
 			file.GetOutStream());
 	}
 }

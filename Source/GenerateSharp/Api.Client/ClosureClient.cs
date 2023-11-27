@@ -119,18 +119,16 @@ public class ClosureClient
 	{
 		try
 		{
-			using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
+			using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+			var typedBody = await JsonSerializer.DeserializeAsync<T>(
+				responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
+			if (typedBody is null)
 			{
-				var typedBody = await JsonSerializer.DeserializeAsync<T>(
-					responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
-				if (typedBody is null)
-				{
-					var message = "Response body was empty.";
-					throw new ApiException(message, (int)response.StatusCode, headers, null);
-				}
-
-				return typedBody;
+				var message = "Response body was empty.";
+				throw new ApiException(message, (int)response.StatusCode, headers, null);
 			}
+
+			return typedBody;
 		}
 		catch (JsonException exception)
 		{

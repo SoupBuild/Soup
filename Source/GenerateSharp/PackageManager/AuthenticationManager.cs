@@ -2,10 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
-using System;
+using IdentityModel.OidcClient;
 using System.Globalization;
 using System.Threading.Tasks;
-using IdentityModel.OidcClient;
 
 namespace Soup.Build.PackageManager;
 

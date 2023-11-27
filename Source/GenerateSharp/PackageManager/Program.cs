@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using Opal.System;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Opal;
-using Opal.System;
 
 namespace Soup.Build.PackageManager;
 

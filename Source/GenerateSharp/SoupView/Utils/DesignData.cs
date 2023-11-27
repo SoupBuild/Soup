@@ -1,6 +1,6 @@
 ﻿
-using Soup.Build.Utilities;
 using Opal;
+using Soup.Build.Utilities;
 using System.Collections.Generic;
 
 namespace Soup.View.ViewModels;

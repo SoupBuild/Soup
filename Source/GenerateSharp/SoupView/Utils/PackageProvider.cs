@@ -4,16 +4,14 @@
 
 using System;
 using System.Collections.Generic;
-using Soup.Build;
-using Opal;
+
+using PackageChildrenMap = IDictionary<string, IList<PackageChildInfo>>;
+using PackageGraphId = Int32;
+using PackageGraphLookupMap = IDictionary<int, PackageGraph>;
+using PackageId = Int32;
+using PackageLookupMap = IDictionary<int, PackageInfo>;
 
 namespace Soup.View;
-
-using PackageId = Int32;
-using PackageGraphId = Int32;
-using PackageChildrenMap = IDictionary<string, IList<PackageChildInfo>>;
-using PackageGraphLookupMap = IDictionary<int, PackageGraph>;
-using PackageLookupMap = IDictionary<int, PackageInfo>;
 
 public class PackageChildInfo
 {

@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Avalonia.Threading;
 using GraphShape;
 using Opal;
 using ReactiveUI;

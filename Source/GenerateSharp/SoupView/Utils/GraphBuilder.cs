@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
 using GraphShape;
 using GraphShape.Algorithms.Layout;
 using QuikGraph;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Soup.View;
 
