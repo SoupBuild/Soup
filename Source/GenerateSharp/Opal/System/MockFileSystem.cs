@@ -23,9 +23,9 @@ public class MockFileSystem : IFileSystem
 	/// </summary>
 	public MockFileSystem()
 	{
-		this.requests = new List<string>();
-		this.files = new Dictionary<Path, MockFile>();
-		this.directoryChildren = new Dictionary<Path, IReadOnlyList<DirectoryEntry>>();
+		this.requests = [];
+		this.files = [];
+		this.directoryChildren = [];
 	}
 
 	/// <summary>

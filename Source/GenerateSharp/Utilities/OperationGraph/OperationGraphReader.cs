@@ -130,7 +130,7 @@ internal static class OperationGraphReader
 		var children = ReadOperationIdList(reader);
 
 		// Read the dependency count
-		var dependecyCount = reader.ReadUInt32();
+		var dependencyCount = reader.ReadUInt32();
 
 		return new OperationInfo(
 			id,
@@ -144,13 +144,7 @@ internal static class OperationGraphReader
 			readAccess,
 			writeAccess,
 			children,
-			dependecyCount);
-	}
-
-	private static bool ReadBoolean(System.IO.BinaryReader reader)
-	{
-		uint result = reader.ReadUInt32();
-		return result != 0;
+			dependencyCount);
 	}
 
 	private static string ReadString(System.IO.BinaryReader reader)

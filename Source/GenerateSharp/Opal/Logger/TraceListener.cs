@@ -12,9 +12,9 @@ namespace Opal;
 /// </summary>
 public abstract class TraceListener
 {
-	private string name;
-	private IEventFilter? filter;
-	private bool showEventType;
+	private readonly string name;
+	private readonly IEventFilter? filter;
+	private readonly bool showEventType;
 	private bool showEventId;
 
 	/// <summary>
@@ -96,7 +96,7 @@ public abstract class TraceListener
 	}
 
 	/// <summary>
-	/// Implementation dependant write methods.
+	/// Implementation dependent write methods.
 	/// </summary>
 	/// <param name="message">The message.</param>
 	protected abstract void WriteLine(string message);

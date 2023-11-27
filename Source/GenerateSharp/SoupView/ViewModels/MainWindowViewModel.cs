@@ -14,9 +14,9 @@ namespace Soup.View.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
 	private Path? recipeFile;
-	private DependencyGraphViewModel dependencyGraph;
-	private TaskGraphViewModel taskGraph;
-	private OperationGraphViewModel operationGraph;
+	private readonly DependencyGraphViewModel dependencyGraph;
+	private readonly TaskGraphViewModel taskGraph;
+	private readonly OperationGraphViewModel operationGraph;
 
 	public IStorageProvider? StorageProvider { get; set; }
 

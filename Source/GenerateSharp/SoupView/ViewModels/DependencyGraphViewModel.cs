@@ -21,7 +21,7 @@ public class DependencyGraphViewModel : ViewModelBase
 	private string errorBarMessage = string.Empty;
 	private bool isErrorBarOpen;
 	private IList<GraphNodeViewModel>? graph;
-	private readonly Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
+	private readonly Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = [];
 
 	public string ErrorBarMessage
 	{

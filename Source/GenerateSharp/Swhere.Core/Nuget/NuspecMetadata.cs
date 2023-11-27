@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup;
 using System;
 using System.Collections.Generic;
 using System.Xml;

@@ -8,10 +8,8 @@ using System.Text.RegularExpressions;
 
 namespace Soup.Build.Utilities
 {
-	public static class SMLExtensions
+	public static partial class SMLExtensions
 	{
-		private static readonly Regex SafeKeyRegex = new Regex(@"^([A-Za-z0-9]+)$");
-
 		private static readonly SMLToken CommaToken = new SMLToken(",");
 
 		private static readonly SMLToken NewlineToken = new SMLToken("\r\n");
@@ -37,7 +35,7 @@ namespace Soup.Build.Utilities
 				new SMLToken("\""))),
 				new List<SMLToken>());
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (array.Values.Count > 0)
 			{
 				var lastItem = array.Values.Last();
@@ -118,16 +116,16 @@ namespace Soup.Build.Utilities
 		{
 			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
 
-			var newTable = CreateInlineTable(new List<string>()
-			{
+			var newTable = CreateInlineTable(
+			[
 				indent,
-			});
+			]);
 
 			var newItem = new SMLArrayValue(
 				new SMLValue(newTable),
 				new List<SMLToken>());
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (array.Values.Count > 0)
 			{
 				var lastItem = array.Values.Last();
@@ -156,7 +154,7 @@ namespace Soup.Build.Utilities
 				{
 					NewlineToken
 				},
-				new Dictionary<string, SMLTableValue>(),
+				[],
 				new List<SMLToken>()
 				{
 					NewlineToken
@@ -173,7 +171,7 @@ namespace Soup.Build.Utilities
 				new SMLValue(newTable),
 				new List<SMLToken>());
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (array.Values.Count > 0)
 			{
 				var lastItem = array.Values.Last();
@@ -204,7 +202,7 @@ namespace Soup.Build.Utilities
 				new SMLToken(value),
 				new SMLToken("\"")));
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (document.Values.Count > 0)
 			{
 				var lastItem = document.Values.Last();
@@ -262,7 +260,7 @@ namespace Soup.Build.Utilities
 				LeadingTrivia = leadingTrivia,
 			};
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (table.Values.Count > 0)
 			{
 				var lastItem = table.Values.Last();
@@ -291,7 +289,7 @@ namespace Soup.Build.Utilities
 				},
 			};
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (table.Values.Count > 0)
 			{
 				var lastItem = table.Values.Last();
@@ -348,7 +346,7 @@ namespace Soup.Build.Utilities
 				{
 					NewlineToken,
 				},
-				new Dictionary<string, SMLTableValue>(),
+				[],
 				new List<SMLToken>()
 				{
 					NewlineToken,
@@ -370,7 +368,7 @@ namespace Soup.Build.Utilities
 				},
 			};
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (values.Count > 0)
 			{
 				var lastItem = values.Last();
@@ -390,7 +388,7 @@ namespace Soup.Build.Utilities
 				{
 					LeadingTrivia = leadingTrivia,
 				},
-				new Dictionary<string, SMLTableValue>(),
+				[],
 				new SMLToken("}")
 				{
 					// Space out the inline table
@@ -410,7 +408,7 @@ namespace Soup.Build.Utilities
 			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
 
 			// Create a new table
-			var newTable = CreateInlineTable(new List<string>());
+			var newTable = CreateInlineTable([]);
 
 			var keyToken = new SMLToken(name)
 			{
@@ -420,7 +418,7 @@ namespace Soup.Build.Utilities
 				},
 			};
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (values.Count > 0)
 			{
 				var lastItem = values.Last();
@@ -467,7 +465,7 @@ namespace Soup.Build.Utilities
 				},
 			};
 
-			// Update the previous last item to have a comma delmiter
+			// Update the previous last item to have a comma delimiter
 			if (values.Count > 0)
 			{
 				var lastItem = values.Last();
@@ -486,10 +484,13 @@ namespace Soup.Build.Utilities
 		{
 			// If the key contains unsafe characters, wrap in string key
 			var keyTokenText = name;
-			if (!SafeKeyRegex.IsMatch(keyTokenText))
+			if (!SafeKeyRegex().IsMatch(keyTokenText))
 				keyTokenText = $"\"{keyTokenText}\"";
 
 			return keyTokenText;
 		}
+
+		[GeneratedRegex(@"^([A-Za-z0-9]+)$")]
+		private static partial Regex SafeKeyRegex();
 	}
 }

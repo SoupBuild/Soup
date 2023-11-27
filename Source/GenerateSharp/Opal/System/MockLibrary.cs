@@ -12,8 +12,8 @@ namespace Opal.System;
 public class MockLibrary : ILibrary
 {
 	// Input
-	private string name;
-	private IList<string> requests;
+	private readonly string name;
+	private readonly IList<string> requests;
 
 	// std::map<std::string, void*> _functions;
 
@@ -45,7 +45,7 @@ public class MockLibrary : ILibrary
 	///// </summary>
 	////void* GetFunction(std::string_view name) override final
 	////{
-	////	std::stringstream message;
+	////	std::stringStream message;
 	////	message << "GetFunction: " << m_name << " [" << name << "]";
 
 	////	m_requests.push_back(message.str());

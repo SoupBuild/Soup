@@ -28,9 +28,7 @@ public static class Log
 	/// </summary>
 	public static TraceListener EnsureListener()
 	{
-		if (listener == null)
-			throw new InvalidOperationException("No Listener registered.");
-		return listener;
+		return listener ?? throw new InvalidOperationException("No Listener registered.");
 	}
 
 	/// <summary>

@@ -68,9 +68,7 @@ public class Path : IEquatable<Path>
 
 	public static bool operator ==(Path? lhs, Path? rhs)
 	{
-		if (ReferenceEquals(lhs, null))
-			return ReferenceEquals(rhs, null);
-		return lhs.Equals(rhs);
+		return lhs is null ? ReferenceEquals(rhs, null) : lhs.Equals(rhs);
 	}
 
 	public static bool operator !=(Path? lhs, Path? rhs)
@@ -239,14 +237,7 @@ public class Path : IEquatable<Path>
 		// Everything after and including the last period is the extension
 		var fileName = this.GetFileName();
 		var lastSeparator = fileName.LastIndexOf(FileExtensionSeparator);
-		if (lastSeparator != -1)
-		{
-			return fileName.Substring(lastSeparator);
-		}
-		else
-		{
-			return string.Empty;
-		}
+		return lastSeparator != -1 ? fileName.Substring(lastSeparator) : string.Empty;
 	}
 
 	/// <summary>
@@ -344,7 +335,7 @@ public class Path : IEquatable<Path>
 	/// <param name="other">The right hand side.</param>
 	public bool Equals(Path? other)
 	{
-		if (ReferenceEquals(other, null))
+		if (other is null)
 			return false;
 		return this.value == other.value;
 	}
@@ -396,12 +387,9 @@ public class Path : IEquatable<Path>
 		}
 
 		// Ensure the last separator was at the end of the string
-		if (current != value.Length)
-		{
-			throw new InvalidOperationException("The directories string must end in a separator");
-		}
-
-		return directories;
+		return current != value.Length ?
+			throw new InvalidOperationException("The directories string must end in a separator") :
+			directories;
 	}
 
 	private static bool IsRoot(string value)

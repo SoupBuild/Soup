@@ -4,7 +4,6 @@
 
 using Opal;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Soup.Build.Utilities;
 

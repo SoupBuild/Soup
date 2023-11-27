@@ -178,7 +178,7 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 
 	public static bool operator ==(SemanticVersion? lhs, SemanticVersion? rhs)
 	{
-		if (ReferenceEquals(lhs, null))
+		if (lhs is null)
 			return ReferenceEquals(rhs, null);
 		return lhs.Equals(rhs);
 	}

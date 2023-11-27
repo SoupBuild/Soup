@@ -12,7 +12,7 @@ namespace Soup.Build;
 /// A package reference object which will consist of a name version pair that
 /// refers to a published package or a path to a local recipe
 /// </summary>
-public class PackageReference : IEquatable<PackageReference>
+public partial class PackageReference : IEquatable<PackageReference>
 {
 	private string? _language;
 	private string? _name;
@@ -24,7 +24,7 @@ public class PackageReference : IEquatable<PackageReference>
 	/// </summary>
 	public static bool TryParse(string value, out PackageReference result)
 	{
-		var nameRegex = new Regex(@"^(?:(?<Language>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$");
+		var nameRegex = ParseRegex();
 		var matchName = nameRegex.Match(value);
 		if (matchName.Success)
 		{
@@ -144,7 +144,7 @@ public class PackageReference : IEquatable<PackageReference>
 	{
 		get
 		{
-			if (ReferenceEquals(_path, null))
+			if (_path is null)
 				throw new InvalidOperationException("Cannot get the path of a non-local reference.");
 			return _path;
 		}
@@ -155,7 +155,7 @@ public class PackageReference : IEquatable<PackageReference>
 	/// </summary>
 	public bool Equals(PackageReference? other)
 	{
-		if (ReferenceEquals(other, null))
+		if (other is null)
 			return false;
 		return _name == other._name &&
 			_version == other._version &&
@@ -170,16 +170,14 @@ public class PackageReference : IEquatable<PackageReference>
 	public override int GetHashCode()
 	{
 		var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode(StringComparison.Ordinal) * 0x100000;
-		var versionHash = ReferenceEquals(_version, null) ? 0 : _version.GetHashCode() * 0x1000;
-		var pathHash = ReferenceEquals(_path, null) ? 0 : _path.GetHashCode();
+		var versionHash = _version is null ? 0 : _version.GetHashCode() * 0x1000;
+		var pathHash = _path is null ? 0 : _path.GetHashCode();
 		return nameHash + versionHash + pathHash;
 	}
 
 	public static bool operator ==(PackageReference? lhs, PackageReference? rhs)
 	{
-		if (ReferenceEquals(lhs, null))
-			return ReferenceEquals(rhs, null);
-		return lhs.Equals(rhs);
+		return lhs is null ? rhs is null : lhs.Equals(rhs);
 	}
 
 	public static bool operator !=(PackageReference? lhs, PackageReference? rhs)
@@ -193,16 +191,16 @@ public class PackageReference : IEquatable<PackageReference>
 	public override string ToString()
 	{
 		// If the reference is a path then just return that
-		if (!ReferenceEquals(_path, null))
+		if (_path is not null)
 		{
 			return _path.ToString();
 		}
 		else
 		{
 			// Build up the language/name/version reference
-			if (!ReferenceEquals(_language, null))
+			if (_language is not null)
 			{
-				if (!ReferenceEquals(_version, null))
+				if (_version is not null)
 				{
 					return $"{_language}|{_name}@{_version}";
 				}
@@ -213,7 +211,7 @@ public class PackageReference : IEquatable<PackageReference>
 			}
 			else
 			{
-				if (!ReferenceEquals(_version, null))
+				if (_version is not null)
 				{
 					return $"{_name}@{_version}";
 				}
@@ -224,4 +222,7 @@ public class PackageReference : IEquatable<PackageReference>
 			}
 		}
 	}
+
+	[GeneratedRegex(@"^(?:(?<Language>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$")]
+	private static partial Regex ParseRegex();
 }

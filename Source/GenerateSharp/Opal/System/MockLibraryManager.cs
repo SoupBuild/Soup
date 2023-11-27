@@ -21,8 +21,8 @@ public class MockLibraryManager : ILibraryManager
 	/// </summary>
 	public MockLibraryManager()
 	{
-		this._libraries = new Dictionary<Path, MockLibrary>();
-		this._requests = new List<string>();
+		this._libraries = [];
+		this._requests = [];
 	}
 
 	/// <summary>

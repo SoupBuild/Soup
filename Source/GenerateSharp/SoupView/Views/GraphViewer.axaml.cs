@@ -19,7 +19,6 @@ public sealed class GraphViewer : TemplatedControl
 	public static int NodeWidth => 200;
 	public static int NodeHeight => 50;
 
-	private static int NodeSpacingHorizontal => 80;
 	private static int NodeSpacingVertical => 50;
 
 	private static int InternalPadding => 20;
@@ -166,8 +165,8 @@ public sealed class GraphViewer : TemplatedControl
 			var startNode = nodeState[node.Id];
 			foreach (var child in node.ChildNodes)
 			{
-				var endNode = nodeState[child];
-				var path = ConnectNodes(startNode.OutConnect, endNode.InConnect);
+				var (item, inConnect, outConnect) = nodeState[child];
+				var path = ConnectNodes(startNode.OutConnect, inConnect);
 				root.Children.Add(path);
 			}
 		}
@@ -223,15 +222,15 @@ public sealed class GraphViewer : TemplatedControl
 						{
 							IsClosed = false,
 							StartPoint = start,
-							Segments = new PathSegments()
-							{
+							Segments =
+							[
 								new BezierSegment()
 								{
 									Point1 = control1,
 									Point2 = control2,
 									Point3 = end,
 								}
-							},
+							],
 						},
 					},
 			},

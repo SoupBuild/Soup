@@ -3,7 +3,6 @@
 // </copyright>
 
 using Moq;
-using Moq.Protected;
 using Opal;
 using Opal.System;
 using System;
@@ -11,7 +10,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -2968,7 +2966,7 @@ public class ClosureManagerUnitTests
 				""";
 		using var originalContent = new System.IO.MemoryStream();
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
-		originalContent.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/MyPackage/PackageLock.sml"),
 			new MockFile(originalContent));
@@ -2991,21 +2989,21 @@ public class ClosureManagerUnitTests
 		using var shimHandler = new ShimHttpMessageHandler(mockMessageHandler.Object);
 		using var httpClient = new HttpClient(shimHandler);
 
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/3.2.2/download"),
@@ -3051,7 +3049,7 @@ public class ClosureManagerUnitTests
 					},
 				},
 		};
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
@@ -3275,7 +3273,7 @@ public class ClosureManagerUnitTests
 				""";
 		using var originalContent = new System.IO.MemoryStream();
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
-		originalContent.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/MyPackage/PackageLock.sml"),
 			new MockFile(originalContent));
