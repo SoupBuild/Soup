@@ -11,7 +11,7 @@ namespace Opal.IO;
 /// </summary>
 public class MockConsoleInput : IConsoleInput
 {
-	private IList<string> _parentRequests;
+	private readonly IList<string> _parentRequests;
 	private string _readPasswordResponse;
 	private string _readLineResponse;
 

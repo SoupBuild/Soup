@@ -1,16 +1,15 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Soup
+namespace Soup;
+
+public static class CollectionExtensions
 {
-	public static class CollectionExtensions
+	public static void AddRange<T>(this IList<T> list, IEnumerable<T> range)
 	{
-		public static void AddRange<T>(this IList<T> list, IEnumerable<T> range)
+		foreach (var value in range)
 		{
-			foreach (var value in range)
-			{
-				list.Add(value);
-			}
+			list.Add(value);
 		}
 	}
 }

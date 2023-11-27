@@ -31,6 +31,8 @@ public class NuspecDependencyGroup : NuspecDependencyBase
 					case "targetFramework":
 						result.TargetFramework = attribute.Value ?? string.Empty;
 						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -45,6 +47,8 @@ public class NuspecDependencyGroup : NuspecDependencyBase
 					case "dependency":
 						var dependency = NuspecDependency.Deserialize(child);
 						result.Dependencies.Add(dependency);
+						break;
+					default:
 						break;
 				}
 			}

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Soup.Build.Utilities;
 
-public record FileId(uint value)
+public record FileId(uint Value)
 {
 	public static FileId Invalid => new FileId(uint.MaxValue);
 }
@@ -23,9 +23,9 @@ public class FileSystemState
 	/// </summary>
 	public FileSystemState()
 	{
-		_maxFileId = new FileId(0);
-		_files = new Dictionary<FileId, Path>();
-		_fileLookup = new Dictionary<string, FileId>();
+		MaxFileId = new FileId(0);
+		_files = [];
+		_fileLookup = [];
 	}
 
 	/// <summary>
@@ -35,9 +35,9 @@ public class FileSystemState
 		FileId maxFileId,
 		Dictionary<FileId, Path> files)
 	{
-		_maxFileId = maxFileId;
+		MaxFileId = maxFileId;
 		_files = files;
-		_fileLookup = new Dictionary<string, FileId>();
+		_fileLookup = [];
 
 		// Build up the reverse lookup for new files
 		foreach (var file in _files)
@@ -54,7 +54,7 @@ public class FileSystemState
 	/// <summary>
 	/// Get the max unique file id
 	/// </summary>
-	public FileId MaxFileId => _maxFileId;
+	public FileId MaxFileId { get; private set; }
 
 	/// <summary>
 	/// Convert a set of file paths to file ids
@@ -88,8 +88,8 @@ public class FileSystemState
 		if (!TryFindFileId(file, out var result))
 		{
 			// Insert the new file
-			_maxFileId = new FileId(_maxFileId.value + 1);
-			result = _maxFileId;
+			MaxFileId = new FileId(MaxFileId.Value + 1);
+			result = MaxFileId;
 
 			_files.Add(result, file);
 			_fileLookup.Add(file.ToString(), result);
@@ -137,10 +137,6 @@ public class FileSystemState
 		return result;
 	}
 
-	// The maximum id that has been used for files
-	// Used to ensure unique ids are generated accross the entire system
-	private FileId _maxFileId;
-
-	private Dictionary<FileId, Path> _files;
-	private Dictionary<string, FileId> _fileLookup;
+	private readonly Dictionary<FileId, Path> _files;
+	private readonly Dictionary<string, FileId> _fileLookup;
 }

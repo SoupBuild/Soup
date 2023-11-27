@@ -33,11 +33,11 @@ internal static class WindowsSDKUtilities
 		{
 			var name = child.Path.GetFileName();
 			Log.Info("CheckFile: " + name);
-			var platformVersion = name.Substring(0, 3);
+			var platformVersion = name[..3];
 			if (platformVersion == "10.")
 			{
 				// Parse the version string
-				var version = SemanticVersion.Parse(name.Substring(3));
+				var version = SemanticVersion.Parse(name[3..]);
 				if (version > currentVersion)
 					currentVersion = version;
 			}

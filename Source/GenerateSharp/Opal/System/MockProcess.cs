@@ -14,14 +14,14 @@ namespace Opal.System;
 public class MockProcess : IProcess
 {
 	// Input
-	private int id;
-	private IList<string> requests;
+	private readonly int id;
+	private readonly IList<string> requests;
 
 	// Result
 	private bool isFinished;
-	private string stdOut;
-	private string stdErr;
-	private int exitCode;
+	private readonly string stdOut;
+	private readonly string stdErr;
+	private readonly int exitCode;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockProcess'/> class.

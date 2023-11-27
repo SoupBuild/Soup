@@ -14,10 +14,10 @@ internal static class OperationGraphWriter
 	// Binary Operation graph file format
 	private static uint FileVersion => 6;
 
-	internal static readonly char[] FIS = new char[] { 'F', 'I', 'S', '\0' };
-	internal static readonly char[] BOG = new char[] { 'B', 'O', 'G', '\0' };
-	internal static readonly char[] ROP = new char[] { 'R', 'O', 'P', '\0' };
-	internal static readonly char[] OPS = new char[] { 'O', 'P', 'S', '\0' };
+	internal static readonly char[] FIS = ['F', 'I', 'S', '\0'];
+	internal static readonly char[] BOG = ['B', 'O', 'G', '\0'];
+	internal static readonly char[] ROP = ['R', 'O', 'P', '\0'];
+	internal static readonly char[] OPS = ['O', 'P', 'S', '\0'];
 
 	public static void Serialize(OperationGraph state, System.IO.BinaryWriter writer)
 	{
@@ -32,7 +32,7 @@ internal static class OperationGraphWriter
 		foreach (var file in files)
 		{
 			// Write the file id + path length + path
-			writer.Write(file.FileId.value);
+			writer.Write(file.FileId.Value);
 			WriteValue(writer, file.Path.ToString());
 		}
 
@@ -52,7 +52,7 @@ internal static class OperationGraphWriter
 	private static void WriteOperationInfo(System.IO.BinaryWriter writer, OperationInfo operation)
 	{
 		// Write out the operation id
-		writer.Write(operation.Id.value);
+		writer.Write(operation.Id.Value);
 
 		// Write out the operation title
 		WriteValue(writer, operation.Title);
@@ -85,12 +85,6 @@ internal static class OperationGraphWriter
 		writer.Write(operation.DependencyCount);
 	}
 
-	private static void WriteValue(System.IO.BinaryWriter writer, bool value)
-	{
-		uint integerValue = value ? 1u : 0u;
-		writer.Write(integerValue);
-	}
-
 	private static void WriteValue(System.IO.BinaryWriter writer, string value)
 	{
 		writer.Write((uint)value.Length);
@@ -111,7 +105,7 @@ internal static class OperationGraphWriter
 		writer.Write((uint)values.Count);
 		foreach (var value in values)
 		{
-			writer.Write(value.value);
+			writer.Write(value.Value);
 		}
 	}
 
@@ -120,7 +114,7 @@ internal static class OperationGraphWriter
 		writer.Write((uint)values.Count);
 		foreach (var value in values)
 		{
-			writer.Write(value.value);
+			writer.Write(value.Value);
 		}
 	}
 }

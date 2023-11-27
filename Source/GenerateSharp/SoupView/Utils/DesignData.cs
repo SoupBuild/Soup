@@ -1,6 +1,6 @@
 ﻿
-using Soup.Build.Utilities;
 using Opal;
+using Soup.Build.Utilities;
 using System.Collections.Generic;
 
 namespace Soup.View.ViewModels;
@@ -18,8 +18,7 @@ public static class DesignData
 	public static TaskGraphViewModel ExampleTaskGraph { get; } =
 		new TaskGraphViewModel()
 		{
-			SelectedTask = new TaskDetailsViewModel(
-				new ValueTable()),
+			SelectedTask = new TaskDetailsViewModel([]),
 		};
 
 	public static OperationGraphViewModel ExampleOperationGraph { get; } =

@@ -24,14 +24,12 @@ public class Recipe
 	private static string Property_Type => "Type";
 	private static string Property_Source => "Source";
 
-	private readonly SMLDocument _document;
-
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Recipe"/> class.
 	/// </summary>
 	public Recipe()
 	{
-		_document = new SMLDocument();
+		Document = new SMLDocument();
 		Name = string.Empty;
 		Language = new LanguageReference();
 	}
@@ -43,7 +41,7 @@ public class Recipe
 		string name,
 		LanguageReference language)
 	{
-		_document = new SMLDocument();
+		Document = new SMLDocument();
 		Name = name;
 		Language = language;
 	}
@@ -53,40 +51,40 @@ public class Recipe
 	/// </summary>
 	public Recipe(SMLDocument document)
 	{
-		_document = document;
+		Document = document;
 
-		if (!HasValue(_document, Property_Name))
+		if (!HasValue(Document, Property_Name))
 			throw new ArgumentException("Missing required property Name");
-		if (!HasValue(_document, Property_Language))
+		if (!HasValue(Document, Property_Language))
 			throw new ArgumentException("Missing required property Language");
 	}
 
 	/// <summary>
 	/// Gets or sets the package name
 	/// </summary>
-	public SMLValue NameValue => GetValue(_document, Property_Name);
+	public SMLValue NameValue => GetValue(Document, Property_Name);
 
 	public string Name
 	{
-		get { return NameValue.AsString().Value; }
-		set { EnsureHasValue(_document, Property_Name, value); }
+		get => NameValue.AsString().Value;
+		set => EnsureHasValue(Document, Property_Name, value);
 	}
 
 	/// <summary>
 	/// Gets or sets the package language
 	/// </summary>
-	public SMLValue LanguageValue => GetValue(_document, Property_Language);
+	public SMLValue LanguageValue => GetValue(Document, Property_Language);
 
 	public LanguageReference Language
 	{
-		get { return LanguageReference.Parse(LanguageValue.AsString().Value); }
-		set { EnsureHasValue(_document, Property_Language, value.ToString()); }
+		get => LanguageReference.Parse(LanguageValue.AsString().Value);
+		set => EnsureHasValue(Document, Property_Language, value.ToString());
 	}
 
 	/// <summary>
 	/// Gets or sets the package version
 	/// </summary>
-	public bool HasVersion => HasValue(_document, Property_Version);
+	public bool HasVersion => HasValue(Document, Property_Version);
 
 	public SemanticVersion Version
 	{
@@ -96,18 +94,15 @@ public class Recipe
 				throw new InvalidOperationException("No version.");
 
 			return SemanticVersion.Parse(
-				GetValue(_document, Property_Version).AsString().Value);
+				GetValue(Document, Property_Version).AsString().Value);
 		}
-		set
-		{
-			EnsureHasValue(_document, Property_Version, value.ToString());
-		}
+		set => EnsureHasValue(Document, Property_Version, value.ToString());
 	}
 
 	/// <summary>
 	/// Gets or sets the package type
 	/// </summary>
-	public bool HasType => HasValue(_document, Property_Type);
+	public bool HasType => HasValue(Document, Property_Type);
 
 	public string Type
 	{
@@ -116,12 +111,9 @@ public class Recipe
 			if (!HasType)
 				throw new InvalidOperationException("No type.");
 
-			return GetValue(_document, Property_Type).AsString().Value;
+			return GetValue(Document, Property_Type).AsString().Value;
 		}
-		set
-		{
-			EnsureHasValue(_document, Property_Type, value);
-		}
+		set => EnsureHasValue(Document, Property_Type, value);
 	}
 
 	/// <summary>
@@ -186,13 +178,13 @@ public class Recipe
 
 	public void AddSource(string value)
 	{
-		var sourceList = EnsureHasList(_document, Property_Source);
+		var sourceList = EnsureHasList(Document, Property_Source);
 		sourceList.AddItemWithSyntax(value, 1);
 	}
 
 	public void AddNamedDependency(string type, string value)
 	{
-		var dependencies = EnsureHasTable(_document, Property_Dependencies);
+		var dependencies = EnsureHasTable(Document, Property_Dependencies);
 		var runtimeDependencies = EnsureHasList(dependencies, type);
 
 		runtimeDependencies.AddItemWithSyntax(value, 2);
@@ -208,42 +200,33 @@ public class Recipe
 	/// </summary>
 	public bool HasRuntimeDependencies => HasNamedDependencies(Property_Runtime);
 
-	public IList<PackageReference> RuntimeDependencies
-	{
-		get { return GetNamedDependencies(Property_Runtime); }
-	}
+	public IList<PackageReference> RuntimeDependencies => GetNamedDependencies(Property_Runtime);
 
 	/// <summary>
 	/// Gets or sets the list of build dependency packages
 	/// </summary>
 	public bool HasBuildDependencies => HasNamedDependencies(Property_Build);
 
-	public IList<PackageReference> BuildDependencies
-	{
-		get { return GetNamedDependencies(Property_Build); }
-	}
+	public IList<PackageReference> BuildDependencies => GetNamedDependencies(Property_Build);
 
 	/// <summary>
 	/// Gets or sets the list of tool dependency packages
 	/// </summary>
 	public bool HasToolDependencies => HasNamedDependencies(Property_Tool);
 
-	public IList<PackageReference> ToolDependencies
-	{
-		get { return GetNamedDependencies(Property_Tool); }
-	}
+	public IList<PackageReference> ToolDependencies => GetNamedDependencies(Property_Tool);
 
 	/// <summary>
 	/// Raw access
 	/// </summary>
-	public SMLDocument Document => _document;
+	public SMLDocument Document { get; }
 
 	/// <summary>
 	/// Gets or sets the table of dependency packages
 	/// </summary>
 	private bool HasDependencies()
 	{
-		return HasValue(_document, Property_Dependencies);
+		return HasValue(Document, Property_Dependencies);
 	}
 
 	private SMLTable GetDependencies()
@@ -251,7 +234,7 @@ public class Recipe
 		if (!HasDependencies())
 			throw new InvalidOperationException("No dependencies.");
 
-		var values = GetValue(_document, Property_Dependencies).AsTable();
+		var values = GetValue(Document, Property_Dependencies).AsTable();
 		return values;
 	}
 

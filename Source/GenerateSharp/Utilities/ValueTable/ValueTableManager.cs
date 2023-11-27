@@ -25,7 +25,7 @@ public static class ValueTableManager
 		if (!LifetimeManager.Get<IFileSystem>().Exists(valueTableFile))
 		{
 			Log.Info("Value Table file does not exist");
-			result = new ValueTable();
+			result = [];
 			return false;
 		}
 
@@ -42,7 +42,7 @@ public static class ValueTableManager
 		catch (InvalidOperationException ex)
 		{
 			Log.Error($"Failed to parse value table: {ex.Message}");
-			result = new ValueTable();
+			result = [];
 			return false;
 		}
 	}

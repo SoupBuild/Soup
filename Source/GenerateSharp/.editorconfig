@@ -22,3 +22,26 @@ dotnet_diagnostic.IDE0290.severity = none
 # IDE0090: Use 'new(...)'
 # Not a fan since it makes it harder to understand the type, use var instead
 dotnet_diagnostic.IDE0090.severity = none
+
+# IDE0042: Deconstruct variable declaration
+# Not required
+dotnet_diagnostic.IDE0042.severity = none
+
+# IDE0045: Convert to conditional expression
+# Not required
+dotnet_diagnostic.IDE0045.severity = none
+
+# Style
+indent_style = tab
+
+dotnet_style_namespace_match_folder = false
+
+csharp_style_namespace_declarations = file_scoped
+csharp_prefer_braces = when_multiline
+
+# No var preferences
+dotnet_diagnostic.IDE0007.severity = none
+dotnet_diagnostic.IDE0008.severity = none
+
+# IDE0046: Convert to conditional expression
+dotnet_diagnostic.IDE0046.severity = none

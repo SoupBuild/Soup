@@ -12,11 +12,11 @@ namespace Soup.Build.Utilities;
 [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "Disagree")]
 public class ValueList : IEnumerable, IEnumerable<Value>
 {
-	private List<Value> _impl;
+	private readonly List<Value> _impl;
 
 	public ValueList()
 	{
-		_impl = new List<Value>();
+		_impl = [];
 	}
 
 	public ValueList(IEnumerable<Value> collection)
@@ -57,14 +57,14 @@ public class ValueList : IEnumerable, IEnumerable<Value>
 	{
 		var builder = new StringBuilder();
 
-		builder.Append("[ ");
+		_ = builder.Append("[ ");
 		foreach (var value in this)
 		{
-			builder.Append(value);
-			builder.Append(", ");
+			_ = builder.Append(value);
+			_ = builder.Append(", ");
 		}
 
-		builder.Append(']');
+		_ = builder.Append(']');
 
 		return builder.ToString();
 	}

@@ -14,7 +14,7 @@ namespace Soup.Build.PackageManager.UnitTests;
 
 public class ShimHttpMessageHandler : HttpMessageHandler
 {
-	private IHttpMessageHandler _handler;
+	private readonly IHttpMessageHandler _handler;
 
 	public ShimHttpMessageHandler(IHttpMessageHandler handler)
 	{

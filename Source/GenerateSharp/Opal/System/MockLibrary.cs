@@ -2,8 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace Opal.System;
 
 /// <summary>
@@ -12,22 +10,18 @@ namespace Opal.System;
 public class MockLibrary : ILibrary
 {
 	// Input
-	private string name;
-	private IList<string> requests;
+	//private readonly string name;
+	//private readonly IList<string> requests;
 
 	// std::map<std::string, void*> _functions;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockLibrary'/> class.
 	/// </summary>
-	/// <param name="name">The name.</param>
-	/// <param name="requests">The requests.</param>
-	public MockLibrary(
-		string name,
-		IList<string> requests)
+	public MockLibrary()
 	{
-		this.name = name;
-		this.requests = requests;
+		//this.name = name;
+		//this.requests = requests;
 	}
 
 	///// <summary>
@@ -45,7 +39,7 @@ public class MockLibrary : ILibrary
 	///// </summary>
 	////void* GetFunction(std::string_view name) override final
 	////{
-	////	std::stringstream message;
+	////	std::stringStream message;
 	////	message << "GetFunction: " << m_name << " [" << name << "]";
 
 	////	m_requests.push_back(message.str());

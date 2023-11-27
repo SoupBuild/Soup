@@ -12,16 +12,13 @@ namespace Opal;
 /// </summary>
 public abstract class TraceListener
 {
-	private string name;
-	private IEventFilter? filter;
-	private bool showEventType;
-	private bool showEventId;
+	private readonly IEventFilter? filter;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='TraceListener'/> class.
 	/// </summary>
 	protected TraceListener()
-		: this(string.Empty, null, true, true)
+		: this(null, true, true)
 	{
 	}
 
@@ -29,20 +26,17 @@ public abstract class TraceListener
 	/// Initializes a new instance of the <see cref='TraceListener'/> class using the specified name as the
 	/// listener.
 	/// </summary>
-	/// <param name="name">The name.</param>
 	/// <param name="filter">The filter.</param>
 	/// <param name="showEventType">A value indicating whether to show the event type.</param>
 	/// <param name="showEventId">A value indicating whether to show the event id.</param>
 	protected TraceListener(
-		string name,
 		IEventFilter? filter,
 		bool showEventType,
 		bool showEventId)
 	{
-		this.name = name;
 		this.filter = filter;
-		this.showEventType = showEventType;
-		this.showEventId = showEventId;
+		this.ShowEventType = showEventType;
+		this.ShowEventId = showEventId;
 	}
 
 	/// <summary>
@@ -56,16 +50,12 @@ public abstract class TraceListener
 	/// <summary>
 	/// Gets or sets a value indicating whether to show or hide the event type.
 	/// </summary>
-	public bool ShowEventType => this.showEventType;
+	public bool ShowEventType { get; }
 
 	/// <summary>
 	/// Gets or sets a value indicating whether to show or hide the event id.
 	/// </summary>
-	public bool ShowEventId
-	{
-		get => this.showEventId;
-		set => this.showEventId = value;
-	}
+	public bool ShowEventId { get; set; }
 
 	/// <summary>
 	/// All other TraceEvent methods come through this one.
@@ -86,7 +76,7 @@ public abstract class TraceListener
 		// Build up the resulting message with required header/footer
 		var builder = new StringBuilder();
 		this.WriteHeader(builder, eventType, id);
-		builder.Append(message);
+		_ = builder.Append(message);
 
 		bool isEmpty = builder.Length == 0;
 		if (isEmpty)
@@ -96,7 +86,7 @@ public abstract class TraceListener
 	}
 
 	/// <summary>
-	/// Implementation dependant write methods.
+	/// Implementation dependent write methods.
 	/// </summary>
 	/// <param name="message">The message.</param>
 	protected abstract void WriteLine(string message);
@@ -140,29 +130,31 @@ public abstract class TraceListener
 			switch (eventType)
 			{
 				case TraceEvents.HighPriority:
-					builder.Append("HIGH");
+					_ = builder.Append("HIGH");
 					break;
 				case TraceEvents.Information:
-					builder.Append("INFO");
+					_ = builder.Append("INFO");
 					break;
 				case TraceEvents.Diagnostic:
-					builder.Append("DIAG");
+					_ = builder.Append("DIAG");
 					break;
 				case TraceEvents.Warning:
-					builder.Append("WARN");
+					_ = builder.Append("WARN");
 					break;
 				case TraceEvents.Error:
-					builder.Append("ERRO");
+					_ = builder.Append("ERRO");
 					break;
 				case TraceEvents.Critical:
-					builder.Append("CRIT");
+					_ = builder.Append("CRIT");
+					break;
+				case TraceEvents.None:
 					break;
 				default:
-					builder.Append("UNKN");
+					_ = builder.Append("UNKN");
 					break;
 			}
 
-			builder.Append(": ");
+			_ = builder.Append(": ");
 		}
 
 		if (this.ShowEventId)

@@ -16,7 +16,7 @@ public class SMLManagerUnitTests
 	public void Deserialize_GarbageThrows()
 	{
 		var recipe = "garbage";
-		Assert.Throws<InvalidOperationException>(() =>
+		_ = Assert.Throws<InvalidOperationException>(() =>
 		{
 			var actual = SMLManager.Deserialize(recipe);
 		});
@@ -248,7 +248,7 @@ public class SMLManagerUnitTests
 			document,
 			stream);
 
-		stream.Seek(0, SeekOrigin.Begin);
+		_ = stream.Seek(0, SeekOrigin.Begin);
 		using var reader = new StreamReader(stream);
 
 		return await reader.ReadToEndAsync();

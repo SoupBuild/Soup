@@ -70,7 +70,7 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 		// Parse the integer values
 		// TODO: Perform my own search to save string creation
 		var stringValues = value.Split('.');
-		if (stringValues.Length < 1 || stringValues.Length > 3)
+		if (stringValues.Length is < 1 or > 3)
 		{
 			return false;
 		}
@@ -178,8 +178,8 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 
 	public static bool operator ==(SemanticVersion? lhs, SemanticVersion? rhs)
 	{
-		if (ReferenceEquals(lhs, null))
-			return ReferenceEquals(rhs, null);
+		if (lhs is null)
+			return rhs is null;
 		return lhs.Equals(rhs);
 	}
 

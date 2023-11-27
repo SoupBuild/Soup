@@ -2,12 +2,12 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Discover;
 
@@ -32,7 +32,7 @@ public static class SwhereManager
 		}
 		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 		{
-			await DiscoverLinuxPlatformAsync(includePrerelease, userConfig);
+			await DiscoverLinuxPlatformAsync(userConfig);
 		}
 
 		// Save the result
@@ -174,7 +174,7 @@ public static class SwhereManager
 		}
 	}
 
-	private static async Task DiscoverLinuxPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
+	private static async Task DiscoverLinuxPlatformAsync(LocalUserConfig userConfig)
 	{
 		await DiscoverGCCAsync(userConfig);
 		await DiscoverClangAsync(userConfig);

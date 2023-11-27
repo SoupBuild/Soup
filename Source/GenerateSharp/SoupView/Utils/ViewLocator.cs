@@ -10,17 +10,13 @@ public class ViewLocator : IDataTemplate
 {
 	public Control Build(object? param)
 	{
-		switch (param)
+		return param switch
 		{
-			case DependencyGraphViewModel:
-				return new DependencyGraphView();
-			case OperationGraphViewModel:
-				return new OperationGraphView();
-			case TaskGraphViewModel:
-				return new TaskGraphView();
-			default:
-				throw new InvalidOperationException("Failed to get the view type");
-		}
+			DependencyGraphViewModel => new DependencyGraphView(),
+			OperationGraphViewModel => new OperationGraphView(),
+			TaskGraphViewModel => new TaskGraphView(),
+			_ => throw new InvalidOperationException("Failed to get the view type"),
+		};
 	}
 
 	public bool Match(object? data)

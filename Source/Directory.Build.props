@@ -18,8 +18,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AnalysisLevel>latest-all</AnalysisLevel>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AnalysisLevel>8.0</AnalysisLevel>
+    <AnalysisLevelStyle>8.0-all</AnalysisLevelStyle>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 

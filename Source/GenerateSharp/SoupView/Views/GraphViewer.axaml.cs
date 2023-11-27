@@ -2,8 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -11,6 +9,8 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Soup.View.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Soup.View.Views;
 
@@ -19,14 +19,13 @@ public sealed class GraphViewer : TemplatedControl
 	public static int NodeWidth => 200;
 	public static int NodeHeight => 50;
 
-	private static int NodeSpacingHorizontal => 80;
 	private static int NodeSpacingVertical => 50;
 
 	private static int InternalPadding => 20;
 
 	private ScrollViewer? scroller;
 	private Canvas? root;
-	private readonly Dictionary<uint, GraphViewerItem> itemLookup = new Dictionary<uint, GraphViewerItem>();
+	private readonly Dictionary<uint, GraphViewerItem> itemLookup = [];
 
 	/// <summary>
 	/// Identifies the <see cref="Graph"/> property.
@@ -88,6 +87,8 @@ public sealed class GraphViewer : TemplatedControl
 				}
 
 				break;
+			default:
+				break;
 		}
 	}
 
@@ -139,8 +140,8 @@ public sealed class GraphViewer : TemplatedControl
 				ToolTip = node.ToolTip,
 				Width = NodeWidth,
 				Height = NodeHeight,
+				DataContext = node
 			};
-			nodeItem.DataContext = node;
 			nodeItem.Click += Node_Click;
 
 			var normalizedPosition = node.Position - minPosition;
@@ -166,8 +167,8 @@ public sealed class GraphViewer : TemplatedControl
 			var startNode = nodeState[node.Id];
 			foreach (var child in node.ChildNodes)
 			{
-				var endNode = nodeState[child];
-				var path = ConnectNodes(startNode.OutConnect, endNode.InConnect);
+				var (item, inConnect, outConnect) = nodeState[child];
+				var path = ConnectNodes(startNode.OutConnect, inConnect);
 				root.Children.Add(path);
 			}
 		}
@@ -217,23 +218,23 @@ public sealed class GraphViewer : TemplatedControl
 		{
 			Data = new PathGeometry()
 			{
-				Figures = new PathFigures()
-					{
+				Figures =
+					[
 						new PathFigure()
 						{
 							IsClosed = false,
 							StartPoint = start,
-							Segments = new PathSegments()
-							{
+							Segments =
+							[
 								new BezierSegment()
 								{
 									Point1 = control1,
 									Point2 = control2,
 									Point3 = end,
 								}
-							},
+							],
 						},
-					},
+					],
 			},
 		};
 

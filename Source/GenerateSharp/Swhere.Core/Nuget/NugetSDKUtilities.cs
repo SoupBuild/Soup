@@ -36,10 +36,7 @@ public static class NugetSDKUtilities
 						nugetPackageVersionDirectory.Path);
 					if (currentPackage is not null && packageVersion is not null)
 					{
-						if (package is null)
-						{
-							package = currentPackage;
-						}
+						package ??= currentPackage;
 
 						// TODO: Check that they are compatible?
 						package.Versions.Add(packageVersion);
@@ -134,7 +131,7 @@ public static class NugetSDKUtilities
 
 	private static string? GetTFM(string targetFramework)
 	{
-		var targetFrameworkMoniker = default(string);
+		string? targetFrameworkMoniker;
 		if (targetFramework.StartsWith("net", StringComparison.InvariantCulture))
 		{
 			targetFrameworkMoniker = targetFramework;

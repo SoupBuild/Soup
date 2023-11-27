@@ -12,7 +12,7 @@ namespace Opal;
 /// </summary>
 public static class LifetimeManager
 {
-	private static Dictionary<Type, object> singletons = new Dictionary<Type, object>();
+	private static readonly Dictionary<Type, object> singletons = [];
 
 	/// <summary>
 	/// Register a Singleton with a specified type.
@@ -44,7 +44,7 @@ public static class LifetimeManager
 	public static void ClearSingleton<TInterface>()
 		where TInterface : notnull
 	{
-		singletons.Remove(typeof(TInterface));
+		_ = singletons.Remove(typeof(TInterface));
 	}
 
 	/// <summary>

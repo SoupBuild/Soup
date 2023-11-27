@@ -20,8 +20,8 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class SearchClient
 {
-	private HttpClient _httpClient;
-	private string _bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string _bearerToken;
 
 	public SearchClient(HttpClient httpClient, string bearerToken)
 	{
@@ -57,10 +57,10 @@ public class SearchClient
 		string q, int? skip, int? take, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/search/packages?");
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/search/packages?");
 		if (q is not null)
 		{
-			urlBuilder_
+			_ = urlBuilder_
 				.Append(Uri.EscapeDataString("q") + "=")
 				.Append(Uri.EscapeDataString(q))
 				.Append('&');
@@ -68,7 +68,7 @@ public class SearchClient
 
 		if (skip is not null)
 		{
-			urlBuilder_
+			_ = urlBuilder_
 				.Append(Uri.EscapeDataString("skip") + "=")
 				.Append(Uri.EscapeDataString($"{skip}"))
 				.Append('&');
@@ -76,7 +76,7 @@ public class SearchClient
 
 		if (take is not null)
 		{
-			urlBuilder_
+			_ = urlBuilder_
 				.Append(Uri.EscapeDataString("take") + "=")
 				.Append(Uri.EscapeDataString($"{take}"))
 				.Append('&');
@@ -88,43 +88,41 @@ public class SearchClient
 		var disposeClient_ = false;
 		try
 		{
-			using (var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false))
+			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
+			request_.Method = new HttpMethod("GET");
+			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+			var url_ = urlBuilder_.ToString();
+			request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
+
+			var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+			var disposeResponse_ = true;
+			try
 			{
-				request_.Method = new HttpMethod("GET");
-				request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-				var url_ = urlBuilder_.ToString();
-				request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-				var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-				var disposeResponse_ = true;
-				try
+				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+				if (response_.Content != null && response_.Content.Headers != null)
 				{
-					var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-					if (response_.Content != null && response_.Content.Headers != null)
-					{
-						foreach (var item_ in response_.Content.Headers)
-							headers_[item_.Key] = item_.Value;
-					}
+					foreach (var item_ in response_.Content.Headers)
+						headers_[item_.Key] = item_.Value;
+				}
 
-					var status_ = (int)response_.StatusCode;
-					if (status_ == 200)
-					{
-						var objectResponse = await ReadObjectResponseAsync<SearchPackagesModel>(
-							response_, headers_, SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
-						return objectResponse;
-					}
-					else
-					{
-						throw new ApiException(
-							"The HTTP status code of the response was not expected.", status_, headers_, null);
-					}
-				}
-				finally
+				var status_ = (int)response_.StatusCode;
+				if (status_ == 200)
 				{
-					if (disposeResponse_)
-						response_.Dispose();
+					var objectResponse = await ReadObjectResponseAsync<SearchPackagesModel>(
+						response_, headers_, SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
+					return objectResponse;
 				}
+				else
+				{
+					throw new ApiException(
+						"The HTTP status code of the response was not expected.", status_, headers_, null);
+				}
+			}
+			finally
+			{
+				if (disposeResponse_)
+					response_.Dispose();
 			}
 		}
 		finally
@@ -164,8 +162,7 @@ public class SearchClient
 	/// <summary>
 	/// Called by implementing swagger client classes.
 	/// </summary>
-	/// <param name="cancellationToken">The cancellation token.</param>
-	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)
+	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
 		if (!string.IsNullOrEmpty(_bearerToken))

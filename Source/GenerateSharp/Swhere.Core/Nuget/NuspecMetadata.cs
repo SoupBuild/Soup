@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup;
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -79,6 +78,8 @@ public class NuspecMetadata
 					case "dependencies":
 						dependencies = DeserializeDependencies(child);
 						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -109,6 +110,8 @@ public class NuspecMetadata
 					case "group":
 						var group = NuspecDependencyGroup.Deserialize(child);
 						result.Add(group);
+						break;
+					default:
 						break;
 				}
 			}

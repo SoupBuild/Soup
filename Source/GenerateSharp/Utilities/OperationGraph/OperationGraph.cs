@@ -4,7 +4,6 @@
 
 using Opal;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Soup.Build.Utilities;
 
@@ -14,20 +13,18 @@ namespace Soup.Build.Utilities;
 /// </summary>
 public class OperationGraph
 {
-	private IList<(FileId FileId, Path Path)> _referencedFiles;
-	private IList<OperationId> _rootOperations;
-	private Dictionary<OperationId, OperationInfo> _operations;
-	private Dictionary<CommandInfo, OperationId> _operationLookup;
+	private readonly Dictionary<OperationId, OperationInfo> _operations;
+	private readonly Dictionary<CommandInfo, OperationId> _operationLookup;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 	/// </summary>
 	public OperationGraph()
 	{
-		_referencedFiles = new List<(FileId FileId, Path Path)>();
-		_rootOperations = new List<OperationId>();
-		_operations = new Dictionary<OperationId, OperationInfo>();
-		_operationLookup = new Dictionary<CommandInfo, OperationId>();
+		ReferencedFiles = new List<(FileId FileId, Path Path)>();
+		RootOperationIds = new List<OperationId>();
+		_operations = [];
+		_operationLookup = [];
 	}
 
 	/// <summary>
@@ -38,10 +35,10 @@ public class OperationGraph
 		IList<OperationId> rootOperations,
 		IList<OperationInfo> operations)
 	{
-		_referencedFiles = referencedFiles;
-		_rootOperations = rootOperations;
-		_operations = new Dictionary<OperationId, OperationInfo>();
-		_operationLookup = new Dictionary<CommandInfo, OperationId>();
+		ReferencedFiles = referencedFiles;
+		RootOperationIds = rootOperations;
+		_operations = [];
+		_operationLookup = [];
 
 		// Store the incoming vector of operations as a lookup for fast checks
 		foreach (var info in operations)
@@ -53,20 +50,12 @@ public class OperationGraph
 	/// <summary>
 	/// Get the set of referenced file ids that map to their paths
 	/// </summary>
-	public IList<(FileId FileId, Path Path)> ReferencedFiles
-	{
-		get { return _referencedFiles; }
-		init { _referencedFiles = value; }
-	}
+	public IList<(FileId FileId, Path Path)> ReferencedFiles { get; init; }
 
 	/// <summary>
 	/// Get the list of root operation ids
 	/// </summary>
-	public IList<OperationId> RootOperationIds
-	{
-		get { return _rootOperations; }
-		init { _rootOperations = value; }
-	}
+	public IList<OperationId> RootOperationIds { get; init; }
 
 	/// <summary>
 	/// Get Operations

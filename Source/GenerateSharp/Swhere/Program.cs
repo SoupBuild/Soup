@@ -2,10 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.Threading.Tasks;
 using Opal;
 using Opal.System;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Discover;
 
@@ -21,7 +20,7 @@ public static class Program
 				TraceEvents.Critical |
 				TraceEvents.Warning |
 				TraceEvents.Error;
-			Log.RegisterListener(new ConsoleTraceListener("", new EventTypeFilter(traceFlags), false, false));
+			Log.RegisterListener(new ConsoleTraceListener(new EventTypeFilter(traceFlags), false, false));
 			LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
 
 			LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();

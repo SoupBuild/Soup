@@ -14,9 +14,9 @@ namespace Opal.System;
 public class RuntimeProcess : IProcess
 {
 	// Input
-	private Path executable;
-	private string arguments;
-	private Path workingDirectory;
+	private readonly Path executable;
+	private readonly string arguments;
+	private readonly Path workingDirectory;
 
 	// Runtime
 	private Process? process;

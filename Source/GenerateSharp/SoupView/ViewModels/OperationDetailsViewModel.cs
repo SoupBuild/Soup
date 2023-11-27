@@ -13,7 +13,7 @@ namespace Soup.View.ViewModels;
 
 public class OperationDetailsViewModel : ViewModelBase
 {
-	private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
+	private readonly ObservableCollection<PropertyValueViewModel> properties = [];
 
 	public OperationDetailsViewModel(
 		FileSystemState fileSystemState,

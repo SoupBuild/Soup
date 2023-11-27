@@ -26,8 +26,8 @@ public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 
 	public Value this[string key]
 	{
-		get { return this._impl[key]; }
-		set { this._impl[key] = value; }
+		get => this._impl[key];
+		set => this._impl[key] = value;
 	}
 
 	public IEnumerable<string> Keys => this._impl.Keys;
