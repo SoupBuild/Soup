@@ -14,14 +14,12 @@ public class LocalUserConfig
 {
 	public static string Property_SDKs => "SDKs";
 
-	private SMLDocument _table;
-
 	/// <summary>
 	/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
 	/// </summary>
 	public LocalUserConfig()
 	{
-		_table = new SMLDocument();
+		Document = new SMLDocument();
 	}
 
 	/// <summary>
@@ -29,7 +27,7 @@ public class LocalUserConfig
 	/// </summary>
 	public LocalUserConfig(SMLDocument table)
 	{
-		_table = table;
+		Document = table;
 	}
 
 	/// <summary>
@@ -37,12 +35,12 @@ public class LocalUserConfig
 	/// </summary>
 	public bool HasSDKs()
 	{
-		return _table.Values.ContainsKey(Property_SDKs);
+		return Document.Values.ContainsKey(Property_SDKs);
 	}
 
 	public IList<SDKConfig> GetSDKs()
 	{
-		if (_table.Values.TryGetValue(Property_SDKs, out var sdksValue))
+		if (Document.Values.TryGetValue(Property_SDKs, out var sdksValue))
 		{
 			var values = sdksValue.Value.AsArray();
 			var result = new List<SDKConfig>();
@@ -63,7 +61,7 @@ public class LocalUserConfig
 	{
 		// Check the existing entries
 		SMLArray? values;
-		if (_table.Values.TryGetValue(Property_SDKs, out var sdksValue))
+		if (Document.Values.TryGetValue(Property_SDKs, out var sdksValue))
 		{
 			values = sdksValue.Value.AsArray();
 			foreach (var value in values.Values)
@@ -75,7 +73,7 @@ public class LocalUserConfig
 		}
 		else
 		{
-			values = _table.AddArrayWithSyntax(Property_SDKs);
+			values = Document.AddArrayWithSyntax(Property_SDKs);
 		}
 
 		// No matching SDK as a table array entry
@@ -90,5 +88,5 @@ public class LocalUserConfig
 	/// <summary>
 	/// Raw access
 	/// </summary>
-	public SMLDocument Document => _table;
+	public SMLDocument Document { get; }
 }

@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 
-using PackageChildrenMap = IDictionary<string, IList<PackageChildInfo>>;
-using PackageGraphId = Int32;
-using PackageGraphLookupMap = IDictionary<int, PackageGraph>;
-using PackageId = Int32;
-using PackageLookupMap = IDictionary<int, PackageInfo>;
+using PackageChildrenMap = System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<Soup.View.PackageChildInfo>>;
+using PackageGraphId = System.Int32;
+using PackageGraphLookupMap = System.Collections.Generic.IDictionary<int, Soup.View.PackageGraph>;
+using PackageId = System.Int32;
+using PackageLookupMap = System.Collections.Generic.IDictionary<int, Soup.View.PackageInfo>;
 
 namespace Soup.View;
 

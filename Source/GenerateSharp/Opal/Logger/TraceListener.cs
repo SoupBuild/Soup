@@ -14,8 +14,6 @@ public abstract class TraceListener
 {
 	private readonly string name;
 	private readonly IEventFilter? filter;
-	private readonly bool showEventType;
-	private bool showEventId;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='TraceListener'/> class.
@@ -41,8 +39,8 @@ public abstract class TraceListener
 	{
 		this.name = name;
 		this.filter = filter;
-		this.showEventType = showEventType;
-		this.showEventId = showEventId;
+		this.ShowEventType = showEventType;
+		this.ShowEventId = showEventId;
 	}
 
 	/// <summary>
@@ -56,16 +54,12 @@ public abstract class TraceListener
 	/// <summary>
 	/// Gets or sets a value indicating whether to show or hide the event type.
 	/// </summary>
-	public bool ShowEventType => this.showEventType;
+	public bool ShowEventType { get; }
 
 	/// <summary>
 	/// Gets or sets a value indicating whether to show or hide the event id.
 	/// </summary>
-	public bool ShowEventId
-	{
-		get => this.showEventId;
-		set => this.showEventId = value;
-	}
+	public bool ShowEventId { get; set; }
 
 	/// <summary>
 	/// All other TraceEvent methods come through this one.

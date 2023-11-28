@@ -61,7 +61,10 @@ public class SMLTable : IEquatable<SMLTable>
 		CloseBrace = closeBrace;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLTable);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLTable);
+	}
 
 	public bool Equals(SMLTable? other)
 	{

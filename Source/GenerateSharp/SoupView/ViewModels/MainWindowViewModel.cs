@@ -94,25 +94,13 @@ public class MainWindowViewModel : ViewModelBase
 		}
 	}
 
-	public string SelectedPackageName
-	{
-		get => this.dependencyGraph.SelectedProject?.Name ?? "[Package]";
-	}
+	public string SelectedPackageName => this.dependencyGraph.SelectedProject?.Name ?? "[Package]";
 
-	public bool IsRootSelected
-	{
-		get => ReferenceEquals(content, dependencyGraph);
-	}
+	public bool IsRootSelected => ReferenceEquals(content, dependencyGraph);
 
-	public bool IsTasksSelected
-	{
-		get => ReferenceEquals(content, taskGraph);
-	}
+	public bool IsTasksSelected => ReferenceEquals(content, taskGraph);
 
-	public bool IsOperationsSelected
-	{
-		get => ReferenceEquals(content, operationGraph);
-	}
+	public bool IsOperationsSelected => ReferenceEquals(content, operationGraph);
 
 	private async Task OnOpenAsync()
 	{

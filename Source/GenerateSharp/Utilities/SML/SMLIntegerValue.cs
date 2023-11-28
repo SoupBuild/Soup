@@ -33,7 +33,10 @@ public class SMLIntegerValue : IEquatable<SMLIntegerValue>
 		Content = content;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLIntegerValue);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLIntegerValue);
+	}
 
 	public bool Equals(SMLIntegerValue? other)
 	{
@@ -48,7 +51,10 @@ public class SMLIntegerValue : IEquatable<SMLIntegerValue>
 		return this.Value == other.Value;
 	}
 
-	public override int GetHashCode() => (Value).GetHashCode();
+	public override int GetHashCode()
+	{
+		return Value.GetHashCode();
+	}
 
 	public static bool operator ==(SMLIntegerValue? lhs, SMLIntegerValue? rhs)
 	{
@@ -63,5 +69,8 @@ public class SMLIntegerValue : IEquatable<SMLIntegerValue>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLIntegerValue? lhs, SMLIntegerValue? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLIntegerValue? lhs, SMLIntegerValue? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

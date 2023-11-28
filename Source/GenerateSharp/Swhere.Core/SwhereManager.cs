@@ -174,7 +174,7 @@ public static class SwhereManager
 		}
 	}
 
-	private static async Task DiscoverLinuxPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
+	private static async Task DiscoverLinuxPlatformAsync(LocalUserConfig userConfig)
 	{
 		await DiscoverGCCAsync(userConfig);
 		await DiscoverClangAsync(userConfig);

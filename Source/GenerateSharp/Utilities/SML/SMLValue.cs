@@ -127,7 +127,10 @@ public class SMLValue : IEquatable<SMLValue>
 			throw new InvalidOperationException("Underlying type was incorrect: Float");
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLValue);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLValue);
+	}
 
 	public bool Equals(SMLValue? other)
 	{
@@ -142,28 +145,23 @@ public class SMLValue : IEquatable<SMLValue>
 		if (this.Type != other.Type)
 			return false;
 
-		switch (this.Type)
+		return this.Type switch
 		{
-			case SMLValueType.Empty:
-				return true;
-			case SMLValueType.Boolean:
-				return this.AsBoolean() == other.AsBoolean();
-			case SMLValueType.Integer:
-				return this.AsInteger() == other.AsInteger();
-			case SMLValueType.Float:
-				return this.AsFloat() == other.AsFloat();
-			case SMLValueType.String:
-				return this.AsString() == other.AsString();
-			case SMLValueType.Table:
-				return this.AsTable() == other.AsTable();
-			case SMLValueType.Array:
-				return this.AsArray() == other.AsArray();
-			default:
-				return false;
-		}
+			SMLValueType.Empty => true,
+			SMLValueType.Boolean => this.AsBoolean() == other.AsBoolean(),
+			SMLValueType.Integer => this.AsInteger() == other.AsInteger(),
+			SMLValueType.Float => this.AsFloat() == other.AsFloat(),
+			SMLValueType.String => this.AsString() == other.AsString(),
+			SMLValueType.Table => this.AsTable() == other.AsTable(),
+			SMLValueType.Array => this.AsArray() == other.AsArray(),
+			_ => false,
+		};
 	}
 
-	public override int GetHashCode() => (Type, RawValue).GetHashCode();
+	public override int GetHashCode()
+	{
+		return (Type, RawValue).GetHashCode();
+	}
 
 	public static bool operator ==(SMLValue? lhs, SMLValue? rhs)
 	{
@@ -178,5 +176,8 @@ public class SMLValue : IEquatable<SMLValue>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLValue? lhs, SMLValue? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLValue? lhs, SMLValue? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

@@ -77,24 +77,12 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	/// <summary>
 	/// Gets or sets the Name.
 	/// </summary>
-	public string Name
-	{
-		get
-		{
-			return _name;
-		}
-	}
+	public string Name => _name;
 
 	/// <summary>
 	/// Gets or sets the Version.
 	/// </summary>
-	public SemanticVersion Version
-	{
-		get
-		{
-			return _version;
-		}
-	}
+	public SemanticVersion Version => _version;
 
 	/// <summary>
 	/// Equality operator

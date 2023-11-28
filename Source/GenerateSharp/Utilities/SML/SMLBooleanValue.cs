@@ -32,7 +32,10 @@ public class SMLBooleanValue : IEquatable<SMLBooleanValue>
 		Content = content;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLBooleanValue);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLBooleanValue);
+	}
 
 	public bool Equals(SMLBooleanValue? other)
 	{
@@ -47,7 +50,10 @@ public class SMLBooleanValue : IEquatable<SMLBooleanValue>
 		return this.Value == other.Value;
 	}
 
-	public override int GetHashCode() => (Value).GetHashCode();
+	public override int GetHashCode()
+	{
+		return Value.GetHashCode();
+	}
 
 	public static bool operator ==(SMLBooleanValue? lhs, SMLBooleanValue? rhs)
 	{
@@ -62,5 +68,8 @@ public class SMLBooleanValue : IEquatable<SMLBooleanValue>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLBooleanValue? lhs, SMLBooleanValue? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLBooleanValue? lhs, SMLBooleanValue? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

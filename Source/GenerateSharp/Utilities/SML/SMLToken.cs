@@ -48,7 +48,10 @@ public class SMLToken : IEquatable<SMLToken>
 	}
 
 	// Only use the text to allow for mapping to same bins
-	public override int GetHashCode() => (Text).GetHashCode(StringComparison.Ordinal);
+	public override int GetHashCode()
+	{
+		return Text.GetHashCode(StringComparison.Ordinal);
+	}
 
 	public static bool operator ==(SMLToken? lhs, SMLToken? rhs)
 	{
@@ -63,5 +66,8 @@ public class SMLToken : IEquatable<SMLToken>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLToken? lhs, SMLToken? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLToken? lhs, SMLToken? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

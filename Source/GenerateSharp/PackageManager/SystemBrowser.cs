@@ -29,14 +29,7 @@ public class SystemBrowser : IBrowser
 	{
 		_path = path;
 
-		if (!port.HasValue)
-		{
-			Port = GetRandomUnusedPort();
-		}
-		else
-		{
-			Port = port.Value;
-		}
+		Port = !port.HasValue ? GetRandomUnusedPort() : port.Value;
 	}
 
 	private static int GetRandomUnusedPort()
@@ -114,21 +107,20 @@ public class LoopbackHttpListener : IDisposable
 	[SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Disposed in async task")]
 	private readonly IWebHost _host;
 	private TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
-	private Uri _url;
 
-	public Uri Url => _url;
+	public Uri Url { get; }
 
 	public LoopbackHttpListener(int port, string? path = null)
 	{
-		path = path ?? string.Empty;
+		path ??= string.Empty;
 		if (path.StartsWith('/'))
-			path = path.Substring(1);
+			path = path[1..];
 
-		_url = new Uri($"http://127.0.0.1:{port}/{path}");
+		Url = new Uri($"http://127.0.0.1:{port}/{path}");
 
 		_host = new WebHostBuilder()
 			.UseKestrel()
-			.UseUrls(_url.ToString())
+			.UseUrls(Url.ToString())
 			.Configure(Configure)
 			.Build();
 		_host.Start();
@@ -161,11 +153,9 @@ public class LoopbackHttpListener : IDisposable
 				}
 				else
 				{
-					using (var sr = new StreamReader(ctx.Request.Body, Encoding.UTF8))
-					{
-						var body = await sr.ReadToEndAsync();
-						await SetResultAsync(body, ctx);
-					}
+					using var sr = new StreamReader(ctx.Request.Body, Encoding.UTF8);
+					var body = await sr.ReadToEndAsync();
+					await SetResultAsync(body, ctx);
 				}
 			}
 			else

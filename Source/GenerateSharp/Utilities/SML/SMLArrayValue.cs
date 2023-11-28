@@ -26,7 +26,10 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 		Delimiter = delimiter;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLArrayValue);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLArrayValue);
+	}
 
 	public bool Equals(SMLArrayValue? other)
 	{
@@ -41,7 +44,10 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 		return this.Value == other.Value;
 	}
 
-	public override int GetHashCode() => (Value).GetHashCode();
+	public override int GetHashCode()
+	{
+		return Value.GetHashCode();
+	}
 
 	public static bool operator ==(SMLArrayValue? lhs, SMLArrayValue? rhs)
 	{
@@ -56,5 +62,8 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLArrayValue? lhs, SMLArrayValue? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLArrayValue? lhs, SMLArrayValue? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

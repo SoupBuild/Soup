@@ -171,7 +171,7 @@ public class PackagesClient
 
 
 				var status_ = (int)response_.StatusCode;
-				if (status_ == 200 || status_ == 201)
+				if (status_ is 200 or 201)
 				{
 					var objectResponse = await ReadObjectResponseAsync<PackageModel>(
 						response_, headers_, SourceGenerationContext.Default.PackageModel, cancellationToken).ConfigureAwait(false);
@@ -225,8 +225,7 @@ public class PackagesClient
 	/// <summary>
 	/// Called by implementing swagger client classes.
 	/// </summary>
-	/// <param name="cancellationToken">The cancellation token.</param>
-	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)
+	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
 		if (!string.IsNullOrEmpty(_bearerToken))

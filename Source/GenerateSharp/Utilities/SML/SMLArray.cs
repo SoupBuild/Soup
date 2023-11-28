@@ -60,7 +60,10 @@ public class SMLArray : IEquatable<SMLArray>
 		CloseBracket = closeBracket;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLArray);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLArray);
+	}
 
 	public bool Equals(SMLArray? other)
 	{
@@ -75,7 +78,10 @@ public class SMLArray : IEquatable<SMLArray>
 		return Enumerable.SequenceEqual(this.Values, other.Values);
 	}
 
-	public override int GetHashCode() => (Values).GetHashCode();
+	public override int GetHashCode()
+	{
+		return Values.GetHashCode();
+	}
 
 	public static bool operator ==(SMLArray? lhs, SMLArray? rhs)
 	{
@@ -90,5 +96,8 @@ public class SMLArray : IEquatable<SMLArray>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLArray? lhs, SMLArray? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLArray? lhs, SMLArray? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

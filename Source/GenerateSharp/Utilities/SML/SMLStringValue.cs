@@ -44,7 +44,10 @@ public class SMLStringValue : IEquatable<SMLStringValue>
 		CloseQuote = closeQuote;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLStringValue);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLStringValue);
+	}
 
 	public bool Equals(SMLStringValue? other)
 	{
@@ -59,7 +62,10 @@ public class SMLStringValue : IEquatable<SMLStringValue>
 		return this.Value == other.Value;
 	}
 
-	public override int GetHashCode() => (Value).GetHashCode(StringComparison.InvariantCulture);
+	public override int GetHashCode()
+	{
+		return Value.GetHashCode(StringComparison.InvariantCulture);
+	}
 
 	public static bool operator ==(SMLStringValue? lhs, SMLStringValue? rhs)
 	{
@@ -74,5 +80,8 @@ public class SMLStringValue : IEquatable<SMLStringValue>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLStringValue? lhs, SMLStringValue? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLStringValue? lhs, SMLStringValue? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

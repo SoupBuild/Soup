@@ -19,13 +19,7 @@ public class ValueTableItemViewModel : ViewModelBase
 	public string Title { get; set; }
 
 	public ValueTableItemType Type { get; set; }
-
-	private ObservableCollection<ValueTableItemViewModel> m_children = new ObservableCollection<ValueTableItemViewModel>();
-	public ObservableCollection<ValueTableItemViewModel> Children
-	{
-		get => m_children;
-		init => m_children = value;
-	}
+	public ObservableCollection<ValueTableItemViewModel> Children { get; init; } = [];
 
 	private bool m_isExpanded;
 	public bool IsExpanded
