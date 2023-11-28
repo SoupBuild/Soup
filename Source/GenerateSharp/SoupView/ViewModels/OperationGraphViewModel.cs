@@ -17,13 +17,13 @@ namespace Soup.View.ViewModels;
 
 public class OperationGraphViewModel : ViewModelBase
 {
-	private FileSystemState fileSystemState = new FileSystemState();
+	private readonly FileSystemState fileSystemState = new FileSystemState();
 	private GraphNodeViewModel? selectedNode;
 	private OperationDetailsViewModel? selectedOperation;
 	private string errorBarMessage = string.Empty;
 	private bool isErrorBarOpen;
 	private IList<GraphNodeViewModel>? graph;
-	private Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = new Dictionary<uint, OperationDetailsViewModel>();
+	private readonly Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = [];
 
 	public string ErrorBarMessage
 	{
@@ -44,14 +44,7 @@ public class OperationGraphViewModel : ViewModelBase
 		{
 			if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
 			{
-				if (selectedNode != null)
-				{
-					SelectedOperation = this.operationDetailsLookup[selectedNode.Id];
-				}
-				else
-				{
-					SelectedOperation = null;
-				}
+				SelectedOperation = selectedNode is not null ? this.operationDetailsLookup[selectedNode.Id] : null;
 			}
 		}
 	}
@@ -154,8 +147,8 @@ public class OperationGraphViewModel : ViewModelBase
 			{
 				Title = operation.Title,
 				ToolTip = toolTop,
-				Id = operation.Id.value,
-				ChildNodes = operation.Children.Select(value => value.value).ToList(),
+				Id = operation.Id.Value,
+				ChildNodes = operation.Children.Select(value => value.Value).ToList(),
 				Position = position,
 			};
 
@@ -172,7 +165,7 @@ public class OperationGraphViewModel : ViewModelBase
 			}
 
 			this.operationDetailsLookup.Add(
-				operation.Id.value,
+				operation.Id.Value,
 				new OperationDetailsViewModel(fileSystemState, operation, operationResult));
 		}
 
@@ -191,7 +184,7 @@ public class OperationGraphViewModel : ViewModelBase
 			StartInfo = processInfo,
 		};
 
-		process.Start();
+		_ = process.Start();
 
 		await process.WaitForExitAsync();
 

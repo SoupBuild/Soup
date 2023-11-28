@@ -21,8 +21,8 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class PackagesClient
 {
-	private HttpClient _httpClient;
-	private string? _bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string? _bearerToken;
 
 	public PackagesClient(HttpClient httpClient, string? bearerToken)
 	{
@@ -55,15 +55,15 @@ public class PackagesClient
 	public virtual async Task<PackageModel> GetPackageAsync(string languageName, string packageName, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
-		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
+		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+		_ = urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;
 		try
 		{
-			using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 			request_.Method = new HttpMethod("GET");
 			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -132,20 +132,20 @@ public class PackagesClient
 		string languageName, string packageName, PackageCreateOrUpdateModel model, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
-		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
+		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+		_ = urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;
 		try
 		{
-			using var request = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 			using var jsonContent = new MemoryStream();
 
 			await JsonSerializer.SerializeAsync(
 				jsonContent, model, SourceGenerationContext.Default.PackageCreateOrUpdateModel, cancellationToken);
-			jsonContent.Seek(0, SeekOrigin.Begin);
+			_ = jsonContent.Seek(0, SeekOrigin.Begin);
 
 			using var content = new StreamContent(jsonContent);
 			content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");

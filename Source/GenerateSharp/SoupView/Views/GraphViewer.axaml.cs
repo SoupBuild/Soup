@@ -25,7 +25,7 @@ public sealed class GraphViewer : TemplatedControl
 
 	private ScrollViewer? scroller;
 	private Canvas? root;
-	private readonly Dictionary<uint, GraphViewerItem> itemLookup = new Dictionary<uint, GraphViewerItem>();
+	private readonly Dictionary<uint, GraphViewerItem> itemLookup = [];
 
 	/// <summary>
 	/// Identifies the <see cref="Graph"/> property.
@@ -87,6 +87,8 @@ public sealed class GraphViewer : TemplatedControl
 				}
 
 				break;
+			default:
+				break;
 		}
 	}
 
@@ -138,8 +140,8 @@ public sealed class GraphViewer : TemplatedControl
 				ToolTip = node.ToolTip,
 				Width = NodeWidth,
 				Height = NodeHeight,
+				DataContext = node
 			};
-			nodeItem.DataContext = node;
 			nodeItem.Click += Node_Click;
 
 			var normalizedPosition = node.Position - minPosition;
@@ -216,8 +218,8 @@ public sealed class GraphViewer : TemplatedControl
 		{
 			Data = new PathGeometry()
 			{
-				Figures = new PathFigures()
-					{
+				Figures =
+					[
 						new PathFigure()
 						{
 							IsClosed = false,
@@ -232,7 +234,7 @@ public sealed class GraphViewer : TemplatedControl
 								}
 							],
 						},
-					},
+					],
 			},
 		};
 

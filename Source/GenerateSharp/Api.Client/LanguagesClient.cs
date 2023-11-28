@@ -20,8 +20,8 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class LanguagesClient
 {
-	private HttpClient _httpClient;
-	private string _bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string _bearerToken;
 
 	public LanguagesClient(HttpClient httpClient, string bearerToken)
 	{
@@ -52,14 +52,14 @@ public class LanguagesClient
 	public virtual async Task<LanguageModel> GetLanguageAsync(string languageName, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}");
-		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}");
+		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;
 		try
 		{
-			using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 			request_.Method = new HttpMethod("GET");
 			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -132,8 +132,7 @@ public class LanguagesClient
 	/// <summary>
 	/// Called by implementing swagger client classes.
 	/// </summary>
-	/// <param name="cancellationToken">The cancellation token.</param>
-	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)
+	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
 		if (!string.IsNullOrEmpty(_bearerToken))

@@ -11,15 +11,15 @@ namespace Opal;
 /// </summary>
 public class TestTraceListener : TraceListener
 {
-	private List<string> _messages;
+	private readonly List<string> _messages;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='TestTraceListener'/> class.
 	/// </summary>
 	public TestTraceListener()
-		: base(string.Empty, null, true, false)
+		: base(null, true, false)
 	{
-		this._messages = new List<string>();
+		this._messages = [];
 	}
 
 	/// <summary>

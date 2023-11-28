@@ -14,9 +14,6 @@ namespace Soup.Build;
 /// </summary>
 public partial class LanguageReference : IEquatable<LanguageReference>
 {
-	private readonly string _name;
-	private readonly SemanticVersion _version;
-
 	/// <summary>
 	/// Try parse a language reference from the provided string
 	/// </summary>
@@ -61,8 +58,8 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	/// </summary>
 	public LanguageReference()
 	{
-		_name = string.Empty;
-		_version = new SemanticVersion();
+		Name = string.Empty;
+		Version = new SemanticVersion();
 	}
 
 	/// <summary>
@@ -70,19 +67,19 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	/// </summary>
 	public LanguageReference(string name, SemanticVersion version)
 	{
-		_name = name;
-		_version = version;
+		Name = name;
+		Version = version;
 	}
 
 	/// <summary>
 	/// Gets or sets the Name.
 	/// </summary>
-	public string Name => _name;
+	public string Name { get; }
 
 	/// <summary>
 	/// Gets or sets the Version.
 	/// </summary>
-	public SemanticVersion Version => _version;
+	public SemanticVersion Version { get; }
 
 	/// <summary>
 	/// Equality operator
@@ -91,8 +88,8 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	{
 		if (other is null)
 			return false;
-		return _name == other._name &&
-			_version == other._version;
+		return Name == other.Name &&
+			Version == other.Version;
 	}
 
 	public override bool Equals(object? obj)
@@ -102,8 +99,8 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 
 	public override int GetHashCode()
 	{
-		var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode(StringComparison.Ordinal) * 0x1000;
-		var versionHash = _version is null ? 0 : _version.GetHashCode();
+		var nameHash = string.IsNullOrEmpty(Name) ? 0 : Name.GetHashCode(StringComparison.Ordinal) * 0x1000;
+		var versionHash = Version is null ? 0 : Version.GetHashCode();
 		return nameHash + versionHash;
 	}
 
@@ -125,7 +122,7 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	public override string ToString()
 	{
 		// Build up the name/version reference
-		return $"{_name}|{_version}";
+		return $"{Name}|{Version}";
 	}
 
 	[GeneratedRegex(@"^(?<Name>[A-Za-z][\w#+.]*)(?:\|(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$")]

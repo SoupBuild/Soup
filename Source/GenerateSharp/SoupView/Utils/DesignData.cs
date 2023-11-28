@@ -18,8 +18,7 @@ public static class DesignData
 	public static TaskGraphViewModel ExampleTaskGraph { get; } =
 		new TaskGraphViewModel()
 		{
-			SelectedTask = new TaskDetailsViewModel(
-				new ValueTable()),
+			SelectedTask = new TaskDetailsViewModel([]),
 		};
 
 	public static OperationGraphViewModel ExampleOperationGraph { get; } =

@@ -31,6 +31,8 @@ public class NuspecPackage
 					case "package":
 						result = DeserializePackage(child);
 						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -50,6 +52,8 @@ public class NuspecPackage
 				{
 					case "metadata":
 						metadata = NuspecMetadata.Deserialize(child);
+						break;
+					default:
 						break;
 				}
 			}

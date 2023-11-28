@@ -58,16 +58,16 @@ public class PackageVersionsClient
 		string languageName, string packageName, string packageVersion, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_
+		_ = urlBuilder_
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
-		urlBuilder_.Replace(
+		_ = urlBuilder_.Replace(
 			"{languageName}",
 			Uri.EscapeDataString(languageName));
-		urlBuilder_.Replace(
+		_ = urlBuilder_.Replace(
 			"{packageName}",
 			Uri.EscapeDataString(packageName));
-		urlBuilder_.Replace(
+		_ = urlBuilder_.Replace(
 			"{packageVersion}",
 			Uri.EscapeDataString(packageVersion));
 
@@ -147,10 +147,10 @@ public class PackageVersionsClient
 		string languageName, string packageName, string packageVersion, FileParameter file, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
-		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
-		urlBuilder_.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
+		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+		_ = urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
+		_ = urlBuilder_.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;
@@ -227,10 +227,10 @@ public class PackageVersionsClient
 		string languageName, string packageName, string packageVersion, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}/download");
-		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
-		urlBuilder_.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}/download");
+		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+		_ = urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
+		_ = urlBuilder_.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;
@@ -256,7 +256,7 @@ public class PackageVersionsClient
 				}
 
 				var status_ = (int)response_.StatusCode;
-				if (status_ == 200 || status_ == 206)
+				if (status_ is 200 or 206)
 				{
 					var responseStream_ = response_.Content == null ?
 						Stream.Null :

@@ -43,7 +43,7 @@ NewItem2: ""Value2""";
 	{
 		var uut = new SMLDocument();
 
-		uut.AddArrayWithSyntax("NewList");
+		_ = uut.AddArrayWithSyntax("NewList");
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -58,7 +58,7 @@ NewItem2: ""Value2""";
 	{
 		var uut = new SMLDocument();
 
-		uut.AddArrayWithSyntax("#");
+		_ = uut.AddArrayWithSyntax("#");
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -73,8 +73,8 @@ NewItem2: ""Value2""";
 	{
 		var uut = new SMLDocument();
 
-		uut.AddArrayWithSyntax("NewList");
-		uut.AddArrayWithSyntax("ANewList2");
+		_ = uut.AddArrayWithSyntax("NewList");
+		_ = uut.AddArrayWithSyntax("ANewList2");
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -109,7 +109,7 @@ ANewList2: [
 		var uut = new SMLDocument();
 
 		var newList = uut.AddArrayWithSyntax("NewList");
-		newList.AddTableWithSyntax(1);
+		_ = newList.AddTableWithSyntax(1);
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -166,7 +166,7 @@ ANewList2: [
 	{
 		var uut = new SMLDocument();
 
-		uut.AddTableWithSyntax("NewTable");
+		_ = uut.AddTableWithSyntax("NewTable");
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -181,7 +181,7 @@ ANewList2: [
 	{
 		var uut = new SMLDocument();
 
-		uut.AddTableWithSyntax("#");
+		_ = uut.AddTableWithSyntax("#");
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -196,7 +196,7 @@ ANewList2: [
 	{
 		var uut = new SMLDocument();
 
-		uut.AddInlineTableWithSyntax("NewTable");
+		_ = uut.AddInlineTableWithSyntax("NewTable");
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -224,8 +224,8 @@ ANewList2: [
 	{
 		var uut = new SMLDocument();
 
-		uut.AddTableWithSyntax("NewTable");
-		uut.AddTableWithSyntax("ANewTable2");
+		_ = uut.AddTableWithSyntax("NewTable");
+		_ = uut.AddTableWithSyntax("ANewTable2");
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -244,7 +244,7 @@ ANewTable2: {
 		var uut = new SMLDocument();
 
 		var newTable = uut.AddTableWithSyntax("NewTable");
-		newTable.AddArrayWithSyntax("NewList", 1);
+		_ = newTable.AddArrayWithSyntax("NewList", 1);
 
 		var content = await SerializeAsync(uut);
 		var expected =
@@ -285,7 +285,7 @@ ANewTable2: {
 			document,
 			stream);
 
-		stream.Seek(0, SeekOrigin.Begin);
+		_ = stream.Seek(0, SeekOrigin.Begin);
 		using var reader = new StreamReader(stream);
 
 		return await reader.ReadToEndAsync();

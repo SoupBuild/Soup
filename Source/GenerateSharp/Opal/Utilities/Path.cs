@@ -136,10 +136,11 @@ public class Path : IEquatable<Path>
 	/// </summary>
 	public Path GetParent()
 	{
-		var result = new Path();
-
-		// Take the root from the left hand side
-		result.rootEndLocation = this.rootEndLocation;
+		var result = new Path()
+		{
+			// Take the root from the left hand side
+			rootEndLocation = this.rootEndLocation
+		};
 
 		// If there is a filename then return the directory
 		// Otherwise return one less directory
@@ -375,7 +376,7 @@ public class Path : IEquatable<Path>
 		var directories = new List<string>();
 		while ((next = value.IndexOf(DirectorySeparator, current)) != -1)
 		{
-			var directory = value.Substring(current, next - current);
+			var directory = value[current..next];
 			if (!string.IsNullOrEmpty(directory))
 			{
 				directories.Add(directory);

@@ -13,9 +13,9 @@ namespace Opal.System;
 public class MockProcessManager : IProcessManager
 {
 	private int uniqueId;
-	private List<string> requests;
-	private Path processFileName;
-	private Dictionary<string, string> executeResults;
+	private readonly List<string> requests;
+	private readonly Path processFileName;
+	private readonly Dictionary<string, string> executeResults;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockProcessManager'/> class.

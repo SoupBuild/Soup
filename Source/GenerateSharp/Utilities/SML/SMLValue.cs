@@ -160,7 +160,7 @@ public class SMLValue : IEquatable<SMLValue>
 
 	public override int GetHashCode()
 	{
-		return (Type, RawValue).GetHashCode();
+		return HashCode.Combine(Type, RawValue);
 	}
 
 	public static bool operator ==(SMLValue? lhs, SMLValue? rhs)

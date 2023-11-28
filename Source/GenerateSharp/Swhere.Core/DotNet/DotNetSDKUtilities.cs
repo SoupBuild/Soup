@@ -69,7 +69,7 @@ public static class DotNetSDKUtilities
 				throw new HandledException();
 			}
 
-			var version = sdkValue.Substring(0, splitIndex);
+			var version = sdkValue[..splitIndex];
 			var installationValue = sdkValue.Substring(splitIndex + 2, sdkValue.Length - splitIndex - 3);
 			var installationPath = new Path(installationValue);
 

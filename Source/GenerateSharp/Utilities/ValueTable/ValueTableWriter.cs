@@ -15,8 +15,8 @@ public sealed class ValueTableWriter
 	// Binary Value Table file format
 	private static uint FileVersion => 2;
 
-	internal static readonly char[] BVT = new char[] { 'B', 'V', 'T', '\0' };
-	internal static readonly char[] TBL = new char[] { 'T', 'B', 'L', '\0' };
+	internal static readonly char[] BVT = ['B', 'V', 'T', '\0'];
+	internal static readonly char[] TBL = ['T', 'B', 'L', '\0'];
 
 	public static void Serialize(ValueTable state, BinaryWriter writer)
 	{
@@ -54,12 +54,14 @@ public sealed class ValueTableWriter
 			case ValueType.Boolean:
 				WriteValue(writer, value.AsBoolean());
 				break;
+			case ValueType.Empty:
+				break;
 			default:
 				throw new InvalidOperationException("Unknown ValueType");
 		}
 	}
 
-	static void WriteValue(BinaryWriter writer, ValueTable value)
+	private static void WriteValue(BinaryWriter writer, ValueTable value)
 	{
 		// Write the count of values
 		writer.Write((uint)value.Count);
@@ -74,7 +76,7 @@ public sealed class ValueTableWriter
 		}
 	}
 
-	static void WriteValue(BinaryWriter writer, ValueList value)
+	private static void WriteValue(BinaryWriter writer, ValueList value)
 	{
 		// Write the count of values
 		writer.Write((uint)value.Count);

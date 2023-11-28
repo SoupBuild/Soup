@@ -45,8 +45,7 @@ public static class WhereIsUtilities
 		var stdOut = await ExecutableUtilities.RunExecutableAsync(executablePath, arguments);
 
 		// The first line is the path
-		var values = stdOut
-			.Substring(0, stdOut.Length - Environment.NewLine.Length)
+		var values = stdOut[..^Environment.NewLine.Length]
 			.Split(separator)
 			.Skip(skipCount)
 			.ToList();

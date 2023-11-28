@@ -232,7 +232,7 @@ public class PackageManager
 				{
 					Description = string.Empty,
 				};
-				await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
+				_ = await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
 			}
 
 			var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient, accessToken)
@@ -351,7 +351,7 @@ public class PackageManager
 	/// <summary>
 	/// Ensure the staging directory exists
 	/// </summary>
-	static Path EnsureStagingDirectoryExists(Path packageStore)
+	private static Path EnsureStagingDirectoryExists(Path packageStore)
 	{
 		var stagingDirectory = packageStore + new Path(StagingFolderName);
 		if (LifetimeManager.Get<IFileSystem>().Exists(stagingDirectory))

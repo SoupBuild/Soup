@@ -94,7 +94,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var keyContent = key.Text;
 		if (keyContext is SMLParser.KeyStringContext)
 		{
-			keyContent = keyContent.Substring(1, keyContent.Length - 2);
+			keyContent = keyContent[1..^1];
 		}
 
 		var colon = BuildToken(context.COLON());
@@ -173,7 +173,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 	public virtual object VisitValueString(SMLParser.ValueStringContext context)
 	{
 		var literal = context.STRING_LITERAL().Symbol.Text;
-		var content = literal.Substring(1, literal.Length - 2);
+		var content = literal[1..^1];
 
 		var openQuoteToken = new SMLToken("\"")
 		{
@@ -230,17 +230,17 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	public virtual object VisitNewlineDelimiter(SMLParser.NewlineDelimiterContext context)
 	{
-		return context.NEWLINE().Select(value => BuildToken(value)).ToList();
+		return context.NEWLINE().Select(BuildToken).ToList();
 	}
 
 	public virtual object VisitLeadingNewlines(SMLParser.LeadingNewlinesContext context)
 	{
-		return context.NEWLINE().Select(value => BuildToken(value)).ToList();
+		return context.NEWLINE().Select(BuildToken).ToList();
 	}
 
 	public virtual object VisitTrailingNewlines(SMLParser.TrailingNewlinesContext context)
 	{
-		return context.NEWLINE().Select(value => BuildToken(value)).ToList();
+		return context.NEWLINE().Select(BuildToken).ToList();
 	}
 
 	public virtual object VisitCommaDelimiter(SMLParser.CommaDelimiterContext context)
@@ -264,7 +264,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 	private List<string> GetLeadingTrivia(ITerminalNode node)
 	{
 		var left = _tokens.GetHiddenTokensToLeft(node.Symbol.TokenIndex);
-		var leadingTrivia = left != null ? left.Select(value => value.Text).ToList() : new List<string>();
+		var leadingTrivia = left != null ? left.Select(value => value.Text).ToList() : [];
 		return leadingTrivia;
 	}
 }

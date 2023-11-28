@@ -15,10 +15,10 @@ public class PackageReferenceUnitTests
 	{
 		var uut = new PackageReference();
 		Assert.True(uut.IsLocal);
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Language; });
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Name; });
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Version; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Language; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Name; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Version; });
 	}
 
 	[Fact]
@@ -27,9 +27,9 @@ public class PackageReferenceUnitTests
 		var uut = PackageReference.Parse("../OtherFolder/");
 		Assert.True(uut.IsLocal);
 		Assert.Equal(new Path("../OtherFolder/"), uut.Path);
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Language; });
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Name; });
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Version; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Language; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Name; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Version; });
 	}
 
 	[Fact]
@@ -37,7 +37,7 @@ public class PackageReferenceUnitTests
 	{
 		var uut = PackageReference.Parse("Other.Package@1.0.0");
 		Assert.False(uut.IsLocal);
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
 		Assert.Null(uut.Language);
 		Assert.Equal("Other.Package", uut.Name);
 		Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);
@@ -48,7 +48,7 @@ public class PackageReferenceUnitTests
 	{
 		var uut = PackageReference.Parse("C#|Other@1.0.0");
 		Assert.False(uut.IsLocal);
-		Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
 		Assert.Equal("C#", uut.Language);
 		Assert.Equal("Other", uut.Name);
 		Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);

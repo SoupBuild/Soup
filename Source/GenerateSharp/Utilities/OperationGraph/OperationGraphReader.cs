@@ -155,7 +155,7 @@ internal static class OperationGraphReader
 		return new string(result);
 	}
 
-	static List<string> ReadStringList(System.IO.BinaryReader reader)
+	private static List<string> ReadStringList(System.IO.BinaryReader reader)
 	{
 		var size = reader.ReadUInt32();
 		var result = new List<string>((int)size);

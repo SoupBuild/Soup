@@ -30,7 +30,10 @@ public class SMLToken : IEquatable<SMLToken>
 		TrailingTrivia = trailingTrivia;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLToken);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLToken);
+	}
 
 	public bool Equals(SMLToken? other)
 	{

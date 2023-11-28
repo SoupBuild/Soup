@@ -14,10 +14,10 @@ namespace Soup.Build;
 /// </summary>
 public partial class PackageReference : IEquatable<PackageReference>
 {
-	private string? _language;
-	private string? _name;
-	private SemanticVersion? _version;
-	private Path? _path;
+	private readonly string? _language;
+	private readonly string? _name;
+	private readonly SemanticVersion? _version;
+	private readonly Path? _path;
 
 	/// <summary>
 	/// Try parse a package reference from the provided string

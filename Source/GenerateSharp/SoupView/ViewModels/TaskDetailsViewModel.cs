@@ -13,7 +13,7 @@ namespace Soup.View.ViewModels;
 
 public class TaskDetailsViewModel : ViewModelBase
 {
-	private ObservableCollection<ValueTableItemViewModel> properties = new ObservableCollection<ValueTableItemViewModel>();
+	private readonly ObservableCollection<ValueTableItemViewModel> properties = [];
 
 	public TaskDetailsViewModel(ValueTable taskInfo)
 	{
@@ -71,6 +71,8 @@ public class TaskDetailsViewModel : ViewModelBase
 					type = ValueTableItemType.Table;
 					BuildValueTable(value.Value.AsTable(), children);
 					break;
+				case ValueType.Empty:
+					throw new NotImplementedException();
 				default:
 					throw new InvalidOperationException("Unknown Value type");
 			}
@@ -123,6 +125,8 @@ public class TaskDetailsViewModel : ViewModelBase
 					type = ValueTableItemType.Table;
 					BuildValueTable(value.AsTable(), children);
 					break;
+				case ValueType.Empty:
+					throw new NotImplementedException();
 				default:
 					throw new InvalidOperationException("Unknown Value type");
 			}

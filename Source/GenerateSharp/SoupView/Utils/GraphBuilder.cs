@@ -22,8 +22,8 @@ public static class GraphBuilder
 			value => nodeSize);
 		var graph2 = new BidirectionalGraph<TNode, Edge<TNode>>();
 
-		graph2.AddVertexRange(graph.Select(value => value.Node));
-		graph2.AddEdgeRange(graph.SelectMany(value => value.Children.Select(child => new Edge<TNode>(value.Node, child))));
+		_ = graph2.AddVertexRange(graph.Select(value => value.Node));
+		_ = graph2.AddEdgeRange(graph.SelectMany(value => value.Children.Select(child => new Edge<TNode>(value.Node, child))));
 
 		var simpleContext = new LayoutContext<TNode, Edge<TNode>, BidirectionalGraph<TNode, Edge<TNode>>>(
 			graph2,

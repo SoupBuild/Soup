@@ -135,9 +135,9 @@ public static class VSWhereUtilities
 		foreach (var arg in args)
 		{
 			if (!isFirst)
-				argumentString.Append(' ');
+				_ = argumentString.Append(' ');
 
-			argumentString.Append(arg);
+			_ = argumentString.Append(arg);
 			isFirst = false;
 		}
 

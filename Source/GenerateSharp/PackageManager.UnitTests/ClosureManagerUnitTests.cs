@@ -81,7 +81,7 @@ public class ClosureManagerUnitTests
 					}
 				},
 		};
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
@@ -190,7 +190,7 @@ public class ClosureManagerUnitTests
 
 		// Verify the contents of the package lock file
 		var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-		packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var reader = new System.IO.StreamReader(packageLock.Content);
 		var packageLockContent = await reader.ReadToEndAsync();
 		var expected =
@@ -252,7 +252,7 @@ public class ClosureManagerUnitTests
 			Result = Api.Client.GenerateClosureResult.Failure,
 			Message = "Something went horribly wrong!",
 		};
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
@@ -262,14 +262,14 @@ public class ClosureManagerUnitTests
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
 			});
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
@@ -487,7 +487,7 @@ public class ClosureManagerUnitTests
 					},
 				},
 		};
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
@@ -497,14 +497,14 @@ public class ClosureManagerUnitTests
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
 			});
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
@@ -683,7 +683,7 @@ public class ClosureManagerUnitTests
 
 		// Verify the contents of the package lock file
 		var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-		packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var reader = new System.IO.StreamReader(packageLock.Content);
 		var packageLockContent = await reader.ReadToEndAsync();
 		var expected =
@@ -848,7 +848,7 @@ public class ClosureManagerUnitTests
 					},
 				},
 		};
-		mockMessageHandler
+		_ = mockMessageHandler
 			.SetupSequence(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
@@ -866,21 +866,21 @@ public class ClosureManagerUnitTests
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
 			});
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
@@ -1139,7 +1139,7 @@ public class ClosureManagerUnitTests
 
 		// Verify the contents of the package lock file
 		var myPackageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-		myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var myPackageLockReader = new System.IO.StreamReader(myPackageLock.Content);
 		var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
 		var expectedMyPackageLock =
@@ -1166,7 +1166,7 @@ public class ClosureManagerUnitTests
 		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
 		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
-		package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
 		var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
 		var expectedPackage1Lock =
@@ -1192,7 +1192,7 @@ public class ClosureManagerUnitTests
 		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
 		var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml"));
-		soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
 		var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
 		var expectedSoupCppLock =
@@ -1456,7 +1456,7 @@ public class ClosureManagerUnitTests
 					},
 				},
 		};
-		mockMessageHandler
+		_ = mockMessageHandler
 			.SetupSequence(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
@@ -1499,7 +1499,7 @@ public class ClosureManagerUnitTests
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
@@ -1939,7 +1939,7 @@ public class ClosureManagerUnitTests
 		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
 		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
-		package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
 		var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
 		var expectedPackage1Lock =
@@ -1967,7 +1967,7 @@ public class ClosureManagerUnitTests
 		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
 		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml"));
-		package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerPackage2Lock = new System.IO.StreamReader(package2Lock.Content);
 		var package2LockContent = await readerPackage2Lock.ReadToEndAsync();
 		var expectedPackage2Lock =
@@ -2344,7 +2344,7 @@ public class ClosureManagerUnitTests
 
 		// Verify the contents of the package lock file
 		var packageLock1 = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-		packageLock1.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = packageLock1.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var reader1 = new System.IO.StreamReader(packageLock1.Content);
 		var packageLockContent1 = await reader1.ReadToEndAsync();
 		var expectedPackageLock1 =
@@ -2371,7 +2371,7 @@ public class ClosureManagerUnitTests
 		Assert.Equal(expectedPackageLock1, packageLockContent1);
 
 		var packageLock2 = mockFileSystem.GetMockFile(new Path("C:/Root/Package1/PackageLock.sml"));
-		packageLock2.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = packageLock2.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var reader2 = new System.IO.StreamReader(packageLock2.Content);
 		var packageLockContent2 = await reader2.ReadToEndAsync();
 		var expectedPackageLock2 =
@@ -2546,7 +2546,7 @@ public class ClosureManagerUnitTests
 				},
 		};
 
-		mockMessageHandler
+		_ = mockMessageHandler
 			.SetupSequence(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
@@ -2856,7 +2856,7 @@ public class ClosureManagerUnitTests
 
 		// Verify the contents of the package lock file
 		var myPackageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
-		myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = myPackageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var myPackageLockReader = new System.IO.StreamReader(myPackageLock.Content);
 		var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
 		var expectedMyPackageLock =
@@ -2884,7 +2884,7 @@ public class ClosureManagerUnitTests
 		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
 		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/Root/Package1/PackageLock.sml"));
-		package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var package1LockReader = new System.IO.StreamReader(package1Lock.Content);
 		var packageLock1Content = await package1LockReader.ReadToEndAsync();
 		var expectedPackage1Lock =
@@ -2908,7 +2908,7 @@ public class ClosureManagerUnitTests
 		Assert.Equal(expectedPackage1Lock, packageLock1Content);
 
 		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/Root/Package2/PackageLock.sml"));
-		package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var package2LockReader = new System.IO.StreamReader(package2Lock.Content);
 		var packageLock2Content = await package2LockReader.ReadToEndAsync();
 		var expectedPackage2Lock =

@@ -20,7 +20,7 @@ public static class Program
 				TraceEvents.Critical |
 				TraceEvents.Warning |
 				TraceEvents.Error;
-			Log.RegisterListener(new ConsoleTraceListener("", new EventTypeFilter(traceFlags), false, false));
+			Log.RegisterListener(new ConsoleTraceListener(new EventTypeFilter(traceFlags), false, false));
 			LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
 
 			LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();

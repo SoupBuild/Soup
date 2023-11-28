@@ -19,10 +19,7 @@ public sealed class FileResponse : IDisposable
 
 	public Stream Stream { get; private set; }
 
-	public bool IsPartial
-	{
-		get { return StatusCode == 206; }
-	}
+	public bool IsPartial => StatusCode == 206;
 
 	public FileResponse(
 		int statusCode,

@@ -20,8 +20,8 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class ClosureClient
 {
-	private HttpClient _httpClient;
-	private string? _bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string? _bearerToken;
 
 	public ClosureClient(HttpClient httpClient, string? bearerToken)
 	{
@@ -52,17 +52,17 @@ public class ClosureClient
 		GenerateClosureRequestModel request, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/closure/generate");
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/closure/generate");
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;
 		try
 		{
-			using var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 			using var jsonContent = new MemoryStream();
 			await JsonSerializer.SerializeAsync(
 				jsonContent, request, SourceGenerationContext.Default.GenerateClosureRequestModel, cancellationToken);
-			jsonContent.Seek(0, SeekOrigin.Begin);
+			_ = jsonContent.Seek(0, SeekOrigin.Begin);
 
 			using var content = new StreamContent(jsonContent);
 			content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
@@ -140,8 +140,7 @@ public class ClosureClient
 	/// <summary>
 	/// Called by implementing swagger client classes.
 	/// </summary>
-	/// <param name="cancellationToken">The cancellation token.</param>
-	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)
+	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
 		if (!string.IsNullOrEmpty(_bearerToken))

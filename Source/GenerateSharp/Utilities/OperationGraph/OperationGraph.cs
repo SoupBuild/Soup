@@ -13,8 +13,8 @@ namespace Soup.Build.Utilities;
 /// </summary>
 public class OperationGraph
 {
-	private Dictionary<OperationId, OperationInfo> _operations;
-	private Dictionary<CommandInfo, OperationId> _operationLookup;
+	private readonly Dictionary<OperationId, OperationInfo> _operations;
+	private readonly Dictionary<CommandInfo, OperationId> _operationLookup;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="OperationGraph"/> class.
@@ -23,8 +23,8 @@ public class OperationGraph
 	{
 		ReferencedFiles = new List<(FileId FileId, Path Path)>();
 		RootOperationIds = new List<OperationId>();
-		_operations = new Dictionary<OperationId, OperationInfo>();
-		_operationLookup = new Dictionary<CommandInfo, OperationId>();
+		_operations = [];
+		_operationLookup = [];
 	}
 
 	/// <summary>
@@ -37,8 +37,8 @@ public class OperationGraph
 	{
 		ReferencedFiles = referencedFiles;
 		RootOperationIds = rootOperations;
-		_operations = new Dictionary<OperationId, OperationInfo>();
-		_operationLookup = new Dictionary<CommandInfo, OperationId>();
+		_operations = [];
+		_operationLookup = [];
 
 		// Store the incoming vector of operations as a lookup for fast checks
 		foreach (var info in operations)

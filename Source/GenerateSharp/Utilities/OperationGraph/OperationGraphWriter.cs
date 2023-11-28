@@ -32,7 +32,7 @@ internal static class OperationGraphWriter
 		foreach (var file in files)
 		{
 			// Write the file id + path length + path
-			writer.Write(file.FileId.value);
+			writer.Write(file.FileId.Value);
 			WriteValue(writer, file.Path.ToString());
 		}
 
@@ -52,7 +52,7 @@ internal static class OperationGraphWriter
 	private static void WriteOperationInfo(System.IO.BinaryWriter writer, OperationInfo operation)
 	{
 		// Write out the operation id
-		writer.Write(operation.Id.value);
+		writer.Write(operation.Id.Value);
 
 		// Write out the operation title
 		WriteValue(writer, operation.Title);
@@ -105,7 +105,7 @@ internal static class OperationGraphWriter
 		writer.Write((uint)values.Count);
 		foreach (var value in values)
 		{
-			writer.Write(value.value);
+			writer.Write(value.Value);
 		}
 	}
 
@@ -114,7 +114,7 @@ internal static class OperationGraphWriter
 		writer.Write((uint)values.Count);
 		foreach (var value in values)
 		{
-			writer.Write(value.value);
+			writer.Write(value.Value);
 		}
 	}
 }

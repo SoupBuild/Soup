@@ -31,7 +31,7 @@ public class MockLibraryManager : ILibraryManager
 	/// <param name="path">The path.</param>
 	public MockLibrary RegisterLibrary(Path path)
 	{
-		var library = new MockLibrary(path.ToString(), this._requests);
+		var library = new MockLibrary();
 		this._libraries.Add(path, library);
 
 		return library;

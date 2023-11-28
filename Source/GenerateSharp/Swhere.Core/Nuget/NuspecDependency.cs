@@ -43,6 +43,8 @@ public class NuspecDependency : NuspecDependencyBase
 					case "exclude":
 						result.Exclude = attribute.Value ?? string.Empty;
 						break;
+					default:
+						break;
 				}
 			}
 		}

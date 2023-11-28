@@ -32,7 +32,7 @@ public static class SwhereManager
 		}
 		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 		{
-			await DiscoverLinuxPlatformAsync(includePrerelease, userConfig);
+			await DiscoverLinuxPlatformAsync(userConfig);
 		}
 
 		// Save the result
