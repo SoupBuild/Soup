@@ -146,22 +146,16 @@ public class Value
 
 	public override string ToString()
 	{
-		switch (Type)
+		return Type switch
 		{
-			case ValueType.Table:
-				return this.AsTable().ToString() ?? string.Empty;
-			case ValueType.List:
-				return this.AsList().ToString() ?? string.Empty;
-			case ValueType.String:
-				return $"\"{this.AsString()}\"";
-			case ValueType.Integer:
-				return this.AsInteger().ToString(CultureInfo.InvariantCulture);
-			case ValueType.Float:
-				return this.AsFloat().ToString(CultureInfo.InvariantCulture);
-			case ValueType.Boolean:
-				return this.AsBoolean().ToString();
-			default:
-				return "UNKNOWN";
-		}
+			ValueType.Table => this.AsTable().ToString() ?? string.Empty,
+			ValueType.List => this.AsList().ToString() ?? string.Empty,
+			ValueType.String => $"\"{this.AsString()}\"",
+			ValueType.Integer => this.AsInteger().ToString(CultureInfo.InvariantCulture),
+			ValueType.Float => this.AsFloat().ToString(CultureInfo.InvariantCulture),
+			ValueType.Boolean => this.AsBoolean().ToString(),
+			ValueType.Empty => throw new NotImplementedException(),
+			_ => "UNKNOWN",
+		};
 	}
 }

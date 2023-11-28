@@ -30,7 +30,10 @@ public class SMLToken : IEquatable<SMLToken>
 		TrailingTrivia = trailingTrivia;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLToken);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLToken);
+	}
 
 	public bool Equals(SMLToken? other)
 	{
@@ -48,7 +51,10 @@ public class SMLToken : IEquatable<SMLToken>
 	}
 
 	// Only use the text to allow for mapping to same bins
-	public override int GetHashCode() => (Text).GetHashCode(StringComparison.Ordinal);
+	public override int GetHashCode()
+	{
+		return Text.GetHashCode(StringComparison.Ordinal);
+	}
 
 	public static bool operator ==(SMLToken? lhs, SMLToken? rhs)
 	{
@@ -63,5 +69,8 @@ public class SMLToken : IEquatable<SMLToken>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLToken? lhs, SMLToken? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLToken? lhs, SMLToken? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

@@ -21,7 +21,7 @@ public class DependencyGraphViewModel : ViewModelBase
 	private string errorBarMessage = string.Empty;
 	private bool isErrorBarOpen;
 	private IList<GraphNodeViewModel>? graph;
-	private readonly Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
+	private readonly Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = [];
 
 	public string ErrorBarMessage
 	{
@@ -42,14 +42,7 @@ public class DependencyGraphViewModel : ViewModelBase
 		{
 			if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
 			{
-				if (selectedNode != null)
-				{
-					SelectedProject = this.projectDetailsLookup[selectedNode.Id];
-				}
-				else
-				{
-					SelectedProject = null;
-				}
+				SelectedProject = selectedNode is not null ? this.projectDetailsLookup[selectedNode.Id] : null;
 			}
 		}
 	}
@@ -130,7 +123,7 @@ public class DependencyGraphViewModel : ViewModelBase
 		while (activeNodes.Count > 0)
 		{
 			var currentNodeId = activeNodes.Pop();
-			result.Add(currentNodeId);
+			_ = result.Add(currentNodeId);
 
 			foreach (var child in GetChildren(packageProvider.GetPackageInfo(currentNodeId).Dependencies, packageProvider))
 			{

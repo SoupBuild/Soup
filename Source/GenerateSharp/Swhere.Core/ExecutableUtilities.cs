@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using Opal.System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Opal;
-using Opal.System;
 
 namespace Soup.Build.Discover;
 
@@ -54,9 +54,9 @@ public static class ExecutableUtilities
 		foreach (var arg in args)
 		{
 			if (!isFirst)
-				argumentString.Append(' ');
+				_ = argumentString.Append(' ');
 
-			argumentString.Append(arg);
+			_ = argumentString.Append(arg);
 			isFirst = false;
 		}
 

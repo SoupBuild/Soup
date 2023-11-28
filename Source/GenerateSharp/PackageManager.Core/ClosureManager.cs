@@ -2,14 +2,14 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
+using Opal;
+using Opal.System;
+using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Opal;
-using Opal.System;
-using Soup.Build.Utilities;
 
 namespace Soup.Build.PackageManager;
 
@@ -32,9 +32,9 @@ public class ClosureManager : IClosureManager
 	private const string DependencyTypeBuild = "Build";
 	private const string DependencyTypeTool = "Tool";
 
-	private Uri _apiEndpoint;
+	private readonly Uri _apiEndpoint;
 
-	private HttpClient _httpClient;
+	private readonly HttpClient _httpClient;
 
 	private readonly SemanticVersion _builtInLanguageVersionCSharp;
 	private readonly SemanticVersion _builtInLanguageVersionCpp;
@@ -259,40 +259,42 @@ public class ClosureManager : IClosureManager
 		var localPackages = localPackageLookup.Values.Where(value => value.Id != rootPackageId).ToList();
 
 		// Request the built in versions for the language extensions
-		var preferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>();
-		preferredVersions.Add(new Api.Client.PackagePublicExactReferenceModel()
+		var preferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>
 		{
-			Language = BuiltInLanguageWren,
-			Name = BuiltInLanguagePackageCSharp,
-			Version = new Api.Client.SemanticVersionExactModel()
+			new Api.Client.PackagePublicExactReferenceModel()
 			{
-				Major = _builtInLanguageVersionCSharp.Major,
-				Minor = _builtInLanguageVersionCSharp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-				Patch = _builtInLanguageVersionCSharp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+				Language = BuiltInLanguageWren,
+				Name = BuiltInLanguagePackageCSharp,
+				Version = new Api.Client.SemanticVersionExactModel()
+				{
+					Major = _builtInLanguageVersionCSharp.Major,
+					Minor = _builtInLanguageVersionCSharp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+					Patch = _builtInLanguageVersionCSharp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+				},
 			},
-		});
-		preferredVersions.Add(new Api.Client.PackagePublicExactReferenceModel()
-		{
-			Language = BuiltInLanguageWren,
-			Name = BuiltInLanguagePackageCpp,
-			Version = new Api.Client.SemanticVersionExactModel()
+			new Api.Client.PackagePublicExactReferenceModel()
 			{
-				Major = _builtInLanguageVersionCpp.Major,
-				Minor = _builtInLanguageVersionCpp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-				Patch = _builtInLanguageVersionCpp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+				Language = BuiltInLanguageWren,
+				Name = BuiltInLanguagePackageCpp,
+				Version = new Api.Client.SemanticVersionExactModel()
+				{
+					Major = _builtInLanguageVersionCpp.Major,
+					Minor = _builtInLanguageVersionCpp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+					Patch = _builtInLanguageVersionCpp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+				},
 			},
-		});
-		preferredVersions.Add(new Api.Client.PackagePublicExactReferenceModel()
-		{
-			Language = BuiltInLanguageWren,
-			Name = BuiltInLanguagePackageWren,
-			Version = new Api.Client.SemanticVersionExactModel()
+			new Api.Client.PackagePublicExactReferenceModel()
 			{
-				Major = _builtInLanguageVersionWren.Major,
-				Minor = _builtInLanguageVersionWren.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-				Patch = _builtInLanguageVersionWren.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-			},
-		});
+				Language = BuiltInLanguageWren,
+				Name = BuiltInLanguagePackageWren,
+				Version = new Api.Client.SemanticVersionExactModel()
+				{
+					Major = _builtInLanguageVersionWren.Major,
+					Minor = _builtInLanguageVersionWren.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+					Patch = _builtInLanguageVersionWren.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+				},
+			}
+		};
 
 		var generateClosureRequest = new Api.Client.GenerateClosureRequestModel()
 		{
@@ -677,10 +679,7 @@ public class ClosureManager : IClosureManager
 				if (dependency.Version == null)
 					throw new ArgumentException("Local package version was null");
 
-				var language = dependency.Language != null ? dependency.Language : implicitLanguage;
-				if (language is null)
-					throw new ArgumentException("Language required for Tool dependency");
-
+				var language = (dependency.Language ?? implicitLanguage) ?? throw new ArgumentException("Language required for Tool dependency");
 				var existingMatch = publicPackages
 					.FirstOrDefault(value =>
 						value.Name == dependency.Name &&
@@ -801,10 +800,8 @@ public class ClosureManager : IClosureManager
 				var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
 
 				// Write the contents to disk, scope cleanup
-				using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
-				{
-					await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
-				}
+				using var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true);
+				await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
 			}
 			catch (Api.Client.ApiException ex)
 			{

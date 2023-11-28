@@ -22,13 +22,9 @@ public class RuntimeFileSystem : IFileSystem
 
 	public Path GetUserProfileDirectory()
 	{
-		string? userProfileFolder;
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			userProfileFolder = Environment.GetEnvironmentVariable("USERPROFILE");
-		else
-			userProfileFolder = Environment.GetEnvironmentVariable("HOME");
-
-		if (userProfileFolder == null)
+		string? userProfileFolder = (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+			? Environment.GetEnvironmentVariable("USERPROFILE")
+			: Environment.GetEnvironmentVariable("HOME")) ??
 			throw new InvalidOperationException("Unable to retrieve user profile");
 		return new Path(userProfileFolder);
 	}
@@ -81,7 +77,7 @@ public class RuntimeFileSystem : IFileSystem
 
 	public void CreateDirectory2(Path path)
 	{
-		global::System.IO.Directory.CreateDirectory(path.ToString());
+		_ = global::System.IO.Directory.CreateDirectory(path.ToString());
 	}
 
 	public IReadOnlyList<DirectoryEntry> GetChildren(Path path)

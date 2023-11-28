@@ -180,7 +180,7 @@ public class SwhereManagerUnitTests
 
 		// Verify the contents of the local user config file
 		var localUserConfig = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/LocalUserConfig.sml"));
-		localUserConfig.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = localUserConfig.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var reader = new System.IO.StreamReader(localUserConfig.Content);
 		var localUserConfigContent = await reader.ReadToEndAsync();
 		var expected =
@@ -447,7 +447,7 @@ public class SwhereManagerUnitTests
 
 		// Verify the contents of the local user config file
 		var localUserConfig = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/LocalUserConfig.sml"));
-		localUserConfig.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = localUserConfig.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var reader = new System.IO.StreamReader(localUserConfig.Content);
 		var localUserConfigContent = await reader.ReadToEndAsync();
 		var expected =
@@ -615,7 +615,7 @@ public class SwhereManagerUnitTests
 ";
 		using var originalContent = new System.IO.MemoryStream();
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
-		originalContent.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Users/Me/.soup/LocalUserConfig.sml"),
 			new MockFile(originalContent));
@@ -772,7 +772,7 @@ public class SwhereManagerUnitTests
 
 		// Verify the contents of the local user config file
 		var localUserConfig = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/LocalUserConfig.sml"));
-		localUserConfig.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = localUserConfig.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var reader = new System.IO.StreamReader(localUserConfig.Content);
 		var localUserConfigContent = await reader.ReadToEndAsync();
 		var expected =

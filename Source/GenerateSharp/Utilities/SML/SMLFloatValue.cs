@@ -33,7 +33,10 @@ public class SMLFloatValue : IEquatable<SMLFloatValue>
 		Content = content;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLFloatValue);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLFloatValue);
+	}
 
 	public bool Equals(SMLFloatValue? other)
 	{
@@ -48,7 +51,10 @@ public class SMLFloatValue : IEquatable<SMLFloatValue>
 		return this.Value == other.Value;
 	}
 
-	public override int GetHashCode() => (Value).GetHashCode();
+	public override int GetHashCode()
+	{
+		return Value.GetHashCode();
+	}
 
 	public static bool operator ==(SMLFloatValue? lhs, SMLFloatValue? rhs)
 	{
@@ -63,5 +69,8 @@ public class SMLFloatValue : IEquatable<SMLFloatValue>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLFloatValue? lhs, SMLFloatValue? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLFloatValue? lhs, SMLFloatValue? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

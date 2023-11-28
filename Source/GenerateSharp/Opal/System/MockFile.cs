@@ -39,7 +39,7 @@ public class MockFile
 
 public class MockOutputFile : IOutputFile
 {
-	private MockFile file;
+	private readonly MockFile file;
 	private bool isDisposed;
 
 	public MockOutputFile(MockFile file)
@@ -74,7 +74,7 @@ public class MockOutputFile : IOutputFile
 
 public class MockInputFile : IInputFile
 {
-	private MockFile _file;
+	private readonly MockFile _file;
 	private bool isDisposed;
 
 	public MockInputFile(MockFile file)
@@ -88,7 +88,7 @@ public class MockInputFile : IInputFile
 	/// </summary>
 	public Stream GetInStream()
 	{
-		this._file.Content.Seek(0, SeekOrigin.Begin);
+		_ = this._file.Content.Seek(0, SeekOrigin.Begin);
 		return this._file.Content;
 	}
 

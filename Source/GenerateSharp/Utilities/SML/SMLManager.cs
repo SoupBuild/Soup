@@ -23,8 +23,10 @@ public static class SMLManager
 		var inputStream = new CodePointCharStream(content);
 		var lexer = new SMLLexer(inputStream);
 		var commonTokenStream = new CommonTokenStream(lexer);
-		var parser = new SMLParser(commonTokenStream);
-		parser.ErrorHandler = new BailErrorStrategy();
+		var parser = new SMLParser(commonTokenStream)
+		{
+			ErrorHandler = new BailErrorStrategy()
+		};
 
 		try
 		{

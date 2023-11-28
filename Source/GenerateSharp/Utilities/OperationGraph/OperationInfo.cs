@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Soup.Build.Utilities;
 
-public record OperationId(uint value);
+public record OperationId(uint Value);
 
 public class CommandInfo : IEquatable<CommandInfo>
 {

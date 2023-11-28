@@ -42,7 +42,10 @@ public class SMLTableValue : IEquatable<SMLTableValue>
 		Delimiter = delimiter;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLTableValue);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLTableValue);
+	}
 
 	public bool Equals(SMLTableValue? other)
 	{
@@ -58,7 +61,10 @@ public class SMLTableValue : IEquatable<SMLTableValue>
 			this.Value == other.Value;
 	}
 
-	public override int GetHashCode() => (Value).GetHashCode();
+	public override int GetHashCode()
+	{
+		return Value.GetHashCode();
+	}
 
 	public static bool operator ==(SMLTableValue? lhs, SMLTableValue? rhs)
 	{
@@ -73,5 +79,8 @@ public class SMLTableValue : IEquatable<SMLTableValue>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLTableValue? lhs, SMLTableValue? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLTableValue? lhs, SMLTableValue? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

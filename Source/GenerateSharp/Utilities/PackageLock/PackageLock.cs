@@ -17,14 +17,12 @@ public class PackageLock
 	private static string Property_Build => "Build";
 	private static string Property_Tool => "Tool";
 
-	private SMLDocument _document;
-
 	/// <summary>
 	/// Initializes a new instance of the <see cref="PackageLock"/> class.
 	/// </summary>
 	public PackageLock()
 	{
-		_document = new SMLDocument();
+		Document = new SMLDocument();
 	}
 
 	/// <summary>
@@ -32,7 +30,7 @@ public class PackageLock
 	/// </summary>
 	public PackageLock(SMLDocument table)
 	{
-		_document = table;
+		Document = table;
 	}
 
 	/// <summary>
@@ -40,7 +38,7 @@ public class PackageLock
 	/// </summary>
 	public bool HasVersion()
 	{
-		return HasValue(_document, Property_Version);
+		return HasValue(Document, Property_Version);
 	}
 
 	public long GetVersion()
@@ -48,13 +46,13 @@ public class PackageLock
 		if (!HasVersion())
 			throw new InvalidOperationException("No version.");
 
-		var value = GetValue(_document, Property_Version).AsInteger();
+		var value = GetValue(Document, Property_Version).AsInteger();
 		return value.Value;
 	}
 
 	public void SetVersion(long value)
 	{
-		_document.AddItemWithSyntax(Property_Version, value);
+		Document.AddItemWithSyntax(Property_Version, value);
 	}
 
 	/// <summary>
@@ -62,7 +60,7 @@ public class PackageLock
 	/// </summary>
 	public bool HasClosures()
 	{
-		return HasValue(_document, Property_Closures);
+		return HasValue(Document, Property_Closures);
 	}
 
 	public SMLTable GetClosures()
@@ -70,13 +68,13 @@ public class PackageLock
 		if (!HasClosures())
 			throw new InvalidOperationException("No closures.");
 
-		var values = GetValue(_document, Property_Closures).AsTable();
+		var values = GetValue(Document, Property_Closures).AsTable();
 		return values;
 	}
 
 	public void EnsureClosure(string closure)
 	{
-		var closures = EnsureHasTable(_document, Property_Closures);
+		var closures = EnsureHasTable(Document, Property_Closures);
 		_ = EnsureHasTable(closures, closure, 1);
 	}
 
@@ -88,7 +86,7 @@ public class PackageLock
 		string? buildClosure,
 		string? toolClosure)
 	{
-		var closures = EnsureHasTable(_document, Property_Closures);
+		var closures = EnsureHasTable(Document, Property_Closures);
 		var closureTable = EnsureHasTable(closures, closure, 1);
 		var projectLanguageList = EnsureHasList(closureTable, language, 2);
 
@@ -109,7 +107,7 @@ public class PackageLock
 	/// <summary>
 	/// Raw access
 	/// </summary>
-	public SMLDocument Document => _document;
+	public SMLDocument Document { get; }
 
 	private static bool HasValue(SMLDocument document, string key)
 	{

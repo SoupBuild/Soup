@@ -14,7 +14,7 @@ namespace Soup.Build.Utilities;
 /// </summary>
 public class OperationResults
 {
-	private Dictionary<OperationId, OperationResult> _results;
+	private readonly Dictionary<OperationId, OperationResult> _results;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="OperationResults"/> class.
@@ -22,7 +22,7 @@ public class OperationResults
 	public OperationResults()
 	{
 		ReferencedFiles = new List<(FileId FileId, Path Path)>();
-		_results = new Dictionary<OperationId, OperationResult>();
+		_results = [];
 	}
 
 	/// <summary>

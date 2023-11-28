@@ -11,7 +11,7 @@ namespace Soup.View.ViewModels;
 
 public class ProjectDetailsViewModel : ViewModelBase
 {
-	private ObservableCollection<PropertyValueViewModel> properties = new ObservableCollection<PropertyValueViewModel>();
+	private readonly ObservableCollection<PropertyValueViewModel> properties = [];
 
 	public ProjectDetailsViewModel(string name, Path path)
 	{

@@ -5,7 +5,6 @@ using Opal;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -14,9 +13,9 @@ namespace Soup.View.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
 	private Path? recipeFile;
-	private DependencyGraphViewModel dependencyGraph;
-	private TaskGraphViewModel taskGraph;
-	private OperationGraphViewModel operationGraph;
+	private readonly DependencyGraphViewModel dependencyGraph;
+	private readonly TaskGraphViewModel taskGraph;
+	private readonly OperationGraphViewModel operationGraph;
 
 	public IStorageProvider? StorageProvider { get; set; }
 
@@ -95,25 +94,13 @@ public class MainWindowViewModel : ViewModelBase
 		}
 	}
 
-	public string SelectedPackageName
-	{
-		get => this.dependencyGraph.SelectedProject?.Name ?? "[Package]";
-	}
+	public string SelectedPackageName => this.dependencyGraph.SelectedProject?.Name ?? "[Package]";
 
-	public bool IsRootSelected
-	{
-		get => ReferenceEquals(content, dependencyGraph);
-	}
+	public bool IsRootSelected => ReferenceEquals(content, dependencyGraph);
 
-	public bool IsTasksSelected
-	{
-		get => ReferenceEquals(content, taskGraph);
-	}
+	public bool IsTasksSelected => ReferenceEquals(content, taskGraph);
 
-	public bool IsOperationsSelected
-	{
-		get => ReferenceEquals(content, operationGraph);
-	}
+	public bool IsOperationsSelected => ReferenceEquals(content, operationGraph);
 
 	private async Task OnOpenAsync()
 	{

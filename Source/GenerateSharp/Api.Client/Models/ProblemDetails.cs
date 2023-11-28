@@ -34,7 +34,7 @@ public class ProblemDetails
 	[JsonExtensionData]
 	public IDictionary<string, object> AdditionalProperties
 	{
-		get { return _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>()); }
-		init { _additionalProperties = value; }
+		get => _additionalProperties ??= new Dictionary<string, object>();
+		init => _additionalProperties = value;
 	}
 }

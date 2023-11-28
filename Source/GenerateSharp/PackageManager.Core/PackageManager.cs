@@ -2,14 +2,14 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
+using Opal;
+using Opal.System;
+using Soup.Build.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Opal;
-using Opal.System;
-using Soup.Build.Utilities;
 
 namespace Soup.Build.PackageManager;
 
@@ -232,7 +232,7 @@ public class PackageManager
 				{
 					Description = string.Empty,
 				};
-				await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
+				_ = await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
 			}
 
 			var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient, accessToken)
@@ -351,7 +351,7 @@ public class PackageManager
 	/// <summary>
 	/// Ensure the staging directory exists
 	/// </summary>
-	static Path EnsureStagingDirectoryExists(Path packageStore)
+	private static Path EnsureStagingDirectoryExists(Path packageStore)
 	{
 		var stagingDirectory = packageStore + new Path(StagingFolderName);
 		if (LifetimeManager.Get<IFileSystem>().Exists(stagingDirectory))

@@ -68,9 +68,7 @@ public class Path : IEquatable<Path>
 
 	public static bool operator ==(Path? lhs, Path? rhs)
 	{
-		if (ReferenceEquals(lhs, null))
-			return ReferenceEquals(rhs, null);
-		return lhs.Equals(rhs);
+		return lhs is null ? rhs is null : lhs.Equals(rhs);
 	}
 
 	public static bool operator !=(Path? lhs, Path? rhs)
@@ -130,7 +128,7 @@ public class Path : IEquatable<Path>
 	{
 		if (rootEndLocation < 0)
 			throw new InvalidOperationException("Cannot access root on path that has none");
-		return this.value.Substring(0, this.rootEndLocation);
+		return this.value[..this.rootEndLocation];
 	}
 
 	/// <summary>
@@ -138,17 +136,18 @@ public class Path : IEquatable<Path>
 	/// </summary>
 	public Path GetParent()
 	{
-		var result = new Path();
-
-		// Take the root from the left hand side
-		result.rootEndLocation = this.rootEndLocation;
+		var result = new Path()
+		{
+			// Take the root from the left hand side
+			rootEndLocation = this.rootEndLocation
+		};
 
 		// If there is a filename then return the directory
 		// Otherwise return one less directory
 		if (this.HasFileName)
 		{
 			// Pass along the path minus the filename
-			result.value = this.value.Substring(0, this.fileNameStartLocation);
+			result.value = this.value[..this.fileNameStartLocation];
 			result.fileNameStartLocation = result.value.Length;
 		}
 		else
@@ -197,9 +196,7 @@ public class Path : IEquatable<Path>
 	public string GetFileName()
 	{
 		// Use the start location to return the end of the value that is the filename
-		return this.value.Substring(
-			this.fileNameStartLocation,
-			this.value.Length - this.fileNameStartLocation);
+		return this.value[this.fileNameStartLocation..];
 	}
 
 	/// <summary>
@@ -217,7 +214,7 @@ public class Path : IEquatable<Path>
 		var lastSeparator = fileName.LastIndexOf(FileExtensionSeparator);
 		if (lastSeparator != -1)
 		{
-			return fileName.Substring(0, lastSeparator);
+			return fileName[..lastSeparator];
 		}
 		else
 		{
@@ -239,14 +236,7 @@ public class Path : IEquatable<Path>
 		// Everything after and including the last period is the extension
 		var fileName = this.GetFileName();
 		var lastSeparator = fileName.LastIndexOf(FileExtensionSeparator);
-		if (lastSeparator != -1)
-		{
-			return fileName.Substring(lastSeparator);
-		}
-		else
-		{
-			return string.Empty;
-		}
+		return lastSeparator != -1 ? fileName[lastSeparator..] : string.Empty;
 	}
 
 	/// <summary>
@@ -344,7 +334,7 @@ public class Path : IEquatable<Path>
 	/// <param name="other">The right hand side.</param>
 	public bool Equals(Path? other)
 	{
-		if (ReferenceEquals(other, null))
+		if (other is null)
 			return false;
 		return this.value == other.value;
 	}
@@ -382,11 +372,11 @@ public class Path : IEquatable<Path>
 	private static List<string> DecomposeDirectoriesString(string value)
 	{
 		var current = 0;
-		var next = 0;
+		int next;
 		var directories = new List<string>();
 		while ((next = value.IndexOf(DirectorySeparator, current)) != -1)
 		{
-			var directory = value.Substring(current, next - current);
+			var directory = value[current..next];
 			if (!string.IsNullOrEmpty(directory))
 			{
 				directories.Add(directory);
@@ -396,12 +386,9 @@ public class Path : IEquatable<Path>
 		}
 
 		// Ensure the last separator was at the end of the string
-		if (current != value.Length)
-		{
-			throw new InvalidOperationException("The directories string must end in a separator");
-		}
-
-		return directories;
+		return current != value.Length ?
+			throw new InvalidOperationException("The directories string must end in a separator") :
+			directories;
 	}
 
 	private static bool IsRoot(string value)
@@ -504,7 +491,7 @@ public class Path : IEquatable<Path>
 		var isFirst = true;
 		while ((next = value.IndexOfAny(AllValidDirectorySeparators, current)) != -1)
 		{
-			var directory = value.Substring(current, next - current);
+			var directory = value[current..next];
 
 			// Check if the first entry is a root
 			if (isFirst)
@@ -537,7 +524,7 @@ public class Path : IEquatable<Path>
 		// Check if there are characters beyond the last separator
 		if (current != value.Length)
 		{
-			var directory = value.Substring(current);
+			var directory = value[current..];
 
 			// Check if still on the first entry
 			// Could be empty root or single filename
@@ -585,34 +572,27 @@ public class Path : IEquatable<Path>
 
 		if (root is not null)
 		{
-			stringBuilder.Append(root);
-			stringBuilder.Append(DirectorySeparator);
+			_ = stringBuilder.Append(root);
+			_ = stringBuilder.Append(DirectorySeparator);
 		}
 
 		for (var i = 0; i < directories.Count; i++)
 		{
-			stringBuilder.Append(directories[i]);
-			stringBuilder.Append(DirectorySeparator);
+			_ = stringBuilder.Append(directories[i]);
+			_ = stringBuilder.Append(DirectorySeparator);
 		}
 
 		if (fileName is not null)
 		{
-			stringBuilder.Append(fileName);
+			_ = stringBuilder.Append(fileName);
 		}
 
-		// Store the persistant state
+		// Store the persistent state
 		this.value = stringBuilder.ToString();
 
 
-		if (root is not null)
-			this.rootEndLocation = root.Length;
-		else
-			this.rootEndLocation = -1;
-
-		if (fileName is not null)
-			this.fileNameStartLocation = this.value.Length - fileName.Length;
-		else
-			this.fileNameStartLocation = this.value.Length;
+		this.rootEndLocation = root is not null ? root.Length : -1;
+		this.fileNameStartLocation = fileName is not null ? this.value.Length - fileName.Length : this.value.Length;
 
 	}
 
@@ -620,15 +600,11 @@ public class Path : IEquatable<Path>
 	{
 		if (rootEndLocation >= 0)
 		{
-			return this.value.Substring(
-				this.rootEndLocation,
-				this.fileNameStartLocation - this.rootEndLocation);
+			return this.value[this.rootEndLocation..this.fileNameStartLocation];
 		}
 		else
 		{
-			return this.value.Substring(
-				0,
-				this.fileNameStartLocation);
+			return this.value[..this.fileNameStartLocation];
 		}
 	}
 }

@@ -13,9 +13,9 @@ namespace Opal.System;
 public class MockProcessManager : IProcessManager
 {
 	private int uniqueId;
-	private List<string> requests;
-	private Path processFileName;
-	private Dictionary<string, string> executeResults;
+	private readonly List<string> requests;
+	private readonly Path processFileName;
+	private readonly Dictionary<string, string> executeResults;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockProcessManager'/> class.
@@ -23,9 +23,9 @@ public class MockProcessManager : IProcessManager
 	public MockProcessManager()
 	{
 		this.uniqueId = 1;
-		this.requests = new List<string>();
+		this.requests = [];
 		this.processFileName = new Path("C:/testlocation/SoupCMDTest.exe");
-		this.executeResults = new Dictionary<string, string>();
+		this.executeResults = [];
 	}
 
 	/// <summary>
@@ -35,9 +35,9 @@ public class MockProcessManager : IProcessManager
 	public MockProcessManager(Path processFileName)
 	{
 		this.uniqueId = 1;
-		this.requests = new List<string>();
+		this.requests = [];
 		this.processFileName = processFileName;
-		this.executeResults = new Dictionary<string, string>();
+		this.executeResults = [];
 	}
 
 	/// <summary>
@@ -53,7 +53,7 @@ public class MockProcessManager : IProcessManager
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> Requests =>this.requests;
+	public IReadOnlyList<string> Requests => this.requests;
 
 	/// <summary>
 	/// Gets the process file name.

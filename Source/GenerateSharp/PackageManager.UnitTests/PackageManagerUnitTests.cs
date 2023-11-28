@@ -37,7 +37,7 @@ public class PackageManagerUnitTests
 
 		// Mock out the closure manager
 		var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
-		mockClosureManager
+		_ = mockClosureManager
 			.Setup(manager => manager.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
 				new Path("C:/Users/Me/.soup/packages/"),
@@ -105,7 +105,7 @@ public class PackageManagerUnitTests
 				Language: "C++|3.2.1"
 				Version: "1.0.0"
 				"""));
-		originalContent.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(originalContent));
@@ -126,7 +126,7 @@ public class PackageManagerUnitTests
 
 		// Mock out the closure manager
 		var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
-		mockClosureManager
+		_ = mockClosureManager
 			.Setup(manager => manager.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
 				new Path("C:/Users/Me/.soup/packages/"),
@@ -183,7 +183,7 @@ public class PackageManagerUnitTests
 
 		// Verify the contents of the recipe file
 		var recipeFile = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/Recipe.sml"));
-		recipeFile.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = recipeFile.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var recipeReader = new System.IO.StreamReader(recipeFile.Content);
 		var recipeContent = await recipeReader.ReadToEndAsync();
 		var expectedRecipe =
@@ -219,7 +219,7 @@ public class PackageManagerUnitTests
 				Language: "C++|3.2.1"
 				Version: "1.0.0"
 				"""));
-		originalContent.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(originalContent));
@@ -240,7 +240,7 @@ public class PackageManagerUnitTests
 
 		// Mock out the closure manager
 		var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
-		mockClosureManager
+		_ = mockClosureManager
 			.Setup(manager => manager.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
 				new Path("C:/Users/Me/.soup/packages/"),
@@ -258,14 +258,14 @@ public class PackageManagerUnitTests
 			Name = "OtherPackage",
 			Latest = new Api.Client.SemanticVersion() { Major = 1, Minor = 2, Patch = 3, },
 		});
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage() { Content = new StringContent(getPackageResponse) });
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
@@ -326,7 +326,7 @@ public class PackageManagerUnitTests
 
 		// Verify the contents of the recipe file
 		var recipeFile = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/Recipe.sml"));
-		recipeFile.Content.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = recipeFile.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var recipeReader = new System.IO.StreamReader(recipeFile.Content);
 		var recipeContent = await recipeReader.ReadToEndAsync();
 		var expectedRecipe =
@@ -362,7 +362,7 @@ public class PackageManagerUnitTests
 				Language: "C++|0.1"
 				Version: "1.0.0"
 				"""));
-		originalContent.Seek(0, System.IO.SeekOrigin.Begin);
+		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(originalContent));
@@ -393,7 +393,7 @@ public class PackageManagerUnitTests
 
 		// Create mock archive
 		var mockZipArchive = new Mock<IZipArchive>();
-		mockZipManager.Setup(zip => zip.OpenCreate(It.IsAny<Path>())).Returns(mockZipArchive.Object);
+		_ = mockZipManager.Setup(zip => zip.OpenCreate(It.IsAny<Path>())).Returns(mockZipArchive.Object);
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
@@ -413,14 +413,14 @@ public class PackageManagerUnitTests
 			Name = "MyPackage",
 			Latest = new Api.Client.SemanticVersion() { Major = 1, Minor = 2, Patch = 3, },
 		});
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage() { Content = new StringContent(getPackageResponse) });
-		mockMessageHandler
+		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Put,
 				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage/versions/1.0.0"),

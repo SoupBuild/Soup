@@ -21,8 +21,8 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class PackagesClient
 {
-	private HttpClient _httpClient;
-	private string? _bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string? _bearerToken;
 
 	public PackagesClient(HttpClient httpClient, string? bearerToken)
 	{
@@ -55,50 +55,48 @@ public class PackagesClient
 	public virtual async Task<PackageModel> GetPackageAsync(string languageName, string packageName, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
-		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
+		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+		_ = urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;
 		try
 		{
-			using (var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false))
+			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
+			request_.Method = new HttpMethod("GET");
+			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+			var url_ = urlBuilder_.ToString();
+			request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
+
+			var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+			var disposeResponse_ = true;
+			try
 			{
-				request_.Method = new HttpMethod("GET");
-				request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-				var url_ = urlBuilder_.ToString();
-				request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-				var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-				var disposeResponse_ = true;
-				try
+				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+				if (response_.Content != null && response_.Content.Headers != null)
 				{
-					var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-					if (response_.Content != null && response_.Content.Headers != null)
-					{
-						foreach (var item_ in response_.Content.Headers)
-							headers_[item_.Key] = item_.Value;
-					}
+					foreach (var item_ in response_.Content.Headers)
+						headers_[item_.Key] = item_.Value;
+				}
 
-					var status_ = (int)response_.StatusCode;
-					if (status_ == 200)
-					{
-						var objectResponse = await ReadObjectResponseAsync<PackageModel>(
-							response_, headers_, SourceGenerationContext.Default.PackageModel, cancellationToken).ConfigureAwait(false);
-						return objectResponse;
-					}
-					else
-					{
-						throw new ApiException("The HTTP status code of the response was not expected.", status_, headers_, null);
-					}
-				}
-				finally
+				var status_ = (int)response_.StatusCode;
+				if (status_ == 200)
 				{
-					if (disposeResponse_)
-						response_.Dispose();
+					var objectResponse = await ReadObjectResponseAsync<PackageModel>(
+						response_, headers_, SourceGenerationContext.Default.PackageModel, cancellationToken).ConfigureAwait(false);
+					return objectResponse;
 				}
+				else
+				{
+					throw new ApiException("The HTTP status code of the response was not expected.", status_, headers_, null);
+				}
+			}
+			finally
+			{
+				if (disposeResponse_)
+					response_.Dispose();
 			}
 		}
 		finally
@@ -134,20 +132,20 @@ public class PackagesClient
 		string languageName, string packageName, PackageCreateOrUpdateModel model, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
-		urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
+		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}");
+		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
+		_ = urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
 
 		var client_ = _httpClient;
 		var disposeClient_ = false;
 		try
 		{
-			using var request = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+			using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 			using var jsonContent = new MemoryStream();
 
 			await JsonSerializer.SerializeAsync(
 				jsonContent, model, SourceGenerationContext.Default.PackageCreateOrUpdateModel, cancellationToken);
-			jsonContent.Seek(0, SeekOrigin.Begin);
+			_ = jsonContent.Seek(0, SeekOrigin.Begin);
 
 			using var content = new StreamContent(jsonContent);
 			content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
@@ -173,7 +171,7 @@ public class PackagesClient
 
 
 				var status_ = (int)response_.StatusCode;
-				if (status_ == 200 || status_ == 201)
+				if (status_ is 200 or 201)
 				{
 					var objectResponse = await ReadObjectResponseAsync<PackageModel>(
 						response_, headers_, SourceGenerationContext.Default.PackageModel, cancellationToken).ConfigureAwait(false);
@@ -206,18 +204,16 @@ public class PackagesClient
 	{
 		try
 		{
-			using (var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
+			using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+			var typedBody = await JsonSerializer.DeserializeAsync<T>(
+				responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
+			if (typedBody is null)
 			{
-				var typedBody = await JsonSerializer.DeserializeAsync<T>(
-					responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
-				if (typedBody is null)
-				{
-					var message = "Response body was empty.";
-					throw new ApiException(message, (int)response.StatusCode, headers, null);
-				}
-
-				return typedBody;
+				var message = "Response body was empty.";
+				throw new ApiException(message, (int)response.StatusCode, headers, null);
 			}
+
+			return typedBody;
 		}
 		catch (JsonException exception)
 		{
@@ -229,8 +225,7 @@ public class PackagesClient
 	/// <summary>
 	/// Called by implementing swagger client classes.
 	/// </summary>
-	/// <param name="cancellationToken">The cancellation token.</param>
-	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)
+	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
 		if (!string.IsNullOrEmpty(_bearerToken))

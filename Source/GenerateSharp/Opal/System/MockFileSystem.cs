@@ -14,18 +14,18 @@ namespace Opal.System;
 /// </summary>
 public class MockFileSystem : IFileSystem
 {
-	private List<string> requests;
-	private Dictionary<Path, MockFile> files;
-	private Dictionary<Path, IReadOnlyList<DirectoryEntry>> directoryChildren;
+	private readonly List<string> requests;
+	private readonly Dictionary<Path, MockFile> files;
+	private readonly Dictionary<Path, IReadOnlyList<DirectoryEntry>> directoryChildren;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockFileSystem'/> class.
 	/// </summary>
 	public MockFileSystem()
 	{
-		this.requests = new List<string>();
-		this.files = new Dictionary<Path, MockFile>();
-		this.directoryChildren = new Dictionary<Path, IReadOnlyList<DirectoryEntry>>();
+		this.requests = [];
+		this.files = [];
+		this.directoryChildren = [];
 	}
 
 	/// <summary>

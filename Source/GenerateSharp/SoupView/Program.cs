@@ -18,7 +18,7 @@ public static class Program
 	[STAThread]
 	public static void Main(string[] args)
 	{
-		BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+		_ = BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 	}
 
 	/// <summary>
@@ -30,7 +30,7 @@ public static class Program
 		Log.RegisterListener(new ConsoleTraceListener());
 		LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
 
-		IconProvider.Current.Register<FontAwesomeIconProvider>();
+		_ = IconProvider.Current.Register<FontAwesomeIconProvider>();
 
 		return AppBuilder.Configure<App>()
 			.UsePlatformDetect()

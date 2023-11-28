@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
+using IdentityModel.OidcClient.Browser;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -12,10 +16,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityModel.OidcClient.Browser;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 
 namespace Soup.Build.PackageManager;
 
@@ -29,14 +29,7 @@ public class SystemBrowser : IBrowser
 	{
 		_path = path;
 
-		if (!port.HasValue)
-		{
-			Port = GetRandomUnusedPort();
-		}
-		else
-		{
-			Port = port.Value;
-		}
+		Port = port ?? GetRandomUnusedPort();
 	}
 
 	private static int GetRandomUnusedPort()
@@ -79,7 +72,7 @@ public class SystemBrowser : IBrowser
 	{
 		try
 		{
-			Process.Start(url);
+			_ = Process.Start(url);
 		}
 		catch
 		{
@@ -87,15 +80,15 @@ public class SystemBrowser : IBrowser
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
 				url = url.Replace("&", "^&", StringComparison.InvariantCulture);
-				Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+				_ = Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				Process.Start("xdg-open", url);
+				_ = Process.Start("xdg-open", url);
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 			{
-				Process.Start("open", url);
+				_ = Process.Start("open", url);
 			}
 			else
 			{
@@ -113,22 +106,21 @@ public class LoopbackHttpListener : IDisposable
 
 	[SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Disposed in async task")]
 	private readonly IWebHost _host;
-	private TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
-	private Uri _url;
+	private readonly TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
 
-	public Uri Url => _url;
+	public Uri Url { get; }
 
 	public LoopbackHttpListener(int port, string? path = null)
 	{
-		path = path ?? string.Empty;
+		path ??= string.Empty;
 		if (path.StartsWith('/'))
-			path = path.Substring(1);
+			path = path[1..];
 
-		_url = new Uri($"http://127.0.0.1:{port}/{path}");
+		Url = new Uri($"http://127.0.0.1:{port}/{path}");
 
 		_host = new WebHostBuilder()
 			.UseKestrel()
-			.UseUrls(_url.ToString())
+			.UseUrls(Url.ToString())
 			.Configure(Configure)
 			.Build();
 		_host.Start();
@@ -137,14 +129,14 @@ public class LoopbackHttpListener : IDisposable
 	[SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "Special case")]
 	public void Dispose()
 	{
-		Task.Run(async () =>
+		_ = Task.Run(async () =>
 		{
 			await Task.Delay(500);
 			_host.Dispose();
 		});
 	}
 
-	void Configure(IApplicationBuilder app)
+	private void Configure(IApplicationBuilder app)
 	{
 		app.Run(async ctx =>
 		{
@@ -161,11 +153,9 @@ public class LoopbackHttpListener : IDisposable
 				}
 				else
 				{
-					using (var sr = new StreamReader(ctx.Request.Body, Encoding.UTF8))
-					{
-						var body = await sr.ReadToEndAsync();
-						await SetResultAsync(body, ctx);
-					}
+					using var sr = new StreamReader(ctx.Request.Body, Encoding.UTF8);
+					var body = await sr.ReadToEndAsync();
+					await SetResultAsync(body, ctx);
 				}
 			}
 			else
@@ -184,7 +174,7 @@ public class LoopbackHttpListener : IDisposable
 			await ctx.Response.WriteAsync("<h1>You can now return to the application.</h1>");
 			await ctx.Response.Body.FlushAsync();
 
-			_source.TrySetResult(value);
+			_ = _source.TrySetResult(value);
 		}
 		catch (Exception ex)
 		{
@@ -199,10 +189,10 @@ public class LoopbackHttpListener : IDisposable
 
 	public Task<string> WaitForCallbackAsync(int timeoutInSeconds = DefaultTimeout)
 	{
-		Task.Run(async () =>
+		_ = Task.Run(async () =>
 		{
 			await Task.Delay(timeoutInSeconds * 1000);
-			_source.TrySetCanceled();
+			_ = _source.TrySetCanceled();
 		});
 
 		return _source.Task;

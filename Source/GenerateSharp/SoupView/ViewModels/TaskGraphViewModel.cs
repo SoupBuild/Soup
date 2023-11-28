@@ -53,14 +53,7 @@ public class TaskGraphViewModel : ViewModelBase
 		{
 			if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
 			{
-				if (selectedNode != null)
-				{
-					SelectedTask = this.taskDetailsLookup[selectedNode.Id];
-				}
-				else
-				{
-					SelectedTask = null;
-				}
+				SelectedTask = selectedNode is not null ? this.taskDetailsLookup[selectedNode.Id] : null;
 			}
 		}
 	}
@@ -244,7 +237,7 @@ public class TaskGraphViewModel : ViewModelBase
 			StartInfo = processInfo,
 		};
 
-		process.Start();
+		_ = process.Start();
 
 		await process.WaitForExitAsync();
 

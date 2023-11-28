@@ -49,7 +49,7 @@ public class DictionaryOfListsComparer<T> : IEqualityComparer<IDictionary<string
 			var hash = 445566;
 			foreach (var key in obj.Keys)
 			{
-				hash = hash * 123 + key.GetHashCode(StringComparison.InvariantCulture);
+				hash = (hash * 123) + key.GetHashCode(StringComparison.InvariantCulture);
 			}
 
 			return hash;

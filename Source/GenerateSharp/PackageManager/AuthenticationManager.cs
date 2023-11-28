@@ -2,16 +2,15 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
-using System;
+using IdentityModel.OidcClient;
 using System.Globalization;
 using System.Threading.Tasks;
-using IdentityModel.OidcClient;
 
 namespace Soup.Build.PackageManager;
 
 internal sealed class AuthenticationManager : IAuthenticationManager
 {
-	static string _authority = "https://auth.soupbuild.com/";
+	private static readonly string _authority = "https://auth.soupbuild.com/";
 	// static string _authority = "https://localhost:5001/";
 
 	/// <summary>

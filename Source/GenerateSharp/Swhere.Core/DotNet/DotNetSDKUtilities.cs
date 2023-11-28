@@ -2,13 +2,13 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using Opal.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Opal;
-using Opal.System;
 
 namespace Soup.Build.Discover;
 
@@ -69,7 +69,7 @@ public static class DotNetSDKUtilities
 				throw new HandledException();
 			}
 
-			var version = sdkValue.Substring(0, splitIndex);
+			var version = sdkValue[..splitIndex];
 			var installationValue = sdkValue.Substring(splitIndex + 2, sdkValue.Length - splitIndex - 3);
 			var installationPath = new Path(installationValue);
 
@@ -99,7 +99,7 @@ public static class DotNetSDKUtilities
 				throw new HandledException();
 			}
 
-			var name = runtimeValue.Substring(0, split1Index);
+			var name = runtimeValue[..split1Index];
 			var version = runtimeValue.Substring(split1Index + 1, split2Index - split1Index - 1);
 			var installationValue = runtimeValue.Substring(split2Index + 2, runtimeValue.Length - split2Index - 3);
 			var installationPath = new Path(installationValue);

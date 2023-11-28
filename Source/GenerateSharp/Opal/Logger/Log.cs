@@ -11,7 +11,6 @@ namespace Opal;
 /// </summary>
 public static class Log
 {
-	private static int activeId;
 	private static TraceListener? listener;
 
 	/// <summary>
@@ -28,19 +27,13 @@ public static class Log
 	/// </summary>
 	public static TraceListener EnsureListener()
 	{
-		if (listener == null)
-			throw new InvalidOperationException("No Listener registered.");
-		return listener;
+		return listener ?? throw new InvalidOperationException("No Listener registered.");
 	}
 
 	/// <summary>
 	/// Set the active ids to use for each event.
 	/// </summary>
-	public static int ActiveId
-	{
-		get => activeId;
-		set => activeId = value;
-	}
+	public static int ActiveId { get; set; }
 
 	/// <summary>
 	/// Log a high priority message.
@@ -54,7 +47,7 @@ public static class Log
 
 	public static void HighPriority(string message)
 	{
-		HighPriority(message, activeId);
+		HighPriority(message, ActiveId);
 	}
 
 	/// <summary>
@@ -69,7 +62,7 @@ public static class Log
 
 	public static void Info(string message)
 	{
-		Info(message, activeId);
+		Info(message, ActiveId);
 	}
 
 	/// <summary>
@@ -84,7 +77,7 @@ public static class Log
 
 	public static void Diag(string message)
 	{
-		Diag(message, activeId);
+		Diag(message, ActiveId);
 	}
 
 	/// <summary>
@@ -99,7 +92,7 @@ public static class Log
 
 	public static void Warning(string message)
 	{
-		Warning(message, activeId);
+		Warning(message, ActiveId);
 	}
 
 	/// <summary>
@@ -114,6 +107,6 @@ public static class Log
 
 	public static void Error(string message)
 	{
-		Error(message, activeId);
+		Error(message, ActiveId);
 	}
 }

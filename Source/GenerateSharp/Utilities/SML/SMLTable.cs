@@ -20,7 +20,7 @@ public class SMLTable : IEquatable<SMLTable>
 	{
 		OpenBrace = SMLToken.Empty;
 		LeadingNewlines = new List<SMLToken>();
-		Values = new Dictionary<string, SMLTableValue>();
+		Values = [];
 		TrailingNewlines = new List<SMLToken>();
 		CloseBrace = SMLToken.Empty;
 	}
@@ -61,7 +61,10 @@ public class SMLTable : IEquatable<SMLTable>
 		CloseBrace = closeBrace;
 	}
 
-	public override bool Equals(object? obj) => this.Equals(obj as SMLTable);
+	public override bool Equals(object? obj)
+	{
+		return this.Equals(obj as SMLTable);
+	}
 
 	public bool Equals(SMLTable? other)
 	{
@@ -76,7 +79,10 @@ public class SMLTable : IEquatable<SMLTable>
 		return Enumerable.SequenceEqual(this.Values, other.Values);
 	}
 
-	public override int GetHashCode() => (Values).GetHashCode();
+	public override int GetHashCode()
+	{
+		return Values.GetHashCode();
+	}
 
 	public static bool operator ==(SMLTable? lhs, SMLTable? rhs)
 	{
@@ -91,5 +97,8 @@ public class SMLTable : IEquatable<SMLTable>
 		return lhs.Equals(rhs);
 	}
 
-	public static bool operator !=(SMLTable? lhs, SMLTable? rhs) => !(lhs == rhs);
+	public static bool operator !=(SMLTable? lhs, SMLTable? rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

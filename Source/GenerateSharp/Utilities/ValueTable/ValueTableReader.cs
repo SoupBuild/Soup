@@ -58,23 +58,17 @@ public sealed class ValueTableReader
 		// Read the value type
 		var valueType = (ValueType)reader.ReadUInt32();
 
-		switch (valueType)
+		return valueType switch
 		{
-			case ValueType.Table:
-				return new Value(ReadValueTable(reader));
-			case ValueType.List:
-				return new Value(ReadValueList(reader));
-			case ValueType.String:
-				return new Value(ReadString(reader));
-			case ValueType.Integer:
-				return new Value(reader.ReadInt64());
-			case ValueType.Float:
-				return new Value(reader.ReadDouble());
-			case ValueType.Boolean:
-				return new Value(ReadBoolean(reader));
-			default:
-				throw new InvalidOperationException("Unknown ValueType");
-		}
+			ValueType.Table => new Value(ReadValueTable(reader)),
+			ValueType.List => new Value(ReadValueList(reader)),
+			ValueType.String => new Value(ReadString(reader)),
+			ValueType.Integer => new Value(reader.ReadInt64()),
+			ValueType.Float => new Value(reader.ReadDouble()),
+			ValueType.Boolean => new Value(ReadBoolean(reader)),
+			ValueType.Empty => throw new NotImplementedException(),
+			_ => throw new InvalidOperationException("Unknown ValueType"),
+		};
 	}
 
 	private static ValueTable ReadValueTable(System.IO.BinaryReader reader)
@@ -114,7 +108,7 @@ public sealed class ValueTableReader
 		return list;
 	}
 
-	static bool ReadBoolean(System.IO.BinaryReader reader)
+	private static bool ReadBoolean(System.IO.BinaryReader reader)
 	{
 		var result = reader.ReadUInt32();
 		return result != 0;
