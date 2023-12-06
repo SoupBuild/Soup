@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "Linux Build SoupView!"
+
+OUT_DIR=~/repos/Soup/out
+
+# Stop on first error
+set -e
+
+SCRIPTS_DIR=$(dirname "$0")
+SOURCE_DIR=$SCRIPTS_DIR/../../Source
+TOOLS_DIR=$SOURCE_DIR/Client/Tools
+
+# Build tools
+echo soup build $TOOLS_DIR -flavor Release
+eval soup build $TOOLS_DIR -flavor Release
