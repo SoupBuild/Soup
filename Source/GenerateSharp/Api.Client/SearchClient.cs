@@ -20,13 +20,13 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class SearchClient
 {
-	private readonly HttpClient _httpClient;
-	private readonly string _bearerToken;
+	private readonly HttpClient httpClient;
+	private readonly string bearerToken;
 
 	public SearchClient(HttpClient httpClient, string bearerToken)
 	{
-		_httpClient = httpClient;
-		_bearerToken = bearerToken;
+		this.httpClient = httpClient;
+		this.bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
@@ -56,11 +56,11 @@ public class SearchClient
 	public virtual async Task<SearchPackagesModel> SearchPackagesAsync(
 		string q, int? skip, int? take, CancellationToken cancellationToken)
 	{
-		var urlBuilder_ = new StringBuilder();
-		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/search/packages?");
+		var urlBuilder = new StringBuilder();
+		_ = urlBuilder.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/search/packages?");
 		if (q is not null)
 		{
-			_ = urlBuilder_
+			_ = urlBuilder
 				.Append(Uri.EscapeDataString("q") + "=")
 				.Append(Uri.EscapeDataString(q))
 				.Append('&');
@@ -68,7 +68,7 @@ public class SearchClient
 
 		if (skip is not null)
 		{
-			_ = urlBuilder_
+			_ = urlBuilder
 				.Append(Uri.EscapeDataString("skip") + "=")
 				.Append(Uri.EscapeDataString($"{skip}"))
 				.Append('&');
@@ -76,59 +76,43 @@ public class SearchClient
 
 		if (take is not null)
 		{
-			_ = urlBuilder_
+			_ = urlBuilder
 				.Append(Uri.EscapeDataString("take") + "=")
 				.Append(Uri.EscapeDataString($"{take}"))
 				.Append('&');
 		}
 
-		urlBuilder_.Length--;
+		urlBuilder.Length--;
 
-		var client_ = _httpClient;
-		var disposeClient_ = false;
-		try
+		var client = this.httpClient;
+
+		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
+		requestMessage.Method = new HttpMethod("GET");
+		requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+		var url = urlBuilder.ToString();
+		requestMessage.RequestUri = new Uri(url, UriKind.RelativeOrAbsolute);
+
+		using var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+
+		var headers = Enumerable.ToDictionary(response.Headers, h => h.Key, h => h.Value);
+		if (response.Content != null && response.Content.Headers != null)
 		{
-			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
-			request_.Method = new HttpMethod("GET");
-			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-			var url_ = urlBuilder_.ToString();
-			request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-			var response_ = await client_.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-			var disposeResponse_ = true;
-			try
-			{
-				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-				if (response_.Content != null && response_.Content.Headers != null)
-				{
-					foreach (var item_ in response_.Content.Headers)
-						headers_[item_.Key] = item_.Value;
-				}
-
-				var status_ = (int)response_.StatusCode;
-				if (status_ == 200)
-				{
-					var objectResponse = await ReadObjectResponseAsync<SearchPackagesModel>(
-						response_, headers_, SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
-					return objectResponse;
-				}
-				else
-				{
-					throw new ApiException(
-						"The HTTP status code of the response was not expected.", status_, headers_, null);
-				}
-			}
-			finally
-			{
-				if (disposeResponse_)
-					response_.Dispose();
-			}
+			foreach (var item in response.Content.Headers)
+				headers[item.Key] = item.Value;
 		}
-		finally
+
+		var status = (int)response.StatusCode;
+		if (status == 200)
 		{
-			if (disposeClient_)
-				client_.Dispose();
+			var objectResponse = await ReadObjectResponseAsync<SearchPackagesModel>(
+				response, headers, SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
+			return objectResponse;
+		}
+		else
+		{
+			throw new ApiException(
+				"The HTTP status code of the response was not expected.", status, headers, null);
 		}
 	}
 
@@ -165,9 +149,9 @@ public class SearchClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(_bearerToken))
+		if (!string.IsNullOrEmpty(this.bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
 		}
 
 		return Task.FromResult(request);
