@@ -3,9 +3,7 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -35,34 +33,34 @@ public class PackageVersionsClient
 	/// <summary>
 	/// Get a package version.
 	/// </summary>
-	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to get.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
 	public virtual Task<PackageVersionModel> GetPackageVersionAsync(
-		string ownerName,
 		string languageName,
+		string ownerName,
 		string packageName,
 		string packageVersion)
 	{
-		return GetPackageVersionAsync(ownerName, languageName, packageName, packageVersion, CancellationToken.None);
+		return GetPackageVersionAsync(languageName, ownerName, packageName, packageVersion, CancellationToken.None);
 	}
 
 	/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 	/// <summary>
 	/// Get a package version.
 	/// </summary>
-	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to get.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
 	public virtual async Task<PackageVersionModel> GetPackageVersionAsync(
-		string ownerName,
 		string languageName,
+		string ownerName,
 		string packageName,
 		string packageVersion,
 		CancellationToken cancellationToken)
@@ -70,19 +68,7 @@ public class PackageVersionsClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append("/v1/users/{ownerName}/packages/{languageName}/{packageName}/versions/{packageVersion}");
-		_ = urlBuilder.Replace(
-			"{ownerName}",
-			Uri.EscapeDataString(ownerName));
-		_ = urlBuilder.Replace(
-			"{languageName}",
-			Uri.EscapeDataString(languageName));
-		_ = urlBuilder.Replace(
-			"{packageName}",
-			Uri.EscapeDataString(packageName));
-		_ = urlBuilder.Replace(
-			"{packageVersion}",
-			Uri.EscapeDataString(packageVersion));
+			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
 		var client = this.httpClient;
 
@@ -93,63 +79,65 @@ public class PackageVersionsClient
 		var url = urlBuilder.ToString();
 		requestMessage.RequestUri = new Uri(url, UriKind.RelativeOrAbsolute);
 
-		using var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-
-		var headers = Enumerable.ToDictionary(response.Headers, h => h.Key, h => h.Value);
-		if (response.Content != null && response.Content.Headers != null)
-		{
-			foreach (var item in response.Content.Headers)
-				headers[item.Key] = item.Value;
-		}
+		using var response = await client.SendAsync(
+			requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
 			var objectResponse = await ReadObjectResponseAsync<PackageVersionModel>(
-				response, headers, SourceGenerationContext.Default.PackageVersionModel, cancellationToken).ConfigureAwait(false);
+				response,
+				SourceGenerationContext.Default.PackageVersionModel,
+				cancellationToken).ConfigureAwait(false);
 			return objectResponse;
 		}
 		else
 		{
 			throw new ApiException(
-				"The HTTP status code of the response was not expected.", status, headers, null);
+				"The HTTP status code of the response was not expected.", status, null, null);
 		}
 	}
 
 	/// <summary>
 	/// Publish a new version of a package.
 	/// </summary>
-	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to publish.</param>
 	/// <param name="file">The uploaded file.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
 	public virtual Task PublishPackageVersionAsync(
-		string ownerName,
 		string languageName,
+		string ownerName,
 		string packageName,
 		string packageVersion,
 		FileParameter file)
 	{
-		return PublishPackageVersionAsync(ownerName, languageName, packageName, packageVersion, file, CancellationToken.None);
+		return PublishPackageVersionAsync(
+			languageName,
+			ownerName,
+			packageName,
+			packageVersion,
+			file,
+			CancellationToken.None);
 	}
 
 	/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 	/// <summary>
 	/// Publish a new version of a package.
 	/// </summary>
-	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to publish.</param>
 	/// <param name="file">The uploaded file.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
 	public virtual async Task PublishPackageVersionAsync(
-		string ownerName,
 		string languageName,
+		string ownerName,
 		string packageName,
 		string packageVersion,
 		FileParameter file,
@@ -158,11 +146,7 @@ public class PackageVersionsClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append("/v1/users/{ownerName}/packages/{languageName}/{packageName}/versions/{packageVersion}");
-		_ = urlBuilder.Replace("{ownerName}", Uri.EscapeDataString(ownerName));
-		_ = urlBuilder.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		_ = urlBuilder.Replace("{packageName}", Uri.EscapeDataString(packageName));
-		_ = urlBuilder.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
+			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
 		var client = this.httpClient;
 
@@ -179,13 +163,6 @@ public class PackageVersionsClient
 		using var response = await client.SendAsync(
 			request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
-		var headers = Enumerable.ToDictionary(response.Headers, h => h.Key, h => h.Value);
-		if (response.Content != null && response.Content.Headers != null)
-		{
-			foreach (var item in response.Content.Headers)
-				headers[item.Key] = item.Value;
-		}
-
 		var status = (int)response.StatusCode;
 		if (status == 201)
 		{
@@ -193,41 +170,41 @@ public class PackageVersionsClient
 		}
 		else
 		{
-			throw new ApiException("The HTTP status code of the response was not expected.", status, headers, null);
+			throw new ApiException("The HTTP status code of the response was not expected.", status, null, null);
 		}
 	}
 
 	/// <summary>
 	/// Download a package version archive.
 	/// </summary>
-	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to download.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
 	public virtual Task<FileResponse> DownloadPackageVersionAsync(
-		string ownerName,
 		string languageName,
+		string ownerName,
 		string packageName,
 		string packageVersion)
 	{
-		return DownloadPackageVersionAsync(ownerName, languageName, packageName, packageVersion, CancellationToken.None);
+		return DownloadPackageVersionAsync(languageName, ownerName, packageName, packageVersion, CancellationToken.None);
 	}
 
 	/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 	/// <summary>
 	/// Download a package version archive.
 	/// </summary>
-	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to download.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
 	public virtual async Task<FileResponse> DownloadPackageVersionAsync(
-		string ownerName,
 		string languageName,
+		string ownerName,
 		string packageName,
 		string packageVersion,
 		CancellationToken cancellationToken)
@@ -235,11 +212,7 @@ public class PackageVersionsClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append("/v1/users/{ownerName}/packages/{languageName}/{packageName}/versions/{packageVersion}/download");
-		_ = urlBuilder.Replace("{ownerName}", Uri.EscapeDataString(ownerName));
-		_ = urlBuilder.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		_ = urlBuilder.Replace("{packageName}", Uri.EscapeDataString(packageName));
-		_ = urlBuilder.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
+			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}/download");
 
 		var client = this.httpClient;
 
@@ -255,20 +228,13 @@ public class PackageVersionsClient
 		var disposeResponse = true;
 		try
 		{
-			var headers = Enumerable.ToDictionary(response.Headers, h => h.Key, h => h.Value);
-			if (response.Content != null && response.Content.Headers != null)
-			{
-				foreach (var item in response.Content.Headers)
-					headers[item.Key] = item.Value;
-			}
-
 			var status = (int)response.StatusCode;
 			if (status is 200 or 206)
 			{
 				var responseStream = response.Content == null ?
 					Stream.Null :
 					await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-				var fileResponse = new FileResponse(status, headers, responseStream, null, response);
+				var fileResponse = new FileResponse(status, null, responseStream, null, response);
 
 				// response is disposed by FileResponse
 				disposeResponse = false;
@@ -277,7 +243,7 @@ public class PackageVersionsClient
 			}
 			else
 			{
-				throw new ApiException("The HTTP status code of the response was not expected.", status, headers, null);
+				throw new ApiException("The HTTP status code of the response was not expected.", status, null, null);
 			}
 		}
 		finally
@@ -289,7 +255,6 @@ public class PackageVersionsClient
 
 	protected virtual async Task<T> ReadObjectResponseAsync<T>(
 		HttpResponseMessage response,
-		IReadOnlyDictionary<string, IEnumerable<string>> headers,
 		JsonTypeInfo<T> jsonTypeInfo,
 		CancellationToken cancellationToken)
 	{
@@ -301,7 +266,7 @@ public class PackageVersionsClient
 			if (typedBody is null)
 			{
 				var message = "Response body was empty.";
-				throw new ApiException(message, (int)response.StatusCode, headers, null);
+				throw new ApiException(message, (int)response.StatusCode, null, null);
 			}
 
 			return typedBody;
@@ -309,7 +274,7 @@ public class PackageVersionsClient
 		catch (JsonException exception)
 		{
 			var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-			throw new ApiException(message, (int)response.StatusCode, headers, exception);
+			throw new ApiException(message, (int)response.StatusCode, null, exception);
 		}
 	}
 

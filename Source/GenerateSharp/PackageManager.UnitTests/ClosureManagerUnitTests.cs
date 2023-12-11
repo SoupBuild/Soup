@@ -47,39 +47,40 @@ public class ClosureManagerUnitTests
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 1,
-						Build = "Build0",
-						Tool = "Tool0",
-					}
-				},
+					LocalId = 1,
+					Build = "Build0",
+					Tool = "Tool0",
+				}
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Cpp",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-								}
-							},
-						}
+								Name = "Soup.Cpp",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+							}
+						},
 					}
-				},
+				}
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					}
-				},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+				}
+			},
 		};
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
@@ -109,23 +110,23 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:Wren Soup.Cpp -> 3.2.1",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: MyPackage -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:C++ MyPackage -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 3.2.1",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: MyPackage -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
 			},
 			testListener.Messages);
 
@@ -133,10 +134,10 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/MyPackage/Recipe.sml",
-					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/Recipe.sml",
+				"OpenRead: C:/Root/MyPackage/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
 			},
 			mockFileSystem.Requests);
 
@@ -156,26 +157,29 @@ public class ClosureManagerUnitTests
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 		mockMessageHandler.Verify(messageHandler =>
@@ -195,17 +199,17 @@ public class ClosureManagerUnitTests
 		var packageLockContent = await reader.ReadToEndAsync();
 		var expected =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "MyPackage", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Cpp", Version: "3.2.1" }
-						]
+						Wren: {
+							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
+						}
 					}
 					Tool0: {
 
@@ -236,8 +240,8 @@ public class ClosureManagerUnitTests
 					Version: "1.0.0"
 					Dependencies: {
 						Runtime: [
-							{ Reference: "Package1@1.2.3" }
-							{ Reference: "Package2@3.2.1" }
+							{ Reference: "User1|Package1@1.2.3" }
+							{ Reference: "User1|Package2@3.2.1" }
 						]
 					}
 					"""))));
@@ -265,14 +269,14 @@ public class ClosureManagerUnitTests
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package1/versions/1.2.3/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package2/versions/3.2.1/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
@@ -297,13 +301,13 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"INFO: Generate final service closure",
-					"ERRO: Unable to create closure: Something went horribly wrong!",
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+				"INFO: Generate final service closure",
+				"ERRO: Unable to create closure: Something went horribly wrong!",
 			},
 			testListener.Messages);
 
@@ -311,9 +315,9 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/MyPackage/Recipe.sml",
-					"OpenRead: C:/Root/MyPackage/Recipe.sml",
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/Recipe.sml",
+				"OpenRead: C:/Root/MyPackage/Recipe.sml",
 			},
 			mockFileSystem.Requests);
 
@@ -342,43 +346,46 @@ public class ClosureManagerUnitTests
 			},
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			{
+				new Api.Client.PackagePublicReferenceModel()
 				{
-					new Api.Client.PackagePublicReferenceModel()
-					{
-						Id = 1,
-						Language = "C++",
-						Name = "Package1",
-						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicReferenceModel()
-					{
-						Id = 2,
-						Language = "C++",
-						Name = "Package2",
-						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
+					Id = 1,
+					Language = "C++",
+					Name = "Package1",
+					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicReferenceModel()
+				{
+					Id = 2,
+					Language = "C++",
+					Name = "Package2",
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+			},
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 		mockMessageHandler.Verify(messageHandler =>
@@ -412,8 +419,8 @@ public class ClosureManagerUnitTests
 					Version: "1.0.0"
 					Dependencies: {
 						Runtime: [
-							{ Reference: "Package1@1.2.3" }
-							{ Reference: "Package2@3.2.1" }
+							{ Reference: "User1|Package1@1.2.3" }
+							{ Reference: "User1|Package2@3.2.1" }
 						]
 					}
 					"""))));
@@ -431,61 +438,64 @@ public class ClosureManagerUnitTests
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 3,
-						Build = "Build0",
-						Tool = "Tool0",
-					},
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						Public = new Api.Client.PackagePublicExactReferenceModel()
-						{
-							Name = "Package1",
-							Language = "C++",
-							Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-						},
-						Build = "Build0",
-						Tool = "Tool0",
-					},
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						Public = new Api.Client.PackagePublicExactReferenceModel()
-						{
-							Name = "Package2",
-							Language = "C++",
-							Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-						},
-						Build = "Build0",
-						Tool = "Tool0",
-					},
+					LocalId = 3,
+					Build = "Build0",
+					Tool = "Tool0",
 				},
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
+				{
+					Public = new Api.Client.PackagePublicExactReferenceModel()
+					{
+						Name = "Package1",
+						Owner = "User1",
+						Language = "C++",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					Build = "Build0",
+					Tool = "Tool0",
+				},
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
+				{
+					Public = new Api.Client.PackagePublicExactReferenceModel()
+					{
+						Name = "Package2",
+						Owner = "User1",
+						Language = "C++",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					Build = "Build0",
+					Tool = "Tool0",
+				},
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Cpp",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-								}
-							},
-						}
-					},
+								Name = "Soup.Cpp",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+							}
+						},
+					}
 				},
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 				},
+			},
 		};
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
@@ -500,14 +510,14 @@ public class ClosureManagerUnitTests
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package1/versions/1.2.3/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package2/versions/3.2.1/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
@@ -529,30 +539,29 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Root:C++ Package1 -> 1.2.3",
-					"DIAG: Root:C++ Package2 -> 3.2.1",
-					"DIAG: Build0:Wren Soup.Cpp -> 3.2.1",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: MyPackage -> ./",
-					"HIGH: Install Package: C++ Package1@1.2.3",
-					"HIGH: Downloading package",
-					"HIGH: Install Package: C++ Package2@3.2.1",
-					"HIGH: Downloading package",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
-
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:C++ MyPackage -> ./",
+				"DIAG: Root:C++ User1|Package1 -> 1.2.3",
+				"DIAG: Root:C++ User1|Package2 -> 3.2.1",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 3.2.1",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: MyPackage -> ./",
+				"HIGH: Install Package: C++ Package1@1.2.3",
+				"HIGH: Downloading package",
+				"HIGH: Install Package: C++ Package2@3.2.1",
+				"HIGH: Downloading package",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
 			},
 			testListener.Messages);
 
@@ -560,25 +569,24 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/MyPackage/Recipe.sml",
-					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/Cpp/Package1/1.2.3/",
-					"OpenWriteTruncate: C:/Staging/Package1.zip",
-					"CreateDirectory: C:/Staging/C++_Package1_1.2.3/",
-					"DeleteFile: C:/Staging/Package1.zip",
-					"Exists: C:/PackageStore/Cpp/Package1",
-					"CreateDirectory: C:/PackageStore/Cpp/Package1",
-					"Rename: [C:/Staging/C++_Package1_1.2.3/] -> [C:/PackageStore/Cpp/Package1/1.2.3/]",
-					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
-					"OpenWriteTruncate: C:/Staging/Package2.zip",
-					"CreateDirectory: C:/Staging/C++_Package2_3.2.1/",
-					"DeleteFile: C:/Staging/Package2.zip",
-					"Exists: C:/PackageStore/Cpp/Package2",
-					"CreateDirectory: C:/PackageStore/Cpp/Package2",
-					"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/Cpp/Package2/3.2.1/]",
-
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/Recipe.sml",
+				"OpenRead: C:/Root/MyPackage/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/PackageStore/Cpp/User1/Package1/1.2.3/",
+				"OpenWriteTruncate: C:/Staging/Package1.zip",
+				"CreateDirectory: C:/Staging/C++_Package1_1.2.3/",
+				"DeleteFile: C:/Staging/Package1.zip",
+				"Exists: C:/PackageStore/Cpp/User1/Package1",
+				"CreateDirectory: C:/PackageStore/Cpp/User1/Package1",
+				"Rename: [C:/Staging/C++_Package1_1.2.3/] -> [C:/PackageStore/Cpp/User1/Package1/1.2.3/]",
+				"Exists: C:/PackageStore/Cpp/User1/Package2/3.2.1/",
+				"OpenWriteTruncate: C:/Staging/Package2.zip",
+				"CreateDirectory: C:/Staging/C++_Package2_3.2.1/",
+				"DeleteFile: C:/Staging/Package2.zip",
+				"Exists: C:/PackageStore/Cpp/User1/Package2",
+				"CreateDirectory: C:/PackageStore/Cpp/User1/Package2",
+				"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/Cpp/User1/Package2/3.2.1/]",
 			},
 			mockFileSystem.Requests);
 
@@ -605,76 +613,79 @@ public class ClosureManagerUnitTests
 					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
+				{
 					{
+						"Runtime",
+						new List<int>()
 						{
-							"Runtime",
-							new List<int>()
-							{
-								1,
-								2,
-							}
-						},
-					}
+							1,
+							2,
+						}
+					},
+				}
 			},
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			{
+				new Api.Client.PackagePublicReferenceModel()
 				{
-					new Api.Client.PackagePublicReferenceModel()
-					{
-						Id = 1,
-						Language = "C++",
-						Name = "Package1",
-						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicReferenceModel()
-					{
-						Id = 2,
-						Language = "C++",
-						Name = "Package2",
-						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
+					Id = 1,
+					Language = "C++",
+					Name = "Package1",
+					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicReferenceModel()
+				{
+					Id = 2,
+					Language = "C++",
+					Name = "Package2",
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+			},
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 		mockMessageHandler.Verify(messageHandler =>
-				messageHandler.SendAsync(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					expectedGenerateRequestValue),
-				Times.Once());
+			messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+				"{Accept: [application/json]}",
+				expectedGenerateRequestValue),
+			Times.Once());
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package1/versions/1.2.3/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package2/versions/3.2.1/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
@@ -688,19 +699,19 @@ public class ClosureManagerUnitTests
 		var packageLockContent = await reader.ReadToEndAsync();
 		var expected =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "MyPackage", Version: "./", Build: "Build0", Tool: "Tool0" }
-							{ Name: "Package1", Version: "1.2.3", Build: "Build0", Tool: "Tool0" }
-							{ Name: "Package2", Version: "3.2.1", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
+							"User1|Package1": { Version: "1.2.3", Build: "Build0", Tool: "Tool0" }
+							"User1|Package2": { Version: "3.2.1", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Cpp", Version: "3.2.1" }
-						]
+						Wren: {
+							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
+						}
 					}
 					Tool0: {
 
@@ -731,13 +742,13 @@ public class ClosureManagerUnitTests
 					Version: "1.0.0"
 					Dependencies: {
 						Build: [
-							{ Reference: "Package1@1.2.3" }
+							{ Reference: "User1|Package1@1.2.3" }
 						]
 					}
 					"""))));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml"),
+			new Path("C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 					Name: "Package1"
@@ -746,7 +757,7 @@ public class ClosureManagerUnitTests
 					"""))));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml"),
+			new Path("C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 					Name: "Soup.Cpp"
@@ -767,86 +778,89 @@ public class ClosureManagerUnitTests
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 2,
-						Build = "Build0",
-						Tool = "Tool0",
-					},
+					LocalId = 2,
+					Build = "Build0",
+					Tool = "Tool0",
 				},
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Cpp",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 5, Minor = 0, Patch = 0, },
-								}
-							},
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+								Name = "Soup.Cpp",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 5, Minor = 0, Patch = 0, },
+							}
+						},
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
+						{
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Package1",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-								}
-							},
-						}
-					},
+								Name = "Package1",
+								Owner = "User1",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+							}
+						},
+					}
 				},
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 				},
+			},
 		};
 		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 1,
-						Build = "Build0",
-						Tool = "Tool0",
-					},
+					LocalId = 1,
+					Build = "Build0",
+					Tool = "Tool0",
 				},
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Wren",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-								}
-							},
-						}
-					},
+								Name = "Soup.Wren",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+							}
+						},
+					}
 				},
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 				},
+			},
 		};
 		_ = mockMessageHandler
 			.SetupSequence(messageHandler => messageHandler.SendAsync(
@@ -869,21 +883,21 @@ public class ClosureManagerUnitTests
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/User1/Package1/versions/1.2.3/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/mwasplund/Soup.Cpp/versions/5.0.0/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
+				new Uri("https://test.api.soupbuild.com/v1/users/mwasplund/packages/Wren/Soup.Wren/versions/6.0.0/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
@@ -905,61 +919,61 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:Wren Soup.Cpp -> 5.0.0",
-					"DIAG: Build0:Wren Package1 -> 1.2.3",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: MyPackage -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Cpp@5.0.0",
-					"HIGH: Downloading package",
-					"HIGH: Install Package: Wren Package1@1.2.3",
-					"HIGH: Downloading package",
-					"INFO: Restore Packages for Closure Tool0",
-					"DIAG: Create Directory: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:Wren Soup.Cpp -> ./",
-					"DIAG: Build0:Wren Soup.Wren -> 4.5.6",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language Wren",
-					"INFO: Skip Package: Soup.Cpp -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Wren@4.5.6",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
-					"DIAG: Create Directory: C:/LockStore/Wren/Package1/1.2.3/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:Wren Package1 -> ./",
-					"DIAG: Build0:Wren Soup.Wren -> 4.5.6",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language Wren",
-					"INFO: Skip Package: Package1 -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Wren@4.5.6",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:C++ MyPackage -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 5.0.0",
+				"DIAG: Build0:Wren User1|Package1 -> 1.2.3",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: MyPackage -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Cpp@5.0.0",
+				"HIGH: Downloading package",
+				"HIGH: Install Package: Wren Package1@1.2.3",
+				"HIGH: Downloading package",
+				"INFO: Restore Packages for Closure Tool0",
+				"DIAG: Create Directory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:Wren Soup.Cpp -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language Wren",
+				"INFO: Skip Package: Soup.Cpp -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
+				"DIAG: Create Directory: C:/LockStore/Wren/User1/Package1/1.2.3/",
+				"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:Wren Package1 -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language Wren",
+				"INFO: Skip Package: Package1 -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
 			},
 			testListener.Messages);
 
@@ -967,36 +981,36 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/MyPackage/Recipe.sml",
-					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp/5.0.0/",
-					"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
-					"CreateDirectory: C:/Staging/Wren_Soup.Cpp_5.0.0/",
-					"DeleteFile: C:/Staging/Soup.Cpp.zip",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp",
-					"CreateDirectory: C:/PackageStore/Wren/Soup.Cpp",
-					"Rename: [C:/Staging/Wren_Soup.Cpp_5.0.0/] -> [C:/PackageStore/Wren/Soup.Cpp/5.0.0/]",
-					"Exists: C:/PackageStore/Wren/Package1/1.2.3/",
-					"OpenWriteTruncate: C:/Staging/Package1.zip",
-					"CreateDirectory: C:/Staging/Wren_Package1_1.2.3/",
-					"DeleteFile: C:/Staging/Package1.zip",
-					"Exists: C:/PackageStore/Wren/Package1",
-					"CreateDirectory: C:/PackageStore/Wren/Package1",
-					"Rename: [C:/Staging/Wren_Package1_1.2.3/] -> [C:/PackageStore/Wren/Package1/1.2.3/]",
-					"Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
-					"CreateDirectory: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
-					"Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenRead: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/LockStore/Wren/Package1/1.2.3/",
-					"CreateDirectory: C:/LockStore/Wren/Package1/1.2.3/",
-					"Exists: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
-					"Exists: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
-					"OpenRead: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/Recipe.sml",
+				"OpenRead: C:/Root/MyPackage/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
+				"CreateDirectory: C:/Staging/Wren_Soup.Cpp_5.0.0/",
+				"DeleteFile: C:/Staging/Soup.Cpp.zip",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp",
+				"CreateDirectory: C:/PackageStore/Wren/mwasplund/Soup.Cpp",
+				"Rename: [C:/Staging/Wren_Soup.Cpp_5.0.0/] -> [C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/]",
+				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.3/",
+				"OpenWriteTruncate: C:/Staging/Package1.zip",
+				"CreateDirectory: C:/Staging/Wren_Package1_1.2.3/",
+				"DeleteFile: C:/Staging/Package1.zip",
+				"Exists: C:/PackageStore/Wren/User1/Package1",
+				"CreateDirectory: C:/PackageStore/Wren/User1/Package1",
+				"Rename: [C:/Staging/Wren_Package1_1.2.3/] -> [C:/PackageStore/Wren/User1/Package1/1.2.3/]",
+				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"CreateDirectory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
+				"OpenRead: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
+				"OpenWriteTruncate: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml",
+				"Exists: C:/LockStore/Wren/User1/Package1/1.2.3/",
+				"CreateDirectory: C:/LockStore/Wren/User1/Package1/1.2.3/",
+				"Exists: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
+				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
+				"OpenRead: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
+				"OpenWriteTruncate: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
 			},
 			mockFileSystem.Requests);
 
@@ -1035,36 +1049,39 @@ public class ClosureManagerUnitTests
 			},
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			{
+				new Api.Client.PackagePublicReferenceModel()
 				{
-					new Api.Client.PackagePublicReferenceModel()
-					{
-						Id = 1,
-						Language = "Wren",
-						Name = "Package1",
-						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
+					Id = 1,
+					Language = "Wren",
+					Name = "Package1",
+					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+			},
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1090,26 +1107,29 @@ public class ClosureManagerUnitTests
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1123,14 +1143,14 @@ public class ClosureManagerUnitTests
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/User1/Package1/versions/1.2.3/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/mwasplund/Soup.Cpp/versions/5.0.0/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
@@ -1144,18 +1164,18 @@ public class ClosureManagerUnitTests
 		var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
 		var expectedMyPackageLock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "MyPackage", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Cpp", Version: "5.0.0" }
-							{ Name: "Package1", Version: "1.2.3" }
-						]
+						Wren: {
+							"mwasplund|Soup.Cpp": { Version: "5.0.0" }
+							"User1|Package1": { Version: "1.2.3" }
+						}
 					}
 					Tool0: {
 
@@ -1165,23 +1185,23 @@ public class ClosureManagerUnitTests
 
 		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
-		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
+		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml"));
 		_ = package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
 		var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
 		var expectedPackage1Lock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						Wren: [
-							{ Name: "Package1", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						Wren: {
+							Package1: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Wren", Version: "4.5.6" }
-						]
+						Wren: {
+							"mwasplund|Soup.Wren": { Version: "4.5.6" }
+						}
 					}
 					Tool0: {
 
@@ -1191,23 +1211,23 @@ public class ClosureManagerUnitTests
 
 		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-		var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml"));
+		var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml"));
 		_ = soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
 		var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
 		var expectedSoupCppLock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						Wren: [
-							{ Name: "Soup.Cpp", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						Wren: {
+							"Soup.Cpp": { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Wren", Version: "4.5.6" }
-						]
+						Wren: {
+							"mwasplund|Soup.Wren": { Version: "4.5.6" }
+						}
 					}
 					Tool0: {
 
@@ -1238,13 +1258,13 @@ public class ClosureManagerUnitTests
 					Version: "1.0.0"
 					Dependencies: {
 						Build: [
-							{ Reference: "Package1@1.2.3" }
+							{ Reference: "User1|Package1@1.2.3" }
 						]
 					}
 					"""))));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml"),
+			new Path("C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 					Name: "Package1"
@@ -1252,13 +1272,13 @@ public class ClosureManagerUnitTests
 					Version: "1.2.3"
 					Dependencies: {
 						Tool: [
-							{ Reference: "C++|Package2@2.3.4" }
+							{ Reference: "C++:User1|Package2@2.3.4" }
 						]
 					}
 					"""))));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml"),
+			new Path("C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 					Name: "Package2"
@@ -1267,7 +1287,7 @@ public class ClosureManagerUnitTests
 					"""))));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml"),
+			new Path("C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 					Name: "Soup.Cpp"
@@ -1288,173 +1308,179 @@ public class ClosureManagerUnitTests
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 2,
-						Build = "Build0",
-						Tool = "Tool0",
-					},
+					LocalId = 2,
+					Build = "Build0",
+					Tool = "Tool0",
 				},
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Cpp",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 5, Minor = 0, Patch = 0, },
-								}
-							},
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+								Name = "Soup.Cpp",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 5, Minor = 0, Patch = 0, },
+							}
+						},
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
+						{
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Package1",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-								}
-							},
-						}
-					},
+								Name = "Package1",
+								Owner = "User1",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+							}
+						},
+					}
 				},
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 				},
+			},
 		};
 		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 1,
-						Build = "Build0",
-						Tool = "Tool0",
-					},
+					LocalId = 1,
+					Build = "Build0",
+					Tool = "Tool0",
 				},
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Wren",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-								}
-							},
-						}
-					},
+								Name = "Soup.Wren",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+							}
+						},
+					}
 				},
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 				},
+			},
 		};
 		var generateClosureResult3 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 2,
-						Build = "Build0",
-						Tool = "Tool0",
-					},
+					LocalId = 2,
+					Build = "Build0",
+					Tool = "Tool0",
 				},
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Wren",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-								}
-							},
-						}
-					},
+								Name = "Soup.Wren",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+							}
+						},
+					}
 				},
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Package2",
-									Language = "C++",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 2, Minor = 3, Patch = 4, },
-								}
-							},
-						}
-					},
+								Name = "Package2",
+								Owner = "User1",
+								Language = "C++",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 2, Minor = 3, Patch = 4, },
+							}
+						},
+					}
 				},
+			},
 		};
 		var generateClosureResult4 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 1,
-						Build = "Build0",
-						Tool = "Tool0",
-					},
+					LocalId = 1,
+					Build = "Build0",
+					Tool = "Tool0",
 				},
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Cpp",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-								}
-							},
-						}
-					},
+								Name = "Soup.Cpp",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+							}
+						},
+					}
 				},
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 				},
+			},
 		};
 		_ = mockMessageHandler
 			.SetupSequence(messageHandler => messageHandler.SendAsync(
@@ -1481,21 +1507,21 @@ public class ClosureManagerUnitTests
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/User1/Package1/versions/1.2.3/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/2.3.4/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package2/versions/2.3.4/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/mwasplund/Soup.Cpp/versions/5.0.0/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
@@ -1524,83 +1550,83 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:Wren Soup.Cpp -> 5.0.0",
-					"DIAG: Build0:Wren Package1 -> 1.2.3",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: MyPackage -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Cpp@5.0.0",
-					"HIGH: Downloading package",
-					"HIGH: Install Package: Wren Package1@1.2.3",
-					"HIGH: Downloading package",
-					"INFO: Restore Packages for Closure Tool0",
-					"DIAG: Create Directory: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:Wren Soup.Cpp -> ./",
-					"DIAG: Build0:Wren Soup.Wren -> 4.5.6",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language Wren",
-					"INFO: Skip Package: Soup.Cpp -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Wren@4.5.6",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
-					"DIAG: Create Directory: C:/LockStore/Wren/Package1/1.2.3/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:Wren Package1 -> ./",
-					"DIAG: Build0:Wren Soup.Wren -> 4.5.6",
-					"DIAG: Tool0:C++ Package2 -> 2.3.4",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language Wren",
-					"INFO: Skip Package: Package1 -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Wren@4.5.6",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"INFO: Restore Packages for Language C++",
-					"HIGH: Install Package: C++ Package2@2.3.4",
-					"HIGH: Downloading package",
-					"HIGH: Skip built in language version in build closure",
-					"DIAG: Create Directory: C:/LockStore/Cpp/Package2/2.3.4/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:C++ Package2 -> ./",
-					"DIAG: Build0:Wren Soup.Cpp -> 3.2.1",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: Package2 -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:C++ MyPackage -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 5.0.0",
+				"DIAG: Build0:Wren User1|Package1 -> 1.2.3",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: MyPackage -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Cpp@5.0.0",
+				"HIGH: Downloading package",
+				"HIGH: Install Package: Wren Package1@1.2.3",
+				"HIGH: Downloading package",
+				"INFO: Restore Packages for Closure Tool0",
+				"DIAG: Create Directory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:Wren Soup.Cpp -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language Wren",
+				"INFO: Skip Package: Soup.Cpp -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
+				"DIAG: Create Directory: C:/LockStore/Wren/User1/Package1/1.2.3/",
+				"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:Wren Package1 -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"DIAG: Tool0:C++ User1|Package2 -> 2.3.4",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language Wren",
+				"INFO: Skip Package: Package1 -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"INFO: Restore Packages for Language C++",
+				"HIGH: Install Package: C++ Package2@2.3.4",
+				"HIGH: Downloading package",
+				"HIGH: Skip built in language version in build closure",
+				"DIAG: Create Directory: C:/LockStore/Cpp/User1/Package2/2.3.4/",
+				"INFO: Ensure Package Lock Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:C++ Package2 -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 3.2.1",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: Package2 -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
 			},
 			testListener.Messages);
 
@@ -1608,49 +1634,49 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/MyPackage/Recipe.sml",
-					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp/5.0.0/",
-					"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
-					"CreateDirectory: C:/Staging/Wren_Soup.Cpp_5.0.0/",
-					"DeleteFile: C:/Staging/Soup.Cpp.zip",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp",
-					"CreateDirectory: C:/PackageStore/Wren/Soup.Cpp",
-					"Rename: [C:/Staging/Wren_Soup.Cpp_5.0.0/] -> [C:/PackageStore/Wren/Soup.Cpp/5.0.0/]",
-					"Exists: C:/PackageStore/Wren/Package1/1.2.3/",
-					"OpenWriteTruncate: C:/Staging/Package1.zip",
-					"CreateDirectory: C:/Staging/Wren_Package1_1.2.3/",
-					"DeleteFile: C:/Staging/Package1.zip",
-					"Exists: C:/PackageStore/Wren/Package1",
-					"CreateDirectory: C:/PackageStore/Wren/Package1",
-					"Rename: [C:/Staging/Wren_Package1_1.2.3/] -> [C:/PackageStore/Wren/Package1/1.2.3/]",
-					"Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
-					"CreateDirectory: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
-					"Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenRead: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/LockStore/Wren/Package1/1.2.3/",
-					"CreateDirectory: C:/LockStore/Wren/Package1/1.2.3/",
-					"Exists: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
-					"Exists: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
-					"OpenRead: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
-					"Exists: C:/PackageStore/Cpp/Package2/2.3.4/",
-					"OpenWriteTruncate: C:/Staging/Package2.zip",
-					"CreateDirectory: C:/Staging/C++_Package2_2.3.4/",
-					"DeleteFile: C:/Staging/Package2.zip",
-					"Exists: C:/PackageStore/Cpp/Package2",
-					"CreateDirectory: C:/PackageStore/Cpp/Package2",
-					"Rename: [C:/Staging/C++_Package2_2.3.4/] -> [C:/PackageStore/Cpp/Package2/2.3.4/]",
-					"Exists: C:/LockStore/Cpp/Package2/2.3.4/",
-					"CreateDirectory: C:/LockStore/Cpp/Package2/2.3.4/",
-					"Exists: C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml",
-					"Exists: C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml",
-					"OpenRead: C:/PackageStore/Cpp/Package2/2.3.4/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/Recipe.sml",
+				"OpenRead: C:/Root/MyPackage/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
+				"CreateDirectory: C:/Staging/Wren_Soup.Cpp_5.0.0/",
+				"DeleteFile: C:/Staging/Soup.Cpp.zip",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp",
+				"CreateDirectory: C:/PackageStore/Wren/mwasplund/Soup.Cpp",
+				"Rename: [C:/Staging/Wren_Soup.Cpp_5.0.0/] -> [C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/]",
+				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.3/",
+				"OpenWriteTruncate: C:/Staging/Package1.zip",
+				"CreateDirectory: C:/Staging/Wren_Package1_1.2.3/",
+				"DeleteFile: C:/Staging/Package1.zip",
+				"Exists: C:/PackageStore/Wren/User1/Package1",
+				"CreateDirectory: C:/PackageStore/Wren/User1/Package1",
+				"Rename: [C:/Staging/Wren_Package1_1.2.3/] -> [C:/PackageStore/Wren/User1/Package1/1.2.3/]",
+				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"CreateDirectory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
+				"OpenRead: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
+				"OpenWriteTruncate: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml",
+				"Exists: C:/LockStore/Wren/User1/Package1/1.2.3/",
+				"CreateDirectory: C:/LockStore/Wren/User1/Package1/1.2.3/",
+				"Exists: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
+				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
+				"OpenRead: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
+				"OpenWriteTruncate: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
+				"Exists: C:/PackageStore/Cpp/User1/Package2/2.3.4/",
+				"OpenWriteTruncate: C:/Staging/Package2.zip",
+				"CreateDirectory: C:/Staging/C++_Package2_2.3.4/",
+				"DeleteFile: C:/Staging/Package2.zip",
+				"Exists: C:/PackageStore/Cpp/User1/Package2",
+				"CreateDirectory: C:/PackageStore/Cpp/User1/Package2",
+				"Rename: [C:/Staging/C++_Package2_2.3.4/] -> [C:/PackageStore/Cpp/User1/Package2/2.3.4/]",
+				"Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/",
+				"CreateDirectory: C:/LockStore/Cpp/User1/Package2/2.3.4/",
+				"Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
+				"Exists: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
+				"OpenRead: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
+				"OpenWriteTruncate: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
 			},
 			mockFileSystem.Requests);
 
@@ -1693,36 +1719,39 @@ public class ClosureManagerUnitTests
 			},
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			{
+				new Api.Client.PackagePublicReferenceModel()
 				{
-					new Api.Client.PackagePublicReferenceModel()
-					{
-						Id = 1,
-						Language = "Wren",
-						Name = "Package1",
-						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
+					Id = 1,
+					Language = "Wren",
+					Name = "Package1",
+					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+			},
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1748,26 +1777,29 @@ public class ClosureManagerUnitTests
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1789,48 +1821,51 @@ public class ClosureManagerUnitTests
 					Version = new Api.Client.SemanticVersionModel() { Major = 6, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
+				{
 					{
+						"Tool",
+						new List<int>()
 						{
-							"Tool",
-							new List<int>()
-							{
-								1,
-							}
-						},
-					}
+							1,
+						}
+					},
+				}
 			},
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
+			{
+				new Api.Client.PackagePublicReferenceModel()
 				{
-					new Api.Client.PackagePublicReferenceModel()
-					{
-						Id = 1,
-						Language = "C++",
-						Name = "Package2",
-						Version = new Api.Client.SemanticVersionModel() { Major = 2, Minor = 3, Patch = 4, },
-					},
+					Id = 1,
+					Language = "C++",
+					Name = "Package2",
+					Version = new Api.Client.SemanticVersionModel() { Major = 2, Minor = 3, Patch = 4, },
 				},
+			},
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1856,26 +1891,29 @@ public class ClosureManagerUnitTests
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest4Value = JsonSerializer.Serialize(expectedGenerateRequest4);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1889,21 +1927,21 @@ public class ClosureManagerUnitTests
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/User1/Package1/versions/1.2.3/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/2.3.4/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package2/versions/2.3.4/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/mwasplund/Soup.Cpp/versions/5.0.0/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
@@ -1917,18 +1955,18 @@ public class ClosureManagerUnitTests
 		var myPackageLockContent = await readerMyPackageLock.ReadToEndAsync();
 		var expectedMyPackageLock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "MyPackage", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Cpp", Version: "5.0.0" }
-							{ Name: "Package1", Version: "1.2.3" }
-						]
+						Wren: {
+							"mwasplund|Soup.Cpp": { Version: "5.0.0" }
+							"User1|Package1": { Version: "1.2.3" }
+						}
 					}
 					Tool0: {
 
@@ -1938,51 +1976,51 @@ public class ClosureManagerUnitTests
 
 		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
-		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
+		var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml"));
 		_ = package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
 		var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
 		var expectedPackage1Lock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						Wren: [
-							{ Name: "Package1", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						Wren: {
+							Package1: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Wren", Version: "4.5.6" }
-						]
+						Wren: {
+							"mwasplund|Soup.Wren": { Version: "4.5.6" }
+						}
 					}
 					Tool0: {
-						"C++": [
-							{ Name: "Package2", Version: "2.3.4" }
-						]
+						"C++": {
+							"User1|Package2": { Version: "2.3.4" }
+						}
 					}
 				}
 				""";
 
 		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Cpp/Package2/2.3.4/PackageLock.sml"));
+		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml"));
 		_ = package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerPackage2Lock = new System.IO.StreamReader(package2Lock.Content);
 		var package2LockContent = await readerPackage2Lock.ReadToEndAsync();
 		var expectedPackage2Lock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "Package2", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							Package2: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Cpp", Version: "3.2.1" }
-						]
+						Wren: {
+							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
+						}
 					}
 					Tool0: {
 
@@ -1992,23 +2030,23 @@ public class ClosureManagerUnitTests
 
 		Assert.Equal(expectedPackage2Lock, package2LockContent);
 
-		var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml"));
+		var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/PackageLock.sml"));
 		_ = soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
 		var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
 		var expectedSoupCppLock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						Wren: [
-							{ Name: "Soup.Cpp", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						Wren: {
+							"Soup.Cpp": { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Wren", Version: "4.5.6" }
-						]
+						Wren: {
+							"mwasplund|Soup.Wren": { Version: "4.5.6" }
+						}
 					}
 					Tool0: {
 
@@ -2062,81 +2100,83 @@ public class ClosureManagerUnitTests
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 2,
-						Build = "Build0",
-						Tool = "Tool0",
-					}
-				},
+					LocalId = 2,
+					Build = "Build0",
+					Tool = "Tool0",
+				}
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Cpp",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-								}
-							},
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
-							{
-								LocalId = 1,
-							},
-						}
+								Name = "Soup.Cpp",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+							}
+						},
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
+						{
+							LocalId = 1,
+						},
 					}
-				},
+				}
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					}
-				},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+				}
+			},
 		};
 		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 1,
-						Build = "Build0",
-						Tool = "Tool0",
-					}
-				},
+					LocalId = 1,
+					Build = "Build0",
+					Tool = "Tool0",
+				}
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Wren",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-								}
-							},
-						}
+								Name = "Soup.Wren",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+							}
+						},
 					}
-				},
+				}
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					}
-				},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+				}
+			},
 		};
 		_ = mockMessageHandler
 			.SetupSequence(messageHandler => messageHandler.SendAsync(
@@ -2170,43 +2210,43 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:Wren Soup.Cpp -> 3.2.1",
-					"DIAG: Build0:Wren Package1 -> ../Package1/",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: MyPackage -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Skip Package: Package1 -> ../Package1/",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Ensure Package Lock Exists: C:/Root/Package1/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/Package1/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:Wren Package1 -> ./",
-					"DIAG: Build0:Wren Soup.Wren -> 4.5.6",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language Wren",
-					"INFO: Skip Package: Package1 -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Wren@4.5.6",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:C++ MyPackage -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 3.2.1",
+				"DIAG: Build0:Wren Package1 -> ../Package1/",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: MyPackage -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Skip Package: Package1 -> ../Package1/",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Ensure Package Lock Exists: C:/Root/Package1/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/Package1/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:Wren Package1 -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language Wren",
+				"INFO: Skip Package: Package1 -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
 			},
 			testListener.Messages);
 
@@ -2214,17 +2254,16 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/MyPackage/Recipe.sml",
-					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"Exists: C:/Root/Package1/Recipe.sml",
-					"OpenRead: C:/Root/Package1/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/Package1/PackageLock.sml",
-					"Exists: C:/Root/Package1/Recipe.sml",
-					"OpenRead: C:/Root/Package1/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
-
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/Recipe.sml",
+				"OpenRead: C:/Root/MyPackage/Recipe.sml",
+				"Exists: C:/Root/Package1/Recipe.sml",
+				"OpenRead: C:/Root/Package1/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/Package1/PackageLock.sml",
+				"Exists: C:/Root/Package1/Recipe.sml",
+				"OpenRead: C:/Root/Package1/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
 			},
 			mockFileSystem.Requests);
 
@@ -2251,40 +2290,43 @@ public class ClosureManagerUnitTests
 					}
 			},
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
+			{
+				new Api.Client.PackageLocalReferenceModel()
 				{
-					new Api.Client.PackageLocalReferenceModel()
+					Id = 1,
+					Language = new Api.Client.LanguageReferenceModel()
 					{
-						Id = 1,
-						Language = new Api.Client.LanguageReferenceModel()
-						{
-							Name = "Wren",
-							Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
-						},
-						Dependencies = new Dictionary<string, ICollection<int>>(),
+						Name = "Wren",
+						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
+					Dependencies = new Dictionary<string, ICollection<int>>(),
 				},
+			},
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2310,26 +2352,29 @@ public class ClosureManagerUnitTests
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2349,18 +2394,18 @@ public class ClosureManagerUnitTests
 		var packageLockContent1 = await reader1.ReadToEndAsync();
 		var expectedPackageLock1 =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "MyPackage", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Cpp", Version: "3.2.1" }
-							{ Name: "Package1", Version: "../Package1/" }
-						]
+						Wren: {
+							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
+							Package1: { Version: "../Package1/" }
+						}
 					}
 					Tool0: {
 
@@ -2376,17 +2421,17 @@ public class ClosureManagerUnitTests
 		var packageLockContent2 = await reader2.ReadToEndAsync();
 		var expectedPackageLock2 =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						Wren: [
-							{ Name: "Package1", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						Wren: {
+							Package1: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Soup.Wren", Version: "4.5.6" }
-						]
+						Wren: {
+							"mwasplund|Soup.Wren": { Version: "4.5.6" }
+						}
 					}
 					Tool0: {
 
@@ -2454,96 +2499,96 @@ public class ClosureManagerUnitTests
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 3,
-						Build = "Build0",
-						Tool = "Tool0",
-					}
-				},
+					LocalId = 3,
+					Build = "Build0",
+					Tool = "Tool0",
+				}
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
-							{
-								LocalId = 2,
-							},
-						}
+							LocalId = 2,
+						},
 					}
-				},
+				}
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
-							{
-								LocalId = 1,
-							},
-						}
+							LocalId = 1,
+						},
 					}
-				},
+				}
+			},
 		};
 
 		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 2,
-						Build = "Build0",
-						Tool = "Tool0",
-					}
-				},
+					LocalId = 2,
+					Build = "Build0",
+					Tool = "Tool0",
+				}
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					}
-				},
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+				}
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					}
-				},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+				}
+			},
 		};
 
 		var generateClosureResult3 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 1,
-						Build = "Build0",
-						Tool = "Tool0",
-					}
-				},
+					LocalId = 1,
+					Build = "Build0",
+					Tool = "Tool0",
+				}
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					}
-				},
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+				}
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					}
-				},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+				}
+			},
 		};
 
 		_ = mockMessageHandler
@@ -2582,51 +2627,51 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
-					"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:Wren Package1 -> ../Package1/",
-					"DIAG: Tool0:C++ Package2 -> ../Package2/",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: MyPackage -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"INFO: Skip Package: Package1 -> ../Package1/",
-					"INFO: Restore Packages for Closure Tool0",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: Package2 -> ../Package2/",
-					"INFO: Ensure Package Lock Exists: C:/Root/Package1/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/Package1/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
-					"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:Wren Package1 -> ./",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language Wren",
-					"INFO: Skip Package: Package1 -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Closure Tool0",
-					"INFO: Ensure Package Lock Exists: C:/Root/Package2/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/Package2/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:C++ Package2 -> ./",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: Package2 -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Closure Tool0",
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
+				"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:C++ MyPackage -> ./",
+				"DIAG: Build0:Wren Package1 -> ../Package1/",
+				"DIAG: Tool0:C++ Package2 -> ../Package2/",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: MyPackage -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"INFO: Skip Package: Package1 -> ../Package1/",
+				"INFO: Restore Packages for Closure Tool0",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: Package2 -> ../Package2/",
+				"INFO: Ensure Package Lock Exists: C:/Root/Package1/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/Package1/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
+				"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:Wren Package1 -> ./",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language Wren",
+				"INFO: Skip Package: Package1 -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Closure Tool0",
+				"INFO: Ensure Package Lock Exists: C:/Root/Package2/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/Package2/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:C++ Package2 -> ./",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: Package2 -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Closure Tool0",
 			},
 			testListener.Messages);
 
@@ -2634,24 +2679,24 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/MyPackage/Recipe.sml",
-					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"Exists: C:/Root/Package1/Recipe.sml",
-					"OpenRead: C:/Root/Package1/Recipe.sml",
-					"Exists: C:/Root/Package2/Recipe.sml",
-					"OpenRead: C:/Root/Package2/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/Root/Package1/PackageLock.sml",
-					"Exists: C:/Root/Package1/Recipe.sml",
-					"OpenRead: C:/Root/Package1/Recipe.sml",
-					"Exists: C:/Root/Package2/Recipe.sml",
-					"OpenRead: C:/Root/Package2/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
-					"Exists: C:/Root/Package2/PackageLock.sml",
-					"Exists: C:/Root/Package2/Recipe.sml",
-					"OpenRead: C:/Root/Package2/Recipe.sml",
-					"OpenWriteTruncate: C:/Root/Package2/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/Recipe.sml",
+				"OpenRead: C:/Root/MyPackage/Recipe.sml",
+				"Exists: C:/Root/Package1/Recipe.sml",
+				"OpenRead: C:/Root/Package1/Recipe.sml",
+				"Exists: C:/Root/Package2/Recipe.sml",
+				"OpenRead: C:/Root/Package2/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/Root/Package1/PackageLock.sml",
+				"Exists: C:/Root/Package1/Recipe.sml",
+				"OpenRead: C:/Root/Package1/Recipe.sml",
+				"Exists: C:/Root/Package2/Recipe.sml",
+				"OpenRead: C:/Root/Package2/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
+				"Exists: C:/Root/Package2/PackageLock.sml",
+				"Exists: C:/Root/Package2/Recipe.sml",
+				"OpenRead: C:/Root/Package2/Recipe.sml",
+				"OpenWriteTruncate: C:/Root/Package2/PackageLock.sml",
 			},
 			mockFileSystem.Requests);
 
@@ -2667,70 +2712,73 @@ public class ClosureManagerUnitTests
 					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
+				{
+					{
+						"Build",
+						new List<int>()
+						{
+							2,
+						}
+					},
+				},
+			},
+			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
+			{
+				new Api.Client.PackageLocalReferenceModel()
+				{
+					Id = 1,
+					Language = new Api.Client.LanguageReferenceModel()
+					{
+						Name = "C++",
+						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					Dependencies = new Dictionary<string, ICollection<int>>(),
+				},
+				new Api.Client.PackageLocalReferenceModel()
+				{
+					Id = 2,
+					Language = new Api.Client.LanguageReferenceModel()
+					{
+						Name = "Wren",
+						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
+					},
+					Dependencies = new Dictionary<string, ICollection<int>>()
 					{
 						{
-							"Build",
+							"Tool",
 							new List<int>()
 							{
-								2,
+								1,
 							}
 						},
 					},
-			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
-				{
-					new Api.Client.PackageLocalReferenceModel()
-					{
-						Id = 1,
-						Language = new Api.Client.LanguageReferenceModel()
-						{
-							Name = "C++",
-							Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
-						},
-						Dependencies = new Dictionary<string, ICollection<int>>(),
-					},
-					new Api.Client.PackageLocalReferenceModel()
-					{
-						Id = 2,
-						Language = new Api.Client.LanguageReferenceModel()
-						{
-							Name = "Wren",
-							Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
-						},
-						Dependencies = new Dictionary<string, ICollection<int>>()
-						{
-							{
-								"Tool",
-								new List<int>()
-								{
-									1,
-								}
-							},
-						},
-					},
 				},
+			},
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2752,51 +2800,54 @@ public class ClosureManagerUnitTests
 					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
+				{
 					{
+						"Tool",
+						new List<int>()
 						{
-							"Tool",
-							new List<int>()
-							{
-								1,
-							}
+							1,
 						}
-					},
+					}
+				},
 			},
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
+			{
+				new Api.Client.PackageLocalReferenceModel()
 				{
-					new Api.Client.PackageLocalReferenceModel()
+					Id = 1,
+					Language = new Api.Client.LanguageReferenceModel()
 					{
-						Id = 1,
-						Language = new Api.Client.LanguageReferenceModel()
-						{
-							Name = "C++",
-							Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
-						},
-						Dependencies = new Dictionary<string, ICollection<int>>(),
+						Name = "C++",
+						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 					},
+					Dependencies = new Dictionary<string, ICollection<int>>(),
 				},
+			},
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2822,26 +2873,29 @@ public class ClosureManagerUnitTests
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2861,22 +2915,22 @@ public class ClosureManagerUnitTests
 		var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
 		var expectedMyPackageLock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "MyPackage", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						Wren: [
-							{ Name: "Package1", Version: "../Package1/" }
-						]
+						Wren: {
+							Package1: { Version: "../Package1/" }
+						}
 					}
 					Tool0: {
-						"C++": [
-							{ Name: "Package2", Version: "../Package2/" }
-						]
+						"C++": {
+							Package2: { Version: "../Package2/" }
+						}
 					}
 				}
 				""";
@@ -2889,12 +2943,12 @@ public class ClosureManagerUnitTests
 		var packageLock1Content = await package1LockReader.ReadToEndAsync();
 		var expectedPackage1Lock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						Wren: [
-							{ Name: "Package1", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						Wren: {
+							Package1: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
 
@@ -2913,12 +2967,12 @@ public class ClosureManagerUnitTests
 		var packageLock2Content = await package2LockReader.ReadToEndAsync();
 		var expectedPackage2Lock =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "Package2", Version: "./", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							Package2: { Version: "./", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
 
@@ -2946,19 +3000,19 @@ public class ClosureManagerUnitTests
 		// Create the original file
 		var original =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "MyPackage", Version: "./", Build: "Build0", Tool: "Tool0" }
-							{ Name: "Package1", Version: "1.2.4", Build: "Build0", Tool: "Tool0" }
-							{ Name: "Package2", Version: "3.2.1", Build: "Build0", Tool: "Tool0" }
-						]
+						"C++": {
+							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
+							"User1|Package1": { Version: "1.2.4", Build: "Build0", Tool: "Tool0" }
+							"User1|Package2": { Version: "3.2.1", Build: "Build0", Tool: "Tool0" }
+						}
 					}
 					Build0: {
-						"Wren": [
-							{ Name: "Soup.Cpp", Version: "3.2.2" }
-						]
+						"Wren": {
+							"mwasplund|Soup.Cpp": { Version: "3.2.2" }
+						}
 					}
 					Tool0: {
 					}
@@ -2972,7 +3026,7 @@ public class ClosureManagerUnitTests
 			new MockFile(originalContent));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml"),
+			new Path("C:/PackageStore/Wren/mwasplund/Soup.Cpp/3.2.2/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 					Name: "Soup.Cpp"
@@ -2992,21 +3046,21 @@ public class ClosureManagerUnitTests
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package1/versions/1.2.4/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package2/versions/3.2.1/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/3.2.2/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/mwasplund/Soup.Cpp/versions/3.2.2/download"),
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
@@ -3015,39 +3069,40 @@ public class ClosureManagerUnitTests
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
 			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
+			{
+				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
-					new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
-					{
-						LocalId = 1,
-						Build = "Build0",
-						Tool = "Tool0",
-					},
+					LocalId = 1,
+					Build = "Build0",
+					Tool = "Tool0",
 				},
+			},
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
+					"Build0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 					{
-						"Build0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
+						new Api.Client.PackageLocalOrPublicExactReferenceModel()
 						{
-							new Api.Client.PackageLocalOrPublicExactReferenceModel()
+							Public = new Api.Client.PackagePublicExactReferenceModel()
 							{
-								Public = new Api.Client.PackagePublicExactReferenceModel()
-								{
-									Name = "Soup.Cpp",
-									Language = "Wren",
-									Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-								}
-							},
-						}
-					},
+								Name = "Soup.Cpp",
+								Owner = "mwasplund",
+								Language = "Wren",
+								Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+							}
+						},
+					}
 				},
+			},
 			ToolClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
+			{
 				{
-					{
-						"Tool0",
-						new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
-					},
+					"Tool0",
+					new List<Api.Client.PackageLocalOrPublicExactReferenceModel>()
 				},
+			},
 		};
 		_ = mockMessageHandler
 			.Setup(messageHandler => messageHandler.SendAsync(
@@ -3077,39 +3132,39 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Restore from package lock",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: MyPackage -> ./",
-					"HIGH: Install Package: C++ Package1@1.2.4",
-					"HIGH: Downloading package",
-					"HIGH: Install Package: C++ Package2@3.2.1",
-					"HIGH: Downloading package",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Cpp@3.2.2",
-					"HIGH: Downloading package",
-					"INFO: Restore Packages for Closure Tool0",
-					"DIAG: Create Directory: C:/LockStore/Wren/Soup.Cpp/3.2.2/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/Soup.Cpp/3.2.2/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/Wren/Soup.Cpp/3.2.2/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml",
-					"INFO: Generate final service closure",
-					"DIAG: Root:Wren Soup.Cpp -> ./",
-					"DIAG: Build0:Wren Soup.Cpp -> 3.2.1",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language Wren",
-					"INFO: Skip Package: Soup.Cpp -> ./",
-					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language Wren",
-					"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version in build closure",
-					"INFO: Restore Packages for Closure Tool0",
-					"HIGH: Skip built in language version in build closure",
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Restore from package lock",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: MyPackage -> ./",
+				"HIGH: Install Package: C++ Package1@1.2.4",
+				"HIGH: Downloading package",
+				"HIGH: Install Package: C++ Package2@3.2.1",
+				"HIGH: Downloading package",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Cpp@3.2.2",
+				"HIGH: Downloading package",
+				"INFO: Restore Packages for Closure Tool0",
+				"DIAG: Create Directory: C:/LockStore/Wren/mwasplund/Soup.Cpp/3.2.2/",
+				"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/3.2.2/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/LockStore/Wren/mwasplund/Soup.Cpp/3.2.2/PackageLock.sml",
+				"INFO: Package Lock file does not exist.",
+				"INFO: Discovering full closure",
+				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/3.2.2/Recipe.sml",
+				"INFO: Generate final service closure",
+				"DIAG: Root:Wren Soup.Cpp -> ./",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 3.2.1",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language Wren",
+				"INFO: Skip Package: Soup.Cpp -> ./",
+				"INFO: Restore Packages for Closure Build0",
+				"INFO: Restore Packages for Language Wren",
+				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Skip built in language version in build closure",
+				"INFO: Restore Packages for Closure Tool0",
+				"HIGH: Skip built in language version in build closure",
 			},
 			testListener.Messages);
 
@@ -3117,35 +3172,35 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"OpenRead: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/Cpp/Package1/1.2.4/",
-					"OpenWriteTruncate: C:/Staging/Package1.zip",
-					"CreateDirectory: C:/Staging/C++_Package1_1.2.4/",
-					"DeleteFile: C:/Staging/Package1.zip",
-					"Exists: C:/PackageStore/Cpp/Package1",
-					"CreateDirectory: C:/PackageStore/Cpp/Package1",
-					"Rename: [C:/Staging/C++_Package1_1.2.4/] -> [C:/PackageStore/Cpp/Package1/1.2.4/]",
-					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
-					"OpenWriteTruncate: C:/Staging/Package2.zip",
-					"CreateDirectory: C:/Staging/C++_Package2_3.2.1/",
-					"DeleteFile: C:/Staging/Package2.zip",
-					"Exists: C:/PackageStore/Cpp/Package2",
-					"CreateDirectory: C:/PackageStore/Cpp/Package2",
-					"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/Cpp/Package2/3.2.1/]",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp/3.2.2/",
-					"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
-					"CreateDirectory: C:/Staging/Wren_Soup.Cpp_3.2.2/",
-					"DeleteFile: C:/Staging/Soup.Cpp.zip",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp",
-					"CreateDirectory: C:/PackageStore/Wren/Soup.Cpp",
-					"Rename: [C:/Staging/Wren_Soup.Cpp_3.2.2/] -> [C:/PackageStore/Wren/Soup.Cpp/3.2.2/]",
-					"Exists: C:/LockStore/Wren/Soup.Cpp/3.2.2/",
-					"CreateDirectory: C:/LockStore/Wren/Soup.Cpp/3.2.2/",
-					"Exists: C:/LockStore/Wren/Soup.Cpp/3.2.2/PackageLock.sml",
-					"Exists: C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml",
-					"OpenRead: C:/PackageStore/Wren/Soup.Cpp/3.2.2/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/Wren/Soup.Cpp/3.2.2/PackageLock.sml",
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"OpenRead: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/PackageStore/Cpp/User1/Package1/1.2.4/",
+				"OpenWriteTruncate: C:/Staging/Package1.zip",
+				"CreateDirectory: C:/Staging/C++_Package1_1.2.4/",
+				"DeleteFile: C:/Staging/Package1.zip",
+				"Exists: C:/PackageStore/Cpp/User1/Package1",
+				"CreateDirectory: C:/PackageStore/Cpp/User1/Package1",
+				"Rename: [C:/Staging/C++_Package1_1.2.4/] -> [C:/PackageStore/Cpp/User1/Package1/1.2.4/]",
+				"Exists: C:/PackageStore/Cpp/User1/Package2/3.2.1/",
+				"OpenWriteTruncate: C:/Staging/Package2.zip",
+				"CreateDirectory: C:/Staging/C++_Package2_3.2.1/",
+				"DeleteFile: C:/Staging/Package2.zip",
+				"Exists: C:/PackageStore/Cpp/User1/Package2",
+				"CreateDirectory: C:/PackageStore/Cpp/User1/Package2",
+				"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/Cpp/User1/Package2/3.2.1/]",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/3.2.2/",
+				"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
+				"CreateDirectory: C:/Staging/Wren_Soup.Cpp_3.2.2/",
+				"DeleteFile: C:/Staging/Soup.Cpp.zip",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp",
+				"CreateDirectory: C:/PackageStore/Wren/mwasplund/Soup.Cpp",
+				"Rename: [C:/Staging/Wren_Soup.Cpp_3.2.2/] -> [C:/PackageStore/Wren/mwasplund/Soup.Cpp/3.2.2/]",
+				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/3.2.2/",
+				"CreateDirectory: C:/LockStore/Wren/mwasplund/Soup.Cpp/3.2.2/",
+				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/3.2.2/PackageLock.sml",
+				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/3.2.2/Recipe.sml",
+				"OpenRead: C:/PackageStore/Wren/mwasplund/Soup.Cpp/3.2.2/Recipe.sml",
+				"OpenWriteTruncate: C:/LockStore/Wren/mwasplund/Soup.Cpp/3.2.2/PackageLock.sml",
 			},
 			mockFileSystem.Requests);
 
@@ -3179,26 +3234,29 @@ public class ClosureManagerUnitTests
 			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
+			{
+				new Api.Client.PackagePublicExactReferenceModel()
 				{
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.CSharp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Cpp",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-					},
-					new Api.Client.PackagePublicExactReferenceModel()
-					{
-						Language = "Wren",
-						Name = "Soup.Wren",
-						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
-					},
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.CSharp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Cpp",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+				},
+				new Api.Client.PackagePublicExactReferenceModel()
+				{
+					Language = "Wren",
+					Owner = "mwasplund",
+					Name = "Soup.Wren",
+					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
+				},
+			},
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -3212,21 +3270,21 @@ public class ClosureManagerUnitTests
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package1/versions/1.2.4/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/C%2B%2B/User1/Package2/versions/3.2.1/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
 		mockMessageHandler.Verify(messageHandler =>
 			messageHandler.SendAsync(
 				HttpMethod.Get,
-				new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/3.2.2/download"),
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/mwasplund/Soup.Cpp/versions/3.2.2/download"),
 				"{Accept: [application/json]}",
 				null),
 			Times.Once());
@@ -3246,28 +3304,28 @@ public class ClosureManagerUnitTests
 		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
 		mockFileSystem.RegisterChildren(
-			new Path("C:/PackageStore/Cpp/Package1/1.2.4/"),
+			new Path("C:/PackageStore/Cpp/User1/Package1/1.2.4/"),
 			new List<DirectoryEntry>());
 		mockFileSystem.RegisterChildren(
-			new Path("C:/PackageStore/Cpp/Package2/3.2.1/"),
+			new Path("C:/PackageStore/Cpp/User1/Package2/3.2.1/"),
 			new List<DirectoryEntry>());
 
 		// Create the original file
 		var original =
 			"""
-				Version: 4
+				Version: 5
 				Closures: {
 					Root: {
-						"C++": [
-							{ Name: "MyPackage", Version: "./", Build: "BuildSet0" }
-							{ Name: "Package1", Version: "1.2.4", Build: "BuildSet0" }
-							{ Name: "Package2", Version: "3.2.1", Build: "BuildSet0" }
-						]
+						"C++": {
+							MyPackage: { Version: "./", Build: "BuildSet0" }
+							"User1|Package1": { Version: "1.2.4", Build: "BuildSet0" }
+							"User1|Package2": { Version: "3.2.1", Build: "BuildSet0" }
+						}
 					}
 					BuildSet0: {
-						"C#": [
-							{ Name: "Soup.Cpp", Version: "3.2.1" }
-						]
+						"C#": {
+							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
+						}
 					}
 				}
 				""";
@@ -3300,21 +3358,21 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
-					"INFO: Restore from package lock",
-					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C++",
-					"INFO: Skip Package: MyPackage -> ./",
-					"HIGH: Install Package: C++ Package1@1.2.4",
-					"HIGH: Found local version",
-					"HIGH: Install Package: C++ Package2@3.2.1",
-					"HIGH: Found local version",
-					"INFO: Restore Packages for Closure BuildSet0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version in build closure",
-					"HIGH: Skip built in language version in build closure",
+				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+				"INFO: Restore from package lock",
+				"INFO: Restore Packages for Closure Root",
+				"INFO: Restore Packages for Language C++",
+				"INFO: Skip Package: MyPackage -> ./",
+				"HIGH: Install Package: C++ Package1@1.2.4",
+				"HIGH: Found local version",
+				"HIGH: Install Package: C++ Package2@3.2.1",
+				"HIGH: Found local version",
+				"INFO: Restore Packages for Closure BuildSet0",
+				"INFO: Restore Packages for Language C#",
+				"HIGH: Install Package: C# Soup.Cpp@3.2.1",
+				"HIGH: Skip built in language version in build closure",
+				"HIGH: Skip built in language version in build closure",
 			},
 			testListener.Messages);
 
@@ -3322,10 +3380,10 @@ public class ClosureManagerUnitTests
 		Assert.Equal(
 			new List<string>()
 			{
-					"Exists: C:/Root/MyPackage/PackageLock.sml",
-					"OpenRead: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/Cpp/Package1/1.2.4/",
-					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
+				"Exists: C:/Root/MyPackage/PackageLock.sml",
+				"OpenRead: C:/Root/MyPackage/PackageLock.sml",
+				"Exists: C:/PackageStore/Cpp/User1/Package1/1.2.4/",
+				"Exists: C:/PackageStore/Cpp/User1/Package2/3.2.1/",
 			},
 			mockFileSystem.Requests);
 

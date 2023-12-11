@@ -3,8 +3,6 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -57,7 +55,9 @@ public class SearchClient
 		string q, int? skip, int? take, CancellationToken cancellationToken)
 	{
 		var urlBuilder = new StringBuilder();
-		_ = urlBuilder.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/search/packages?");
+		_ = urlBuilder
+			.Append(BaseUrl.OriginalString.TrimEnd('/'))
+			.Append("/v1/search/packages?");
 		if (q is not null)
 		{
 			_ = urlBuilder
@@ -93,32 +93,28 @@ public class SearchClient
 		var url = urlBuilder.ToString();
 		requestMessage.RequestUri = new Uri(url, UriKind.RelativeOrAbsolute);
 
-		using var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-
-		var headers = Enumerable.ToDictionary(response.Headers, h => h.Key, h => h.Value);
-		if (response.Content != null && response.Content.Headers != null)
-		{
-			foreach (var item in response.Content.Headers)
-				headers[item.Key] = item.Value;
-		}
+		using var response = await client.SendAsync(
+			requestMessage,
+			HttpCompletionOption.ResponseHeadersRead,
+			cancellationToken).ConfigureAwait(false);
 
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
 			var objectResponse = await ReadObjectResponseAsync<SearchPackagesModel>(
-				response, headers, SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
+				response,
+				SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
 			return objectResponse;
 		}
 		else
 		{
 			throw new ApiException(
-				"The HTTP status code of the response was not expected.", status, headers, null);
+				"The HTTP status code of the response was not expected.", status, null, null);
 		}
 	}
 
 	protected virtual async Task<T> ReadObjectResponseAsync<T>(
 		HttpResponseMessage response,
-		IReadOnlyDictionary<string, IEnumerable<string>> headers,
 		JsonTypeInfo<T> jsonTypeInfo,
 		CancellationToken cancellationToken)
 	{
@@ -131,7 +127,7 @@ public class SearchClient
 			if (typedBody is null)
 			{
 				var message = "Response body was empty.";
-				throw new ApiException(message, (int)response.StatusCode, headers, null);
+				throw new ApiException(message, (int)response.StatusCode, null, null);
 			}
 
 			return typedBody;
@@ -139,7 +135,7 @@ public class SearchClient
 		catch (JsonException exception)
 		{
 			var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-			throw new ApiException(message, (int)response.StatusCode, headers, exception);
+			throw new ApiException(message, (int)response.StatusCode, null, exception);
 		}
 	}
 

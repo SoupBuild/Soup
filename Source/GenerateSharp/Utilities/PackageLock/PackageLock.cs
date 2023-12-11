@@ -12,7 +12,6 @@ namespace Soup.Build.Utilities;
 public class PackageLock
 {
 	public static string Property_Version => "Version";
-	public static string Property_Name => "Name";
 	private static string Property_Closures => "Closures";
 	private static string Property_Build => "Build";
 	private static string Property_Tool => "Tool";
@@ -81,17 +80,16 @@ public class PackageLock
 	public void AddProject(
 		string closure,
 		string language,
-		string name,
+		string uniqueName,
 		string version,
 		string? buildClosure,
 		string? toolClosure)
 	{
 		var closures = EnsureHasTable(Document, Property_Closures);
 		var closureTable = EnsureHasTable(closures, closure, 1);
-		var projectLanguageList = EnsureHasList(closureTable, language, 2);
+		var projectLanguageTable = EnsureHasTable(closureTable, language, 2);
 
-		var projectTable = projectLanguageList.AddInlineTableWithSyntax(3);
-		projectTable.AddInlineItemWithSyntax(Property_Name, name);
+		var projectTable = projectLanguageTable.AddInlineTableWithSyntax(uniqueName, 3);
 		projectTable.AddInlineItemWithSyntax(Property_Version, version);
 		if (buildClosure != null)
 		{
@@ -157,23 +155,6 @@ public class PackageLock
 		{
 			// Create a new table
 			return table.AddTableWithSyntax(name, indentLevel);
-		}
-	}
-
-	private static SMLArray EnsureHasList(SMLTable table, string name, int indentLevel)
-	{
-		if (table.Values.TryGetValue(name, out var value))
-		{
-			if (value.Value.Type != SMLValueType.Array)
-				throw new InvalidOperationException($"The package lock already has a non-list {name} property");
-
-			// Find the Syntax for the table
-			return value.Value.AsArray();
-		}
-		else
-		{
-			// Create a new list
-			return table.AddArrayWithSyntax(name, indentLevel);
 		}
 	}
 }

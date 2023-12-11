@@ -49,7 +49,7 @@ public class RecipeUnitTests
 		Assert.Equal(
 			new List<PackageReference>()
 			{
-					new PackageReference(null, "SomeDependency", null),
+				new PackageReference(null, "Owner", "SomeDependency", null),
 			},
 			uut.RuntimeDependencies);
 	}

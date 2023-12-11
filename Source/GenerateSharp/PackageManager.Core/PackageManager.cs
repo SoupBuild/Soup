@@ -121,10 +121,11 @@ public class PackageManager
 		// Get the latest version if no version provided
 		if (targetPackageReference.Version == null)
 		{
-			var packageModel = await GetPackageModelAsync(recipe.Language.Name, packageName);
+			var ownerName = targetPackageReference.Owner ?? throw new InvalidOperationException("Owner was not set");
+			var packageModel = await GetPackageModelAsync(recipe.Language.Name, ownerName, packageName);
 			var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
 			Log.HighPriority("Latest Version: " + latestVersion.ToString());
-			targetPackageReference = new PackageReference(null, packageModel.Name, latestVersion);
+			targetPackageReference = new PackageReference(null, packageModel.Owner, packageModel.Name, latestVersion);
 		}
 
 		if (targetPackageReference.Version == null)
@@ -196,6 +197,7 @@ public class PackageManager
 			// Authenticate the user
 			Log.Info("Request Authentication Token");
 			var accessToken = await LifetimeManager.Get<IAuthenticationManager>().EnsureSignInAsync();
+			var ownerName = "_";
 
 			// Publish the archive
 			Log.Info("Publish package");
@@ -208,7 +210,7 @@ public class PackageManager
 			bool packageExists = false;
 			try
 			{
-				var package = await packageClient.GetPackageAsync(recipe.Language.Name, recipe.Name);
+				var package = await packageClient.GetPackageAsync(recipe.Language.Name, ownerName, recipe.Name);
 				packageExists = true;
 			}
 			catch (Api.Client.ApiException ex)
@@ -232,7 +234,11 @@ public class PackageManager
 				{
 					Description = string.Empty,
 				};
-				_ = await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
+				_ = await packageClient.CreateOrUpdatePackageAsync(
+					recipe.Language.Name,
+					ownerName,
+					recipe.Name,
+					createPackageModel);
 			}
 
 			var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient, accessToken)
@@ -246,6 +252,7 @@ public class PackageManager
 				{
 					await packageVersionClient.PublishPackageVersionAsync(
 						recipe.Language.Name,
+						ownerName,
 						recipe.Name,
 						recipe.Version.ToString(),
 						new Api.Client.FileParameter(readArchiveFile.GetInStream(), string.Empty, "application/zip"));
@@ -287,14 +294,17 @@ public class PackageManager
 		}
 	}
 
-	private async Task<Api.Client.PackageModel> GetPackageModelAsync(string languageName, string packageName)
+	private async Task<Api.Client.PackageModel> GetPackageModelAsync(
+		string languageName,
+		string ownerName,
+		string packageName)
 	{
 		var client = new Api.Client.PackagesClient(_httpClient, null)
 		{
 			BaseUrl = _apiEndpoint,
 		};
 
-		return await client.GetPackageAsync(languageName, packageName);
+		return await client.GetPackageAsync(languageName, ownerName, packageName);
 	}
 
 	private static void AddPackageFiles(Path workingDirectory, IZipArchive archive)

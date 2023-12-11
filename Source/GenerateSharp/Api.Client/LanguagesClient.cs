@@ -3,8 +3,6 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -52,8 +50,9 @@ public class LanguagesClient
 	public virtual async Task<LanguageModel> GetLanguageAsync(string languageName, CancellationToken cancellationToken)
 	{
 		var urlBuilder = new StringBuilder();
-		_ = urlBuilder.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}");
-		_ = urlBuilder.Replace("{languageName}", Uri.EscapeDataString(languageName));
+		_ = urlBuilder
+			.Append(BaseUrl.OriginalString.TrimEnd('/'))
+			.Append($"/v1/languages/{Uri.EscapeDataString(languageName)}");
 
 		var client = this.httpClient;
 
@@ -67,29 +66,23 @@ public class LanguagesClient
 		using var response = await client.SendAsync(
 			requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
-		var headers = Enumerable.ToDictionary(response.Headers, h => h.Key, h => h.Value);
-		if (response.Content != null && response.Content.Headers != null)
-		{
-			foreach (var item in response.Content.Headers)
-				headers[item.Key] = item.Value;
-		}
-
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
 			var objectResponse = await ReadObjectResponseAsync<LanguageModel>(
-				response, headers, SourceGenerationContext.Default.LanguageModel, cancellationToken).ConfigureAwait(false);
+				response,
+				SourceGenerationContext.Default.LanguageModel,
+				cancellationToken).ConfigureAwait(false);
 			return objectResponse;
 		}
 		else
 		{
-			throw new ApiException("The HTTP status code of the response was not expected.", status, headers, null);
+			throw new ApiException("The HTTP status code of the response was not expected.", status, null, null);
 		}
 	}
 
 	protected virtual async Task<T> ReadObjectResponseAsync<T>(
 		HttpResponseMessage response,
-		IReadOnlyDictionary<string, IEnumerable<string>> headers,
 		JsonTypeInfo<T> jsonTypeInfo,
 		CancellationToken cancellationToken)
 	{
@@ -101,7 +94,7 @@ public class LanguagesClient
 			if (typedBody is null)
 			{
 				var message = "Response body was empty.";
-				throw new ApiException(message, (int)response.StatusCode, headers, null);
+				throw new ApiException(message, (int)response.StatusCode, null, null);
 			}
 
 			return typedBody;
@@ -109,7 +102,7 @@ public class LanguagesClient
 		catch (JsonException exception)
 		{
 			var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-			throw new ApiException(message, (int)response.StatusCode, headers, exception);
+			throw new ApiException(message, (int)response.StatusCode, null, exception);
 		}
 	}
 

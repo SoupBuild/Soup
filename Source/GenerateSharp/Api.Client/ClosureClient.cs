@@ -3,7 +3,6 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -59,7 +58,7 @@ public class ClosureClient
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		using var jsonContent = new MemoryStream();
 		await JsonSerializer.SerializeAsync(
-			jsonContent, requestMessage, SourceGenerationContext.Default.GenerateClosureRequestModel, cancellationToken);
+			jsonContent, request, SourceGenerationContext.Default.GenerateClosureRequestModel, cancellationToken);
 		_ = jsonContent.Seek(0, SeekOrigin.Begin);
 
 		using var content = new StreamContent(jsonContent);
@@ -75,29 +74,23 @@ public class ClosureClient
 		using var response = await client.SendAsync(
 			requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
-		var headers = System.Linq.Enumerable.ToDictionary(response.Headers, h => h.Key, h => h.Value);
-		if (response.Content != null && response.Content.Headers != null)
-		{
-			foreach (var item in response.Content.Headers)
-				headers[item.Key] = item.Value;
-		}
-
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
 			var objectResponse = await ReadObjectResponseAsync<GenerateClosureResultModel>(
-				response, headers, SourceGenerationContext.Default.GenerateClosureResultModel, cancellationToken).ConfigureAwait(false);
+				response,
+				SourceGenerationContext.Default.GenerateClosureResultModel,
+				cancellationToken).ConfigureAwait(false);
 			return objectResponse;
 		}
 		else
 		{
-			throw new ApiException("The HTTP status code of the response was not expected.", status, headers, null);
+			throw new ApiException("The HTTP status code of the response was not expected.", status, null, null);
 		}
 	}
 
 	protected virtual async Task<T> ReadObjectResponseAsync<T>(
 		HttpResponseMessage response,
-		IReadOnlyDictionary<string, IEnumerable<string>> headers,
 		JsonTypeInfo<T> jsonTypeInfo,
 		CancellationToken cancellationToken)
 	{
@@ -109,7 +102,7 @@ public class ClosureClient
 			if (typedBody is null)
 			{
 				var message = "Response body was empty.";
-				throw new ApiException(message, (int)response.StatusCode, headers, null);
+				throw new ApiException(message, (int)response.StatusCode, null, null);
 			}
 
 			return typedBody;
@@ -117,7 +110,7 @@ public class ClosureClient
 		catch (JsonException exception)
 		{
 			var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-			throw new ApiException(message, (int)response.StatusCode, headers, exception);
+			throw new ApiException(message, (int)response.StatusCode, null, exception);
 		}
 	}
 

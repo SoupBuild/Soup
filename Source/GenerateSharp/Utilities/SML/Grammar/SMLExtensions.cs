@@ -28,7 +28,7 @@ public static partial class SMLExtensions
 				// Array items must have newline
 				LeadingTrivia = new List<string>()
 				{
-						indent,
+					indent,
 				},
 			},
 			new SMLToken(value),
@@ -147,12 +147,12 @@ public static partial class SMLExtensions
 			{
 				LeadingTrivia = new List<string>()
 				{
-						indent,
+					indent,
 				},
 			},
 			new List<SMLToken>()
 			{
-					NewlineToken
+				NewlineToken
 			},
 			[],
 			new List<SMLToken>()
@@ -164,7 +164,7 @@ public static partial class SMLExtensions
 				// Arrays items should always force closing on newline
 				LeadingTrivia = new List<string>()
 				{
-						indent,
+					indent,
 				},
 			});
 		var newItem = new SMLArrayValue(
@@ -243,9 +243,9 @@ public static partial class SMLExtensions
 
 		// If this is the first item then place it on a newline
 		var leadingTrivia = new List<string>()
-			{
-				indent,
-			};
+		{
+			indent,
+		};
 
 		// Create a new item and matching syntax
 		var newValue = new SMLValue(new SMLStringValue(
@@ -284,9 +284,9 @@ public static partial class SMLExtensions
 		var keyToken = new SMLToken(EnsureSafeKey(key))
 		{
 			LeadingTrivia = new List<string>()
-				{
-					" ",
-				},
+			{
+				" ",
+			},
 		};
 
 		// Update the previous last item to have a comma delimiter
@@ -344,28 +344,28 @@ public static partial class SMLExtensions
 			new SMLToken("{"),
 			new List<SMLToken>()
 			{
-					NewlineToken,
+				NewlineToken,
 			},
 			[],
 			new List<SMLToken>()
 			{
-					NewlineToken,
+				NewlineToken,
 			},
 			new SMLToken("}")
 			{
 				// Offset the closing brace
 				LeadingTrivia = new List<string>()
 				{
-						indent,
+					indent,
 				},
 			});
 
 		var keyToken = new SMLToken(EnsureSafeKey(name))
 		{
 			LeadingTrivia = new List<string>()
-				{
-					indent,
-				},
+			{
+				indent,
+			},
 		};
 
 		// Update the previous last item to have a comma delimiter
@@ -394,7 +394,7 @@ public static partial class SMLExtensions
 				// Space out the inline table
 				LeadingTrivia = new List<string>()
 				{
-						" ",
+					" ",
 				},
 			});
 		return newTable;
@@ -410,12 +410,12 @@ public static partial class SMLExtensions
 		// Create a new table
 		var newTable = CreateInlineTable([]);
 
-		var keyToken = new SMLToken(name)
+		var keyToken = new SMLToken(EnsureSafeKey(name))
 		{
 			LeadingTrivia = new List<string>()
-				{
-					indent,
-				},
+			{
+				indent,
+			},
 		};
 
 		// Update the previous last item to have a comma delimiter
@@ -442,18 +442,18 @@ public static partial class SMLExtensions
 			new SMLToken("["),
 			new List<SMLToken>()
 			{
-					NewlineToken,
+				NewlineToken,
 			},
 			new List<SMLArrayValue>(),
 			new List<SMLToken>()
 			{
-					NewlineToken,
+				NewlineToken,
 			},
 			new SMLToken("]")
 			{
 				LeadingTrivia = new List<string>()
 				{
-						indent,
+					indent,
 				},
 			});
 

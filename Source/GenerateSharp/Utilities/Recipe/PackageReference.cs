@@ -15,6 +15,7 @@ namespace Soup.Build;
 public partial class PackageReference : IEquatable<PackageReference>
 {
 	private readonly string? _language;
+	private readonly string? _owner;
 	private readonly string? _name;
 	private readonly SemanticVersion? _version;
 	private readonly Path? _path;
@@ -29,12 +30,14 @@ public partial class PackageReference : IEquatable<PackageReference>
 		if (matchName.Success)
 		{
 			// The package is a published reference
-			var language = matchName.Groups.ContainsKey("Language") && matchName.Groups["Language"].Success ? matchName.Groups["Language"].Value : null;
+			var language = matchName.Groups.ContainsKey("Language") && matchName.Groups["Language"].Success ?
+				matchName.Groups["Language"].Value : null;
+			var owner = matchName.Groups.ContainsKey("Owner") && matchName.Groups["Owner"].Success ?
+				matchName.Groups["Owner"].Value : null;
 			var name = matchName.Groups["Name"].Value;
 			var version = matchName.Groups.ContainsKey("Version") && matchName.Groups["Version"].Success ?
-					SemanticVersion.Parse(matchName.Groups["Version"].Value) :
-					null;
-			result = new PackageReference(language, name, version);
+					SemanticVersion.Parse(matchName.Groups["Version"].Value) : null;
+			result = new PackageReference(language, owner, name, version);
 			return true;
 		}
 		else
@@ -66,6 +69,7 @@ public partial class PackageReference : IEquatable<PackageReference>
 	public PackageReference()
 	{
 		_language = null;
+		_owner = null;
 		_name = null;
 		_version = null;
 		_path = null;
@@ -74,9 +78,10 @@ public partial class PackageReference : IEquatable<PackageReference>
 	/// <summary>
 	/// Initializes a new instance of the <see cref="PackageReference"/> class.
 	/// </summary>
-	public PackageReference(string? language, string name, SemanticVersion? version)
+	public PackageReference(string? language, string? owner, string name, SemanticVersion? version)
 	{
 		_language = language;
+		_owner = owner;
 		_name = name;
 		_version = version;
 		_path = null;
@@ -88,6 +93,7 @@ public partial class PackageReference : IEquatable<PackageReference>
 	public PackageReference(Path path)
 	{
 		_language = null;
+		_owner = null;
 		_name = null;
 		_version = null;
 		_path = path;
@@ -112,13 +118,26 @@ public partial class PackageReference : IEquatable<PackageReference>
 	}
 
 	/// <summary>
+	/// Gets or sets the Owner.
+	/// </summary>
+	public string? Owner
+	{
+		get
+		{
+			if (IsLocal)
+				throw new InvalidOperationException("Cannot get the owner of a local reference.");
+			return _owner;
+		}
+	}
+
+	/// <summary>
 	/// Gets or sets the Name.
 	/// </summary>
 	public string Name
 	{
 		get
 		{
-			if (string.IsNullOrEmpty(_name))
+			if (_name is null)
 				throw new InvalidOperationException("Cannot get the name of a local reference.");
 			return _name;
 		}
@@ -202,27 +221,27 @@ public partial class PackageReference : IEquatable<PackageReference>
 			{
 				if (_version is not null)
 				{
-					return $"{_language}|{_name}@{_version}";
+					return $"{_language}:{_owner}|{_name}@{_version}";
 				}
 				else
 				{
-					return $"{_language}|{_name}";
+					return $"{_language}:{_owner}|{_name}";
 				}
 			}
 			else
 			{
 				if (_version is not null)
 				{
-					return $"{_name}@{_version}";
+					return $"{_owner}|{_name}@{_version}";
 				}
 				else
 				{
-					return $"{_name}";
+					return $"{_owner}|{_name}";
 				}
 			}
 		}
 	}
 
-	[GeneratedRegex(@"^(?:(?<Language>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$")]
+	[GeneratedRegex(@"^(?:(?<Language>[\w#+]+)\:)?(?:(?<Owner>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$")]
 	private static partial Regex ParseRegex();
 }
