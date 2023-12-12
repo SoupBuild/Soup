@@ -3,7 +3,9 @@
 // </copyright>
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -28,7 +30,7 @@ public class PackageVersionsClient
 		this.bearerToken = bearerToken;
 	}
 
-	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
+	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
 
 	/// <summary>
 	/// Get a package version.
@@ -94,7 +96,7 @@ public class PackageVersionsClient
 		else
 		{
 			throw new ApiException(
-				"The HTTP status code of the response was not expected.", status, null, null);
+				"The HTTP status code of the response was not expected.", response.StatusCode, null, null);
 		}
 	}
 
@@ -135,6 +137,7 @@ public class PackageVersionsClient
 	/// <param name="file">The uploaded file.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
+	[SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Allow default handler")]
 	public virtual async Task PublishPackageVersionAsync(
 		string languageName,
 		string ownerName,
@@ -163,15 +166,13 @@ public class PackageVersionsClient
 		using var response = await client.SendAsync(
 			request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
-		var status = (int)response.StatusCode;
-		if (status == 201)
+		switch (response.StatusCode)
 		{
-			return;
-		}
-		else
-		{
-			throw new ApiException("The HTTP status code of the response was not expected.", status, null, null);
-		}
+			case HttpStatusCode.Created:
+				break;
+			default:
+				throw new ApiException("The HTTP status code of the response was not expected.", response.StatusCode, null, null);
+		};
 	}
 
 	/// <summary>
@@ -243,7 +244,7 @@ public class PackageVersionsClient
 			}
 			else
 			{
-				throw new ApiException("The HTTP status code of the response was not expected.", status, null, null);
+				throw new ApiException("The HTTP status code of the response was not expected.", response.StatusCode, null, null);
 			}
 		}
 		finally
@@ -266,7 +267,7 @@ public class PackageVersionsClient
 			if (typedBody is null)
 			{
 				var message = "Response body was empty.";
-				throw new ApiException(message, (int)response.StatusCode, null, null);
+				throw new ApiException(message, response.StatusCode, null, null);
 			}
 
 			return typedBody;
@@ -274,7 +275,7 @@ public class PackageVersionsClient
 		catch (JsonException exception)
 		{
 			var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-			throw new ApiException(message, (int)response.StatusCode, null, exception);
+			throw new ApiException(message, response.StatusCode, null, exception);
 		}
 	}
 

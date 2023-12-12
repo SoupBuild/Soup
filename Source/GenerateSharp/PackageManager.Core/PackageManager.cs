@@ -8,6 +8,7 @@ using Soup.Build.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -164,6 +165,7 @@ public class PackageManager
 	/// <summary>
 	/// Publish a package
 	/// </summary>
+	[SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Allow default fallthrough")]
 	public async Task PublishPackageAsync(Path workingDirectory)
 	{
 		Log.Info($"Publish Project: {workingDirectory}");
@@ -215,7 +217,7 @@ public class PackageManager
 			}
 			catch (Api.Client.ApiException ex)
 			{
-				if (ex.StatusCode == 404)
+				if (ex.StatusCode == HttpStatusCode.NotFound)
 				{
 					Log.Info("Package does not exist");
 					packageExists = false;
@@ -256,23 +258,22 @@ public class PackageManager
 						recipe.Name,
 						recipe.Version.ToString(),
 						new Api.Client.FileParameter(readArchiveFile.GetInStream(), string.Empty, "application/zip"));
-
 					Log.Info("Package published");
 				}
 				catch (Api.Client.ApiException ex)
 				{
 					switch (ex.StatusCode)
 					{
-						case 400:
+						case HttpStatusCode.BadRequest:
 							if (ex is Api.Client.ApiException<Api.Client.ProblemDetails> problemDetailsEx)
 								Log.Error(problemDetailsEx.Result.Detail ?? "Bad request");
 							else
 								Log.Error("Bad request");
 							break;
-						case 403:
+						case HttpStatusCode.Forbidden:
 							Log.Error("You do not have permission to edit this package");
 							break;
-						case 409:
+						case HttpStatusCode.Conflict:
 							Log.Info("Package version already exists");
 							break;
 						default:

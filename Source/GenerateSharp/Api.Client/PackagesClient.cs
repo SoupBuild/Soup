@@ -28,7 +28,7 @@ public class PackagesClient
 		this.bearerToken = bearerToken;
 	}
 
-	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
+	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
 
 	/// <summary>
 	/// Get a package by unique name.
@@ -72,7 +72,10 @@ public class PackagesClient
 		var url = urlBuilder.ToString();
 		requestMessage.RequestUri = new Uri(url, UriKind.RelativeOrAbsolute);
 
-		using var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+		using var response = await client.SendAsync(
+			requestMessage,
+			HttpCompletionOption.ResponseHeadersRead,
+			cancellationToken).ConfigureAwait(false);
 
 		var status = (int)response.StatusCode;
 		if (status == 200)
@@ -85,7 +88,7 @@ public class PackagesClient
 		}
 		else
 		{
-			throw new ApiException("The HTTP status code of the response was not expected.", status, null, null);
+			throw new ApiException("The HTTP status code of the response was not expected.", response.StatusCode, null, null);
 		}
 	}
 
@@ -163,7 +166,7 @@ public class PackagesClient
 		}
 		else
 		{
-			throw new ApiException("The HTTP status code of the response was not expected.", status, null, null);
+			throw new ApiException("The HTTP status code of the response was not expected.", response.StatusCode, null, null);
 		}
 	}
 
@@ -180,7 +183,7 @@ public class PackagesClient
 			if (typedBody is null)
 			{
 				var message = "Response body was empty.";
-				throw new ApiException(message, (int)response.StatusCode, null, null);
+				throw new ApiException(message, response.StatusCode, null, null);
 			}
 
 			return typedBody;
@@ -188,7 +191,7 @@ public class PackagesClient
 		catch (JsonException exception)
 		{
 			var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-			throw new ApiException(message, (int)response.StatusCode, null, exception);
+			throw new ApiException(message, response.StatusCode, null, exception);
 		}
 	}
 

@@ -8,6 +8,7 @@ using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -841,7 +842,7 @@ public class ClosureManager : IClosureManager
 			}
 			catch (Api.Client.ApiException ex)
 			{
-				if (ex.StatusCode == 404)
+				if (ex.StatusCode == HttpStatusCode.NotFound)
 				{
 					Log.HighPriority("Package Version Missing");
 					throw new HandledException();

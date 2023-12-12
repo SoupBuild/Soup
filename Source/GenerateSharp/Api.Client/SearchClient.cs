@@ -27,7 +27,7 @@ public class SearchClient
 		this.bearerToken = bearerToken;
 	}
 
-	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
+	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
 
 	/// <summary>
 	/// Search for packages.
@@ -109,7 +109,7 @@ public class SearchClient
 		else
 		{
 			throw new ApiException(
-				"The HTTP status code of the response was not expected.", status, null, null);
+				"The HTTP status code of the response was not expected.", response.StatusCode, null, null);
 		}
 	}
 
@@ -127,7 +127,7 @@ public class SearchClient
 			if (typedBody is null)
 			{
 				var message = "Response body was empty.";
-				throw new ApiException(message, (int)response.StatusCode, null, null);
+				throw new ApiException(message, response.StatusCode, null, null);
 			}
 
 			return typedBody;
@@ -135,7 +135,7 @@ public class SearchClient
 		catch (JsonException exception)
 		{
 			var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-			throw new ApiException(message, (int)response.StatusCode, null, exception);
+			throw new ApiException(message, response.StatusCode, null, exception);
 		}
 	}
 

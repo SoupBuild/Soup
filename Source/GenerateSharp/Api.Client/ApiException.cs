@@ -5,19 +5,20 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace Soup.Build.Api.Client;
 
 [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "Required parameters")]
 public class ApiException : Exception
 {
-	public int StatusCode { get; private set; }
+	public HttpStatusCode StatusCode { get; private set; }
 
 	public IReadOnlyDictionary<string, IEnumerable<string>> Headers { get; private set; }
 
 	public ApiException(
 		string message,
-		int statusCode,
+		HttpStatusCode statusCode,
 		IReadOnlyDictionary<string, IEnumerable<string>> headers,
 		Exception? innerException)
 		: base($"{message} - StatusCode {statusCode}", innerException)
@@ -34,7 +35,7 @@ public class ApiException<TResult> : ApiException
 
 	public ApiException(
 		string message,
-		int statusCode,
+		HttpStatusCode statusCode,
 		IReadOnlyDictionary<string, IEnumerable<string>> headers,
 		TResult result,
 		Exception? innerException)
