@@ -43,7 +43,7 @@ public class RecipeUnitTests
 						},
 				}));
 
-		uut.AddRuntimeDependency("SomeDependency");
+		uut.AddRuntimeDependency("Owner|SomeDependency");
 
 		Assert.True(uut.HasRuntimeDependencies);
 		Assert.Equal(

@@ -123,10 +123,11 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: MyPackage -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Install Package: Wren mwasplund Soup.Cpp@3.2.1",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure",
+
 			},
 			testListener.Messages);
 
@@ -552,16 +553,16 @@ public class ClosureManagerUnitTests
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
 				"INFO: Skip Package: MyPackage -> ./",
-				"HIGH: Install Package: C++ Package1@1.2.3",
+				"HIGH: Install Package: C++ User1 Package1@1.2.3",
 				"HIGH: Downloading package",
-				"HIGH: Install Package: C++ Package2@3.2.1",
+				"HIGH: Install Package: C++ User1 Package2@3.2.1",
 				"HIGH: Downloading package",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Install Package: Wren mwasplund Soup.Cpp@3.2.1",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
-				"HIGH: Skip built in language version in build closure",
+				"HIGH: Skip built in language version in build closure"
 			},
 			testListener.Messages);
 
@@ -933,9 +934,9 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: MyPackage -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Cpp@5.0.0",
+				"HIGH: Install Package: Wren mwasplund Soup.Cpp@5.0.0",
 				"HIGH: Downloading package",
-				"HIGH: Install Package: Wren Package1@1.2.3",
+				"HIGH: Install Package: Wren User1 Package1@1.2.3",
 				"HIGH: Downloading package",
 				"INFO: Restore Packages for Closure Tool0",
 				"DIAG: Create Directory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
@@ -952,7 +953,7 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: Soup.Cpp -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure",
@@ -970,10 +971,10 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: Package1 -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
-				"HIGH: Skip built in language version in build closure",
+				"HIGH: Skip built in language version in build closure"
 			},
 			testListener.Messages);
 
@@ -1272,7 +1273,7 @@ public class ClosureManagerUnitTests
 					Version: "1.2.3"
 					Dependencies: {
 						Tool: [
-							{ Reference: "C++:User1|Package2@2.3.4" }
+							{ Reference: "C++|User1|Package2@2.3.4" }
 						]
 					}
 					"""))));
@@ -1564,9 +1565,9 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: MyPackage -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Cpp@5.0.0",
+				"HIGH: Install Package: Wren mwasplund Soup.Cpp@5.0.0",
 				"HIGH: Downloading package",
-				"HIGH: Install Package: Wren Package1@1.2.3",
+				"HIGH: Install Package: Wren User1 Package1@1.2.3",
 				"HIGH: Downloading package",
 				"INFO: Restore Packages for Closure Tool0",
 				"DIAG: Create Directory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
@@ -1583,7 +1584,7 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: Soup.Cpp -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure",
@@ -1602,11 +1603,11 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: Package1 -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"INFO: Restore Packages for Language C++",
-				"HIGH: Install Package: C++ Package2@2.3.4",
+				"HIGH: Install Package: C++ User1 Package2@2.3.4",
 				"HIGH: Downloading package",
 				"HIGH: Skip built in language version in build closure",
 				"DIAG: Create Directory: C:/LockStore/Cpp/User1/Package2/2.3.4/",
@@ -1623,7 +1624,7 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: Package2 -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Install Package: Wren mwasplund Soup.Cpp@3.2.1",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure",
@@ -2225,7 +2226,7 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: MyPackage -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Install Package: Wren mwasplund Soup.Cpp@3.2.1",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Skip Package: Package1 -> ../Package1/",
 				"INFO: Restore Packages for Closure Tool0",
@@ -2243,10 +2244,10 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: Package1 -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Wren@4.5.6",
+				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
-				"HIGH: Skip built in language version in build closure",
+				"HIGH: Skip built in language version in build closure"
 			},
 			testListener.Messages);
 
@@ -3138,13 +3139,13 @@ public class ClosureManagerUnitTests
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
 				"INFO: Skip Package: MyPackage -> ./",
-				"HIGH: Install Package: C++ Package1@1.2.4",
+				"HIGH: Install Package: C++ User1 Package1@1.2.4",
 				"HIGH: Downloading package",
-				"HIGH: Install Package: C++ Package2@3.2.1",
+				"HIGH: Install Package: C++ User1 Package2@3.2.1",
 				"HIGH: Downloading package",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Cpp@3.2.2",
+				"HIGH: Install Package: Wren mwasplund Soup.Cpp@3.2.2",
 				"HIGH: Downloading package",
 				"INFO: Restore Packages for Closure Tool0",
 				"DIAG: Create Directory: C:/LockStore/Wren/mwasplund/Soup.Cpp/3.2.2/",
@@ -3161,10 +3162,10 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: Soup.Cpp -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
-				"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
+				"HIGH: Install Package: Wren mwasplund Soup.Cpp@3.2.1",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
-				"HIGH: Skip built in language version in build closure",
+				"HIGH: Skip built in language version in build closure"
 			},
 			testListener.Messages);
 
@@ -3364,15 +3365,15 @@ public class ClosureManagerUnitTests
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
 				"INFO: Skip Package: MyPackage -> ./",
-				"HIGH: Install Package: C++ Package1@1.2.4",
+				"HIGH: Install Package: C++ User1 Package1@1.2.4",
 				"HIGH: Found local version",
-				"HIGH: Install Package: C++ Package2@3.2.1",
+				"HIGH: Install Package: C++ User1 Package2@3.2.1",
 				"HIGH: Found local version",
 				"INFO: Restore Packages for Closure BuildSet0",
 				"INFO: Restore Packages for Language C#",
-				"HIGH: Install Package: C# Soup.Cpp@3.2.1",
+				"HIGH: Install Package: C# mwasplund Soup.Cpp@3.2.1",
 				"HIGH: Skip built in language version in build closure",
-				"HIGH: Skip built in language version in build closure",
+				"HIGH: Skip built in language version in build closure"
 			},
 			testListener.Messages);
 

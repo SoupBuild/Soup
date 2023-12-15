@@ -176,7 +176,8 @@ public partial class PackageReference : IEquatable<PackageReference>
 	{
 		if (other is null)
 			return false;
-		return _name == other._name &&
+		return _owner == other._owner &&
+			_name == other._name &&
 			_version == other._version &&
 			_path == other._path;
 	}
@@ -188,10 +189,11 @@ public partial class PackageReference : IEquatable<PackageReference>
 
 	public override int GetHashCode()
 	{
+		var ownerHash = string.IsNullOrEmpty(_owner) ? 0 : _owner.GetHashCode(StringComparison.Ordinal) * 0x200000;
 		var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode(StringComparison.Ordinal) * 0x100000;
 		var versionHash = _version is null ? 0 : _version.GetHashCode() * 0x1000;
 		var pathHash = _path is null ? 0 : _path.GetHashCode();
-		return nameHash + versionHash + pathHash;
+		return ownerHash + nameHash + versionHash + pathHash;
 	}
 
 	public static bool operator ==(PackageReference? lhs, PackageReference? rhs)
@@ -221,11 +223,11 @@ public partial class PackageReference : IEquatable<PackageReference>
 			{
 				if (_version is not null)
 				{
-					return $"{_language}:{_owner}|{_name}@{_version}";
+					return $"{_language}|{_owner}|{_name}@{_version}";
 				}
 				else
 				{
-					return $"{_language}:{_owner}|{_name}";
+					return $"{_language}|{_owner}|{_name}";
 				}
 			}
 			else
@@ -242,6 +244,6 @@ public partial class PackageReference : IEquatable<PackageReference>
 		}
 	}
 
-	[GeneratedRegex(@"^(?:(?<Language>[\w#+]+)\:)?(?:(?<Owner>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$")]
+	[GeneratedRegex(@"^(?:(?<Language>[\w#+]+)\|)?(?:(?<Owner>[\w#+]+)\|)(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$")]
 	private static partial Regex ParseRegex();
 }

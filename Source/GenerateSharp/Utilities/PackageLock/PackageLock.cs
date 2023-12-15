@@ -80,7 +80,7 @@ public class PackageLock
 	public void AddProject(
 		string closure,
 		string language,
-		string uniqueName,
+		PackageName uniqueName,
 		string version,
 		string? buildClosure,
 		string? toolClosure)
@@ -89,7 +89,7 @@ public class PackageLock
 		var closureTable = EnsureHasTable(closures, closure, 1);
 		var projectLanguageTable = EnsureHasTable(closureTable, language, 2);
 
-		var projectTable = projectLanguageTable.AddInlineTableWithSyntax(uniqueName, 3);
+		var projectTable = projectLanguageTable.AddInlineTableWithSyntax(uniqueName.ToString(), 3);
 		projectTable.AddInlineItemWithSyntax(Property_Version, version);
 		if (buildClosure != null)
 		{
