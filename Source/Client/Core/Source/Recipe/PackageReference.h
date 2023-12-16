@@ -42,7 +42,7 @@ namespace Soup::Core
 		static PackageReference Parse(const std::string& value)
 		{
 			// Reuse regex between runs
-			static auto nameRegex = std::regex(R"(^(?:([\w#+]+)\|)?([A-Za-z][\w.]*)(?:@(\d+(?:.\d+)?(?:.\d+)?))?$)");
+			static auto nameRegex = std::regex(R"(^(?:([\w#+]+)\|)?(?:([A-Za-z][\w.]*)\|)([A-Za-z][\w.]*)(?:@(\d+(?:.\d+)?(?:.\d+)?))?$)");
 
 			// Attempt to parse Named reference
 			auto nameMatch = std::smatch();
@@ -56,16 +56,18 @@ namespace Soup::Core
 					language = languageMatch.str();
 				}
 
-				auto name = nameMatch[2].str();
+				auto owner = nameMatch[2].str();
+
+				auto name = nameMatch[3].str();
 
 				std::optional<SemanticVersion> version = std::nullopt;
-				auto versionMatch = nameMatch[3];
+				auto versionMatch = nameMatch[4];
 				if (versionMatch.matched)
 				{
 					version = SemanticVersion::Parse(versionMatch.str());
 				}
 
-				return PackageReference(std::move(language), std::move(name), version);
+				return PackageReference(std::move(language), std::move(owner), std::move(name), version);
 			}
 			else
 			{
@@ -80,6 +82,7 @@ namespace Soup::Core
 		/// </summary>
 		PackageReference() :
 			_language(std::nullopt),
+			_owner(std::nullopt),
 			_name(std::nullopt),
 			_version(std::nullopt),
 			_path(std::nullopt)
@@ -91,9 +94,11 @@ namespace Soup::Core
 		/// </summary>
 		PackageReference(
 			std::optional<std::string> language,
+			std::string owner,
 			std::string name,
 			std::optional<SemanticVersion> version) :
 			_language(std::move(language)),
+			_owner(std::move(owner)),
 			_name(std::move(name)),
 			_version(version),
 			_path(std::nullopt)
@@ -138,6 +143,16 @@ namespace Soup::Core
 		}
 
 		/// <summary>
+		/// Gets or sets the Owner.
+		/// </summary>
+		const std::string& GetOwner() const
+		{
+			if (!_owner.has_value())
+				throw std::runtime_error("Cannot get the owner of a local reference.");
+			return _owner.value();
+		}
+
+		/// <summary>
 		/// Gets or sets the Name.
 		/// </summary>
 		const std::string& GetName() const
@@ -172,10 +187,11 @@ namespace Soup::Core
 		/// </summary>
 		bool operator ==(const PackageReference& rhs) const
 		{
-			return _language == rhs. _language &&
-				_name == rhs. _name &&
-				_version == rhs. _version &&
-				_path == rhs. _path;
+			return _language == rhs._language &&
+				_owner == rhs._owner &&
+				_name == rhs._name &&
+				_version == rhs._version &&
+				_path == rhs._path;
 		}
 
 		/// <summary>
@@ -183,10 +199,11 @@ namespace Soup::Core
 		/// </summary>
 		bool operator !=(const PackageReference& rhs) const
 		{
-			return _language != rhs. _language ||
-				_name != rhs. _name ||
-				_version != rhs. _version ||
-				_path != rhs. _path;
+			return _language != rhs._language ||
+				_owner != rhs._owner ||
+				_name != rhs._name ||
+				_version != rhs._version ||
+				_path != rhs._path;
 		}
 
 		/// <summary>
@@ -209,7 +226,7 @@ namespace Soup::Core
 					stringBuilder << _language.value() << '|';
 				}
 
-				stringBuilder << _name.value();
+				stringBuilder << _owner.value() << '|' << _name.value();
 
 				if (_version.has_value())
 				{
@@ -222,6 +239,7 @@ namespace Soup::Core
 
 	private:
 		std::optional<std::string> _language;
+		std::optional<std::string> _owner;
 		std::optional<std::string> _name;
 		std::optional<SemanticVersion> _version;
 		std::optional<Path> _path;

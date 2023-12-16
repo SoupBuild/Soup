@@ -29,7 +29,7 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "Soup.Cpp")
+					KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				}
 			});
 			auto uut = RecipeBuildLocationManager(knownLanguages);
@@ -81,7 +81,7 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				}
 			});
 			auto uut = RecipeBuildLocationManager(knownLanguages);

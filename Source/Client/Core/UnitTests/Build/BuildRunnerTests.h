@@ -97,7 +97,7 @@ namespace Soup::Core::UnitTests
 						1,
 						PackageInfo(
 							1,
-							"MyPackage",
+							PackageName(std::nullopt, "MyPackage"),
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
 							Path(),
@@ -338,7 +338,7 @@ namespace Soup::Core::UnitTests
 							"Dependencies",
 							RecipeTable(
 							{
-								{ "Build", RecipeList({ "TestBuild@1.2.3" }) },
+								{ "Build", RecipeList({ "User1|TestBuild@1.2.3" }) },
 							})
 						},
 					}))
@@ -384,7 +384,7 @@ namespace Soup::Core::UnitTests
 						1,
 						PackageInfo(
 							1,
-							"MyPackage",
+							PackageName(std::nullopt, "MyPackage"),
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
 							Path(),
@@ -394,7 +394,7 @@ namespace Soup::Core::UnitTests
 									"Build",
 									{
 										PackageChildInfo(
-											PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)),
+											PackageReference(std::nullopt, "User1", "TestBuild", SemanticVersion(1, 2, 3)),
 											true,
 											-1,
 											2),
@@ -406,7 +406,7 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
-							"TestBuild",
+							PackageName("User1", "TestBuild"),
 							false,
 							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/"),
 							Path(),
@@ -727,7 +727,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("TestBuild@1.2.3") },
+															{ "Reference", std::string("User1|TestBuild@1.2.3") },
 															{ "TargetDirectory", std::string("/(TARGET_TestBuild)/") },
 														})
 													},
@@ -840,7 +840,7 @@ namespace Soup::Core::UnitTests
 							"Dependencies",
 							RecipeTable(
 							{
-								{ "Runtime", RecipeList({ "PackageA@1.2.3", "PackageB@1.1.1" }) },
+								{ "Runtime", RecipeList({ "User1|PackageA@1.2.3", "User1|PackageB@1.1.1" }) },
 							})
 						},
 					}))
@@ -856,7 +856,7 @@ namespace Soup::Core::UnitTests
 							"Dependencies",
 							RecipeTable(
 							{
-								{ "Runtime", RecipeList({ "PackageB@1.1.1" }) },
+								{ "Runtime", RecipeList({ "User1|PackageB@1.1.1" }) },
 							})
 						},
 					}))
@@ -892,7 +892,7 @@ namespace Soup::Core::UnitTests
 						1,
 						PackageInfo(
 							1,
-							"MyPackage",
+							PackageName(std::nullopt, "MyPackage"),
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
 							Path(),
@@ -901,8 +901,8 @@ namespace Soup::Core::UnitTests
 								{
 									"Runtime",
 									{
-										PackageChildInfo(PackageReference(std::nullopt, "PackageA", SemanticVersion(1, 2, 3)), false, 2, -1),
-										PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)), false, 3, -1),
+										PackageChildInfo(PackageReference(std::nullopt, "User1", "PackageA", SemanticVersion(1, 2, 3)), false, 2, -1),
+										PackageChildInfo(PackageReference(std::nullopt, "User1", "PackageB", SemanticVersion(1, 1, 1)), false, 3, -1),
 									}
 								},
 							}))
@@ -911,7 +911,7 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
-							"PackageA",
+							PackageName("User1", "PackageA"),
 							false,
 							Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/"),
 							Path(),
@@ -920,7 +920,7 @@ namespace Soup::Core::UnitTests
 								{
 									"Runtime",
 									{
-										PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)), false, 3, -1),
+										PackageChildInfo(PackageReference(std::nullopt, "User1", "PackageB", SemanticVersion(1, 1, 1)), false, 3, -1),
 									}
 								},
 							}))
@@ -929,7 +929,7 @@ namespace Soup::Core::UnitTests
 						3,
 						PackageInfo(
 							3,
-							"PackageB",
+							PackageName("User1", "PackageB"),
 							false,
 							Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/"),
 							Path(),
@@ -954,7 +954,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 3>Running Build: C++|PackageB",
+					"DIAG: 3>Running Build: C++|User1|PackageB",
 					"INFO: 3>Build 'PackageB'",
 					"INFO: 3>Checking for existing Evaluate Operation Graph",
 					"DIAG: 3>C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -976,7 +976,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 3>Saving updated build state",
 					"INFO: 3>Done",
-					"DIAG: 2>Running Build: C++|PackageA",
+					"DIAG: 2>Running Build: C++|User1|PackageA",
 					"INFO: 2>Build 'PackageA'",
 					"INFO: 2>Checking for existing Evaluate Operation Graph",
 					"DIAG: 2>C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -998,8 +998,8 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 2>Saving updated build state",
 					"INFO: 2>Done",
-					"DIAG: 3>Running Build: C++|PackageB",
-					"DIAG: 3>Recipe already built: C++|PackageB",
+					"DIAG: 3>Running Build: C++|User1|PackageB",
+					"DIAG: 3>Recipe already built: C++|User1|PackageB",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Checking for existing Evaluate Operation Graph",
@@ -1204,7 +1204,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("PackageB@1.1.1") },
+															{ "Reference", std::string("User1|PackageB@1.1.1") },
 															{ "TargetDirectory", std::string("/(TARGET_PackageB)/") },
 														})
 													},
@@ -1445,7 +1445,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("PackageA@1.2.3") },
+															{ "Reference", std::string("User1|PackageA@1.2.3") },
 															{ "TargetDirectory", std::string("/(TARGET_PackageA)/") },
 														})
 													},
@@ -1459,7 +1459,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("PackageB@1.1.1") },
+															{ "Reference", std::string("User1|PackageB@1.1.1") },
 															{ "TargetDirectory", std::string("/(TARGET_PackageB)/") },
 														})
 													},
@@ -1525,26 +1525,26 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 4
+					Version: 5
 					Closures: {
 						Root: {
-							"C#": [
-								{ Name: "TestBuild", Version: "1.3.0", Build: "Build1" }
-							]
-							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
-							]
+							"C#": {
+								"User1|TestBuild": { Version: "1.3.0", Build: "Build1" }
+							}
+							"C++": {
+								MyPackage: { Version: "../MyPackage/", Build: "Build0" }
+							}
 						}
 						Build0: {
-							"C#": [
-								{ Name: "Soup.Cpp", Version: "1.0.2" }
-								{ Name: "TestBuild", Version: "1.3.0" }
-							]
+							"C#": {
+								"User1|Soup.Cpp": { Version: "1.0.2" }
+								"User1|TestBuild": { Version: "1.3.0" }
+							}
 						}
 						Build1: {
-							"C#": [
-								{ Name: "Soup.CSharp", Version: "1.0.1" }
-							]
+							"C#": {
+								"User1|Soup.CSharp": { Version: "1.0.1" }
+							}
 						}
 					}
 				)")));
@@ -1592,7 +1592,7 @@ namespace Soup::Core::UnitTests
 							"Dependencies",
 							RecipeTable(
 							{
-								{ "Build", RecipeList({ "TestBuild@1.2.3" }) },
+								{ "Build", RecipeList({ "User1|TestBuild@1.2.3" }) },
 							})
 						},
 					}))
@@ -1638,7 +1638,7 @@ namespace Soup::Core::UnitTests
 						1,
 						PackageInfo(
 							1,
-							"MyPackage",
+							PackageName(std::nullopt, "MyPackage"),
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
 							Path(),
@@ -1647,7 +1647,7 @@ namespace Soup::Core::UnitTests
 								{
 									"Build",
 									{
-										PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), true, -1, 2),
+										PackageChildInfo(PackageReference(std::nullopt, "User1", "TestBuild", SemanticVersion(1, 2, 3)), true, -1, 2),
 									}
 								},
 							}))
@@ -1656,7 +1656,7 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
-							"TestBuild",
+							PackageName("User1", "TestBuild"),
 							false,
 							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0"),
 							Path(),
@@ -1977,7 +1977,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("TestBuild@1.2.3") },
+															{ "Reference", std::string("User1|TestBuild@1.2.3") },
 															{ "TargetDirectory", std::string("/(TARGET_TestBuild)/") },
 														})
 													},

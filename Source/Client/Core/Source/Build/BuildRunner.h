@@ -115,12 +115,12 @@ namespace Soup::Core
 				else
 				{
 					// Cache the build state for upstream dependencies
-					Log::Diag("Package was prebuilt: " + packageInfo.Name);
+					Log::Diag("Package was prebuilt: " + packageInfo.Name.ToString());
 					_buildCache.emplace(
 						packageInfo.Id,
 						RecipeBuildCacheState(
-							packageInfo.Name,
-							Path("/(TARGET_" + packageInfo.Name + ")/"),
+							packageInfo.Name.ToString(),
+							Path("/(TARGET_" + packageInfo.Name.ToString() + ")/"),
 							packageInfo.TargetDirectory,
 							packageInfo.TargetDirectory + Path(".soup/"),
 							{},
@@ -168,7 +168,7 @@ namespace Soup::Core
 			try
 			{
 				Log::SetActiveId(packageInfo.Id);
-				auto languagePackageName = packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name;
+				auto languagePackageName = packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name.ToString();
 				Log::Diag("Running Build: " + languagePackageName);
 
 				// Check if we already built this package down a different dependency path
@@ -196,11 +196,11 @@ namespace Soup::Core
 		/// </summary>
 		void RunBuild(const PackageGraph& packageGraph, const PackageInfo& packageInfo)
 		{
-			Log::Info("Build '" + packageInfo.Name + "'");
+			Log::Info("Build '" + packageInfo.Name.ToString() + "'");
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Name + ")/");
-			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Name + ")/");
+			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Name.ToString() + ")/");
+			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Name.ToString() + ")/");
 			auto realTargetDirectory = _locationManager.GetOutputDirectory(
 				packageInfo.PackageRoot,
 				*packageInfo.Recipe,
@@ -313,7 +313,7 @@ namespace Soup::Core
 			_buildCache.emplace(
 				packageInfo.Id,
 				RecipeBuildCacheState(
-					packageInfo.Name,
+					packageInfo.Name.ToString(),
 					std::move(macroTargetDirectory),
 					std::move(realTargetDirectory),
 					std::move(soupTargetDirectory),
@@ -424,7 +424,7 @@ namespace Soup::Core
 			generateArguments.push_back(soupTargetDirectory.ToString());
 			auto generateOperation = OperationInfo(
 				generateOperationId,
-				"Generate: " + packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name,
+				"Generate: " + packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name.ToString(),
 				CommandInfo(
 					packageInfo.PackageRoot,
 					generateExecutable,
@@ -757,7 +757,7 @@ namespace Soup::Core
 							if (dependencyType == _dependencyTypeBuild)
 							{
 								// Replace with unique macro to prevent collisions
-								auto macroBuildTargetDirectory = Path("/(BUILD_TARGET_" + dependencyPackageInfo.Name + ")/");
+								auto macroBuildTargetDirectory = Path("/(BUILD_TARGET_" + dependencyPackageInfo.Name.ToString() + ")/");
 								targetSet.GenerateSubGraphMacros.emplace(
 									dependencyState.MacroTargetDirectory.ToString(),
 									macroBuildTargetDirectory.ToString());
@@ -772,7 +772,7 @@ namespace Soup::Core
 							else if (dependencyType == _dependencyTypeTool)
 							{
 								// Replace with unique macro to prevent collisions
-								auto macroToolTargetDirectory = Path("/(TOOL_TARGET_" + dependencyPackageInfo.Name + ")/");
+								auto macroToolTargetDirectory = Path("/(TOOL_TARGET_" + dependencyPackageInfo.Name.ToString() + ")/");
 								targetSet.GenerateSubGraphMacros.emplace(
 									dependencyState.MacroTargetDirectory.ToString(),
 									macroToolTargetDirectory.ToString());

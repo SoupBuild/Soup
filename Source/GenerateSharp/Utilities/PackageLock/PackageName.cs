@@ -138,6 +138,6 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 		}
 	}
 
-	[GeneratedRegex(@"^(?:(?<Owner>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)$")]
+	[GeneratedRegex(@"^(?:(?<Owner>[A-Za-z][\w.]*)\|)?(?<Name>[A-Za-z][\w.]*)$")]
 	private static partial Regex ParseRegex();
 }

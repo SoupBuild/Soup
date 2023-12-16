@@ -25,19 +25,19 @@ namespace Soup::Core
 			{
 				{
 					"C",
-					KnownLanguage("C", "Soup.C")
+					KnownLanguage("C", "mwasplund", "Soup.C")
 				},
 				{
 					"C++",
-					KnownLanguage("Cpp", "Soup.Cpp")
+					KnownLanguage("Cpp", "mwasplund", "Soup.Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "Soup.CSharp")
+					KnownLanguage("CSharp", "mwasplund", "Soup.CSharp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "mwasplund", "Soup.Wren")
 				},
 			});
 

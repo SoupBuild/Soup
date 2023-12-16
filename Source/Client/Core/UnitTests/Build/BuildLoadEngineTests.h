@@ -75,7 +75,7 @@ namespace Soup::Core::UnitTests
 					Language: "Wren|1"
 					Dependencies: {
 						Tool: [
-							"C++|TestTool@4.4.4"
+							"C++|User1|TestTool@4.4.4"
 						]
 					}
 				)")));
@@ -92,11 +92,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "Soup.CSharp")
+					KnownLanguage("CSharp", "User1", "Soup.CSharp")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -209,7 +209,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(""),
@@ -218,13 +218,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 3),
 										}
 									},
 									{
 										"Tool",
 										{
-											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 2),
+											PackageChildInfo(PackageReference("C++", "User1", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 2),
 										}
 									},
 								}))
@@ -233,7 +233,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"TestTool",
+								PackageName("User1", "TestTool"),
 								true,
 								Path("C:/BuiltIn/Packages/TestTool/4.4.4/"),
 								Path("C:/BuiltIn/Packages/TestTool/4.4.4/out/"),
@@ -244,7 +244,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -287,11 +287,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "Soup.CSharp")
+					KnownLanguage("CSharp", "User1", "Soup.CSharp")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -386,7 +386,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -395,7 +395,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -404,7 +404,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -442,7 +442,7 @@ namespace Soup::Core::UnitTests
 					Language: "Wren|2.2.2"
 					Dependencies: {
 						Tool: [
-							"C++|TestTool@4.4.4"
+							"C++|User1|TestTool@4.4.4"
 						]
 					}
 				)")));
@@ -472,22 +472,22 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 4
+					Version: 5
 					Closures: {
 						Root: {
-							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
-							]
+							"C++": {
+								MyPackage: { Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
+							}
 						}
 						Build0: {
-							Wren: [
-								{ Name: "Soup.Cpp", Version: "4.5.6" }
-							]
+							Wren: {
+								"User1|Soup.Cpp": { Version: "4.5.6" }
+							}
 						}
 						Tool0: {
-							"C++": [
-								{ Name: "TestTool", Version: "3.3.3" }
-							]
+							"C++": {
+								"User1|TestTool": { Version: "3.3.3" }
+							}
 						}
 					}
 				)")));
@@ -497,11 +497,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -638,7 +638,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -647,13 +647,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(4, 5, 6)), true, -1, 5),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(4, 5, 6)), true, -1, 5),
 										}
 									},
 									{
 										"Tool",
 										{
-											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(3, 3, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("C++", "User1", "TestTool", SemanticVersion(3, 3, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -662,7 +662,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/4.5.6/"),
 								Path(),
@@ -671,7 +671,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
 										}
 									},
 								}))
@@ -680,7 +680,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"TestTool",
+								PackageName("User1", "TestTool"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/"),
 								Path(),
@@ -689,7 +689,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -698,7 +698,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -709,7 +709,7 @@ namespace Soup::Core::UnitTests
 							5,
 							PackageInfo(
 								5,
-								"Soup.Wren",
+								PackageName("User1", "Soup.Wren"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
@@ -740,8 +740,8 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1.1.1"
 					Dependencies: {
 						Runtime: [
-							"PackageA@3.3.3"
-							"PackageB@4.4.4"
+							"User1|PackageA@3.3.3"
+							"User1|PackageB@4.4.4"
 						]
 					}
 				)")));
@@ -752,7 +752,7 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1.1.1"
 					Dependencies: {
 						Runtime: [
-							"PackageB@4.4.4"
+							"User1|PackageB@4.4.4"
 						]
 					}
 				)")));
@@ -774,15 +774,15 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "Soup.CSharp")
+					KnownLanguage("CSharp", "User1", "Soup.CSharp")
 				},
 				{
 					"Wren",
-					 KnownLanguage("Wren", "Soup.Wren")
+					 KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -833,7 +833,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
-					"DIAG: Recipe already loaded: C++|PackageB",
+					"DIAG: Recipe already loaded: C++|User1|PackageB",
 					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
 				}),
 				testListener->GetMessages(),
@@ -885,7 +885,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -894,14 +894,14 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Runtime",
 										{
-											PackageChildInfo(PackageReference("C++", "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
-											PackageChildInfo(PackageReference("C++", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+											PackageChildInfo(PackageReference("C++", "User1", "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
+											PackageChildInfo(PackageReference("C++", "User1", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
 										}
 									},
 								}))
@@ -910,7 +910,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"PackageA",
+								PackageName("User1", "PackageA"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/"),
 								Path(),
@@ -919,13 +919,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Runtime",
 										{
-											PackageChildInfo(PackageReference("C++", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+											PackageChildInfo(PackageReference("C++", "User1", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
 										}
 									},
 								}))
@@ -934,7 +934,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"PackageB",
+								PackageName("User1", "PackageB"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/"),
 								Path(),
@@ -943,7 +943,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -952,7 +952,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -983,8 +983,8 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1.1.1"
 					Dependencies: {
 						Runtime: [
-							"PackageA@3.3.3"
-							"PackageB@4.4.4"
+							"User1|PackageA@3.3.3"
+							"User1|PackageB@4.4.4"
 						]
 					}
 				)")));
@@ -995,7 +995,7 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1.1.1"
 					Dependencies: {
 						Runtime: [
-							"PackageB@4.4.4"
+							"User1|PackageB@4.4.4"
 						]
 					}
 				)")));
@@ -1017,11 +1017,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "Soup.CSharp")
+					KnownLanguage("CSharp", "User1", "Soup.CSharp")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -1072,7 +1072,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
-					"DIAG: Recipe already loaded: C++|PackageB",
+					"DIAG: Recipe already loaded: C++|User1|PackageB",
 					"DIAG: Graph already loaded: C:/BuiltIn/Packages/Soup.Cpp/1.1.1/",
 				}),
 				testListener->GetMessages(),
@@ -1124,7 +1124,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -1133,14 +1133,14 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Runtime",
 										{
-											PackageChildInfo(PackageReference("C++", "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
-											PackageChildInfo(PackageReference("C++", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+											PackageChildInfo(PackageReference("C++", "User1", "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
+											PackageChildInfo(PackageReference("C++", "User1", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
 										}
 									},
 								}))
@@ -1149,7 +1149,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"PackageA",
+								PackageName("User1", "PackageA"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/"),
 								Path(),
@@ -1158,13 +1158,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Runtime",
 										{
-											PackageChildInfo(PackageReference("C++", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+											PackageChildInfo(PackageReference("C++", "User1", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
 										}
 									},
 								}))
@@ -1173,7 +1173,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"PackageB",
+								PackageName("User1", "PackageB"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/"),
 								Path(),
@@ -1182,7 +1182,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -1191,7 +1191,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -1222,7 +1222,7 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1.1.1"
 					Dependencies: {
 						Build: [
-							"TestBuild@3.3.3"
+							"User1|TestBuild@3.3.3"
 						]
 					}
 				)")));
@@ -1234,7 +1234,7 @@ namespace Soup::Core::UnitTests
 					Language: "Wren|2.2.2"
 					Dependencies: {
 						Tool: [
-							"C++|TestTool@4.4.4"
+							"C++|User1|TestTool@4.4.4"
 						]
 					}
 				)")));
@@ -1265,11 +1265,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -1406,7 +1406,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -1415,14 +1415,14 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Tool",
 										{
-											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
+											PackageChildInfo(PackageReference("C++", "User1", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
 										}
 									},
 								}))
@@ -1431,7 +1431,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"TestBuild",
+								PackageName("User1", "TestBuild"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
 								Path(),
@@ -1440,7 +1440,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
 										}
 									},
 								}))
@@ -1449,7 +1449,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"TestTool",
+								PackageName("User1", "TestTool"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/"),
 								Path(),
@@ -1458,7 +1458,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -1467,7 +1467,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -1478,7 +1478,7 @@ namespace Soup::Core::UnitTests
 							5,
 							PackageInfo(
 								5,
-								"Soup.Wren",
+								PackageName("User1", "Soup.Wren"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
@@ -1540,11 +1540,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -1664,7 +1664,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -1674,7 +1674,7 @@ namespace Soup::Core::UnitTests
 										"Build",
 										{
 											PackageChildInfo(PackageReference(Path("../TestBuild/")), true, -1, 3),
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
 										}
 									},
 								}))
@@ -1683,7 +1683,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"TestBuild",
+								PackageName("User1", "TestBuild"),
 								false,
 								Path("C:/WorkingDirectory/TestBuild/"),
 								Path(),
@@ -1692,7 +1692,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -1701,7 +1701,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"Soup.Wren",
+								PackageName("User1", "Soup.Wren"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
@@ -1712,7 +1712,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -1743,7 +1743,7 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1"
 					Dependencies: {
 						Build: [
-							"TestBuild@3.3.3"
+							"User1|TestBuild@3.3.3"
 						]
 					}
 				)")));
@@ -1773,18 +1773,18 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 4
+					Version: 5
 					Closures: {
 						Root: {
-							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
-							]
+							"C++": {
+								MyPackage: { Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
+							}
 						}
 						Build0: {
-							Wren: [
-								{ Name: "Soup.Cpp", Version: "1.1.1" }
-								{ Name: "TestBuild", Version: "3.3.3" }
-							]
+							Wren: {
+								"User1|Soup.Cpp": { Version: "1.1.1" }
+								"User1|TestBuild": { Version: "3.3.3" }
+							}
 						}
 						Tool0: {
 						}
@@ -1796,11 +1796,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -1927,7 +1927,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -1936,8 +1936,8 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 3),
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "User1", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
 										}
 									},
 								}))
@@ -1946,7 +1946,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"TestBuild",
+								PackageName("User1", "TestBuild"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
 								Path(),
@@ -1955,7 +1955,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -1964,7 +1964,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"Soup.Wren",
+								PackageName("User1", "Soup.Wren"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
@@ -1975,7 +1975,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -2006,7 +2006,7 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1"
 					Dependencies: {
 						Build: [
-							"TestBuild@3.3.3"
+							"User1|TestBuild@3.3.3"
 						]
 					}
 				)")));
@@ -2018,7 +2018,7 @@ namespace Soup::Core::UnitTests
 					Language: "Wren|2.2.2"
 					Dependencies: {
 						Tool: [
-							"C++|TestTool@4.4.4"
+							"C++|User1|TestTool@4.4.4"
 						]
 					}
 				)")));
@@ -2048,23 +2048,23 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 4
+					Version: 5
 					Closures: {
 						Root: {
-							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
-							]
+							"C++": {
+								MyPackage: { Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
+							}
 						}
 						Build0: {
-							Wren: [
-								{ Name: "Soup.Cpp", Version: "1.1.1" }
-								{ Name: "TestBuild", Version: "3.3.3", Tool: "Tool0" }
-							]
+							Wren: {
+								"User1|Soup.Cpp": { Version: "1.1.1" }
+								"User1|TestBuild": { Version: "3.3.3", Tool: "Tool0" }
+							}
 						}
 						Tool0: {
-							"C++": [
-								{ Name: "TestTool", Version: "3.3.3" }
-							]
+							"C++": {
+								"User1|TestTool": { Version: "3.3.3" }
+							}
 						}
 					}
 				)")));
@@ -2074,11 +2074,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -2225,7 +2225,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -2234,14 +2234,14 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Tool",
 										{
-											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(3, 3, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("C++", "User1", "TestTool", SemanticVersion(3, 3, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -2250,7 +2250,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"TestBuild",
+								PackageName("User1", "TestBuild"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
 								Path(),
@@ -2259,7 +2259,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
 										}
 									},
 								}))
@@ -2268,7 +2268,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"TestTool",
+								PackageName("User1", "TestTool"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/3.3.3/"),
 								Path(""),
@@ -2277,7 +2277,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -2286,7 +2286,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -2297,7 +2297,7 @@ namespace Soup::Core::UnitTests
 							5,
 							PackageInfo(
 								5,
-								"Soup.Wren",
+								PackageName("User1", "Soup.Wren"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
@@ -2328,7 +2328,7 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1"
 					Dependencies: {
 						Build: [
-							"TestBuild@3.3.3"
+							"User1|TestBuild@3.3.3"
 						]
 					}
 				)")));
@@ -2365,18 +2365,18 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 4
+					Version: 5
 					Closures: {
 						Root: {
-							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
-							]
+							"C++": {
+								MyPackage: { Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
+							}
 						}
 						Build0: {
-							Wren: [
-								{ Name: "Soup.Cpp", Version: "1.1.2" }
-								{ Name: "TestBuild", Version: "3.3.4" }
-							]
+							Wren: {
+								"User1|Soup.Cpp": { Version: "1.1.2" }
+								"User1|TestBuild": { Version: "3.3.4" }
+							}
 						}
 						Tool0: {
 						}
@@ -2385,17 +2385,17 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.4/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 4
+					Version: 5
 					Closures: {
 						Root: {
-							Wren: [
-								{ Name: "TestBuild", Version: "../TestBuild/", Build: "Build0", Tool: "Tool0" }
-							]
+							Wren: {
+								TestBuild: { Version: "../TestBuild/", Build: "Build0", Tool: "Tool0" }
+							}
 						}
 						Build0: {
-							Wren: [
-								{ Name: "Soup.Wren", Version: "2.2.3" }
-							]
+							Wren: {
+								"User1|Soup.Wren": { Version: "2.2.3" }
+							}
 						}
 						Tool0: {
 						}
@@ -2407,11 +2407,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -2574,7 +2574,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -2583,8 +2583,8 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "TestBuild", SemanticVersion(3, 3, 4)), true, -1, 4),
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 2)), true, -1, 5),
+											PackageChildInfo(PackageReference("Wren", "User1", "TestBuild", SemanticVersion(3, 3, 4)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 2)), true, -1, 5),
 										}
 									},
 								}))
@@ -2593,7 +2593,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"TestBuild",
+								PackageName("User1", "TestBuild"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/"),
 								Path(),
@@ -2602,7 +2602,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -2611,7 +2611,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"Soup.Wren",
+								PackageName("User1", "Soup.Wren"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/"),
 								Path(),
@@ -2620,7 +2620,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -2629,7 +2629,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Wren",
+								PackageName("User1", "Soup.Wren"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
@@ -2640,7 +2640,7 @@ namespace Soup::Core::UnitTests
 							5,
 							PackageInfo(
 								5,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/"),
 								Path(),
@@ -2649,7 +2649,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -2678,7 +2678,7 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1"
 					Dependencies: {
 						Other: [
-							"C#|Package1@4.4.4"
+							"C#|User1|Package1@4.4.4"
 						]
 					}
 				)")));
@@ -2708,25 +2708,25 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 4
+					Version: 5
 					Closures: {
 						Root: {
-							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
-							]
-							"C#": [
-								{ Name: "Package1", Version: "4.4.4", Build: "Build1", Tool: "Tool0" }
-							]
+							"C++": {
+								MyPackage: { Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
+							}
+							"C#": {
+								"User1|Package1": { Version: "4.4.4", Build: "Build1", Tool: "Tool0" }
+							}
 						}
 						Build0: {
-							Wren: [
-								{ Name: "Soup.Cpp", Version: "1.1.1" }
-							]
+							Wren: {
+								"User1|Soup.Cpp": { Version: "1.1.1" }
+							}
 						}
 						Build1: {
-							Wren: [
-								{ Name: "Soup.CSharp", Version: "3.3.3" }
-							]
+							Wren: {
+								"User1|Soup.CSharp": { Version: "3.3.3" }
+							}
 						}
 						Tool1: {
 						}
@@ -2738,15 +2738,15 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					 KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "Soup.CSharp")
+					KnownLanguage("CSharp", "User1", "Soup.CSharp")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -2867,7 +2867,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -2876,13 +2876,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 3),
 										}
 									},
 									{
 										"Other",
 										{
-											PackageChildInfo(PackageReference("C#", "Package1", SemanticVersion(4, 4, 4)), false, 2, -1),
+											PackageChildInfo(PackageReference("C#", "User1", "Package1", SemanticVersion(4, 4, 4)), false, 2, -1),
 										}
 									},
 								}))
@@ -2891,7 +2891,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"Package1",
+								PackageName("User1", "Package1"),
 								false,
 								Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/"),
 								Path(),
@@ -2900,7 +2900,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.CSharp", SemanticVersion(3, 3, 3)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.CSharp", SemanticVersion(3, 3, 3)), true, -1, 2),
 										}
 									},
 								}))
@@ -2909,7 +2909,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"Soup.CSharp",
+								PackageName("User1", "Soup.CSharp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.CSharp/3.3.3/"),
 								Path("C:/BuiltIn/Packages/Soup.CSharp/3.3.3/out/"),
@@ -2920,7 +2920,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Cpp",
+								PackageName("User1", "Soup.Cpp"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/"),
 								Path("C:/BuiltIn/Packages/Soup.Cpp/1.1.1/out/"),
@@ -2981,18 +2981,18 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 4
+					Version: 5
 					Closures: {
 						Root: {
-							"C#": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
-								{ Name: "Package1", Version: "../Package1/", Build: "Build0", Tool: "Tool0" }
-							]
+							"C#": {
+								MyPackage: { Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
+								Package1: { Version: "../Package1/", Build: "Build0", Tool: "Tool0" }
+							}
 						}
 						Build0: {
-							Wren: [
-								{ Name: "Soup.CSharp", Version: "2.2.3" }
-							]
+							Wren: {
+								"User1|Soup.CSharp": { Version: "2.2.3" }
+							}
 						}
 						Tool0: {
 						}
@@ -3004,11 +3004,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "User1", "Soup.Wren")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "Soup.CSharp")
+					KnownLanguage("CSharp", "User1", "Soup.CSharp")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -3129,7 +3129,7 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
-								"MyPackage",
+								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path(),
@@ -3138,7 +3138,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 									{
@@ -3153,7 +3153,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								"Package1",
+								PackageName("User1", "Package1"),
 								false,
 								Path("C:/WorkingDirectory/Package1/"),
 								Path(),
@@ -3162,7 +3162,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -3171,7 +3171,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"Soup.CSharp",
+								PackageName("User1", "Soup.CSharp"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/"),
 								Path(),
@@ -3180,7 +3180,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "User1", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -3189,7 +3189,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								"Soup.Wren",
+								PackageName("User1", "Soup.Wren"),
 								true,
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/"),
 								Path("C:/BuiltIn/Packages/Soup.Wren/2.2.2/out/"),
