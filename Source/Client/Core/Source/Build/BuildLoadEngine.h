@@ -42,7 +42,7 @@ namespace Soup::Core
 		// Built ins
 		const Path& _builtInPackageDirectory;
 		const std::map<std::string, KnownLanguage>& _knownLanguageLookup;
-		const std::map<std::string, std::map<std::string, SemanticVersion>>& _builtInPackageLookup;
+		const std::map<std::string, std::map<PackageName, SemanticVersion>>& _builtInPackageLookup;
 
 		// Arguments
 		const ValueTable& _targetBuildGlobalParameters;
@@ -71,7 +71,7 @@ namespace Soup::Core
 		BuildLoadEngine(
 			const Path& builtInPackageDirectory,
 			const std::map<std::string, KnownLanguage>& knownLanguageLookup,
-			const std::map<std::string, std::map<std::string, SemanticVersion>>& builtInPackageLookup,
+			const std::map<std::string, std::map<PackageName, SemanticVersion>>& builtInPackageLookup,
 			const ValueTable& targetBuildGlobalParameters,
 			const ValueTable& hostBuildGlobalParameters,
 			Path userDataPath,
@@ -123,15 +123,15 @@ namespace Soup::Core
 				rootGraphId,
 				PackageGraph(rootGraphId, rootPackageId, _targetBuildGlobalParameters));
 
-			auto languagePackageName = recipe->GetLanguage().GetName() + "|" + recipe->GetName();
+			auto name = PackageName(std::nullopt, recipe->GetName());
+			auto languagePackageName = recipe->GetLanguage().GetName() + "|" + name.ToString();
 			auto parentSet = std::set<std::string>();
 			auto knownPackageSet = KnownPackageMap();
 			auto toolDependencyProjects = std::vector<PackageChildInfo>();
 			std::optional<std::string> rootBuildToolClosureName = std::nullopt;
-			std::optional<std::string> owner = std::nullopt;
 			LoadClosure(
 				rootBuildToolClosureName,
-				owner,
+				name,
 				*recipe,
 				projectRoot,
 				languagePackageName,
@@ -193,7 +193,7 @@ namespace Soup::Core
 			auto findPackageLock = findClosure->second.find(packageLanguage);
 			if (findPackageLock == findClosure->second.end())
 				throw std::runtime_error("Language [" + _rootClosureName + "] [" + packageLanguage + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
-			auto packageVersion = findPackageLock->second.find(packageName.ToString());
+			auto packageVersion = findPackageLock->second.find(packageName);
 			if (packageVersion == findPackageLock->second.end())
 				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName.ToString() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
@@ -242,6 +242,7 @@ namespace Soup::Core
 					auto activeVersionString = activeReference.GetVersion().ToString();
 					packagePath = packageStore +
 						Path(languageSafeName) +
+						Path(activeReference.GetOwner()) +
 						Path(activeReference.GetName()) +
 						Path(activeVersionString + "/");
 				}
@@ -284,6 +285,7 @@ namespace Soup::Core
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 					packagePath = packageStore +
 						Path(languageSafeName) +
+						Path(activeReference.GetOwner()) +
 						Path(activeReference.GetName()) +
 						Path(activeReference.GetVersion().ToString() + "/");
 				}
@@ -313,10 +315,10 @@ namespace Soup::Core
 				auto findPackageLock = findClosure->second.find(language);
 				if (findPackageLock == findClosure->second.end())
 					throw std::runtime_error("Language [" + closureName + "] [" + language + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
-				auto name = PackageName(reference.GetOwner(), reference.GetName());
-				auto findPackageVersion = findPackageLock->second.find(name.ToString());
+				auto packageName = PackageName(reference.GetOwner(), reference.GetName());
+				auto findPackageVersion = findPackageLock->second.find(packageName);
 				if (findPackageVersion == findPackageLock->second.end())
-					throw std::runtime_error("Package [" + closureName + "] [" + language + "] [" + reference.GetName() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+					throw std::runtime_error("Package [" + closureName + "] [" + language + "] [" + packageName.ToString() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 				auto& lockReference = findPackageVersion->second.Reference;
 				if (lockReference.IsLocal())
@@ -333,7 +335,7 @@ namespace Soup::Core
 
 		void LoadClosure(
 			const std::optional<std::string>& buildToolClosureName,
-			const std::optional<std::string>& owner,
+			const PackageName& packageName,
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& languagePackageName,
@@ -358,7 +360,6 @@ namespace Soup::Core
 				throw std::runtime_error("Recipe does not have a language reference.");
 
 			// Get the current package build closure
-			auto packageName = PackageName(owner, recipe.GetName());
 			auto [buildClosureName, toolClosureName] = GetPackageSubGraphsClosure(
 				recipe.GetLanguage().GetName(),
 				packageName,
@@ -536,8 +537,13 @@ namespace Soup::Core
 				throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 			}
 
+			std::optional<std::string> owner = std::nullopt;
+			if (!originalReference.IsLocal())
+				owner = originalReference.GetOwner();
+
 			// Check if the package has already been processed from another reference
-			auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + activeReference.GetOwner() + "|" + activeReference.GetName();
+			auto dependencyName = PackageName(owner, dependencyRecipe->GetName());
+			auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + dependencyName.ToString();
 			auto findKnownPackage = knownPackageSet.find(languagePackageName);
 			if (findKnownPackage != knownPackageSet.end())
 			{
@@ -561,7 +567,7 @@ namespace Soup::Core
 				std::optional<std::string> runtimeBuildToolClosureName = std::nullopt;
 				LoadClosure(
 					runtimeBuildToolClosureName,
-					activeReference.GetOwner(),
+					dependencyName,
 					*dependencyRecipe,
 					dependencyProjectRoot,
 					languagePackageName,
@@ -681,7 +687,8 @@ namespace Soup::Core
 			}
 		}
 
-		bool HasBuiltInVersion(const PackageReference& reference)
+		bool HasBuiltInVersion(
+			const PackageReference& reference)
 		{
 			if (reference.IsLocal())
 				return false;
@@ -690,7 +697,8 @@ namespace Soup::Core
 			if (builtInLanguagePackageResult == _builtInPackageLookup.end())
 				return false;
 
-			auto builtInPackageResult = builtInLanguagePackageResult->second.find(reference.GetName());
+			auto packageName = PackageName(reference.GetOwner(), reference.GetName());
+			auto builtInPackageResult = builtInLanguagePackageResult->second.find(packageName);
 			if (builtInPackageResult == builtInLanguagePackageResult->second.end())
 				return false;
 
@@ -809,13 +817,18 @@ namespace Soup::Core
 					packageLockState);
 				auto dependencyPackageLockState = LoadPackageLockIfPresent(packageLockRoot);
 
+				std::optional<std::string> owner = std::nullopt;
+				if (!originalReference.IsLocal())
+					owner = originalReference.GetOwner();
+
 				// Discover all recursive dependencies
-				auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + activeReference.GetOwner() + "|" + activeReference.GetName();
+				auto dependencyName = PackageName(owner, dependencyRecipe->GetName());
+				auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + dependencyName.ToString();
 				auto childPackageId = ++_uniquePackageId;
 				auto toolDependencyProjects = std::vector<PackageChildInfo>();
 				LoadClosure(
 					toolClosureName,
-					activeReference.GetOwner(),
+					dependencyName,
 					*dependencyRecipe,
 					dependencyProjectRoot,
 					languagePackageName,
@@ -885,6 +898,7 @@ namespace Soup::Core
 		{
 			// Use the prebuilt version in the install folder
 			auto packageRoot = _builtInPackageDirectory +
+				Path(activeReference.GetOwner()) +
 				Path(activeReference.GetName()) +
 				Path(activeReference.GetVersion().ToString() + "/");
 

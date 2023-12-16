@@ -131,6 +131,14 @@ namespace Soup::Core
 		}
 
 		/// <summary>
+		/// Less Than operator
+		/// </summary>
+		bool operator<(const PackageName& other) const
+		{
+			return std::tie(_owner, _name) < std::tie(other._owner, other._name);
+		}
+
+		/// <summary>
 		/// Convert to string
 		/// </summary>
 		std::string ToString() const

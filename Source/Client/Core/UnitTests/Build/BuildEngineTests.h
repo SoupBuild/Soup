@@ -34,7 +34,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/BuiltIn/Packages/Soup.Cpp/0.8.2/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
@@ -87,8 +87,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/BuiltIn/Packages/Soup.Cpp/0.8.2/Recipe.sml",
-					"DIAG: 0>Package was prebuilt: Soup.Cpp",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/Recipe.sml",
+					"DIAG: 0>Package was prebuilt: mwasplund|Soup.Cpp",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Checking for existing Evaluate Operation Graph",
@@ -116,7 +116,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>C:/Users/Me/.soup/LocalUserConfig.sml",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
-					"DIAG: 1>C:/BuiltIn/Packages/Soup.Cpp/0.8.2/out/",
+					"DIAG: 1>C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/out/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"DIAG: 1>Allowed Write Access:",
@@ -147,8 +147,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/Soup.Cpp/0.8.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/Soup.Cpp/0.8.2/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/Recipe.sml",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
@@ -203,10 +203,10 @@ namespace Soup::Core::UnitTests
 								ValueTable(
 								{
 									{
-										"Soup.Cpp",
+										"mwasplund|Soup.Cpp",
 										ValueTable(
 										{
-											{ "SoupTargetDirectory", std::string("C:/BuiltIn/Packages/Soup.Cpp/0.8.2/out/.soup/") },
+											{ "SoupTargetDirectory", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/out/.soup/") },
 										})
 									},
 								})
@@ -240,14 +240,14 @@ namespace Soup::Core::UnitTests
 						"GenerateMacros",
 						ValueTable(
 						{
-							{ "/(BUILD_TARGET_Soup.Cpp)/", std::string("C:/BuiltIn/Packages/Soup.Cpp/0.8.2/out/") },
+							{ "/(BUILD_TARGET_mwasplund|Soup.Cpp)/", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/out/") },
 						})
 					},
 					{
 						"GenerateSubGraphMacros",
 						ValueTable(
 						{
-							{ "/(TARGET_Soup.Cpp)/", std::string("/(BUILD_TARGET_Soup.Cpp)/") },
+							{ "/(TARGET_mwasplund|Soup.Cpp)/", std::string("/(BUILD_TARGET_mwasplund|Soup.Cpp)/") },
 						})
 					},
 					{
@@ -272,7 +272,7 @@ namespace Soup::Core::UnitTests
 										ValueTable(
 										{
 											{
-												"Soup.Cpp",
+												"mwasplund|Soup.Cpp",
 												ValueTable(
 												{
 													{
@@ -280,7 +280,7 @@ namespace Soup::Core::UnitTests
 														ValueTable(
 														{
 															{ "Reference", std::string("Wren|mwasplund|Soup.Cpp@0.8.2") },
-															{ "TargetDirectory", std::string("/(TARGET_Soup.Cpp)/") },
+															{ "TargetDirectory", std::string("/(TARGET_mwasplund|Soup.Cpp)/") },
 														})
 													},
 												})

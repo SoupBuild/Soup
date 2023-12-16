@@ -44,19 +44,19 @@ namespace Soup::Core
 			return result;
 		}
 
-		static std::map<std::string, std::map<std::string, SemanticVersion>> GetBuiltInPackages()
+		static std::map<std::string, std::map<PackageName, SemanticVersion>> GetBuiltInPackages()
 		{
-			auto result = std::map<std::string, std::map<std::string, SemanticVersion>>(
+			auto result = std::map<std::string, std::map<PackageName, SemanticVersion>>(
 			{
 				{
 					"C++",
 					{
 						{
-							"copy",
+							PackageName("mwasplund", "copy"),
 							SemanticVersion(1, 0, 0)
 						},
 						{
-							"mkdir",
+							PackageName("mwasplund", "mkdir"),
 							SemanticVersion(1, 0, 0)
 						},
 					}
@@ -65,15 +65,15 @@ namespace Soup::Core
 					"Wren",
 					{
 						{
-							"Soup.Cpp",
+							PackageName("mwasplund", "Soup.Cpp"),
 							SemanticVersion(0, 8, 2)
 						},
 						{
-							"Soup.CSharp",
+							PackageName("mwasplund", "Soup.CSharp"),
 							SemanticVersion(0, 9, 0)
 						},
 						{
-							"Soup.Wren",
+							PackageName("mwasplund", "Soup.Wren"),
 							SemanticVersion(0, 2, 0)
 						},
 					}

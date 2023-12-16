@@ -33,7 +33,7 @@ namespace Soup::Core
 	/// <summary>
 	/// The package lock container
 	/// </summary>
-	using PackageClosure = std::map<std::string, std::map<std::string, PackageClosureValue>>;
+	using PackageClosure = std::map<std::string, std::map<PackageName, PackageClosureValue>>;
 	using PackageClosures = std::map<std::string, PackageClosure>;
 	class PackageLock
 	{
@@ -97,7 +97,7 @@ namespace Soup::Core
 				auto closureLock = PackageClosure();
 				for (const auto& [languageKey, languageValue] : closureValue.AsTable())
 				{
-					auto languageLock = std::map<std::string, PackageClosureValue>();
+					auto languageLock = std::map<PackageName, PackageClosureValue>();
 					for (auto& [projectUniqueName, projectValue] : languageValue.AsTable())
 					{
 						auto& projectTable = projectValue.AsTable();
@@ -129,7 +129,7 @@ namespace Soup::Core
 							toolValue = GetValue(projectTable, Property_Tool).AsString();
 
 						auto lockValue = PackageClosureValue(std::move(reference), std::move(buildValue), std::move(toolValue));
-						languageLock.emplace(projectUniqueName, std::move(lockValue));
+						languageLock.emplace(projectName, std::move(lockValue));
 					}
 
 					closureLock.emplace(languageKey, std::move(languageLock));
