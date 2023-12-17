@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "PackageIdentifier.h"
 
 namespace Soup::Core
 {
@@ -15,31 +16,16 @@ namespace Soup::Core
 	#endif
 	class PackageReference
 	{
+	private:
+		std::optional<PackageIdentifier> _identifier;
+		std::optional<SemanticVersion> _version;
+		std::optional<Path> _path;
+
 	public:
 		/// <summary>
 		/// Try parse a package reference from the provided string
 		/// </summary>
 		static bool TryParse(const std::string& value, PackageReference& result)
-		{
-			// TODO: Invert try parse to be the default and parse to add the exception
-			// Way faster on the failed case and this could eat OOM
-			try
-			{
-				result = Parse(value);
-				return true;
-			}
-			catch (...)
-			{
-			}
-
-			result = PackageReference();
-			return false;
-		}
-
-		/// <summary>
-		/// Parse a package reference from the provided string.
-		/// </summary>
-		static PackageReference Parse(const std::string& value)
 		{
 			// Reuse regex between runs
 			static auto nameRegex = std::regex(R"(^(?:\[([\w#+]+)\])?(?:([A-Za-z][\w.]*)\|)?([A-Za-z][\w.]*)(?:@(\d+(?:.\d+)?(?:.\d+)?))?$)");
@@ -72,12 +58,39 @@ namespace Soup::Core
 					version = SemanticVersion::Parse(versionMatch.str());
 				}
 
-				return PackageReference(std::move(language), std::move(owner), std::move(name), version);
+				result = PackageReference(std::move(language), std::move(owner), std::move(name), version);
+				return true;
 			}
 			else
 			{
-				// Assume that this package is a relative path reference
-				return PackageReference(Path(value));
+				try
+				{
+					// Assume that this package is a relative path reference
+					// TODO: Add a try parse Path
+					result = PackageReference(Path(value));
+					return true;
+				}
+				catch (const std::runtime_error&)
+				{
+					result = PackageReference();
+					return false;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Parse a package reference from the provided string.
+		/// </summary>
+		static PackageReference Parse(const std::string& value)
+		{
+			PackageReference result;
+			if (TryParse(value, result))
+			{
+				return result;
+			}
+			else
+			{
+				throw std::runtime_error("Invalid package reference");
 			}
 		}
 
@@ -86,9 +99,7 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="PackageReference"/> class.
 		/// </summary>
 		PackageReference() :
-			_language(std::nullopt),
-			_owner(std::nullopt),
-			_name(std::nullopt),
+			_identifier(std::nullopt),
 			_version(std::nullopt),
 			_path(std::nullopt)
 		{
@@ -102,9 +113,7 @@ namespace Soup::Core
 			std::optional<std::string> owner,
 			std::string name,
 			std::optional<SemanticVersion> version) :
-			_language(std::move(language)),
-			_owner(std::move(owner)),
-			_name(std::move(name)),
+			_identifier(PackageIdentifier(std::move(language), std::move(owner), std::move(name))),
 			_version(version),
 			_path(std::nullopt)
 		{
@@ -114,8 +123,7 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="PackageReference"/> class.
 		/// </summary>
 		PackageReference(Path path) :
-			_language(std::nullopt),
-			_name(std::nullopt),
+			_identifier(std::nullopt),
 			_version(std::nullopt),
 			_path(std::move(path))
 		{
@@ -134,7 +142,7 @@ namespace Soup::Core
 		/// </summary>
 		bool HasLanguage() const
 		{
-			return _language.has_value();
+			return _identifier.has_value() && _identifier.value().HasLanguage();
 		}
 
 		/// <summary>
@@ -142,9 +150,9 @@ namespace Soup::Core
 		/// </summary>
 		const std::string& GetLanguage() const
 		{
-			if (!_language.has_value())
-				throw std::runtime_error("PackageReference does not have a Language value.");
-			return _language.value();
+			if (!_identifier.has_value())
+				throw std::runtime_error("PackageReference does not have an identifier.");
+			return _identifier.value().GetLanguage();
 		}
 
 		/// <summary>
@@ -152,7 +160,7 @@ namespace Soup::Core
 		/// </summary>
 		bool HasOwner() const
 		{
-			return _owner.has_value();
+			return _identifier.has_value() && _identifier.value().HasOwner();
 		}
 
 		/// <summary>
@@ -160,9 +168,9 @@ namespace Soup::Core
 		/// </summary>
 		const std::string& GetOwner() const
 		{
-			if (!_owner.has_value())
-				throw std::runtime_error("PackageReference does not have an Owner value.");
-			return _owner.value();
+			if (!_identifier.has_value())
+				throw std::runtime_error("PackageReference does not have an identifier.");
+			return _identifier.value().GetOwner();
 		}
 
 		/// <summary>
@@ -170,9 +178,9 @@ namespace Soup::Core
 		/// </summary>
 		const std::string& GetName() const
 		{
-			if (!_name.has_value())
-				throw std::runtime_error("Cannot get the name of a local reference.");
-			return _name.value();
+			if (!_identifier.has_value())
+				throw std::runtime_error("PackageReference does not have an identifier.");
+			return _identifier.value().GetName();
 		}
 
 		/// <summary>
@@ -200,9 +208,7 @@ namespace Soup::Core
 		/// </summary>
 		bool operator ==(const PackageReference& rhs) const
 		{
-			return _language == rhs._language &&
-				_owner == rhs._owner &&
-				_name == rhs._name &&
+			return _identifier == rhs._identifier &&
 				_version == rhs._version &&
 				_path == rhs._path;
 		}
@@ -212,9 +218,7 @@ namespace Soup::Core
 		/// </summary>
 		bool operator !=(const PackageReference& rhs) const
 		{
-			return _language != rhs._language ||
-				_owner != rhs._owner ||
-				_name != rhs._name ||
+			return _identifier != rhs._identifier ||
 				_version != rhs._version ||
 				_path != rhs._path;
 		}
@@ -234,17 +238,7 @@ namespace Soup::Core
 				// Build up the language/name/version reference
 				std::stringstream stringBuilder;
 
-				if (_language.has_value())
-				{
-					stringBuilder << '[' << _language.value() << ']';
-				}
-
-				if (_owner.has_value())
-				{
-					stringBuilder << _owner.value() << '|';
-				}
-
-				stringBuilder << _name.value();
+				stringBuilder << _identifier.value().ToString();
 
 				if (_version.has_value())
 				{
@@ -254,12 +248,5 @@ namespace Soup::Core
 				return stringBuilder.str();
 			}
 		}
-
-	private:
-		std::optional<std::string> _language;
-		std::optional<std::string> _owner;
-		std::optional<std::string> _name;
-		std::optional<SemanticVersion> _version;
-		std::optional<Path> _path;
 	};
 }

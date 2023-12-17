@@ -5,7 +5,7 @@
 #pragma once
 #include "Recipe/RecipeValue.h"
 #include "Recipe/PackageReference.h"
-#include "PackageName.h"
+#include "Recipe/PackageName.h"
 
 #ifdef SOUP_BUILD
 export

@@ -279,7 +279,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("Wren|mwasplund|Soup.Cpp@0.8.2") },
+															{ "Reference", std::string("[Wren]mwasplund|Soup.Cpp@0.8.2") },
 															{ "TargetDirectory", std::string("/(TARGET_mwasplund|Soup.Cpp)/") },
 														})
 													},

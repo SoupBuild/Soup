@@ -7,38 +7,22 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// A package name that uniquely identifies a package in a single build graph
+	/// A package owner/name that uniquely identifies a package in a single language
 	/// </summary>
 	#ifdef SOUP_BUILD
 	export
 	#endif
 	class PackageName
 	{
+	private:
+		std::optional<std::string> _owner;
+		std::string _name;
+
 	public:
 		/// <summary>
 		/// Try parse a package name from the provided string
 		/// </summary>
 		static bool TryParse(const std::string& value, PackageName& result)
-		{
-			// TODO: Invert try parse to be the default and parse to add the exception
-			// Way faster on the failed case and this could eat OOM
-			try
-			{
-				result = Parse(value);
-				return true;
-			}
-			catch (...)
-			{
-			}
-
-			result = PackageName();
-			return false;
-		}
-
-		/// <summary>
-		/// Parse a package name from the provided string.
-		/// </summary>
-		static PackageName Parse(const std::string& value)
 		{
 			// Reuse regex between runs
 			static auto nameRegex = std::regex(R"(^(?:([A-Za-z][\w.]*)\|)?([A-Za-z][\w.]*)$)");
@@ -57,7 +41,25 @@ namespace Soup::Core
 
 				auto name = nameMatch[2].str();
 
-				return PackageName(std::move(owner), std::move(name));
+				result = PackageName(std::move(owner), std::move(name));
+				return true;
+			}
+			else
+			{
+				result = PackageName();
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Parse a package name from the provided string.
+		/// </summary>
+		static PackageName Parse(const std::string& value)
+		{
+			PackageName result;
+			if (TryParse(value, result))
+			{
+				return result;
 			}
 			else
 			{
@@ -143,7 +145,6 @@ namespace Soup::Core
 		/// </summary>
 		std::string ToString() const
 		{
-			// Build up the owner/name name
 			std::stringstream stringBuilder;
 
 			if (_owner.has_value())
@@ -155,9 +156,5 @@ namespace Soup::Core
 
 			return stringBuilder.str();
 		}
-
-	private:
-		std::optional<std::string> _owner;
-		std::string _name;
 	};
 }
