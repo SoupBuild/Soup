@@ -543,7 +543,7 @@ namespace Soup::Core
 
 			// Check if the package has already been processed from another reference
 			auto dependencyName = PackageName(owner, dependencyRecipe->GetName());
-			auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + dependencyName.ToString();
+			auto languagePackageName = "[" + dependencyRecipe->GetLanguage().GetName() + "]" + dependencyName.ToString();
 			auto findKnownPackage = knownPackageSet.find(languagePackageName);
 			if (findKnownPackage != knownPackageSet.end())
 			{

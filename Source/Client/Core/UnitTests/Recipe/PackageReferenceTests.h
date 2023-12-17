@@ -152,11 +152,15 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Theory]]
+		// [[InlineData("Name", std::nullopt, std::nullopt, "Name", std::nullopt)]]
+		// [[InlineData("Name@1.2.3", std::nullopt, std::nullopt, "Name", Soup::SemanticVersion(1, 2, 3))]]
+		// [[InlineData("[C#]Name", "C#", std::nullopt, "Name", std::nullopt)]]
+		// [[InlineData("[C#]Name@1.2.3", "C#", std::nullopt, "Name", Soup::SemanticVersion(1, 2, 3))]]
 		// [[InlineData("User1|Name", std::nullopt, "User1", "Name", std::nullopt)]]
 		// [[InlineData("User1|Name@1.2.3", std::nullopt, "User1", "Name", Soup::SemanticVersion(1, 2, 3))]]
-		// [[InlineData("C#|User1|Name", "C#", "User1", "Name", std::nullopt)]]
-		// [[InlineData("C#|User1|Name@1.2.3", "C#", "User1", "Name", Soup::SemanticVersion(1, 2, 3))]]
-		void ParseNamedValues(std::string value, std::optional<std::string> language, std::string owner, std::string name, std::optional<SemanticVersion> version)
+		// [[InlineData("[C#]User1|Name", "C#", "User1", "Name", std::nullopt)]]
+		// [[InlineData("[C#]User1|Name@1.2.3", "C#", "User1", "Name", Soup::SemanticVersion(1, 2, 3))]]
+		void ParseNamedValues(std::string value, std::optional<std::string> language, std::optional<std::string> owner, std::string name, std::optional<SemanticVersion> version)
 		{
 			auto uut = PackageReference::Parse(value);
 			Assert::AreEqual(
@@ -190,11 +194,15 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Theory]]
+		// [[InlineData(std::nullopt, std::nullopt, "Name", std::nullopt, "Name")]]
+		// [[InlineData(std::nullopt, std::nullopt, "Name", Soup::SemanticVersion(1, 2, 3), "Name@1.2.3")]]
+		// [[InlineData("C#", std::nullopt, "Name", std::nullopt, "[C#]Name")]]
+		// [[InlineData("C#", std::nullopt, "Name", Soup::SemanticVersion(1, 2, 3), "[C#]Name@1.2.3")]]
 		// [[InlineData(std::nullopt, "User1", "Name", std::nullopt, "User1|Name")]]
 		// [[InlineData(std::nullopt, "User1", "Name", Soup::SemanticVersion(1, 2, 3), "User1|Name@1.2.3")]]
-		// [[InlineData("C#", "User1", "Name", std::nullopt, "C#|User1|Name")]]
-		// [[InlineData("C#", "User1", "Name", Soup::SemanticVersion(1, 2, 3), "C#|User1|Name@1.2.3")]]
-		void ToStringNamedValues(std::optional<std::string> language, std::string owner, std::string name, std::optional<SemanticVersion> version, std::string expected)
+		// [[InlineData("C#", "User1", "Name", std::nullopt, "[C#]User1|Name")]]
+		// [[InlineData("C#", "User1", "Name", Soup::SemanticVersion(1, 2, 3), "[C#]User1|Name@1.2.3")]]
+		void ToStringNamedValues(std::optional<std::string> language, std::optional<std::string> owner, std::string name, std::optional<SemanticVersion> version, std::string expected)
 		{
 			auto uut = PackageReference(language, owner, name, version);
 			auto value = uut.ToString();

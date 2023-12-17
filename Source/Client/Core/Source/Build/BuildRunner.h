@@ -168,7 +168,7 @@ namespace Soup::Core
 			try
 			{
 				Log::SetActiveId(packageInfo.Id);
-				auto languagePackageName = packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name.ToString();
+				auto languagePackageName = "[" + packageInfo.Recipe->GetLanguage().GetName() + "]" + packageInfo.Name.ToString();
 				Log::Diag("Running Build: " + languagePackageName);
 
 				// Check if we already built this package down a different dependency path
@@ -424,7 +424,7 @@ namespace Soup::Core
 			generateArguments.push_back(soupTargetDirectory.ToString());
 			auto generateOperation = OperationInfo(
 				generateOperationId,
-				"Generate: " + packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name.ToString(),
+				"Generate: [" + packageInfo.Recipe->GetLanguage().GetName() + "]" + packageInfo.Name.ToString(),
 				CommandInfo(
 					packageInfo.PackageRoot,
 					generateExecutable,

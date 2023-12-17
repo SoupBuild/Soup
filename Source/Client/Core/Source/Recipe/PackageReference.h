@@ -42,7 +42,7 @@ namespace Soup::Core
 		static PackageReference Parse(const std::string& value)
 		{
 			// Reuse regex between runs
-			static auto nameRegex = std::regex(R"(^(?:([\w#+]+)\|)?(?:([A-Za-z][\w.]*)\|)([A-Za-z][\w.]*)(?:@(\d+(?:.\d+)?(?:.\d+)?))?$)");
+			static auto nameRegex = std::regex(R"(^(?:\[([\w#+]+)\])?(?:([A-Za-z][\w.]*)\|)?([A-Za-z][\w.]*)(?:@(\d+(?:.\d+)?(?:.\d+)?))?$)");
 
 			// Attempt to parse Named reference
 			auto nameMatch = std::smatch();
@@ -56,7 +56,12 @@ namespace Soup::Core
 					language = languageMatch.str();
 				}
 
-				auto owner = nameMatch[2].str();
+				std::optional<std::string> owner = std::nullopt;
+				auto ownerMatch = nameMatch[2];
+				if (ownerMatch.matched)
+				{
+					owner = ownerMatch.str();
+				}
 
 				auto name = nameMatch[3].str();
 
@@ -94,7 +99,7 @@ namespace Soup::Core
 		/// </summary>
 		PackageReference(
 			std::optional<std::string> language,
-			std::string owner,
+			std::optional<std::string> owner,
 			std::string name,
 			std::optional<SemanticVersion> version) :
 			_language(std::move(language)),
@@ -145,10 +150,18 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the Owner.
 		/// </summary>
+		bool HasOwner() const
+		{
+			return _owner.has_value();
+		}
+
+		/// <summary>
+		/// Gets or sets the Owner.
+		/// </summary>
 		const std::string& GetOwner() const
 		{
 			if (!_owner.has_value())
-				throw std::runtime_error("Cannot get the owner of a local reference.");
+				throw std::runtime_error("PackageReference does not have an Owner value.");
 			return _owner.value();
 		}
 
@@ -223,10 +236,15 @@ namespace Soup::Core
 
 				if (_language.has_value())
 				{
-					stringBuilder << _language.value() << '|';
+					stringBuilder << '[' << _language.value() << ']';
 				}
 
-				stringBuilder << _owner.value() << '|' << _name.value();
+				if (_owner.has_value())
+				{
+					stringBuilder << _owner.value() << '|';
+				}
+
+				stringBuilder << _name.value();
 
 				if (_version.has_value())
 				{

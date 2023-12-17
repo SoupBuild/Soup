@@ -122,7 +122,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 1>Running Build: C++|MyPackage",
+					"DIAG: 1>Running Build: [C++]MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Checking for existing Evaluate Operation Graph",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -431,7 +431,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 2>Running Build: C#|User1|TestBuild",
+					"DIAG: 2>Running Build: [C#]User1|TestBuild",
 					"INFO: 2>Build 'User1|TestBuild'",
 					"INFO: 2>Checking for existing Evaluate Operation Graph",
 					"DIAG: 2>C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
@@ -453,7 +453,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"INFO: 2>Saving updated build state",
 					"INFO: 2>Done",
-					"DIAG: 1>Running Build: C++|MyPackage",
+					"DIAG: 1>Running Build: [C++]MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Checking for existing Evaluate Operation Graph",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -954,7 +954,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 3>Running Build: C++|User1|PackageB",
+					"DIAG: 3>Running Build: [C++]User1|PackageB",
 					"INFO: 3>Build 'User1|PackageB'",
 					"INFO: 3>Checking for existing Evaluate Operation Graph",
 					"DIAG: 3>C:/Users/Me/.soup/packages/Cpp/User1/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -976,7 +976,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 3>Saving updated build state",
 					"INFO: 3>Done",
-					"DIAG: 2>Running Build: C++|User1|PackageA",
+					"DIAG: 2>Running Build: [C++]User1|PackageA",
 					"INFO: 2>Build 'User1|PackageA'",
 					"INFO: 2>Checking for existing Evaluate Operation Graph",
 					"DIAG: 2>C:/Users/Me/.soup/packages/Cpp/User1/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -998,9 +998,9 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 2>Saving updated build state",
 					"INFO: 2>Done",
-					"DIAG: 3>Running Build: C++|User1|PackageB",
-					"DIAG: 3>Recipe already built: C++|User1|PackageB",
-					"DIAG: 1>Running Build: C++|MyPackage",
+					"DIAG: 3>Running Build: [C++]User1|PackageB",
+					"DIAG: 3>Recipe already built: [C++]User1|PackageB",
+					"DIAG: 1>Running Build: [C++]MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Checking for existing Evaluate Operation Graph",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -1683,7 +1683,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 2>Running Build: C#|User1|TestBuild",
+					"DIAG: 2>Running Build: [C#]User1|TestBuild",
 					"INFO: 2>Build 'User1|TestBuild'",
 					"INFO: 2>Checking for existing Evaluate Operation Graph",
 					"DIAG: 2>C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
@@ -1705,7 +1705,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"INFO: 2>Saving updated build state",
 					"INFO: 2>Done",
-					"DIAG: 1>Running Build: C++|MyPackage",
+					"DIAG: 1>Running Build: [C++]MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Checking for existing Evaluate Operation Graph",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
