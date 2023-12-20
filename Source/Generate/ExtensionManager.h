@@ -20,7 +20,7 @@ namespace Soup::Core::Generate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionManager"/> class.
 		/// </summary>
-		 ExtensionManager() :
+		ExtensionManager() :
 			_tasks()
 		{
 		}

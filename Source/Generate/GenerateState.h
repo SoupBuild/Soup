@@ -23,7 +23,7 @@ namespace Soup::Core::Generate
 		/// <summary>
 		/// Initializes a new instance of the GenerateState class
 		/// </summary>
-		 GenerateState(
+		GenerateState(
 			ValueTable globalState,
 			FileSystemState& fileSystemState,
 			std::vector<Path> readAccessList,

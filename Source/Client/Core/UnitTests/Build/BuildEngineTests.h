@@ -40,6 +40,26 @@ namespace Soup::Core::UnitTests
 					Language: "Wren|1"
 				)")));
 
+			// Create the package lock
+			fileSystem->CreateMockFile(
+				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Version: 5
+					Closures: {
+						Root: {
+							"C++": {
+								MyPackage: { Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
+							}
+						}
+						Build0: {
+							Wren: {
+								"mwasplund|Soup.Cpp": { Version: "0.8.2" }
+							}
+						}
+						Tool0: {}
+					}
+				)")));
+
 			auto operationGraph = OperationGraph(
 				std::vector<OperationId>(),
 				std::vector<OperationInfo>());
@@ -85,7 +105,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"INFO: PackageLock file does not exist",
+					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/Recipe.sml",
 					"DIAG: 0>Package was prebuilt: mwasplund|Soup.Cpp",
@@ -145,6 +165,7 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"GetCurrentDirectory",
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"Exists: C:/BuiltIn/Packages/mwasplund/Soup.Cpp/0.8.2/Recipe.sml",

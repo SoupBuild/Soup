@@ -4,7 +4,7 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Api.Client\Soup.Build.Api.Client.csproj" />
-	  <ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
+		<ProjectReference Include="..\Api.Client\Soup.Build.Api.Client.csproj" />
+		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
 	</ItemGroup>
 </Project>
