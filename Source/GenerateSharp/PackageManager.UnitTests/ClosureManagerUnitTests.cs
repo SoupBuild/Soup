@@ -1273,7 +1273,7 @@ public class ClosureManagerUnitTests
 					Version: "1.2.3"
 					Dependencies: {
 						Tool: [
-							{ Reference: "C++|User1|Package2@2.3.4" }
+							{ Reference: "[C++]User1|Package2@2.3.4" }
 						]
 					}
 					"""))));

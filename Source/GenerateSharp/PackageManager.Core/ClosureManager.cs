@@ -145,7 +145,7 @@ public class ClosureManager : IClosureManager
 							else
 							{
 								var languageSafeName = GetLanguageSafeName(languageName);
-								var userFolder = projectName.HasOwner ? new Path(projectName.Owner) : new Path("Local");
+								var userFolder = projectName.Owner is not null ? new Path(projectName.Owner) : new Path("Local");
 								var packageLanguageNameVersionPath =
 									new Path(languageSafeName) +
 									userFolder +
@@ -770,7 +770,7 @@ public class ClosureManager : IClosureManager
 					{
 						await EnsurePackageDownloadedAsync(
 							isRuntime,
-							projectName.Owner,
+							projectName.Owner ?? throw new InvalidOperationException("Missing owner"),
 							languageName,
 							projectName.Name,
 							version,

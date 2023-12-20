@@ -79,9 +79,9 @@ namespace Soup::Core::UnitTests
 					"INFO: PackageLock file does not exist",
 					"ERRO: Missing or invalid package lock",
 					"HIGH: Run `restore` and try again",
-					}),
-					testListener->GetMessages(),
-					"Verify log messages match expected.");
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
@@ -1001,9 +1001,9 @@ namespace Soup::Core::UnitTests
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					}),
-					testListener->GetMessages(),
-					"Verify log messages match expected.");
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
@@ -1020,9 +1020,9 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					}),
-					fileSystem->GetRequests(),
-					"Verify file system requests match expected.");
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -1323,9 +1323,9 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 					"DIAG: Graph already loaded: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/",
-					}),
-					testListener->GetMessages(),
-					"Verify log messages match expected.");
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
@@ -1346,9 +1346,9 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					}),
-					fileSystem->GetRequests(),
-					"Verify file system requests match expected.");
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -3771,9 +3771,9 @@ namespace Soup::Core::UnitTests
 					"DIAG: Graph already loaded: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/",
 					"DIAG: Recipe already loaded: [C++]User1|PackageB",
 					"DIAG: Graph already loaded: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/",
-					}),
-					testListener->GetMessages(),
-					"Verify log messages match expected.");
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
@@ -3788,9 +3788,9 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
 					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					}),
-					fileSystem->GetRequests(),
-					"Verify file system requests match expected.");
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -4049,9 +4049,9 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					}),
-					testListener->GetMessages(),
-					"Verify log messages match expected.");
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
@@ -4066,9 +4066,9 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
 					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					}),
-					fileSystem->GetRequests(),
-					"Verify file system requests match expected.");
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(

@@ -13,8 +13,6 @@ namespace Soup.Build;
 /// </summary>
 public partial class PackageName : IEquatable<PackageName>, IComparable<PackageName>
 {
-	private readonly string? _owner;
-
 	/// <summary>
 	/// Try parse a package name from the provided string
 	/// </summary>
@@ -58,27 +56,19 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 	/// </summary>
 	public PackageName(string? owner, string name)
 	{
-		_owner = owner;
+		Owner = owner;
 		Name = name;
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the name has an owner or not
 	/// </summary>
-	public bool HasOwner => _owner is not null;
+	public bool HasOwner => Owner is not null;
 
 	/// <summary>
 	/// Gets or sets the Owner.
 	/// </summary>
-	public string Owner
-	{
-		get
-		{
-			if (_owner is null)
-				throw new InvalidOperationException("Cannot get null owner");
-			return _owner;
-		}
-	}
+	public string? Owner { get; set; }
 
 	/// <summary>
 	/// Gets or sets the Name.
@@ -92,7 +82,7 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 	{
 		if (other is null)
 			return false;
-		return _owner == other._owner &&
+		return Owner == other.Owner &&
 			Name == other.Name;
 	}
 
@@ -103,7 +93,7 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 
 	public override int GetHashCode()
 	{
-		var ownerHash = string.IsNullOrEmpty(_owner) ? 0 : _owner.GetHashCode(StringComparison.Ordinal) * 0x1000;
+		var ownerHash = Owner is null ? 0 : Owner.GetHashCode(StringComparison.Ordinal) * 0x1000;
 		var nameHash = Name.GetHashCode();
 		return ownerHash + nameHash;
 	}
@@ -128,9 +118,9 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 	/// </summary>
 	public override string ToString()
 	{
-		if (_owner is not null)
+		if (Owner is not null)
 		{
-			return $"{_owner}|{Name}";
+			return $"{Owner}|{Name}";
 		}
 		else
 		{
