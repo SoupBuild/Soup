@@ -30,7 +30,8 @@ public partial class PackageReference : IEquatable<PackageReference>
 			// The package is a published reference
 			var language = matchName.Groups.ContainsKey("Language") && matchName.Groups["Language"].Success ?
 				matchName.Groups["Language"].Value : null;
-			var owner = matchName.Groups["Owner"].Value;
+			var owner = matchName.Groups.ContainsKey("Owner") && matchName.Groups["Owner"].Success ?
+				matchName.Groups["Owner"].Value : null;
 			var name = matchName.Groups["Name"].Value;
 			var version = matchName.Groups.ContainsKey("Version") && matchName.Groups["Version"].Success ?
 					SemanticVersion.Parse(matchName.Groups["Version"].Value) : null;
