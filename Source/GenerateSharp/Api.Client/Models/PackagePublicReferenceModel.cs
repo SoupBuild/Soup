@@ -17,7 +17,7 @@ public class PackagePublicReferenceModel
 	/// </summary>
 	[JsonPropertyName("id")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-	public int Id { get; set; }
+	public required int Id { get; set; }
 
 	/// <summary>
 	/// Gets or sets the language.
@@ -25,7 +25,15 @@ public class PackagePublicReferenceModel
 	[JsonPropertyName("language")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required(AllowEmptyStrings = true)]
-	public string Language { get; set; }
+	public required string Language { get; set; }
+
+	/// <summary>
+	/// Gets or sets the owner.
+	/// </summary>
+	[JsonPropertyName("owner")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required(AllowEmptyStrings = true)]
+	public required string Owner { get; set; }
 
 	/// <summary>
 	/// Gets or sets the name.
@@ -33,7 +41,7 @@ public class PackagePublicReferenceModel
 	[JsonPropertyName("name")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required(AllowEmptyStrings = true)]
-	public string Name { get; set; }
+	public required string Name { get; set; }
 
 	/// <summary>
 	/// Gets or sets the version.
@@ -41,5 +49,5 @@ public class PackagePublicReferenceModel
 	[JsonPropertyName("version")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public SemanticVersionModel Version { get; set; } = new SemanticVersionModel();
+	public required SemanticVersionModel Version { get; set; } = new SemanticVersionModel();
 }

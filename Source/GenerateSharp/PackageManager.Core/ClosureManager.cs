@@ -711,9 +711,11 @@ public class ClosureManager : IClosureManager
 					throw new ArgumentException("Local package version was null");
 
 				var language = (dependency.Language ?? implicitLanguage) ?? throw new ArgumentException("Language required for Tool dependency");
+				var owner = dependency.Owner ?? throw new ArgumentException("Owner required for Tool dependency");
 				var existingMatch = publicPackages
 					.FirstOrDefault(value =>
 						value.Name == dependency.Name &&
+						value.Owner == owner &&
 						value.Version.Major == dependency.Version.Major &&
 						value.Version.Minor == dependency.Version.Minor &&
 						value.Version.Patch == dependency.Version.Patch &&
@@ -728,6 +730,7 @@ public class ClosureManager : IClosureManager
 					{
 						Id = localPackageLookup.Count + publicPackages.Count + 1,
 						Name = dependency.Name,
+						Owner = owner,
 						Version = new Api.Client.SemanticVersionModel()
 						{
 							Major = dependency.Version.Major,

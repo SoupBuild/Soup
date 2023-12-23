@@ -352,6 +352,7 @@ public class ClosureManagerUnitTests
 				{
 					Id = 1,
 					Language = "C++",
+					Owner = "User1",
 					Name = "Package1",
 					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
@@ -359,6 +360,7 @@ public class ClosureManagerUnitTests
 				{
 					Id = 2,
 					Language = "C++",
+					Owner = "User1",
 					Name = "Package2",
 					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 				},
@@ -632,6 +634,7 @@ public class ClosureManagerUnitTests
 				{
 					Id = 1,
 					Language = "C++",
+					Owner = "User1",
 					Name = "Package1",
 					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
@@ -639,6 +642,7 @@ public class ClosureManagerUnitTests
 				{
 					Id = 2,
 					Language = "C++",
+					Owner = "User1",
 					Name = "Package2",
 					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 				},
@@ -1055,6 +1059,7 @@ public class ClosureManagerUnitTests
 				{
 					Id = 1,
 					Language = "Wren",
+					Owner = "User1",
 					Name = "Package1",
 					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
@@ -1725,6 +1730,7 @@ public class ClosureManagerUnitTests
 				{
 					Id = 1,
 					Language = "Wren",
+					Owner = "User1",
 					Name = "Package1",
 					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
@@ -1839,6 +1845,7 @@ public class ClosureManagerUnitTests
 				{
 					Id = 1,
 					Language = "C++",
+					Owner = "User1",
 					Name = "Package2",
 					Version = new Api.Client.SemanticVersionModel() { Major = 2, Minor = 3, Patch = 4, },
 				},
