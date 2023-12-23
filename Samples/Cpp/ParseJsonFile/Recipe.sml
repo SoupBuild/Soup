@@ -1,5 +1,5 @@
 Name: "Samples.Cpp.ParseJsonFile"
-Language: "C++|0.1"
+Language: "C++|0"
 Version: "1.0.0"
 Type: "Executable"
 Source: [
@@ -8,6 +8,6 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		"json11@1.1.0"
+		"mwasplund|json11@1"
 	]
 }
