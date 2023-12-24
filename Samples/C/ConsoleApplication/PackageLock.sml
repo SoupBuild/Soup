@@ -1,19 +1,19 @@
-Version: 4
+Version: 5
 Closures: {
 	Root: {
-		C: [
-			{ Name: "Samples.C.ConsoleApplication", Version: "./", Build: "Build0", Tool: "Tool0" }
-		]
+		C: {
+			"Samples.C.ConsoleApplication": { Version: "../ConsoleApplication", Build: "Build0", Tool: "Tool0" }
+		}
 	}
 	Build0: {
-		Wren: [
-			{ Name: "Soup.C", Version: "0.1.0" }
-		]
+		Wren: {
+			"mwasplund|Soup.C": { Version: "0.2.0" }
+		}
 	}
 	Tool0: {
-		"C++": [
-			{ Name: "copy", Version: "1.0.0" }
-			{ Name: "mkdir", Version: "1.0.0" }
-		]
+		"C++": {
+			"mwasplund|copy": { Version: "1.0.0" }
+			"mwasplund|mkdir": { Version: "1.0.0" }
+		}
 	}
 }
