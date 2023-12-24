@@ -1,6 +1,6 @@
 Name: "Monitor.Client"
 Description: "The Detours dynamic library that is injected into a child process to intercept system calls."
-Language: "C++|0.1"
+Language: "C++|0"
 Version: "1.0.0"
 Type: "DynamicLibrary"
 Defines: [
@@ -13,8 +13,8 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		"Detours@4.0.9"
+		"mwasplund|Detours@4"
 		"../Shared/"
-		"Opal@0.5.0"
+		"mwasplund|Opal@0"
 	]
 }

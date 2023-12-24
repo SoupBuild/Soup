@@ -17,17 +17,17 @@ Source: [
 
 Dependencies: {
 	Build: [
-		"Soup.Test.Cpp@0.6.0"
+		# TODO: "Soup.Test.Cpp@0.6.0"
 	]
 	Runtime: [
-		"Opal@0.5"
-		"reflex@1.0"
+		"mwasplund|Opal@0"
+		"mwasplund|reflex@1"
 		"../../Monitor/Host/"
-		"wren@1.0"
-		"CryptoPP@1.1"
+		"mwasplund|wren@1"
+		"mwasplund|CryptoPP@1"
 	]
 	Test: [
-		"Soup.Test.Assert@0.3"
+		# TODO: "Soup.Test.Assert@0.3"
 	]
 }
 

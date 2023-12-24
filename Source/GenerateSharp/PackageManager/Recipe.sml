@@ -1,5 +1,5 @@
 Name: "Soup.PackageManager"
-Language: "C#|0.1"
+Language: "C#|0"
 Version: "1.0.0"
 Type: "Executable"
 Source: [
@@ -12,7 +12,7 @@ Source: [
 
 Dependencies: {
 	Build: [
-		"Soup.CSharp.Nuget@0.1"
+		"mwasplund|Soup.CSharp.Nuget@0"
 	]
 	Runtime: [
 		"../PackageManager.Core/"
