@@ -65,14 +65,6 @@ namespace Soup::Core
 					"Wren",
 					{
 						{
-							PackageName("mwasplund", "Soup.Cpp"),
-							SemanticVersion(0, 8, 2)
-						},
-						{
-							PackageName("mwasplund", "Soup.CSharp"),
-							SemanticVersion(0, 9, 0)
-						},
-						{
 							PackageName("mwasplund", "Soup.Wren"),
 							SemanticVersion(0, 3, 0)
 						},

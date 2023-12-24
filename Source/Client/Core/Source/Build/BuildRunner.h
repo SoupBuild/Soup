@@ -202,6 +202,7 @@ namespace Soup::Core
 			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Name.ToString() + ")/");
 			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Name.ToString() + ")/");
 			auto realTargetDirectory = _locationManager.GetOutputDirectory(
+				packageInfo.Name,
 				packageInfo.PackageRoot,
 				*packageInfo.Recipe,
 				packageGraph.GlobalParameters,
