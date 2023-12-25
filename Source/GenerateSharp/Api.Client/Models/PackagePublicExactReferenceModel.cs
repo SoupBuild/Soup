@@ -18,7 +18,15 @@ public class PackagePublicExactReferenceModel
 	[JsonPropertyName("language")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required(AllowEmptyStrings = true)]
-	public string Language { get; set; }
+	public required string Language { get; set; }
+
+	/// <summary>
+	/// Gets or sets the owner.
+	/// </summary>
+	[JsonPropertyName("owner")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required(AllowEmptyStrings = true)]
+	public required string Owner { get; set; }
 
 	/// <summary>
 	/// Gets or sets the name.
@@ -26,7 +34,7 @@ public class PackagePublicExactReferenceModel
 	[JsonPropertyName("name")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required(AllowEmptyStrings = true)]
-	public string Name { get; set; }
+	public required string Name { get; set; }
 
 	/// <summary>
 	/// Gets or sets the version.
@@ -34,5 +42,5 @@ public class PackagePublicExactReferenceModel
 	[JsonPropertyName("version")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public SemanticVersionExactModel Version { get; set; } = new SemanticVersionExactModel();
+	public required SemanticVersionExactModel Version { get; set; } = new SemanticVersionExactModel();
 }

@@ -8,7 +8,7 @@ Source: [
 Dependencies: {
 	Runtime: [
 		"../Client/Core/"
-		"wren@1.0.0"
-		"Opal@0.5.0"
+		"mwasplund|wren@1"
+		"mwasplund|Opal@0"
 	]
 }

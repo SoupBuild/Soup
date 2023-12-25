@@ -61,6 +61,9 @@ namespace Soup::Client
 				throw Core::HandledException(1234);
 			}
 
+			// Build up the unique name
+			auto packageName = Core::PackageName(std::nullopt, recipe->GetName());
+
 			// Setup the build parameters
 			auto globalParameters = Core::ValueTable();
 
@@ -76,6 +79,7 @@ namespace Soup::Client
 			auto knownLanguages = Core::BuildEngine::GetKnownLanguages();
 			auto locationManager = Core::RecipeBuildLocationManager(knownLanguages);
 			auto targetDirectory = locationManager.GetOutputDirectory(
+				packageName,
 				workingDirectory,
 				*recipe,
 				globalParameters,

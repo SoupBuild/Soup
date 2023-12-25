@@ -171,7 +171,17 @@ public class LoopbackHttpListener : IDisposable
 		{
 			ctx.Response.StatusCode = 200;
 			ctx.Response.ContentType = "text/html";
-			await ctx.Response.WriteAsync("<h1>You can now return to the application.</h1>");
+
+			var responsePage = WebPageBuilder.BuildWebPage(
+				"Sign In Success",
+				"""
+				<div class="alert alert-success" role="alert">
+					<h1>Sign In Success</h1>
+					<h2>It is safe to close this tab.</h2>
+				</div>
+				""");
+
+			await ctx.Response.WriteAsync(responsePage);
 			await ctx.Response.Body.FlushAsync();
 
 			_ = _source.TrySetResult(value);
@@ -182,7 +192,16 @@ public class LoopbackHttpListener : IDisposable
 
 			ctx.Response.StatusCode = 400;
 			ctx.Response.ContentType = "text/html";
-			await ctx.Response.WriteAsync("<h1>Invalid request.</h1>");
+
+			var responsePage = WebPageBuilder.BuildWebPage(
+				"Sign In Failed",
+				"""
+				<div class="alert alert-danger" role="alert">
+					<h1>Invalid request.</h1>
+				</div>
+				""");
+
+			await ctx.Response.WriteAsync(responsePage);
 			await ctx.Response.Body.FlushAsync();
 		}
 	}

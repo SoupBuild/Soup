@@ -8,6 +8,7 @@ using Soup.Build.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -121,10 +122,11 @@ public class PackageManager
 		// Get the latest version if no version provided
 		if (targetPackageReference.Version == null)
 		{
-			var packageModel = await GetPackageModelAsync(recipe.Language.Name, packageName);
+			var ownerName = targetPackageReference.Owner ?? throw new InvalidOperationException("Owner was not set");
+			var packageModel = await GetPackageModelAsync(recipe.Language.Name, ownerName, packageName);
 			var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
 			Log.HighPriority("Latest Version: " + latestVersion.ToString());
-			targetPackageReference = new PackageReference(null, packageModel.Name, latestVersion);
+			targetPackageReference = new PackageReference(null, packageModel.Owner, packageModel.Name, latestVersion);
 		}
 
 		if (targetPackageReference.Version == null)
@@ -163,6 +165,7 @@ public class PackageManager
 	/// <summary>
 	/// Publish a package
 	/// </summary>
+	[SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Allow default fallthrough")]
 	public async Task PublishPackageAsync(Path workingDirectory)
 	{
 		Log.Info($"Publish Project: {workingDirectory}");
@@ -196,6 +199,7 @@ public class PackageManager
 			// Authenticate the user
 			Log.Info("Request Authentication Token");
 			var accessToken = await LifetimeManager.Get<IAuthenticationManager>().EnsureSignInAsync();
+			var ownerName = "_";
 
 			// Publish the archive
 			Log.Info("Publish package");
@@ -208,12 +212,12 @@ public class PackageManager
 			bool packageExists = false;
 			try
 			{
-				var package = await packageClient.GetPackageAsync(recipe.Language.Name, recipe.Name);
+				var package = await packageClient.GetPackageAsync(recipe.Language.Name, ownerName, recipe.Name);
 				packageExists = true;
 			}
 			catch (Api.Client.ApiException ex)
 			{
-				if (ex.StatusCode == 404)
+				if (ex.StatusCode == HttpStatusCode.NotFound)
 				{
 					Log.Info("Package does not exist");
 					packageExists = false;
@@ -232,7 +236,11 @@ public class PackageManager
 				{
 					Description = string.Empty,
 				};
-				_ = await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
+				_ = await packageClient.CreateOrUpdatePackageAsync(
+					recipe.Language.Name,
+					ownerName,
+					recipe.Name,
+					createPackageModel);
 			}
 
 			var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient, accessToken)
@@ -246,26 +254,26 @@ public class PackageManager
 				{
 					await packageVersionClient.PublishPackageVersionAsync(
 						recipe.Language.Name,
+						ownerName,
 						recipe.Name,
 						recipe.Version.ToString(),
 						new Api.Client.FileParameter(readArchiveFile.GetInStream(), string.Empty, "application/zip"));
-
 					Log.Info("Package published");
 				}
 				catch (Api.Client.ApiException ex)
 				{
 					switch (ex.StatusCode)
 					{
-						case 400:
+						case HttpStatusCode.BadRequest:
 							if (ex is Api.Client.ApiException<Api.Client.ProblemDetails> problemDetailsEx)
 								Log.Error(problemDetailsEx.Result.Detail ?? "Bad request");
 							else
 								Log.Error("Bad request");
 							break;
-						case 403:
+						case HttpStatusCode.Forbidden:
 							Log.Error("You do not have permission to edit this package");
 							break;
-						case 409:
+						case HttpStatusCode.Conflict:
 							Log.Info("Package version already exists");
 							break;
 						default:
@@ -287,14 +295,17 @@ public class PackageManager
 		}
 	}
 
-	private async Task<Api.Client.PackageModel> GetPackageModelAsync(string languageName, string packageName)
+	private async Task<Api.Client.PackageModel> GetPackageModelAsync(
+		string languageName,
+		string ownerName,
+		string packageName)
 	{
 		var client = new Api.Client.PackagesClient(_httpClient, null)
 		{
 			BaseUrl = _apiEndpoint,
 		};
 
-		return await client.GetPackageAsync(languageName, packageName);
+		return await client.GetPackageAsync(languageName, ownerName, packageName);
 	}
 
 	private static void AddPackageFiles(Path workingDirectory, IZipArchive archive)

@@ -1,5 +1,5 @@
 Name: "Samples.C.BuildExtension.Extension"
-Language: "Wren|0.1"
+Language: "Wren|0"
 Version: "1.0.0"
 Source: [
 	"CustomBuildTask.wren"
@@ -7,6 +7,6 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		"Soup.Build.Utils@0.4.0"
+		"mwasplund|Soup.Build.Utils@0"
 	]
 }

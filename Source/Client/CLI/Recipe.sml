@@ -1,6 +1,6 @@
 Name: "Soup"
-Version: "0.35.4"
-Language: "C++|0.1"
+Version: "0.36.0"
+Language: "C++|0"
 
 Type: "Executable"
 
@@ -22,15 +22,15 @@ Dependencies: {
 	Other: [
 		"../../Tools/Copy/"
 		"../../Tools/Mkdir/"
-		"Wren|Soup.Cpp@0"
-		"Wren|Soup.CSharp@0"
-		"Wren|Soup.Wren@0"
+		"[Wren]mwasplund|Soup.Cpp@0"
+		"[Wren]mwasplund|Soup.CSharp@0"
+		"[Wren]mwasplund|Soup.Wren@0"
 	]
 	Build: [
 		# TODO: "Soup.Test.Cpp@0.4.0"
 	]
 	Test: [
-		"Soup.Test.Assert@0.3.0"
+		# TODO: "Soup.Test.Assert@0.3.0"
 	]
 }
 

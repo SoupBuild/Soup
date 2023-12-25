@@ -11,7 +11,7 @@ namespace Soup.Build.PackageManager;
 internal sealed class AuthenticationManager : IAuthenticationManager
 {
 	private static readonly string _authority = "https://auth.soupbuild.com/";
-	// static string _authority = "https://localhost:5001/";
+	// private static readonly string _authority = "https://localhost:5001/";
 
 	/// <summary>
 	/// Ensure the user is logged in

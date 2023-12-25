@@ -1,5 +1,5 @@
 Name: "printgraph"
-Language: "C++|0.1"
+Language: "C++|0"
 Version: "1.0.0"
 Type: "Executable"
 Source: [
@@ -8,7 +8,7 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		"Opal@0.5.0"
+		"mwasplund|Opal@0"
 		"../../Client/Core/"
 	]
 }

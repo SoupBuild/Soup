@@ -1,6 +1,6 @@
 # A sample Monitor that logs all access to disk
 Name: "LogMonitor"
-Language: "C++|0.1"
+Language: "C++|0"
 Version: "1.0.0"
 Type: "Executable"
 Source: [
@@ -9,8 +9,8 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		"Detours@4.0.9"
-		"Opal@0.5.0"
+		"mwasplund|Detours@4"
+		"mwasplund|Opal@0"
 		"../Shared/"
 	]
 }
