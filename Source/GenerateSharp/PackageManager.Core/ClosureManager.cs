@@ -73,6 +73,7 @@ public class ClosureManager : IClosureManager
 		var processedLocks = new HashSet<Path>();
 		await CheckGenerateAndRestoreRecursiveLocksAsync(
 			workingDirectory,
+			null,
 			packageLockPath,
 			packageStoreDirectory,
 			packageLockStoreDirectory,
@@ -82,6 +83,7 @@ public class ClosureManager : IClosureManager
 
 	private async Task CheckGenerateAndRestoreRecursiveLocksAsync(
 		Path workingDirectory,
+		string? owner,
 		Path packageLockPath,
 		Path packageStoreDirectory,
 		Path packageLockStoreDirectory,
@@ -96,6 +98,7 @@ public class ClosureManager : IClosureManager
 		{
 			var packageLock = await EnsurePackageLockAsync(
 				workingDirectory,
+				owner,
 				packageLockPath);
 			await RestorePackageLockAsync(
 				packageStoreDirectory,
@@ -166,6 +169,7 @@ public class ClosureManager : IClosureManager
 
 								await CheckGenerateAndRestoreRecursiveLocksAsync(
 									packageContentDirectory,
+									projectName.Owner,
 									packageLockPath,
 									packageStoreDirectory,
 									packageLockStoreDirectory,
@@ -184,6 +188,7 @@ public class ClosureManager : IClosureManager
 
 							await CheckGenerateAndRestoreRecursiveLocksAsync(
 								dependencyPath,
+								null,
 								dependencyLockPath,
 								packageStoreDirectory,
 								packageLockStoreDirectory,
@@ -201,6 +206,7 @@ public class ClosureManager : IClosureManager
 	/// </summary>
 	private async Task<PackageLock> EnsurePackageLockAsync(
 		Path workingDirectory,
+		string? owner,
 		Path packageLockPath)
 	{
 		Log.Info($"Ensure Package Lock Exists: {packageLockPath}");
@@ -213,11 +219,12 @@ public class ClosureManager : IClosureManager
 		else
 		{
 			Log.Info("Discovering full closure");
-			var localPackageReverseLookup = new Dictionary<int, (string Language, string Name, Path Path)>();
+			var localPackageReverseLookup = new Dictionary<int, (string Language, string? Owner, string Name, Path Path)>();
 			var localPackageLookup = new Dictionary<Path, Api.Client.PackageLocalReferenceModel>();
 			var publicPackages = new List<Api.Client.PackagePublicReferenceModel>();
 			var rootPackageId = await EnsureDiscoverDependenciesAsync(
 				workingDirectory,
+				owner,
 				localPackageReverseLookup,
 				localPackageLookup,
 				publicPackages);
@@ -249,7 +256,7 @@ public class ClosureManager : IClosureManager
 		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> BuildClosures,
 		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> ToolClosures)> GenerateServiceClosureAsync(
 		int rootPackageId,
-		IDictionary<int, (string Language, string Name, Path Path)> localPackageReverseLookup,
+		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		IList<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
@@ -360,7 +367,7 @@ public class ClosureManager : IClosureManager
 			{
 				var localReference = localPackageReverseLookup[package.LocalId.Value];
 				language = localReference.Language;
-				uniqueName = new PackageName(null, localReference.Name);
+				uniqueName = new PackageName(localReference.Owner, localReference.Name);
 				packageReference = new PackageReference(localReference.Path);
 			}
 			else
@@ -409,7 +416,7 @@ public class ClosureManager : IClosureManager
 				{
 					var localReference = localPackageReverseLookup[package.LocalId.Value];
 					language = localReference.Language;
-					uniqueName = new PackageName(null, localReference.Name);
+					uniqueName = new PackageName(localReference.Owner, localReference.Name);
 					packageReference = new PackageReference(localReference.Path);
 				}
 				else
@@ -454,7 +461,7 @@ public class ClosureManager : IClosureManager
 				{
 					var localReference = localPackageReverseLookup[package.LocalId.Value];
 					language = localReference.Language;
-					uniqueName = new PackageName(null, localReference.Name);
+					uniqueName = new PackageName(localReference.Owner, localReference.Name);
 					packageReference = new PackageReference(localReference.Path);
 				}
 				else
@@ -583,7 +590,8 @@ public class ClosureManager : IClosureManager
 	/// </summary>
 	private async Task<int> EnsureDiscoverDependenciesAsync(
 		Path recipeDirectory,
-		IDictionary<int, (string Language, string Name, Path Path)> localPackageReverseLookup,
+		string? owner,
+		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		List<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
@@ -625,7 +633,7 @@ public class ClosureManager : IClosureManager
 				Dependencies = dependencyIds,
 			};
 
-			localPackageReverseLookup.Add(packageReference.Id, (recipe.Language.Name, recipe.Name, recipeDirectory));
+			localPackageReverseLookup.Add(packageReference.Id, (recipe.Language.Name, owner, recipe.Name, recipeDirectory));
 			localPackageLookup.Add(recipeDirectory, packageReference);
 			return packageReference.Id;
 		}
@@ -637,7 +645,7 @@ public class ClosureManager : IClosureManager
 	private async Task<IDictionary<string, ICollection<int>>> DiscoverDependenciesAsync(
 		Path recipeDirectory,
 		Recipe recipe,
-		IDictionary<int, (string Language, string Name, Path Path)> localPackageReverseLookup,
+		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		List<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
@@ -683,7 +691,7 @@ public class ClosureManager : IClosureManager
 		Recipe recipe,
 		string dependencyType,
 		string? implicitLanguage,
-		IDictionary<int, (string Language, string Name, Path Path)> localPackageReverseLookup,
+		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		List<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
@@ -698,8 +706,10 @@ public class ClosureManager : IClosureManager
 				if (!dependencyPath.HasRoot)
 					dependencyPath = recipeDirectory + dependencyPath;
 
+				string? owner = null;
 				var id = await EnsureDiscoverDependenciesAsync(
 					dependencyPath,
+					owner,
 					localPackageReverseLookup,
 					localPackageLookup,
 					publicPackages);
