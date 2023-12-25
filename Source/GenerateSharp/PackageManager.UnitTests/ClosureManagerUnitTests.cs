@@ -33,10 +33,10 @@ public class ClosureManagerUnitTests
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "MyPackage"
-					Language: "C++|3.2.1"
-					Version: "1.0.0"
-					"""))));
+				Name: 'MyPackage'
+				Language: 'C++|3.2.1'
+				Version: '1.0.0'
+				"""))));
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
@@ -200,23 +200,23 @@ public class ClosureManagerUnitTests
 		var packageLockContent = await reader.ReadToEndAsync();
 		var expected =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: '3.2.1' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expected, packageLockContent);
 	}
@@ -236,16 +236,16 @@ public class ClosureManagerUnitTests
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "MyPackage"
-					Language: "C++|3.2.1"
-					Version: "1.0.0"
-					Dependencies: {
-						Runtime: [
-							{ Reference: "User1|Package1@1.2.3" }
-							{ Reference: "User1|Package2@3.2.1" }
-						]
-					}
-					"""))));
+				Name: 'MyPackage'
+				Language: 'C++|3.2.1'
+				Version: '1.0.0'
+				Dependencies: {
+					Runtime: [
+						{ Reference: 'User1|Package1@1.2.3' }
+						{ Reference: 'User1|Package2@3.2.1' }
+					]
+				}
+				"""))));
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
@@ -417,16 +417,16 @@ public class ClosureManagerUnitTests
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "MyPackage"
-					Language: "C++|3.2.1"
-					Version: "1.0.0"
-					Dependencies: {
-						Runtime: [
-							{ Reference: "User1|Package1@1.2.3" }
-							{ Reference: "User1|Package2@3.2.1" }
-						]
-					}
-					"""))));
+				Name: 'MyPackage'
+				Language: 'C++|3.2.1'
+				Version: '1.0.0'
+				Dependencies: {
+					Runtime: [
+						{ Reference: 'User1|Package1@1.2.3' }
+						{ Reference: 'User1|Package2@3.2.1' }
+					]
+				}
+				"""))));
 
 		// Setup the mock zip manager
 		var mockZipManager = new Mock<IZipManager>();
@@ -704,25 +704,25 @@ public class ClosureManagerUnitTests
 		var packageLockContent = await reader.ReadToEndAsync();
 		var expected =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
-							"User1|Package1": { Version: "1.2.3", Build: "Build0", Tool: "Tool0" }
-							"User1|Package2": { Version: "3.2.1", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
+						'User1|Package1': { Version: '1.2.3', Build: 'Build0', Tool: 'Tool0' }
+						'User1|Package2': { Version: '3.2.1', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: '3.2.1' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expected, packageLockContent);
 	}
@@ -742,33 +742,33 @@ public class ClosureManagerUnitTests
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "MyPackage"
-					Language: "C++|5"
-					Version: "1.0.0"
-					Dependencies: {
-						Build: [
-							{ Reference: "User1|Package1@1.2.3" }
-						]
-					}
-					"""))));
+				Name: 'MyPackage'
+				Language: 'C++|5'
+				Version: '1.0.0'
+				Dependencies: {
+					Build: [
+						{ Reference: 'User1|Package1@1.2.3' }
+					]
+				}
+				"""))));
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Package1"
-					Language: "Wren|4"
-					Version: "1.2.3"
-					"""))));
+				Name: 'Package1'
+				Language: 'Wren|4'
+				Version: '1.2.3'
+				"""))));
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Soup.Cpp"
-					Language: "Wren|4"
-					Version: "5.0.0"
-					"""))));
+				Name: 'Soup.Cpp'
+				Language: 'Wren|4'
+				Version: '5.0.0'
+				"""))));
 
 		// Setup the mock zip manager
 		var mockZipManager = new Mock<IZipManager>();
@@ -950,11 +950,11 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren Soup.Cpp -> ./",
+				"DIAG: Root:Wren mwasplund|Soup.Cpp -> ./",
 				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
-				"INFO: Skip Package: Soup.Cpp -> ./",
+				"INFO: Skip Package: mwasplund|Soup.Cpp -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
@@ -968,11 +968,11 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren Package1 -> ./",
+				"DIAG: Root:Wren User1|Package1 -> ./",
 				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
-				"INFO: Skip Package: Package1 -> ./",
+				"INFO: Skip Package: User1|Package1 -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
@@ -1170,24 +1170,24 @@ public class ClosureManagerUnitTests
 		var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
 		var expectedMyPackageLock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Cpp": { Version: "5.0.0" }
-							"User1|Package1": { Version: "1.2.3" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: '5.0.0' }
+						'User1|Package1': { Version: '1.2.3' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
@@ -1197,23 +1197,23 @@ public class ClosureManagerUnitTests
 		var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
 		var expectedPackage1Lock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						Wren: {
-							Package1: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Wren": { Version: "4.5.6" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					Wren: {
+						'User1|Package1': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
@@ -1223,23 +1223,23 @@ public class ClosureManagerUnitTests
 		var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
 		var expectedSoupCppLock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						Wren: {
-							"Soup.Cpp": { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Wren": { Version: "4.5.6" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedSoupCppLock, soupCppLockContent);
 	}
@@ -1259,47 +1259,47 @@ public class ClosureManagerUnitTests
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "MyPackage"
-					Language: "C++|5"
-					Version: "1.0.0"
-					Dependencies: {
-						Build: [
-							{ Reference: "User1|Package1@1.2.3" }
-						]
-					}
-					"""))));
+				Name: 'MyPackage'
+				Language: 'C++|5'
+				Version: '1.0.0'
+				Dependencies: {
+					Build: [
+						{ Reference: 'User1|Package1@1.2.3' }
+					]
+				}
+				"""))));
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Package1"
-					Language: "Wren|6"
-					Version: "1.2.3"
-					Dependencies: {
-						Tool: [
-							{ Reference: "[C++]User1|Package2@2.3.4" }
-						]
-					}
-					"""))));
+				Name: 'Package1'
+				Language: 'Wren|6'
+				Version: '1.2.3'
+				Dependencies: {
+					Tool: [
+						{ Reference: '[C++]User1|Package2@2.3.4' }
+					]
+				}
+				"""))));
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Package2"
-					Language: "C++|5"
-					Version: "2.3.4"
-					"""))));
+				Name: 'Package2'
+				Language: 'C++|5'
+				Version: '2.3.4'
+				"""))));
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Soup.Cpp"
-					Language: "Wren|4.5.6"
-					Version: "5.0.0"
-					"""))));
+				Name: 'Soup.Cpp'
+				Language: 'Wren|4.5.6'
+				Version: '5.0.0'
+				"""))));
 
 		// Setup the mock zip manager
 		var mockZipManager = new Mock<IZipManager>();
@@ -1582,11 +1582,11 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren Soup.Cpp -> ./",
+				"DIAG: Root:Wren mwasplund|Soup.Cpp -> ./",
 				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
-				"INFO: Skip Package: Soup.Cpp -> ./",
+				"INFO: Skip Package: mwasplund|Soup.Cpp -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
@@ -1600,12 +1600,12 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren Package1 -> ./",
+				"DIAG: Root:Wren User1|Package1 -> ./",
 				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
 				"DIAG: Tool0:C++ User1|Package2 -> 2.3.4",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
-				"INFO: Skip Package: Package1 -> ./",
+				"INFO: Skip Package: User1|Package1 -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
@@ -1622,17 +1622,17 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:C++ Package2 -> ./",
+				"DIAG: Root:C++ User1|Package2 -> ./",
 				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 3.2.1",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
-				"INFO: Skip Package: Package2 -> ./",
+				"INFO: Skip Package: User1|Package2 -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Cpp@3.2.1",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
-				"HIGH: Skip built in language version in build closure",
+				"HIGH: Skip built in language version in build closure"
 			},
 			testListener.Messages);
 
@@ -1963,24 +1963,24 @@ public class ClosureManagerUnitTests
 		var myPackageLockContent = await readerMyPackageLock.ReadToEndAsync();
 		var expectedMyPackageLock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Cpp": { Version: "5.0.0" }
-							"User1|Package1": { Version: "1.2.3" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: '5.0.0' }
+						'User1|Package1': { Version: '1.2.3' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
@@ -1990,25 +1990,25 @@ public class ClosureManagerUnitTests
 		var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
 		var expectedPackage1Lock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						Wren: {
-							Package1: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Wren": { Version: "4.5.6" }
-						}
-					}
-					Tool0: {
-						"C++": {
-							"User1|Package2": { Version: "2.3.4" }
-						}
+			Version: 5
+			Closures: {
+				Root: {
+					Wren: {
+						'User1|Package1': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+					}
+				}
+				Tool0: {
+					'C++': {
+						'User1|Package2': { Version: '2.3.4' }
+					}
+				}
+			}
+			""";
 
 		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
@@ -2018,23 +2018,23 @@ public class ClosureManagerUnitTests
 		var package2LockContent = await readerPackage2Lock.ReadToEndAsync();
 		var expectedPackage2Lock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							Package2: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						'User1|Package2': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: '3.2.1' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedPackage2Lock, package2LockContent);
 
@@ -2044,23 +2044,23 @@ public class ClosureManagerUnitTests
 		var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
 		var expectedSoupCppLock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						Wren: {
-							"Soup.Cpp": { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Wren": { Version: "4.5.6" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedSoupCppLock, soupCppLockContent);
 	}
@@ -2080,24 +2080,24 @@ public class ClosureManagerUnitTests
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "MyPackage"
-					Language: "C++|3.2.1"
-					Version: "1.0.0"
-					Dependencies: {
-						Build: [
-							{ Reference: "../Package1/" }
-						]
-					}
-					"""))));
+				Name: 'MyPackage'
+				Language: 'C++|3.2.1'
+				Version: '1.0.0'
+				Dependencies: {
+					Build: [
+						{ Reference: '../Package1/' }
+					]
+				}
+				"""))));
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/Package1/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Package1"
-					Language: "Wren|4.5.6"
-					Version: "1.2.3"
-					"""))));
+				Name: 'Package1'
+				Language: 'Wren|4.5.6'
+				Version: '1.2.3'
+				"""))));
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
@@ -2402,24 +2402,24 @@ public class ClosureManagerUnitTests
 		var packageLockContent1 = await reader1.ReadToEndAsync();
 		var expectedPackageLock1 =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
-							Package1: { Version: "../Package1/" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: '3.2.1' }
+						Package1: { Version: '../Package1/' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedPackageLock1, packageLockContent1);
 
@@ -2429,23 +2429,23 @@ public class ClosureManagerUnitTests
 		var packageLockContent2 = await reader2.ReadToEndAsync();
 		var expectedPackageLock2 =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						Wren: {
-							Package1: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							"mwasplund|Soup.Wren": { Version: "4.5.6" }
-						}
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					Wren: {
+						Package1: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+					}
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedPackageLock2, packageLockContent2);
 	}
@@ -2465,38 +2465,38 @@ public class ClosureManagerUnitTests
 			new Path("C:/Root/MyPackage/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "MyPackage"
-					Language: "C++|3.2.1"
-					Version: "1.0.0"
-					Dependencies: {
-						Build: [
-							{ Reference: "../Package1/" }
-						]
-					}
-					"""))));
+				Name: 'MyPackage'
+				Language: 'C++|3.2.1'
+				Version: '1.0.0'
+				Dependencies: {
+					Build: [
+						{ Reference: '../Package1/' }
+					]
+				}
+				"""))));
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/Package1/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Package1"
-					Language: "Wren|4.5.6"
-					Version: "1.2.3"
-					Dependencies: {
-						Tool: [
-							{ Reference: "../Package2/" }
-						]
-					}
-					"""))));
+				Name: 'Package1'
+				Language: 'Wren|4.5.6'
+				Version: '1.2.3'
+				Dependencies: {
+					Tool: [
+						{ Reference: '../Package2/' }
+					]
+				}
+				"""))));
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/Package2/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Package2"
-					Language: "C++|3.2.1"
-					Version: "2.3.4"
-					"""))));
+				Name: 'Package2'
+				Language: 'C++|3.2.1'
+				Version: '2.3.4'
+				"""))));
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
@@ -2923,25 +2923,25 @@ public class ClosureManagerUnitTests
 		var myPackageLockContent = await myPackageLockReader.ReadToEndAsync();
 		var expectedMyPackageLock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						Wren: {
-							Package1: { Version: "../Package1/" }
-						}
-					}
-					Tool0: {
-						"C++": {
-							Package2: { Version: "../Package2/" }
-						}
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						Package1: { Version: '../Package1/' }
+					}
+				}
+				Tool0: {
+					'C++': {
+						Package2: { Version: '../Package2/' }
+					}
+				}
+			}
+			""";
 
 		Assert.Equal(expectedMyPackageLock, myPackageLockContent);
 
@@ -2951,21 +2951,21 @@ public class ClosureManagerUnitTests
 		var packageLock1Content = await package1LockReader.ReadToEndAsync();
 		var expectedPackage1Lock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						Wren: {
-							Package1: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					Wren: {
+						Package1: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedPackage1Lock, packageLock1Content);
 
@@ -2975,21 +2975,21 @@ public class ClosureManagerUnitTests
 		var packageLock2Content = await package2LockReader.ReadToEndAsync();
 		var expectedPackage2Lock =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							Package2: { Version: "./", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-
-					}
-					Tool0: {
-
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						Package2: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+
+				}
+				Tool0: {
+
+				}
+			}
+			""";
 
 		Assert.Equal(expectedPackage2Lock, packageLock2Content);
 	}
@@ -3008,24 +3008,24 @@ public class ClosureManagerUnitTests
 		// Create the original file
 		var original =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							MyPackage: { Version: "./", Build: "Build0", Tool: "Tool0" }
-							"User1|Package1": { Version: "1.2.4", Build: "Build0", Tool: "Tool0" }
-							"User1|Package2": { Version: "3.2.1", Build: "Build0", Tool: "Tool0" }
-						}
-					}
-					Build0: {
-						"Wren": {
-							"mwasplund|Soup.Cpp": { Version: "3.2.2" }
-						}
-					}
-					Tool0: {
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
+						'User1|Package1': { Version: '1.2.4', Build: 'Build0', Tool: 'Tool0' }
+						'User1|Package2': { Version: '3.2.1', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
-				""";
+				Build0: {
+					Wren: {
+						'mwasplund|Soup.Cpp': { Version: '3.2.2' }
+					}
+				}
+				Tool0: {
+				}
+			}
+			""";
 		using var originalContent = new System.IO.MemoryStream();
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
@@ -3037,10 +3037,10 @@ public class ClosureManagerUnitTests
 			new Path("C:/PackageStore/Wren/mwasplund/Soup.Cpp/3.2.2/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Soup.Cpp"
-					Language: "Wren|1.2.3"
-					Version: "3.2.2"
-					"""))));
+				Name: 'Soup.Cpp'
+				Language: 'Wren|1.2.3'
+				Version: '3.2.2'
+				"""))));
 
 		// Setup the mock zip manager
 		var mockZipManager = new Mock<IZipManager>();
@@ -3162,11 +3162,11 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/3.2.2/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren Soup.Cpp -> ./",
+				"DIAG: Root:Wren mwasplund|Soup.Cpp -> ./",
 				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 3.2.1",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
-				"INFO: Skip Package: Soup.Cpp -> ./",
+				"INFO: Skip Package: mwasplund|Soup.Cpp -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Cpp@3.2.1",
@@ -3321,22 +3321,22 @@ public class ClosureManagerUnitTests
 		// Create the original file
 		var original =
 			"""
-				Version: 5
-				Closures: {
-					Root: {
-						"C++": {
-							MyPackage: { Version: "./", Build: "BuildSet0" }
-							"User1|Package1": { Version: "1.2.4", Build: "BuildSet0" }
-							"User1|Package2": { Version: "3.2.1", Build: "BuildSet0" }
-						}
-					}
-					BuildSet0: {
-						"C#": {
-							"mwasplund|Soup.Cpp": { Version: "3.2.1" }
-						}
+			Version: 5
+			Closures: {
+				Root: {
+					'C++': {
+						MyPackage: { Version: './', Build: 'BuildSet0' }
+						'User1|Package1': { Version: '1.2.4', Build: 'BuildSet0' }
+						'User1|Package2': { Version: '3.2.1', Build: 'BuildSet0' }
 					}
 				}
-				""";
+				BuildSet0: {
+					'C#': {
+						'mwasplund|Soup.Cpp': { Version: '3.2.1' }
+					}
+				}
+			}
+			""";
 		using var originalContent = new System.IO.MemoryStream();
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);

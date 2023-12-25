@@ -186,93 +186,93 @@ public class SwhereManagerUnitTests
 		var expected =
 @"SDKs: [
 	{
-		Name: ""DotNet""
+		Name: 'DotNet'
 		SourceDirectories: [
-			""C:/Program Files/dotnet""
+			'C:/Program Files/dotnet'
 		]
 		Properties: {
-			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
+			DotNetExecutable: 'C:/Program Files/dotnet/dotnet.exe'
 			SDKs: {
-				""5.0.0"": ""C:/Program Files/dotnet/sdk""
-				""6.0.8"": ""C:/Program Files/dotnet/sdk""
-				""7.0.201"": ""C:/Program Files/dotnet/sdk""
-				""7.0.300-preview.23179.2"": ""C:/Program Files/dotnet/sdk""
-				""7.0.304"": ""C:/Program Files/dotnet/sdk""
-				""7.0.400-preview.23274.1"": ""C:/Program Files/dotnet/sdk""
+				'5.0.0': 'C:/Program Files/dotnet/sdk'
+				'6.0.8': 'C:/Program Files/dotnet/sdk'
+				'7.0.201': 'C:/Program Files/dotnet/sdk'
+				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk'
+				'7.0.304': 'C:/Program Files/dotnet/sdk'
+				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk'
 			}
 			Runtimes: {
-				""Microsoft.AspNetCore.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+				'Microsoft.AspNetCore.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
 				}
-				""Microsoft.NETCore.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.12"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.15"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.20"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+				'Microsoft.NETCore.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.12': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.15': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.20': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
 				}
-				""Microsoft.WindowsDesktop.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+				'Microsoft.WindowsDesktop.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
 				}
 			}
 			TargetingPacks: {
-				""Microsoft.NETCore.App.Ref"": {
-					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+				'Microsoft.NETCore.App.Ref': {
+					'5.0.0': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.8': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.9': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'7.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
 				}
 			}
 		}
 	}
 	{
-		Name: ""MSVC""
+		Name: 'MSVC'
 		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+			'C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/'
 		]
 		Properties: {
-			Version: ""14.33.31629""
-			VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+			Version: '14.33.31629'
+			VCToolsRoot: 'C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/'
 		}
 	}
 	{
-		Name: ""Windows""
+		Name: 'Windows'
 		SourceDirectories: [
-			""C:/Program Files (x86)/Windows Kits/10/""
+			'C:/Program Files (x86)/Windows Kits/10/'
 		]
 		Properties: {
-			Version: ""10.0.19041.0""
-			RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
+			Version: '10.0.19041.0'
+			RootPath: 'C:/Program Files (x86)/Windows Kits/10/'
 		}
 	}
 	{
-		Name: ""NetFXTools""
+		Name: 'NetFXTools'
 		SourceDirectories: [
-			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+			'C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/'
 		]
 		Properties: {
-			ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+			ToolsRoot: 'C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/'
 		}
 	}
 ]";
@@ -453,93 +453,93 @@ public class SwhereManagerUnitTests
 		var expected =
 @"SDKs: [
 	{
-		Name: ""DotNet""
+		Name: 'DotNet'
 		SourceDirectories: [
-			""C:/Program Files/dotnet""
+			'C:/Program Files/dotnet'
 		]
 		Properties: {
-			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
+			DotNetExecutable: 'C:/Program Files/dotnet/dotnet.exe'
 			SDKs: {
-				""5.0.0"": ""C:/Program Files/dotnet/sdk""
-				""6.0.8"": ""C:/Program Files/dotnet/sdk""
-				""7.0.201"": ""C:/Program Files/dotnet/sdk""
-				""7.0.300-preview.23179.2"": ""C:/Program Files/dotnet/sdk""
-				""7.0.304"": ""C:/Program Files/dotnet/sdk""
-				""7.0.400-preview.23274.1"": ""C:/Program Files/dotnet/sdk""
+				'5.0.0': 'C:/Program Files/dotnet/sdk'
+				'6.0.8': 'C:/Program Files/dotnet/sdk'
+				'7.0.201': 'C:/Program Files/dotnet/sdk'
+				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk'
+				'7.0.304': 'C:/Program Files/dotnet/sdk'
+				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk'
 			}
 			Runtimes: {
-				""Microsoft.AspNetCore.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+				'Microsoft.AspNetCore.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
 				}
-				""Microsoft.NETCore.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.12"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.15"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.20"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+				'Microsoft.NETCore.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.12': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.15': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.20': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
 				}
-				""Microsoft.WindowsDesktop.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+				'Microsoft.WindowsDesktop.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
 				}
 			}
 			TargetingPacks: {
-				""Microsoft.NETCore.App.Ref"": {
-					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+				'Microsoft.NETCore.App.Ref': {
+					'5.0.0': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.8': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.9': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'7.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
 				}
 			}
 		}
 	}
 	{
-		Name: ""MSVC""
+		Name: 'MSVC'
 		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
+			'C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/'
 		]
 		Properties: {
-			Version: ""14.34.31823""
-			VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
+			Version: '14.34.31823'
+			VCToolsRoot: 'C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/'
 		}
 	}
 	{
-		Name: ""Windows""
+		Name: 'Windows'
 		SourceDirectories: [
-			""C:/Program Files (x86)/Windows Kits/10/""
+			'C:/Program Files (x86)/Windows Kits/10/'
 		]
 		Properties: {
-			Version: ""10.0.19041.0""
-			RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
+			Version: '10.0.19041.0'
+			RootPath: 'C:/Program Files (x86)/Windows Kits/10/'
 		}
 	}
 	{
-		Name: ""NetFXTools""
+		Name: 'NetFXTools'
 		SourceDirectories: [
-			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+			'C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/'
 		]
 		Properties: {
-			ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+			ToolsRoot: 'C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/'
 		}
 	}
 ]";
@@ -564,51 +564,51 @@ public class SwhereManagerUnitTests
 		var original =
 @"SDKs: [
 	{
-		Name: ""CustomSDK""
+		Name: 'CustomSDK'
 		SourceDirectories: [
-			""C:/SomeWhere/""
+			'C:/SomeWhere/'
 		]
 		Properties: {
-			ToolsRoot: ""C:/SomeWhere/""
+			ToolsRoot: 'C:/SomeWhere/'
 		}
 	}
 	{
-		Name: ""DotNet""
+		Name: 'DotNet'
 		SourceDirectories: [
-			""C:/Program Files/dotnet/""
+			'C:/Program Files/dotnet/'
 		]
 		Properties: {
-			RuntimeVersion: ""6.0.9""
-			RootPath: ""C:/Program Files/dotnet/""
+			RuntimeVersion: '6.0.9'
+			RootPath: 'C:/Program Files/dotnet/'
 		}
 	}
 	{
-		Name: ""MSVC""
+		Name: 'MSVC'
 		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
+			'C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/'
 		]
 		Properties: {
-			Version: ""14.34.31823""
-			VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/""
+			Version: '14.34.31823'
+			VCToolsRoot: 'C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.34.31823/'
 		}
 	}
 	{
-		Name: ""Windows""
+		Name: 'Windows'
 		SourceDirectories: [
-			""C:/Program Files (x86)/Windows Kits/10/""
+			'C:/Program Files (x86)/Windows Kits/10/'
 		]
 		Properties: {
-			Version: ""10.0.19041.0""
-			RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
+			Version: '10.0.19041.0'
+			RootPath: 'C:/Program Files (x86)/Windows Kits/10/'
 		}
 	}
 	{
-		Name: ""NetFXTools""
+		Name: 'NetFXTools'
 		SourceDirectories: [
-			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+			'C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/'
 		]
 		Properties: {
-			ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+			ToolsRoot: 'C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/'
 		}
 	}
 ]
@@ -778,102 +778,102 @@ public class SwhereManagerUnitTests
 		var expected =
 @"SDKs: [
 	{
-		Name: ""CustomSDK""
+		Name: 'CustomSDK'
 		SourceDirectories: [
-			""C:/SomeWhere/""
+			'C:/SomeWhere/'
 		]
 		Properties: {
-			ToolsRoot: ""C:/SomeWhere/""
+			ToolsRoot: 'C:/SomeWhere/'
 		}
 	}
 	{
-		Name: ""DotNet""
+		Name: 'DotNet'
 		SourceDirectories: [
-			""C:/Program Files/dotnet""
+			'C:/Program Files/dotnet'
 		]
 		Properties: {
-			DotNetExecutable: ""C:/Program Files/dotnet/dotnet.exe""
+			DotNetExecutable: 'C:/Program Files/dotnet/dotnet.exe'
 			SDKs: {
-				""5.0.0"": ""C:/Program Files/dotnet/sdk""
-				""6.0.8"": ""C:/Program Files/dotnet/sdk""
-				""7.0.201"": ""C:/Program Files/dotnet/sdk""
-				""7.0.300-preview.23179.2"": ""C:/Program Files/dotnet/sdk""
-				""7.0.304"": ""C:/Program Files/dotnet/sdk""
-				""7.0.400-preview.23274.1"": ""C:/Program Files/dotnet/sdk""
+				'5.0.0': 'C:/Program Files/dotnet/sdk'
+				'6.0.8': 'C:/Program Files/dotnet/sdk'
+				'7.0.201': 'C:/Program Files/dotnet/sdk'
+				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk'
+				'7.0.304': 'C:/Program Files/dotnet/sdk'
+				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk'
 			}
 			Runtimes: {
-				""Microsoft.AspNetCore.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App""
+				'Microsoft.AspNetCore.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App'
 				}
-				""Microsoft.NETCore.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.12"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.15"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""6.0.20"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.NETCore.App""
+				'Microsoft.NETCore.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.12': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.15': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'6.0.20': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App'
 				}
-				""Microsoft.WindowsDesktop.App"": {
-					""3.1.32"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""5.0.17"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.14"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.16"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""6.0.18"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.3"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.5"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
-					""7.0.7"": ""C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App""
+				'Microsoft.WindowsDesktop.App': {
+					'3.1.32': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'5.0.17': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.14': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.16': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'6.0.18': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.3': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.5': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
+					'7.0.7': 'C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App'
 				}
 			}
 			TargetingPacks: {
-				""Microsoft.NETCore.App.Ref"": {
-					""5.0.0"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.8"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""6.0.9"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
-					""7.0.7"": ""C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref""
+				'Microsoft.NETCore.App.Ref': {
+					'5.0.0': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.8': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'6.0.9': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
+					'7.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref'
 				}
 			}
 		}
 	}
 	{
-		Name: ""MSVC""
+		Name: 'MSVC'
 		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+			'C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/'
 		]
 		Properties: {
-			Version: ""14.33.31629""
-			VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+			Version: '14.33.31629'
+			VCToolsRoot: 'C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/'
 		}
 	}
 	{
-		Name: ""Windows""
+		Name: 'Windows'
 		SourceDirectories: [
-			""C:/Program Files (x86)/Windows Kits/10/""
+			'C:/Program Files (x86)/Windows Kits/10/'
 		]
 		Properties: {
-			Version: ""10.0.19041.0""
-			RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
+			Version: '10.0.19041.0'
+			RootPath: 'C:/Program Files (x86)/Windows Kits/10/'
 		}
 	}
 	{
-		Name: ""NetFXTools""
+		Name: 'NetFXTools'
 		SourceDirectories: [
-			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+			'C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/'
 		]
 		Properties: {
-			ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+			ToolsRoot: 'C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/'
 		}
 	}
 ]

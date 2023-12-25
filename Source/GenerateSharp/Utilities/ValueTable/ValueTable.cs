@@ -80,9 +80,9 @@ public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 		_ = builder.Append("{ ");
 		foreach (var value in this)
 		{
-			_ = builder.Append('\"');
+			_ = builder.Append('\'');
 			_ = builder.Append(value.Key);
-			_ = builder.Append("\": ");
+			_ = builder.Append("': ");
 			_ = builder.Append(value.Value);
 			_ = builder.Append(", ");
 		}
