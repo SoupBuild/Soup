@@ -46,5 +46,5 @@ COMMENT             : '#'.*?'\r'?'\n' -> channel(HIDDEN) ;
 INTEGER             : DIGIT+ ;
 KEY_LITERAL         : [\p{L}\p{N}]+ ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
-STRING_LITERAL      : '"' BASIC_CHAR*? '"' ;
+STRING_LITERAL      : '\'' BASIC_CHAR*? '\'' ;
 WHITESPACE          : (' '|'\t')+ -> channel(HIDDEN) ;
