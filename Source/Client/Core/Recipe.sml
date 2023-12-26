@@ -17,7 +17,7 @@ Source: [
 
 Dependencies: {
 	Build: [
-		# TODO: "Soup.Test.Cpp@0.6.0"
+		"mwasplund|Soup.Test.Cpp@0"
 	]
 	Runtime: [
 		"mwasplund|Opal@0"
@@ -27,7 +27,7 @@ Dependencies: {
 		"mwasplund|CryptoPP@1"
 	]
 	Test: [
-		# TODO: "Soup.Test.Assert@0.3"
+		"mwasplund|Soup.Test.Assert@0"
 	]
 }
 
