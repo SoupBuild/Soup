@@ -96,8 +96,6 @@ public class ClosureManagerUnitTests
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		await uut.GenerateAndRestoreRecursiveLocksAsync(
@@ -159,20 +157,6 @@ public class ClosureManagerUnitTests
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 			{
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -285,8 +269,6 @@ public class ClosureManagerUnitTests
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		_ = await Assert.ThrowsAsync<HandledException>(async () =>
@@ -367,20 +349,6 @@ public class ClosureManagerUnitTests
 			},
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 			{
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -524,12 +492,17 @@ public class ClosureManagerUnitTests
 				It.IsAny<string>(),
 				null))
 			.Returns(() => new HttpResponseMessage());
+		_ = mockMessageHandler
+			.Setup(messageHandler => messageHandler.SendAsync(
+				HttpMethod.Get,
+				new Uri("https://test.api.soupbuild.com/v1/packages/Wren/mwasplund/Soup.Cpp/versions/3.2.1/download"),
+				It.IsAny<string>(),
+				null))
+			.Returns(() => new HttpResponseMessage());
 
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		await uut.GenerateAndRestoreRecursiveLocksAsync(
@@ -649,20 +622,6 @@ public class ClosureManagerUnitTests
 			},
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 			{
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -910,8 +869,6 @@ public class ClosureManagerUnitTests
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		await uut.GenerateAndRestoreRecursiveLocksAsync(
@@ -1070,20 +1027,6 @@ public class ClosureManagerUnitTests
 				{
 					Language = "Wren",
 					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
@@ -1114,20 +1057,6 @@ public class ClosureManagerUnitTests
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 			{
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -1542,8 +1471,6 @@ public class ClosureManagerUnitTests
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		await uut.GenerateAndRestoreRecursiveLocksAsync(
@@ -1741,20 +1668,6 @@ public class ClosureManagerUnitTests
 				{
 					Language = "Wren",
 					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
@@ -1785,20 +1698,6 @@ public class ClosureManagerUnitTests
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 			{
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -1856,20 +1755,6 @@ public class ClosureManagerUnitTests
 				{
 					Language = "Wren",
 					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
@@ -1900,20 +1785,6 @@ public class ClosureManagerUnitTests
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 			{
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -2204,8 +2075,6 @@ public class ClosureManagerUnitTests
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		await uut.GenerateAndRestoreRecursiveLocksAsync(
@@ -2317,20 +2186,6 @@ public class ClosureManagerUnitTests
 				{
 					Language = "Wren",
 					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
@@ -2361,20 +2216,6 @@ public class ClosureManagerUnitTests
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 			{
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -2621,8 +2462,6 @@ public class ClosureManagerUnitTests
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		await uut.GenerateAndRestoreRecursiveLocksAsync(
@@ -2769,20 +2608,6 @@ public class ClosureManagerUnitTests
 				{
 					Language = "Wren",
 					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
@@ -2838,20 +2663,6 @@ public class ClosureManagerUnitTests
 				{
 					Language = "Wren",
 					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
@@ -2882,20 +2693,6 @@ public class ClosureManagerUnitTests
 			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
 			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
 			{
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -3126,8 +2923,6 @@ public class ClosureManagerUnitTests
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		await uut.GenerateAndRestoreRecursiveLocksAsync(
@@ -3247,20 +3042,6 @@ public class ClosureManagerUnitTests
 				{
 					Language = "Wren",
 					Owner = "mwasplund",
-					Name = "Soup.CSharp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
-					Name = "Soup.Cpp",
-					Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
-				},
-				new Api.Client.PackagePublicExactReferenceModel()
-				{
-					Language = "Wren",
-					Owner = "mwasplund",
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
@@ -3352,8 +3133,6 @@ public class ClosureManagerUnitTests
 		var uut = new ClosureManager(
 			new Uri("https://test.api.soupbuild.com/"),
 			httpClient,
-			new SemanticVersion(1, 2, 3),
-			new SemanticVersion(3, 2, 1),
 			new SemanticVersion(4, 5, 6));
 
 		await uut.GenerateAndRestoreRecursiveLocksAsync(

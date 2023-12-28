@@ -40,14 +40,11 @@ public static class Program
 			var workingDirectory = new Path(args[1]);
 
 			using var httpClient = new HttpClient();
-			SemanticVersion builtInLanguageVersionCSharp = new SemanticVersion(0, 9, 0);
-			SemanticVersion builtInLanguageVersionCpp = new SemanticVersion(0, 8, 2);
-			SemanticVersion builtInLanguageVersionWren = new SemanticVersion(0, 3, 0);
+			SemanticVersion minimumLanguageVersionCpp = new SemanticVersion(0, 12, 0);
+			SemanticVersion builtInLanguageVersionWren = new SemanticVersion(0, 4, 1);
 			var closureManager = new ClosureManager(
 				SoupApiEndpoint,
 				httpClient,
-				builtInLanguageVersionCSharp,
-				builtInLanguageVersionCpp,
 				builtInLanguageVersionWren);
 			var packageManager = new PackageManager(
 				SoupApiEndpoint,
@@ -58,7 +55,7 @@ public static class Program
 			{
 				case "initialize-package":
 					{
-						var initializeCommand = new InitializeCommand(builtInLanguageVersionCpp);
+						var initializeCommand = new InitializeCommand(minimumLanguageVersionCpp);
 
 						await initializeCommand.InitializePackageAsync(workingDirectory);
 					}

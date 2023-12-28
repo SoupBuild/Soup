@@ -15,7 +15,7 @@ SET PKG_OWNER=mwasplund
 SET SOUP_VERSION=0.37.0
 SET COPY_VERSION=1.0.0
 SET MKDIR_VERSION=1.0.0
-SET SOUP_WREN_VERSION=0.4.0
+SET SOUP_WREN_VERSION=0.4.1
 
 REM - Use a copy of the final binary in case we are re-buiding itself
 robocopy %ScriptsDir%\Install\ %RunDir%\ /MIR /NJH /NJS /NDL > NUL
