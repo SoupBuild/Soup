@@ -1,41 +1,41 @@
-Name: "Soup.Core"
-Language: "C++|0"
-Version: "0.1.1"
+Name: 'Soup.Core'
+Language: 'C++|0'
+Version: '0.1.1'
 Defines: [
-	# "LOCAL_DEBUG"
-	# "TRACE_SYSTEM_ACCESS"
+	# 'LOCAL_DEBUG'
+	# 'TRACE_SYSTEM_ACCESS'
 ]
 IncludePaths: [
-	"Source/"
+	'Source/'
 ]
-Interface: "Source/Module.cpp"
+Interface: 'Source/Module.cpp'
 Source: [
-	"Source/Recipe/LanguageReferenceParser.cpp"
-	"Source/SML/SMLParser.cpp"
-	"Source/ValueTable/Value.cpp"
+	'Source/Recipe/LanguageReferenceParser.cpp'
+	'Source/SML/SMLParser.cpp'
+	'Source/ValueTable/Value.cpp'
 ]
 
 Dependencies: {
 	Build: [
-		"mwasplund|Soup.Test.Cpp@0"
+		'mwasplund|Soup.Test.Cpp@0'
 	]
 	Runtime: [
-		"mwasplund|Opal@0"
-		"mwasplund|reflex@1"
-		"../../Monitor/Host/"
-		"mwasplund|wren@1"
-		"mwasplund|CryptoPP@1"
+		'mwasplund|Opal@0'
+		'mwasplund|reflex@1'
+		'../../Monitor/Host/'
+		'mwasplund|wren@1'
+		'mwasplund|CryptoPP@1'
 	]
 	Test: [
-		"mwasplund|Soup.Test.Assert@0"
+		'mwasplund|Soup.Test.Assert@0'
 	]
 }
 
 Tests: {
 	Source: [
-		"UnitTests/gen/Main.cpp"
+		'UnitTests/gen/Main.cpp'
 	]
 	IncludePaths: [
-		"UnitTests/"
+		'UnitTests/'
 	]
 }

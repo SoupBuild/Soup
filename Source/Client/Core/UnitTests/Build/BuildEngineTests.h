@@ -41,7 +41,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.3.0/Recipe.sml"),
+				Path("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
 					Language: 'Wren|1'
@@ -79,7 +79,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'mwasplund|Soup.Wren': { Version: '0.3.0' }
+								'mwasplund|Soup.Wren': { Version: '0.4.1' }
 							}
 						}
 						Tool0: {}
@@ -147,7 +147,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/mwasplund/Soup.Cpp/0.8.2/PackageLock.sml",
 					"INFO: Package lock loaded",
-					"DIAG: Load Recipe: C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.3.0/Recipe.sml",
+					"DIAG: Load Recipe: C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/Recipe.sml",
 					"DIAG: 0>Package was prebuilt: mwasplund|Soup.Wren",
 					"DIAG: 2>Running Build: [Wren]mwasplund|Soup.Cpp",
 					"INFO: 2>Build 'mwasplund|Soup.Cpp'",
@@ -176,7 +176,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>C:/Users/Me/.soup/LocalUserConfig.sml",
 					"DIAG: 2>C:/Windows/",
 					"DIAG: 2>C:/Program Files/dotnet/",
-					"DIAG: 2>C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.3.0/out/",
+					"DIAG: 2>C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/out/",
 					"DIAG: 2>C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/",
 					"DIAG: 2>C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/",
 					"DIAG: 2>Allowed Write Access:",
@@ -252,8 +252,8 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/locks/Wren/mwasplund/Soup.Cpp/0.8.2/PackageLock.sml",
 					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/mwasplund/Soup.Cpp/0.8.2/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.3.0/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.3.0/Recipe.sml",
+					"Exists: C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/Recipe.sml",
+					"OpenReadBinary: C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/Wren/mwasplund/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/Wren/RootRecipe.sml",
@@ -471,7 +471,7 @@ namespace Soup::Core::UnitTests
 										"mwasplund|Soup.Wren",
 										ValueTable(
 										{
-											{ "SoupTargetDirectory", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.3.0/out/.soup/") },
+											{ "SoupTargetDirectory", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/out/.soup/") },
 										})
 									},
 								})
@@ -505,7 +505,7 @@ namespace Soup::Core::UnitTests
 						"GenerateMacros",
 						ValueTable(
 						{
-							{ "/(BUILD_TARGET_mwasplund|Soup.Wren)/", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.3.0/out/") },
+							{ "/(BUILD_TARGET_mwasplund|Soup.Wren)/", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/out/") },
 						})
 					},
 					{
@@ -544,7 +544,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("[Wren]mwasplund|Soup.Wren@0.3.0") },
+															{ "Reference", std::string("[Wren]mwasplund|Soup.Wren@0.4.1") },
 															{ "TargetDirectory", std::string("/(TARGET_mwasplund|Soup.Wren)/") },
 														})
 													},
