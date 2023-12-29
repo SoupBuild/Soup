@@ -1,14 +1,14 @@
-Name: "SoupTools"
-Language: "C++|0"
-Version: "1.0.0"
+Name: 'SoupTools'
+Language: 'C++|0'
+Version: '1.0.0'
 Source: [
-	"Public.cpp"
+	'Public.cpp'
 ]
-Type: "DynamicLibrary"
+Type: 'DynamicLibrary'
 
 Dependencies: {
 	Runtime: [
-		"../Core/"
-		"mwasplund|json11@1"
+		'../Core/'
+		'mwasplund|json11@1'
 	]
 }

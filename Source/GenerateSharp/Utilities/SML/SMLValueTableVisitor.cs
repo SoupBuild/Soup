@@ -175,12 +175,12 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var literal = context.STRING_LITERAL().Symbol.Text;
 		var content = literal[1..^1];
 
-		var openQuoteToken = new SMLToken("\"")
+		var openQuoteToken = new SMLToken("'")
 		{
 			LeadingTrivia = GetLeadingTrivia(context.STRING_LITERAL()),
 		};
 		var contentToken = new SMLToken(content);
-		var closeQuoteToken = new SMLToken("\"");
+		var closeQuoteToken = new SMLToken("'");
 
 		// Cache the last seen token
 		_lastToken = closeQuoteToken;

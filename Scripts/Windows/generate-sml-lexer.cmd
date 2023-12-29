@@ -4,7 +4,7 @@ SET Flavor=%1
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\..\
 SET ClientCoreSourceDir=Source\Client\Core\Source
-SET REFLEX=%UserProfile%\source\repos\RE-flex\bin\win64\reflex.exe
+SET REFLEX=%UserProfile%\Dev\Repos\RE-flex\bin\win64\reflex.exe
 
 pushd %RootDir%
 echo %REFLEX% %ClientCoreSourceDir%\SML\SMLParser.l -o %ClientCoreSourceDir%\SML\SMLParser.cpp

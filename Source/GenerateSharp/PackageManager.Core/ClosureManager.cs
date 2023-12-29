@@ -24,8 +24,6 @@ public class ClosureManager : IClosureManager
 	private const string BuiltInLanguageCSharp = "C#";
 	private const string BuiltInLanguageCpp = "C++";
 	private const string BuiltInLanguageWren = "Wren";
-	private const string BuiltInLanguagePackageCSharp = "Soup.CSharp";
-	private const string BuiltInLanguagePackageCpp = "Soup.Cpp";
 	private const string BuiltInLanguagePackageWren = "Soup.Wren";
 	private const string BuiltInLanguageSafeNameCSharp = "CSharp";
 	private const string BuiltInLanguageSafeNameCpp = "Cpp";
@@ -38,21 +36,15 @@ public class ClosureManager : IClosureManager
 
 	private readonly HttpClient _httpClient;
 
-	private readonly SemanticVersion _builtInLanguageVersionCSharp;
-	private readonly SemanticVersion _builtInLanguageVersionCpp;
 	private readonly SemanticVersion _builtInLanguageVersionWren;
 
 	public ClosureManager(
 		Uri apiEndpoint,
 		HttpClient httpClient,
-		SemanticVersion builtInLanguageVersionCSharp,
-		SemanticVersion builtInLanguageVersionCpp,
 		SemanticVersion builtInLanguageVersionWren)
 	{
 		_apiEndpoint = apiEndpoint;
 		_httpClient = httpClient;
-		_builtInLanguageVersionCSharp = builtInLanguageVersionCSharp;
-		_builtInLanguageVersionCpp = builtInLanguageVersionCpp;
 		_builtInLanguageVersionWren = builtInLanguageVersionWren;
 	}
 
@@ -139,9 +131,7 @@ public class ClosureManager : IClosureManager
 						{
 							// Check if the package version already exists
 							if (projectName.HasOwner && projectName.Owner == BuiltInOwner &&
-								((projectName.Name == BuiltInLanguagePackageCpp && version == _builtInLanguageVersionCpp) ||
-								(projectName.Name == BuiltInLanguagePackageCSharp && version == _builtInLanguageVersionCSharp) ||
-								(projectName.Name == BuiltInLanguagePackageWren && version == _builtInLanguageVersionWren)))
+								projectName.Name == BuiltInLanguagePackageWren && version == _builtInLanguageVersionWren)
 							{
 								Log.HighPriority("Skip built in language version in build closure");
 							}
@@ -273,30 +263,6 @@ public class ClosureManager : IClosureManager
 		// Request the built in versions for the language extensions
 		var preferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>
 		{
-			new Api.Client.PackagePublicExactReferenceModel()
-			{
-				Language = BuiltInLanguageWren,
-				Owner = BuiltInOwner,
-				Name = BuiltInLanguagePackageCSharp,
-				Version = new Api.Client.SemanticVersionExactModel()
-				{
-					Major = _builtInLanguageVersionCSharp.Major,
-					Minor = _builtInLanguageVersionCSharp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-					Patch = _builtInLanguageVersionCSharp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-				},
-			},
-			new Api.Client.PackagePublicExactReferenceModel()
-			{
-				Language = BuiltInLanguageWren,
-				Owner = BuiltInOwner,
-				Name = BuiltInLanguagePackageCpp,
-				Version = new Api.Client.SemanticVersionExactModel()
-				{
-					Major = _builtInLanguageVersionCpp.Major,
-					Minor = _builtInLanguageVersionCpp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-					Patch = _builtInLanguageVersionCpp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-				},
-			},
 			new Api.Client.PackagePublicExactReferenceModel()
 			{
 				Language = BuiltInLanguageWren,
@@ -820,9 +786,7 @@ public class ClosureManager : IClosureManager
 
 		// Check if the package version already exists
 		if (!isRuntime &&
-			((packageName == BuiltInLanguagePackageCpp && packageVersion == _builtInLanguageVersionCpp) ||
-			(packageName == BuiltInLanguagePackageCSharp && packageVersion == _builtInLanguageVersionCSharp) ||
-			(packageName == BuiltInLanguagePackageWren && packageVersion == _builtInLanguageVersionWren)))
+			packageName == BuiltInLanguagePackageWren && packageVersion == _builtInLanguageVersionWren)
 		{
 			Log.HighPriority("Skip built in language version in build closure");
 		}

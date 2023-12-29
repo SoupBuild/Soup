@@ -1,15 +1,15 @@
-Name: "Monitor.Host"
-Language: "C++|0"
-Version: "1.0.0"
+Name: 'Monitor.Host'
+Language: 'C++|0'
+Version: '1.0.0'
 Defines: [
-	# "TRACE_DETOUR_SERVER"
+	# 'TRACE_DETOUR_SERVER'
 ]
-Interface: "Module.cpp"
+Interface: 'Module.cpp'
 
 Dependencies: {
 	Runtime: [
-		"mwasplund|Detours@4"
-		"../Shared/"
-		"mwasplund|Opal@0"
+		'mwasplund|Detours@4'
+		'../Shared/'
+		'mwasplund|Opal@0'
 	]
 }

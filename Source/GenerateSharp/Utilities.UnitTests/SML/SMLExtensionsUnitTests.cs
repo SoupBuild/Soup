@@ -19,7 +19,7 @@ public class SMLExtensionsUnitTests
 
 		var content = await SerializeAsync(uut);
 		var expected =
-@"NewItem: ""Value1""";
+@"NewItem: 'Value1'";
 		Assert.Equal(expected, content);
 	}
 
@@ -33,8 +33,8 @@ public class SMLExtensionsUnitTests
 
 		var content = await SerializeAsync(uut);
 		var expected =
-@"NewItem1: ""Value1""
-NewItem2: ""Value2""";
+@"NewItem1: 'Value1'
+NewItem2: 'Value2'";
 		Assert.Equal(expected, content);
 	}
 
@@ -62,7 +62,7 @@ NewItem2: ""Value2""";
 
 		var content = await SerializeAsync(uut);
 		var expected =
-@"""#"": [
+@"'#': [
 
 ]";
 		Assert.Equal(expected, content);
@@ -98,7 +98,7 @@ ANewList2: [
 		var content = await SerializeAsync(uut);
 		var expected =
 @"NewList: [
-	""NewItem""
+	'NewItem'
 ]";
 		Assert.Equal(expected, content);
 	}
@@ -134,7 +134,7 @@ ANewList2: [
 		var expected =
 @"NewList: [
 	{
-		NewItem: ""NewValue""
+		NewItem: 'NewValue'
 	}
 ]";
 		Assert.Equal(expected, content);
@@ -154,8 +154,8 @@ ANewList2: [
 		var expected =
 @"NewList: [
 	{
-		NewItem1: ""NewValue1""
-		NewItem2: ""NewValue2""
+		NewItem1: 'NewValue1'
+		NewItem2: 'NewValue2'
 	}
 ]";
 		Assert.Equal(expected, content);
@@ -185,7 +185,7 @@ ANewList2: [
 
 		var content = await SerializeAsync(uut);
 		var expected =
-@"""#"": {
+@"'#': {
 
 }";
 		Assert.Equal(expected, content);
@@ -215,7 +215,7 @@ ANewList2: [
 
 		var content = await SerializeAsync(uut);
 		var expected =
-@"NewTable: { Item1: ""Value1"", Item2: ""Value2"" }";
+@"NewTable: { Item1: 'Value1', Item2: 'Value2' }";
 		Assert.Equal(expected, content);
 	}
 
@@ -271,7 +271,7 @@ ANewTable2: {
 @"NewTable: {
 	NewList: [
 		{
-			NewItem: ""NewValue""
+			NewItem: 'NewValue'
 		}
 	]
 }";

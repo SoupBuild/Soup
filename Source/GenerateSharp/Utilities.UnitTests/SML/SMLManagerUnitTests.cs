@@ -26,8 +26,8 @@ public class SMLManagerUnitTests
 	public void Deserialize_Simple_Flat()
 	{
 		var recipe =
-			@"Name: ""MyPackage""
-				Language: ""C++|1""";
+			@"Name: 'MyPackage'
+				Language: 'C++|1'";
 		var actual = SMLManager.Deserialize(recipe);
 
 		var expected = new SMLDocument(
@@ -58,7 +58,7 @@ public class SMLManagerUnitTests
 	public void Deserialize_ComplexKey()
 	{
 		var recipe =
-			@"""#1%^`"": ""ComplexValue""";
+			@"'#1%^`': 'ComplexValue'";
 		var actual = SMLManager.Deserialize(recipe);
 
 		var expected = new SMLDocument(
@@ -67,7 +67,7 @@ public class SMLManagerUnitTests
 					{
 						"#1%^`",
 						new SMLTableValue(
-							new SMLToken("\"#1%^`\""),
+							new SMLToken("'#1%^`'"),
 							"#1%^`",
 							new SMLToken(":"),
 							new SMLValue(new SMLStringValue("ComplexValue")))
@@ -81,7 +81,7 @@ public class SMLManagerUnitTests
 	public void Deserialize_Simple_Inline()
 	{
 		var recipe =
-			@"Name: ""MyPackage"", Language: ""C++|1""";
+			@"Name: 'MyPackage', Language: 'C++|1'";
 		var actual = SMLManager.Deserialize(recipe);
 
 		var expected = new SMLDocument(
@@ -112,11 +112,11 @@ public class SMLManagerUnitTests
 	public void Deserialize_AllProperties()
 	{
 		var recipe =
-			@"Name: ""MyPackage""
+			@"Name: 'MyPackage'
 
 				# A Comment in the file
-				Language: ""C++|1""
-				Version: ""1.2.3""
+				Language: 'C++|1'
+				Version: '1.2.3'
 				EnableErrorsAsWarnings: false
 				EnableCoolFeature: true
 				Dependencies: {
@@ -124,7 +124,7 @@ public class SMLManagerUnitTests
 
 					Test :[
 						123
-						false, ""string"" ]
+						false, 'string' ]
 				}";
 		var actual = SMLManager.Deserialize(recipe);
 
@@ -219,20 +219,20 @@ public class SMLManagerUnitTests
 	public async Task RoundTrip_AllProperties()
 	{
 		var expected =
-			@"Name: ""MyPackage""
+			@"Name: 'MyPackage'
 
 				# A Comment in the file
-				Language: ""C++|1""
-				Version: ""1.2.3""
+				Language: 'C++|1'
+				Version: '1.2.3'
 				EnableErrorsAsWarnings: false
 				EnableCoolFeature: true
-				""Z@#1%"": ""Complex""
+				'Z@#1%': 'Complex'
 				Dependencies: {
 					Runtime:[], Build:[]
 
 					Test :[
 						123
-						false, ""string"" ]
+						false, 'string' ]
 				}";
 		var document = SMLManager.Deserialize(expected);
 

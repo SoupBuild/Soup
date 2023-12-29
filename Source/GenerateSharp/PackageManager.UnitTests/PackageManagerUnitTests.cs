@@ -101,10 +101,10 @@ public class PackageManagerUnitTests
 		using var originalContent = new System.IO.MemoryStream();
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
-				Name: "MyPackage"
-				Language: "C++|3.2.1"
-				Version: "1.0.0"
-				"""));
+			Name: 'MyPackage'
+			Language: 'C++|3.2.1'
+			Version: '1.0.0'
+			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/MyPackage/Recipe.sml"),
@@ -114,10 +114,10 @@ public class PackageManagerUnitTests
 			new Path("C:/Users/Me/.soup/packages/Cpp/OtherPackage/1.2.3/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Package1"
-					Language: "C++|3.2.1"
-					Version: "1.2.3"
-					"""))));
+				Name: 'Package1'
+				Language: 'C++|3.2.1'
+				Version: '1.2.3'
+				"""))));
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
@@ -188,15 +188,15 @@ public class PackageManagerUnitTests
 		var recipeContent = await recipeReader.ReadToEndAsync();
 		var expectedRecipe =
 			"""
-				Name: "MyPackage"
-				Language: "C++|3.2.1"
-				Version: "1.0.0"
-				Dependencies: {
-					Runtime: [
-						"User1|OtherPackage@1.2.3"
-					]
-				}
-				""";
+			Name: 'MyPackage'
+			Language: 'C++|3.2.1'
+			Version: '1.0.0'
+			Dependencies: {
+				Runtime: [
+					'User1|OtherPackage@1.2.3'
+				]
+			}
+			""";
 
 		Assert.Equal(expectedRecipe, recipeContent);
 	}
@@ -215,10 +215,10 @@ public class PackageManagerUnitTests
 		using var originalContent = new System.IO.MemoryStream();
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
-				Name: "MyPackage"
-				Language: "C++|3.2.1"
-				Version: "1.0.0"
-				"""));
+			Name: 'MyPackage'
+			Language: 'C++|3.2.1'
+			Version: '1.0.0'
+			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/MyPackage/Recipe.sml"),
@@ -228,10 +228,10 @@ public class PackageManagerUnitTests
 			new Path("C:/Users/Me/.soup/packages/Cpp/OtherPackage/1.2.3/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
-					Name: "Package1"
-					Language: "C++|3.2.1"
-					Version: "1.2.3"
-					"""))));
+				Name: 'Package1'
+				Language: 'C++|3.2.1'
+				Version: '1.2.3'
+				"""))));
 
 		// Mock out the http
 		var mockMessageHandler = new Mock<IHttpMessageHandler>();
@@ -332,15 +332,15 @@ public class PackageManagerUnitTests
 		var recipeContent = await recipeReader.ReadToEndAsync();
 		var expectedRecipe =
 			"""
-				Name: "MyPackage"
-				Language: "C++|3.2.1"
-				Version: "1.0.0"
-				Dependencies: {
-					Runtime: [
-						"User1|OtherPackage@1.2.3"
-					]
-				}
-				""";
+			Name: 'MyPackage'
+			Language: 'C++|3.2.1'
+			Version: '1.0.0'
+			Dependencies: {
+				Runtime: [
+					'User1|OtherPackage@1.2.3'
+				]
+			}
+			""";
 
 		Assert.Equal(expectedRecipe, recipeContent);
 	}
@@ -359,10 +359,10 @@ public class PackageManagerUnitTests
 		using var originalContent = new System.IO.MemoryStream();
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
-				Name: "MyPackage"
-				Language: "C++|0.1"
-				Version: "1.0.0"
-				"""));
+			Name: 'MyPackage'
+			Language: 'C++|0.1'
+			Version: '1.0.0'
+			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Root/MyPackage/Recipe.sml"),

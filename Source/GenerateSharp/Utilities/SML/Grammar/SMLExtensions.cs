@@ -23,7 +23,7 @@ public static partial class SMLExtensions
 		// Create a new item and matching syntax
 		var newValue = new SMLArrayValue(new SMLValue(new SMLStringValue(
 			value,
-			new SMLToken("\"")
+			new SMLToken("'")
 			{
 				// Array items must have newline
 				LeadingTrivia = new List<string>()
@@ -32,7 +32,7 @@ public static partial class SMLExtensions
 				},
 			},
 			new SMLToken(value),
-			new SMLToken("\""))),
+			new SMLToken("'"))),
 			new List<SMLToken>());
 
 		// Update the previous last item to have a comma delimiter
@@ -198,9 +198,9 @@ public static partial class SMLExtensions
 		// Create a new item and matching syntax
 		var newValue = new SMLValue(new SMLStringValue(
 			value,
-			new SMLToken("\""),
+			new SMLToken("'"),
 			new SMLToken(value),
-			new SMLToken("\"")));
+			new SMLToken("'")));
 
 		// Update the previous last item to have a comma delimiter
 		if (document.Values.Count > 0)
@@ -250,9 +250,9 @@ public static partial class SMLExtensions
 		// Create a new item and matching syntax
 		var newValue = new SMLValue(new SMLStringValue(
 			value,
-			new SMLToken("\""),
+			new SMLToken("'"),
 			new SMLToken(value),
-			new SMLToken("\"")));
+			new SMLToken("'")));
 
 		// Tables items should be on newline
 		var keyToken = new SMLToken(EnsureSafeKey(key))
@@ -276,9 +276,9 @@ public static partial class SMLExtensions
 		// Create a new item and matching syntax
 		var newValue = new SMLValue(new SMLStringValue(
 			value,
-			new SMLToken("\""),
+			new SMLToken("'"),
 			new SMLToken(value),
-			new SMLToken("\"")));
+			new SMLToken("'")));
 
 		// Tables items should be on newline
 		var keyToken = new SMLToken(EnsureSafeKey(key))
@@ -485,7 +485,7 @@ public static partial class SMLExtensions
 		// If the key contains unsafe characters, wrap in string key
 		var keyTokenText = name;
 		if (!SafeKeyRegex().IsMatch(keyTokenText))
-			keyTokenText = $"\"{keyTokenText}\"";
+			keyTokenText = $"'{keyTokenText}'";
 
 		return keyTokenText;
 	}

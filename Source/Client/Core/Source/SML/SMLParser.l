@@ -1,6 +1,8 @@
 
 %top{
+#ifdef SOUP_BUILD
 module;
+#endif
 
 // #define SHOW_TOKENS
 
@@ -10,8 +12,24 @@ module;
 
 # include <iostream>
 # include <chrono>
+#ifndef _WIN32 // TODO: MSVC BUG
+# include <optional>
+# include <unordered_map>
+# include <vector>
+#endif
+
+#ifdef SOUP_BUILD
 
 module Soup.Core;
+import reflex;
+
+#else
+
+#include <variant>
+#include <vector>
+#include "SML.h"
+
+#endif
 
 enum class SMLToken : int
 {
@@ -74,7 +92,7 @@ private:
 // TODO: Remove extra symbols
 
 %x QUOTE
-basic_char      [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}["\\]
+basic_char      [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}['\\]
 whitespace      [ \t]+
 newline         \r?\n
 comment         "#".*?\r?\n
@@ -98,18 +116,18 @@ basic_string    {basic_char}+
 "{"             return (int)SMLToken::OpenBrace;
 "}"             return (int)SMLToken::CloseBrace;
 ","             return (int)SMLToken::Comma;
-\"              { ClearString(); start(QUOTE); }
+"'"             { ClearString(); start(QUOTE); }
 .               return (int)SMLToken::Error;
 
 <QUOTE>{
-\"              { start(INITIAL); return (int)SMLToken::StringLiteral; }
+'               { start(INITIAL); return (int)SMLToken::StringLiteral; }
 \\0             { AddCharacter('\0'); }
 \\t             { AddCharacter('\t'); } // tab              (U+0009)
 \\n             { AddCharacter('\n'); } // linefeed         (U+000A)
 \\f             { AddCharacter('\f'); } // form feed        (U+000C)
 \\r             { AddCharacter('\r'); } // carriage return  (U+000D)
 \\e             { AddCharacter('\r'); } // escape           (U+001B)
-\\\"            { AddCharacter('"'); }  // quote            (U+0022)
+\\'             { AddCharacter('\''); } // quote            (U+001B)
 \\\\            { AddCharacter('\\'); } // backslash        (U+005C)
 {basic_string}  { AddString(text(), size()); }
 .               { AddString(text(), size()); }
@@ -456,8 +474,8 @@ private:
                 case SMLToken::Newline:
                     std::cout << "Token: " << "Newline" << '\n';
                     break;
-                case SMLToken::Key:
-                    std::cout << "Token: " << "Key" << '\n';
+                case SMLToken::KeyLiteral:
+                    std::cout << "Token: " << "KeyLiteral" << '\n';
                     break;
                 case SMLToken::Integer:
                     std::cout << "Token: " << "Integer" << '\n';
