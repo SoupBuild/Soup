@@ -4,13 +4,13 @@ Closures: {
 		'C++': {
 			'Monitor.Host': { Version: '../../Monitor/Host/', Build: 'Build0', Tool: 'Tool0' }
 			'Monitor.Shared': { Version: '../../Monitor/Shared/', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|CryptoPP': { Version: '1.2.1', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|Detours': { Version: '4.0.11', Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|CryptoPP': { Version: '1.2.2', Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|Detours': { Version: '4.0.12', Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|json11': { Version: '1.1.1', Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Opal': { Version: '0.10.0', Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|reflex': { Version: '1.0.4', Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Soup.Test.Assert': { Version: '0.4.0', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|wren': { Version: '1.0.4', Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|wren': { Version: '1.0.5', Build: 'Build0', Tool: 'Tool0' }
 			'Soup.Core': { Version: '../Core/', Build: 'Build1', Tool: 'Tool0' }
 			SoupTools: { Version: '../Tools', Build: 'Build0', Tool: 'Tool0' }
 		}
@@ -28,8 +28,8 @@ Closures: {
 	}
 	Tool0: {
 		'C++': {
-			'mwasplund|copy': { Version: '1.0.0' }
-			'mwasplund|mkdir': { Version: '1.0.0' }
+			'mwasplund|copy': { Version: '1.1.0' }
+			'mwasplund|mkdir': { Version: '1.1.0' }
 		}
 	}
 }

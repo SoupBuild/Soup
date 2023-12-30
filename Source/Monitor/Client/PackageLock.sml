@@ -4,7 +4,7 @@ Closures: {
 		'C++': {
 			'Monitor.Client': { Version: '../Client', Build: 'Build0', Tool: 'Tool0' }
 			'Monitor.Shared': { Version: '../Shared/', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|Detours': { Version: '4.0.11', Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|Detours': { Version: '4.0.12', Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Opal': { Version: '0.10.0', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}

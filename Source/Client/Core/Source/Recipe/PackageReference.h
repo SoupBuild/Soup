@@ -30,9 +30,16 @@ namespace Soup::Core
 			// Reuse regex between runs
 			static auto nameRegex = std::regex(R"(^(?:\[([\w#+]+)\])?(?:([A-Za-z][\w.]*)\|)?([A-Za-z][\w.]*)(?:@(\d+(?:.\d+)?(?:.\d+)?))?$)");
 
+			auto parseValue = value;
+			if (parseValue.starts_with("C++|"))
+			{
+				parseValue = "[C++]mwasplund|" + parseValue.substr(4);
+				Log::Info("Replace C++| -> " + parseValue);
+			}
+
 			// Attempt to parse Named reference
 			auto nameMatch = std::smatch();
-			if (std::regex_match(value, nameMatch, nameRegex))
+			if (std::regex_match(parseValue, nameMatch, nameRegex))
 			{
 				// The package is a published reference
 				std::optional<std::string> language = std::nullopt;
