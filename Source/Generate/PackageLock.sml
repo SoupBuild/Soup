@@ -21,8 +21,8 @@ Closures: {
 	}
 	Tool0: {
 		"C++": [
-			{ Name: "copy", Version: "1.0.0" }
-			{ Name: "mkdir", Version: "1.0.0" }
+			{ Name: "copy", Version: "1.1.0" }
+			{ Name: "mkdir", Version: "1.1.0" }
 		]
 	}
 }

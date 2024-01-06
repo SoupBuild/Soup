@@ -386,7 +386,7 @@ private:
             }
             case SMLToken::Integer:
             {
-                auto integer = std::stoll(text());
+                int64_t integer = std::stoll(text());
                 value = SMLValue(integer);
                 return true;
             }

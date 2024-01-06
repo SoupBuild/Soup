@@ -53,11 +53,11 @@ namespace Soup::Core
 					{
 						{
 							PackageName("mwasplund", "copy"),
-							SemanticVersion(1, 0, 0)
+							SemanticVersion(1, 1, 0)
 						},
 						{
 							PackageName("mwasplund", "mkdir"),
-							SemanticVersion(1, 0, 0)
+							SemanticVersion(1, 1, 0)
 						},
 					}
 				},

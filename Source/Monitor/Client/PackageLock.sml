@@ -4,8 +4,8 @@ Closures: {
 		'C++': {
 			'Monitor.Client': { Version: '../Client', Build: 'Build0', Tool: 'Tool0' }
 			'Monitor.Shared': { Version: '../Shared/', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|Detours': { Version: '4.0.11', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|Opal': { Version: '0.10.0', Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|Detours': { Version: '4.0.12', Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|Opal': { Version: '0.10.1', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
@@ -15,8 +15,8 @@ Closures: {
 	}
 	Tool0: {
 		'C++': {
-			'mwasplund|copy': { Version: '1.0.0' }
-			'mwasplund|mkdir': { Version: '1.0.0' }
+			'mwasplund|copy': { Version: '1.1.0' }
+			'mwasplund|mkdir': { Version: '1.1.0' }
 		}
 	}
 }
