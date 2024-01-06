@@ -24,16 +24,16 @@ SOUP_WREN_VERSION="0.4.1"
 rm -rf $RUN_DIR
 mkdir -p $RUN_DIR
 
-cp -p $OUT_DIR/Cpp/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.exe $RUN_DIR/soup
-cp -p $OUT_DIR/Cpp/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.Generate.exe $RUN_DIR/generate
+cp -p $OUT_DIR/Cpp/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.exe $RUN_DIR/soup
+cp -p $OUT_DIR/Cpp/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.Generate.exe $RUN_DIR/generate
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION
 cp -p $SOURCE_DIR/Tools/Copy/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/Recipe.sml
-cp -p -R $OUT_DIR/Cpp/copy/$COPY_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/out/
+cp -p -R $OUT_DIR/Cpp/Local/copy/$COPY_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/out/
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION
 cp -p $SOURCE_DIR/Tools/Mkdir/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/Recipe.sml
-cp -p -R $OUT_DIR/Cpp/mkdir/$MKDIR_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/out/
+cp -p -R $OUT_DIR/Cpp/Local/mkdir/$MKDIR_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/out/
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION
 cp -p $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml
