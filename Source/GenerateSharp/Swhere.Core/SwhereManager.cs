@@ -187,12 +187,12 @@ public static class SwhereManager
 		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync("g++");
 
 		var gccSDK = userConfig.EnsureSDK("GCC");
-		gccSDK.SourceDirectories.Clear();
+		gccSDK.SourceDirectories = new List<Path>();
 		gccSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-					{ "CCompiler", cCompilerPath.ToString() },
-					{ "CppCompiler", cppCompilerPath.ToString() },
+				{ "CCompiler", cCompilerPath.ToString() },
+				{ "CppCompiler", cppCompilerPath.ToString() },
 			});
 	}
 
@@ -204,13 +204,13 @@ public static class SwhereManager
 		var archiverPath = await WhereIsUtilities.FindExecutableAsync("ar");
 
 		var clangSDK = userConfig.EnsureSDK("Clang");
-		clangSDK.SourceDirectories.Clear();
+		clangSDK.SourceDirectories = new List<Path>();
 		clangSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-					{ "CCompiler", cCompilerPath.ToString() },
-					{ "CppCompiler", cppCompilerPath.ToString() },
-					{ "Archiver", archiverPath.ToString() },
+				{ "CCompiler", cCompilerPath.ToString() },
+				{ "CppCompiler", cppCompilerPath.ToString() },
+				{ "Archiver", archiverPath.ToString() },
 			});
 	}
 }
