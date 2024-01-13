@@ -1,14 +1,14 @@
-Name: "printgraph"
-Language: "C++|0"
-Version: "1.0.0"
-Type: "Executable"
+Name: 'printgraph'
+Language: 'C++|0'
+Version: '1.0.0'
+Type: 'Executable'
 Source: [
-	"Main.cpp"
+	'Main.cpp'
 ]
 
 Dependencies: {
 	Runtime: [
-		"mwasplund|Opal@0"
-		"../../Client/Core/"
+		'mwasplund|Opal@0'
+		'../../Client/Core/'
 	]
 }
