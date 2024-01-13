@@ -1,10 +1,10 @@
-Name: "Samples.C.StaticLibrary.Library"
-Language: "C|0"
-Version: "1.0.0"
-Type: "StaticLibrary"
+Name: 'Samples.C.StaticLibrary.Library'
+Language: 'C|0'
+Version: '1.0.0'
+Type: 'StaticLibrary'
 Source: [
-	"Library.c"
+	'Library.c'
 ]
 PublicHeaders: [
-	"Library.h"
+	'Library.h'
 ]
