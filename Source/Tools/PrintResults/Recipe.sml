@@ -1,15 +1,15 @@
-Name: "printresults"
-Language: "C++|0"
-Version: "1.0.0"
-Type: "Executable"
+Name: 'printresults'
+Language: 'C++|0'
+Version: '1.0.0'
+Type: 'Executable'
 Source: [
-	"Main.cpp"
+	'Main.cpp'
 ]
 
 Dependencies: {
 	Runtime: [
-		"mwasplund|Opal@0"
-		"../../Client/Core/"
-		"mwasplund|fmt@10"
+		'mwasplund|Opal@0'
+		'../../Client/Core/'
+		'mwasplund|fmt@10'
 	]
 }

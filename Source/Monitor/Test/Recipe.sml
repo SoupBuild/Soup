@@ -1,7 +1,7 @@
-Name: "Monitor.Test"
-Language: "C++|0.1"
-Version: "1.0.0"
-Type: "Executable"
+Name: 'Monitor.Test'
+Language: 'C++|0.1'
+Version: '1.0.0'
+Type: 'Executable'
 Source: [
-	"Main.cpp"
+	'Main.cpp'
 ]

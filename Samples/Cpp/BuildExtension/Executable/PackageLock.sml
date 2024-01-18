@@ -2,12 +2,12 @@ Version: 5
 Closures: {
 	Root: {
 		'C++': {
-			'Samples.SimpleBuildExtension.Executable': { Version: './', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.SimpleBuildExtension.Executable': { Version: '../Executable', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
 		Wren: {
-			'amples.Cpp.BuildExtension.Extension': { Version: '../Extension/' }
+			'Samples.Cpp.BuildExtension.Extension': { Version: '../Extension/' }
 			'mwasplund|Soup.Cpp': { Version: '0.12.0' }
 		}
 	}
