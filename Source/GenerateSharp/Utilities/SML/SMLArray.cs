@@ -19,18 +19,18 @@ public class SMLArray : IEquatable<SMLArray>
 	public SMLArray()
 	{
 		OpenBracket = SMLToken.Empty;
-		LeadingNewlines = new List<SMLToken>();
-		Values = new List<SMLArrayValue>();
-		TrailingNewlines = new List<SMLToken>();
+		LeadingNewlines = [];
+		Values = [];
+		TrailingNewlines = [];
 		CloseBracket = SMLToken.Empty;
 	}
 
 	public SMLArray(IList<SMLArrayValue> values)
 	{
 		OpenBracket = SMLToken.Empty;
-		LeadingNewlines = new List<SMLToken>();
+		LeadingNewlines = [];
 		Values = values;
-		TrailingNewlines = new List<SMLToken>();
+		TrailingNewlines = [];
 		CloseBracket = SMLToken.Empty;
 	}
 
@@ -40,9 +40,9 @@ public class SMLArray : IEquatable<SMLArray>
 		SMLToken closeBracket)
 	{
 		OpenBracket = openBracket;
-		LeadingNewlines = new List<SMLToken>();
+		LeadingNewlines = [];
 		Values = values;
-		TrailingNewlines = new List<SMLToken>();
+		TrailingNewlines = [];
 		CloseBracket = closeBracket;
 	}
 

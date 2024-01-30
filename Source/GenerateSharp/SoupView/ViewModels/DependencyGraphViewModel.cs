@@ -8,7 +8,6 @@ using ReactiveUI;
 using Soup.View.Views;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -80,15 +79,6 @@ public class DependencyGraphViewModel : ViewModelBase
 
 		Graph = activeGraph;
 		SelectedNode = rootNode;
-	}
-
-	private void NotifyError(string message)
-	{
-		if (Debugger.IsAttached)
-			Debugger.Break();
-
-		ErrorBarMessage = message;
-		IsErrorBarOpen = true;
 	}
 
 	private List<GraphNodeViewModel> BuildGraph(

@@ -18,9 +18,9 @@ public class SMLToken : IEquatable<SMLToken>
 
 	public SMLToken(string text)
 	{
-		LeadingTrivia = new List<string>();
+		LeadingTrivia = [];
 		Text = text;
-		TrailingTrivia = new List<string>();
+		TrailingTrivia = [];
 	}
 
 	public SMLToken(IList<string> leadingTrivia, string text, IList<string> trailingTrivia)

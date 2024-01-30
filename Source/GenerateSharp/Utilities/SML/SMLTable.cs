@@ -19,9 +19,9 @@ public class SMLTable : IEquatable<SMLTable>
 	public SMLTable()
 	{
 		OpenBrace = SMLToken.Empty;
-		LeadingNewlines = new List<SMLToken>();
+		LeadingNewlines = [];
 		Values = [];
-		TrailingNewlines = new List<SMLToken>();
+		TrailingNewlines = [];
 		CloseBrace = SMLToken.Empty;
 	}
 
@@ -29,9 +29,9 @@ public class SMLTable : IEquatable<SMLTable>
 		Dictionary<string, SMLTableValue> values)
 	{
 		OpenBrace = SMLToken.Empty;
-		LeadingNewlines = new List<SMLToken>();
+		LeadingNewlines = [];
 		Values = values;
-		TrailingNewlines = new List<SMLToken>();
+		TrailingNewlines = [];
 		CloseBrace = SMLToken.Empty;
 	}
 
@@ -41,9 +41,9 @@ public class SMLTable : IEquatable<SMLTable>
 		SMLToken closeBrace)
 	{
 		OpenBrace = openBrace;
-		LeadingNewlines = new List<SMLToken>();
+		LeadingNewlines = [];
 		Values = values;
-		TrailingNewlines = new List<SMLToken>();
+		TrailingNewlines = [];
 		CloseBrace = closeBrace;
 	}
 
