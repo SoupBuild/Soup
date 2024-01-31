@@ -4,7 +4,6 @@ using Avalonia.Platform.Storage;
 using Opal;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -111,13 +110,13 @@ public class MainWindowViewModel : ViewModelBase
 			new FilePickerOpenOptions()
 			{
 				AllowMultiple = false,
-				FileTypeFilter = new List<FilePickerFileType>()
-				{
+				FileTypeFilter =
+				[
 					new FilePickerFileType("Recipe")
 					{
-						Patterns = new List<string>() { "Recipe.sml" },
+						Patterns = ["Recipe.sml"],
 					},
-				}
+				]
 			});
 
 		// Use file picker like normal!

@@ -18,17 +18,17 @@ public class SMLDocument : IEquatable<SMLDocument>
 
 	public SMLDocument()
 	{
-		LeadingNewlines = new List<SMLToken>();
+		LeadingNewlines = [];
 		Values = [];
-		TrailingNewlines = new List<SMLToken>();
+		TrailingNewlines = [];
 	}
 
 	public SMLDocument(
 		Dictionary<string, SMLTableValue> values)
 	{
-		LeadingNewlines = new List<SMLToken>();
+		LeadingNewlines = [];
 		Values = values;
-		TrailingNewlines = new List<SMLToken>();
+		TrailingNewlines = [];
 	}
 
 	public SMLDocument(

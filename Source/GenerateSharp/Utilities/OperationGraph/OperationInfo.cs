@@ -17,7 +17,7 @@ public class CommandInfo : IEquatable<CommandInfo>
 	/// Initializes a new instance of the <see cref="CommandInfo"/> class.
 	/// </summary>
 	public CommandInfo() :
-		this(new Path(), new Path(), new List<string>())
+		this(new Path(), new Path(), [])
 	{
 	}
 
@@ -83,11 +83,11 @@ public class OperationInfo : IEquatable<OperationInfo>
 			new OperationId(0),
 			string.Empty,
 			new CommandInfo(),
-			new List<FileId>(),
-			new List<FileId>(),
-			new List<FileId>(),
-			new List<FileId>(),
-			new List<OperationId>(),
+			[],
+			[],
+			[],
+			[],
+			[],
 			0)
 	{
 	}
@@ -111,7 +111,7 @@ public class OperationInfo : IEquatable<OperationInfo>
 			declaredOutput,
 			readAccess,
 			writeAccess,
-			new List<OperationId>(),
+			[],
 			0)
 	{
 	}

@@ -58,7 +58,7 @@ public static class DotNetSDKUtilities
 		Log.HighPriority("Find DotNet SDK Versions");
 		var sdksOutput = await ExecutableUtilities.RunExecutableAsync(
 			dotnetExecutablePath,
-			new List<string>() { "--list-sdks" });
+			["--list-sdks"]);
 		var sdks = new List<(string, Path)>();
 		foreach (var sdkValue in sdksOutput.Split(Environment.NewLine).SkipLast(1))
 		{
@@ -87,7 +87,7 @@ public static class DotNetSDKUtilities
 		Log.HighPriority("Find DotNet Runtime Versions");
 		var runtimesOutput = await ExecutableUtilities.RunExecutableAsync(
 			dotnetExecutablePath,
-			new List<string>() { "--list-runtimes" });
+			["--list-runtimes"]);
 		var runtimes = new Dictionary<string, IList<(string, Path)>>();
 		foreach (var runtimeValue in runtimesOutput.Split(Environment.NewLine).SkipLast(1))
 		{
@@ -112,7 +112,7 @@ public static class DotNetSDKUtilities
 			}
 			else
 			{
-				runtimes.Add(name, new List<(string, Path)>() { (version, installationPath) });
+				runtimes.Add(name, [(version, installationPath)]);
 			}
 		}
 

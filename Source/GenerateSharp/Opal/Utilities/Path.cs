@@ -29,7 +29,7 @@ public class Path : IEquatable<Path>
 	public Path()
 	{
 		this.value = string.Empty;
-		this.SetState(new List<string>() { RelativeDirectory }, null, null);
+		this.SetState([RelativeDirectory], null, null);
 	}
 
 	/// <summary>
@@ -56,7 +56,7 @@ public class Path : IEquatable<Path>
 
 	private static char AlternateDirectorySeparator => '\\';
 
-	private static char[] AllValidDirectorySeparators => new char[] { '/', '\\' };
+	private static char[] AllValidDirectorySeparators => ['/', '\\'];
 
 	private static char LetterDriveSpecifier => ':';
 
