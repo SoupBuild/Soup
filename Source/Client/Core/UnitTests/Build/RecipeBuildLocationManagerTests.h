@@ -16,6 +16,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
+			auto packageName = Core::PackageName(std::nullopt, "MyPackage");
 			auto workingDirectory = Path("C:/WorkingDirectory/");
 			auto recipe = Recipe(RecipeTable(
 			{
@@ -29,11 +30,12 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "Soup.Cpp")
+					KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				}
 			});
 			auto uut = RecipeBuildLocationManager(knownLanguages);
 			auto targetDirectory = uut.GetOutputDirectory(
+				packageName,
 				workingDirectory,
 				recipe,
 				globalParameters,
@@ -65,9 +67,10 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/RootRecipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					OutputRoot: "BuildOut/"
+					OutputRoot: 'BuildOut/'
 				)")));
 
+			auto packageName = Core::PackageName(std::nullopt, "MyPackage");
 			auto workingDirectory = Path("C:/WorkingDirectory/");
 			auto recipe = Recipe(RecipeTable(
 			{
@@ -81,24 +84,25 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					 KnownLanguage("Cpp", "Soup.Cpp")
+					KnownLanguage("Cpp", "User1", "Soup.Cpp")
 				}
 			});
 			auto uut = RecipeBuildLocationManager(knownLanguages);
 			auto targetDirectory = uut.GetOutputDirectory(
+				packageName,
 				workingDirectory,
 				recipe,
 				globalParameters,
 				recipeCache);
 
-			Assert::AreEqual(Path("C:/BuildOut/Cpp/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"), targetDirectory, "Verify target directory matches expected.");
+			Assert::AreEqual(Path("C:/BuildOut/Cpp/Local/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"), targetDirectory, "Verify target directory matches expected.");
 
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Found Root Recipe: 'C:/RootRecipe.sml'",
 					"DIAG: Load Root Recipe: C:/RootRecipe.sml",
-					"INFO: Override root output: C:/BuildOut/Cpp/MyPackage/1.2.3/",
+					"INFO: Override root output: C:/BuildOut/Cpp/Local/MyPackage/1.2.3/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

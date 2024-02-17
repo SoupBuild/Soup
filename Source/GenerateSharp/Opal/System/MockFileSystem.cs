@@ -183,7 +183,7 @@ public class MockFileSystem : IFileSystem
 		this.requests.Add($"Rename: [{source}] -> [{destination}]");
 
 		// Create a fake destination directory
-		this.RegisterChildren(destination, new List<DirectoryEntry>());
+		this.RegisterChildren(destination, []);
 	}
 
 	/// <summary>

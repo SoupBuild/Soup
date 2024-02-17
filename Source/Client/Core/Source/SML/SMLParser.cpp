@@ -241,52 +241,52 @@ int Soup::Core::SML::Lexer::lex(void)
               return int();
             }
             break;
-          case 1: // rule Source\Client\Core\Source\SML\SMLParser.l:89: {whitespace} :
+          case 1: // rule Source\Client\Core\Source\SML\SMLParser.l:105: {whitespace} :
 { /* ignore whitespace */ }
             break;
-          case 2: // rule Source\Client\Core\Source\SML\SMLParser.l:90: {comment} :
+          case 2: // rule Source\Client\Core\Source\SML\SMLParser.l:106: {comment} :
 { /* ignore comments */ }
             break;
-          case 3: // rule Source\Client\Core\Source\SML\SMLParser.l:91: {newline} :
+          case 3: // rule Source\Client\Core\Source\SML\SMLParser.l:107: {newline} :
 return (int)SMLToken::Newline;
             break;
-          case 4: // rule Source\Client\Core\Source\SML\SMLParser.l:92: {integer} :
+          case 4: // rule Source\Client\Core\Source\SML\SMLParser.l:108: {integer} :
 return (int)SMLToken::Integer;
             break;
-          case 5: // rule Source\Client\Core\Source\SML\SMLParser.l:93: "true" :
+          case 5: // rule Source\Client\Core\Source\SML\SMLParser.l:109: "true" :
 return (int)SMLToken::True;
             break;
-          case 6: // rule Source\Client\Core\Source\SML\SMLParser.l:94: "false" :
+          case 6: // rule Source\Client\Core\Source\SML\SMLParser.l:110: "false" :
 return (int)SMLToken::False;
             break;
-          case 7: // rule Source\Client\Core\Source\SML\SMLParser.l:95: {key} :
+          case 7: // rule Source\Client\Core\Source\SML\SMLParser.l:111: {key} :
 return (int)SMLToken::KeyLiteral;
             break;
-          case 8: // rule Source\Client\Core\Source\SML\SMLParser.l:96: {decimal} :
+          case 8: // rule Source\Client\Core\Source\SML\SMLParser.l:112: {decimal} :
 return (int)SMLToken::Decimal;
             break;
-          case 9: // rule Source\Client\Core\Source\SML\SMLParser.l:97: ":" :
+          case 9: // rule Source\Client\Core\Source\SML\SMLParser.l:113: ":" :
 return (int)SMLToken::Colon;
             break;
-          case 10: // rule Source\Client\Core\Source\SML\SMLParser.l:98: "[" :
+          case 10: // rule Source\Client\Core\Source\SML\SMLParser.l:114: "[" :
 return (int)SMLToken::OpenBracket;
             break;
-          case 11: // rule Source\Client\Core\Source\SML\SMLParser.l:99: "]" :
+          case 11: // rule Source\Client\Core\Source\SML\SMLParser.l:115: "]" :
 return (int)SMLToken::CloseBracket;
             break;
-          case 12: // rule Source\Client\Core\Source\SML\SMLParser.l:100: "{" :
+          case 12: // rule Source\Client\Core\Source\SML\SMLParser.l:116: "{" :
 return (int)SMLToken::OpenBrace;
             break;
-          case 13: // rule Source\Client\Core\Source\SML\SMLParser.l:101: "}" :
+          case 13: // rule Source\Client\Core\Source\SML\SMLParser.l:117: "}" :
 return (int)SMLToken::CloseBrace;
             break;
-          case 14: // rule Source\Client\Core\Source\SML\SMLParser.l:102: "," :
+          case 14: // rule Source\Client\Core\Source\SML\SMLParser.l:118: "," :
 return (int)SMLToken::Comma;
             break;
-          case 15: // rule Source\Client\Core\Source\SML\SMLParser.l:103: \" :
+          case 15: // rule Source\Client\Core\Source\SML\SMLParser.l:119: "'" :
 { ClearString(); start(QUOTE); }
             break;
-          case 16: // rule Source\Client\Core\Source\SML\SMLParser.l:104: . :
+          case 16: // rule Source\Client\Core\Source\SML\SMLParser.l:120: . :
 return (int)SMLToken::Error;
 
             break;
@@ -307,37 +307,37 @@ return (int)SMLToken::Error;
               return int();
             }
             break;
-          case 1: // rule Source\Client\Core\Source\SML\SMLParser.l:107: \" :
+          case 1: // rule Source\Client\Core\Source\SML\SMLParser.l:123: ' :
 { start(INITIAL); return (int)SMLToken::StringLiteral; }
             break;
-          case 2: // rule Source\Client\Core\Source\SML\SMLParser.l:108: \\0 :
+          case 2: // rule Source\Client\Core\Source\SML\SMLParser.l:124: \\0 :
 { AddCharacter('\0'); }
             break;
-          case 3: // rule Source\Client\Core\Source\SML\SMLParser.l:109: \\t :
+          case 3: // rule Source\Client\Core\Source\SML\SMLParser.l:125: \\t :
 { AddCharacter('\t'); } // tab              (U+0009)
             break;
-          case 4: // rule Source\Client\Core\Source\SML\SMLParser.l:110: \\n :
+          case 4: // rule Source\Client\Core\Source\SML\SMLParser.l:126: \\n :
 { AddCharacter('\n'); } // linefeed         (U+000A)
             break;
-          case 5: // rule Source\Client\Core\Source\SML\SMLParser.l:111: \\f :
+          case 5: // rule Source\Client\Core\Source\SML\SMLParser.l:127: \\f :
 { AddCharacter('\f'); } // form feed        (U+000C)
             break;
-          case 6: // rule Source\Client\Core\Source\SML\SMLParser.l:112: \\r :
+          case 6: // rule Source\Client\Core\Source\SML\SMLParser.l:128: \\r :
 { AddCharacter('\r'); } // carriage return  (U+000D)
             break;
-          case 7: // rule Source\Client\Core\Source\SML\SMLParser.l:113: \\e :
+          case 7: // rule Source\Client\Core\Source\SML\SMLParser.l:129: \\e :
 { AddCharacter('\r'); } // escape           (U+001B)
             break;
-          case 8: // rule Source\Client\Core\Source\SML\SMLParser.l:114: \\\" :
-{ AddCharacter('"'); }  // quote            (U+0022)
+          case 8: // rule Source\Client\Core\Source\SML\SMLParser.l:130: \\' :
+{ AddCharacter('\''); } // quote            (U+001B)
             break;
-          case 9: // rule Source\Client\Core\Source\SML\SMLParser.l:115: \\\\ :
+          case 9: // rule Source\Client\Core\Source\SML\SMLParser.l:131: \\\\ :
 { AddCharacter('\\'); } // backslash        (U+005C)
             break;
-          case 10: // rule Source\Client\Core\Source\SML\SMLParser.l:116: {basic_string} :
+          case 10: // rule Source\Client\Core\Source\SML\SMLParser.l:132: {basic_string} :
 { AddString(text(), size()); }
             break;
-          case 11: // rule Source\Client\Core\Source\SML\SMLParser.l:117: . :
+          case 11: // rule Source\Client\Core\Source\SML\SMLParser.l:133: . :
 { AddString(text(), size()); }
             break;
         }
@@ -695,8 +695,8 @@ private:
                 case SMLToken::Newline:
                     std::cout << "Token: " << "Newline" << '\n';
                     break;
-                case SMLToken::Key:
-                    std::cout << "Token: " << "Key" << '\n';
+                case SMLToken::KeyLiteral:
+                    std::cout << "Token: " << "KeyLiteral" << '\n';
                     break;
                 case SMLToken::Integer:
                     std::cout << "Token: " << "Integer" << '\n';
@@ -845,8 +845,8 @@ S0:
   if ('0' <= c1 && c1 <= '9') goto S184;
   if (c1 == '.') goto S139;
   if (c1 == ',') goto S166;
+  if (c1 == '\'') goto S169;
   if (c1 == '#') goto S52;
-  if (c1 == '"') goto S169;
   if (c1 == ' ') goto S175;
   if (c1 == '\r') goto S180;
   if (c1 == '\n') goto S57;
@@ -9183,7 +9183,7 @@ S0:
   if (195 <= c1 && c1 <= 204) goto S90;
   if (c1 == 194) goto S85;
   if (c1 == '\\') goto S37;
-  if (c1 == '"') goto S34;
+  if (c1 == '\'') goto S34;
   if (' ' <= c1 && c1 <= '~') goto S51;
   if ('\v' <= c1) goto S48;
   if ('\n' <= c1) return m.FSM_HALT(c1);
@@ -9208,7 +9208,7 @@ S37:
   if (c1 == 'e') goto S372;
   if (c1 == '\\') goto S376;
   if (c1 == '0') goto S362;
-  if (c1 == '"') goto S374;
+  if (c1 == '\'') goto S374;
   return m.FSM_HALT(c1);
 
 S48:
@@ -9249,8 +9249,8 @@ S51:
   if (c1 == 194) goto S411;
   if (128 <= c1 && c1 <= 191) goto S48;
   if (']' <= c1 && c1 <= '~') goto S378;
-  if ('#' <= c1 && c1 <= '[') goto S378;
-  if (' ' <= c1 && c1 <= '!') goto S378;
+  if ('(' <= c1 && c1 <= '[') goto S378;
+  if (' ' <= c1 && c1 <= '&') goto S378;
   if (c1 == '\t') goto S378;
   return m.FSM_HALT(c1);
 
@@ -9675,8 +9675,8 @@ S378:
   if (195 <= c1 && c1 <= 204) goto S414;
   if (c1 == 194) goto S411;
   if (']' <= c1 && c1 <= '~') goto S378;
-  if ('#' <= c1 && c1 <= '[') goto S378;
-  if (' ' <= c1 && c1 <= '!') goto S378;
+  if ('(' <= c1 && c1 <= '[') goto S378;
+  if (' ' <= c1 && c1 <= '&') goto S378;
   if (c1 == '\t') goto S378;
   return m.FSM_HALT(c1);
 

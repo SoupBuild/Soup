@@ -25,7 +25,7 @@ public class SMLTableValue : IEquatable<SMLTableValue>
 		KeyContent = keyContent;
 		Colon = colon;
 		Value = value;
-		Delimiter = new List<SMLToken>();
+		Delimiter = [];
 	}
 
 	public SMLTableValue(

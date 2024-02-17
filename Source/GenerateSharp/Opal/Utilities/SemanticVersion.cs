@@ -123,28 +123,38 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 
 	public static bool IsUpCompatible(SemanticVersion requested, SemanticVersion target)
 	{
-		// The target version must be fully qualified
-		if (!target.Minor.HasValue)
-			throw new ArgumentException("Target must have minor version");
-		if (!target.Patch.HasValue)
-			throw new ArgumentException("Target must have patch version");
-
 		if (requested.Major == target.Major)
 		{
-			if (!requested.Minor.HasValue || target.Minor > requested.Minor)
+			if (target.Minor.HasValue)
 			{
-				// If the Minor version is acceptable increase then allow it
-				return true;
-			}
-			else if (requested.Minor == target.Minor)
-			{
-				// Check that the patch is not backtracking
-				return !requested.Patch.HasValue || target.Patch >= requested.Patch;
+				if (!requested.Minor.HasValue || target.Minor > requested.Minor)
+				{
+					// If the Minor version is acceptable increase then allow it
+					return true;
+				}
+				else if (requested.Minor == target.Minor)
+				{
+					if (target.Patch.HasValue)
+					{
+						// Check that the patch is acceptable increase or equal
+						return !requested.Patch.HasValue || target.Patch >= requested.Patch;
+					}
+					else
+					{
+						// Allowed if neither has patch version
+						return !requested.Patch.HasValue;
+					}
+				}
+				else
+				{
+					// Minor version drops not allowed
+					return false;
+				}
 			}
 			else
 			{
-				// Minor version drops not allowed
-				return false;
+				// Allowed if neither has minor version
+				return !requested.Minor.HasValue;
 			}
 		}
 		else

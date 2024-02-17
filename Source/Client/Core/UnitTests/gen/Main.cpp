@@ -46,6 +46,8 @@ using namespace Soup::Test;
 
 #include "Package/PackageManagerTests.gen.h"
 
+#include "Recipe/PackageIdentifierTests.gen.h"
+#include "Recipe/PackageNameTests.gen.h"
 #include "Recipe/PackageReferenceTests.gen.h"
 #include "Recipe/RecipeExtensionsTests.gen.h"
 #include "Recipe/RecipeTests.gen.h"
@@ -84,6 +86,8 @@ int main()
 
 	state += RunPackageManagerTests();
 
+	state += RunPackageIdentifierTests();
+	state += RunPackageNameTests();
 	state += RunPackageReferenceTests();
 	state += RunRecipeExtensionsTests();
 	state += RunRecipeTests();

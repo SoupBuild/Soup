@@ -1,14 +1,14 @@
-Name: "printvaluetable"
-Language: "C++|0.1"
-Version: "1.0.0"
-Type: "Executable"
+Name: 'printvaluetable'
+Language: 'C++|0'
+Version: '1.0.0'
+Type: 'Executable'
 Source: [
-	"Main.cpp"
+	'Main.cpp'
 ]
 
 Dependencies: {
 	Runtime: [
-		"Opal@0.5.0"
-		"../../Client/Core/"
+		'mwasplund|Opal@0'
+		'../../Client/Core/'
 	]
 }

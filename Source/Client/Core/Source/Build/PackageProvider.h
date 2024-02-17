@@ -72,14 +72,14 @@ namespace Soup::Core
 	public:
 		PackageInfo(
 			PackageId id,
-			std::string name,
+			PackageName name,
 			bool isPrebuilt,
 			Path packageRoot,
 			Path targetDirectory,
 			const Recipe* recipe,
 			PackageChildrenMap dependencies) :
 			Id(id),
-			Name(name),
+			Name(std::move(name)),
 			IsPrebuilt(isPrebuilt),
 			PackageRoot(std::move(packageRoot)),
 			TargetDirectory(std::move(targetDirectory)),
@@ -89,7 +89,7 @@ namespace Soup::Core
 		}
 
 		PackageId Id;
-		std::string Name;
+		PackageName Name;
 		bool IsPrebuilt;
 		Path PackageRoot;
 		Path TargetDirectory;

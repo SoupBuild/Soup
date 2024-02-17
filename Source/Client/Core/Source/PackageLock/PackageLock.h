@@ -5,6 +5,7 @@
 #pragma once
 #include "Recipe/RecipeValue.h"
 #include "Recipe/PackageReference.h"
+#include "Recipe/PackageName.h"
 
 #ifdef SOUP_BUILD
 export
@@ -32,13 +33,12 @@ namespace Soup::Core
 	/// <summary>
 	/// The package lock container
 	/// </summary>
-	using PackageClosure = std::map<std::string, std::map<std::string, PackageClosureValue>>;
+	using PackageClosure = std::map<std::string, std::map<PackageName, PackageClosureValue>>;
 	using PackageClosures = std::map<std::string, PackageClosure>;
 	class PackageLock
 	{
 	private:
 		static constexpr const char* Property_Closures = "Closures";
-		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_Version = "Version";
 		static constexpr const char* Property_Build = "Build";
 		static constexpr const char* Property_Tool = "Tool";
@@ -97,14 +97,12 @@ namespace Soup::Core
 				auto closureLock = PackageClosure();
 				for (const auto& [languageKey, languageValue] : closureValue.AsTable())
 				{
-					auto languageLock = std::map<std::string, PackageClosureValue>();
-					for (auto& projectValue : languageValue.AsList())
+					auto languageLock = std::map<PackageName, PackageClosureValue>();
+					for (auto& [projectUniqueName, projectValue] : languageValue.AsTable())
 					{
 						auto& projectTable = projectValue.AsTable();
 
-						if (!HasValue(projectTable, Property_Name))
-							throw std::runtime_error("No Name on project table.");
-						auto& name = GetValue(projectTable, Property_Name).AsString();
+						auto projectName = PackageName::Parse(projectUniqueName);
 
 						if (!HasValue(projectTable, Property_Version))
 							throw std::runtime_error("No Version on project table.");
@@ -114,7 +112,7 @@ namespace Soup::Core
 						PackageReference reference;
 						if (SemanticVersion::TryParse(versionValue, version))
 						{
-							reference = PackageReference(std::nullopt, name, version);
+							reference = PackageReference(std::nullopt, projectName.GetOwner(), projectName.GetName(), version);
 						}
 						else
 						{
@@ -131,7 +129,7 @@ namespace Soup::Core
 							toolValue = GetValue(projectTable, Property_Tool).AsString();
 
 						auto lockValue = PackageClosureValue(std::move(reference), std::move(buildValue), std::move(toolValue));
-						languageLock.emplace(name, std::move(lockValue));
+						languageLock.emplace(projectName, std::move(lockValue));
 					}
 
 					closureLock.emplace(languageKey, std::move(languageLock));

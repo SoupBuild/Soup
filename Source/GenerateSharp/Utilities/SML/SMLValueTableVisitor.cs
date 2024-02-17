@@ -100,7 +100,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var colon = BuildToken(context.COLON());
 		var values = (SMLValue)context.value().Accept(this);
 
-		return new SMLTableValue(key, keyContent, colon, values, new List<SMLToken>());
+		return new SMLTableValue(key, keyContent, colon, values, []);
 	}
 
 	public virtual object VisitKeyLiteral(SMLParser.KeyLiteralContext context)
@@ -134,7 +134,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	public virtual object VisitArrayContent(SMLParser.ArrayContentContext context)
 	{
-		var arrayContent = new List<SMLArrayValue>();
+		List<SMLArrayValue> arrayContent = [];
 		var arrayValues = context.value();
 		var delimiters = context.delimiter();
 		for (var i = 0; i < arrayValues.Length; i++)
@@ -175,12 +175,12 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var literal = context.STRING_LITERAL().Symbol.Text;
 		var content = literal[1..^1];
 
-		var openQuoteToken = new SMLToken("\"")
+		var openQuoteToken = new SMLToken("'")
 		{
 			LeadingTrivia = GetLeadingTrivia(context.STRING_LITERAL()),
 		};
 		var contentToken = new SMLToken(content);
-		var closeQuoteToken = new SMLToken("\"");
+		var closeQuoteToken = new SMLToken("'");
 
 		// Cache the last seen token
 		_lastToken = closeQuoteToken;
@@ -246,15 +246,15 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 	public virtual object VisitCommaDelimiter(SMLParser.CommaDelimiterContext context)
 	{
 		return new List<SMLToken>()
-			{
-				BuildToken(context.COMMA()),
-			};
+		{
+			BuildToken(context.COMMA()),
+		};
 	}
 
 	private SMLToken BuildToken(ITerminalNode node)
 	{
 		var leadingTrivia = GetLeadingTrivia(node);
-		var trailingTrivia = new List<string>();
+		List<string> trailingTrivia = [];
 		return new SMLToken(
 			leadingTrivia,
 			node.Symbol.Text,

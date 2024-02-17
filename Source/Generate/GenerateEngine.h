@@ -235,6 +235,13 @@ namespace Soup::Core::Generate
 			MacroManager& generateSubGraphMacroManager,
 			const ValueTable& inputTable)
 		{
+			auto hackMacros = std::map<std::string, std::string>({
+				{ "/(TARGET_Soup.Wren)/", "/(TARGET_mwasplund|Soup.Wren)/" },
+				{ "/(TARGET_mkdir)/", "/(TARGET_mwasplund|mkdir)/" },
+				{ "/(TARGET_copy)/", "/(TARGET_mwasplund|copy)/" },
+			});
+			auto hackMacroManager = MacroManager(hackMacros);
+
 			auto sharedDependenciesTable = ValueTable();
 			auto dependencyTableValue = inputTable.find("Dependencies");
 			if (dependencyTableValue != inputTable.end())
@@ -257,6 +264,9 @@ namespace Soup::Core::Generate
 							Log::Error("Failed to load the shared state file: " + sharedStateFile.ToString());
 							throw std::runtime_error("Failed to load shared state file.");
 						}
+
+						// Hack
+						sharedStateTable = ResolveMacros(hackMacroManager, sharedStateTable);
 
 						// Ensure SubGraph macros are unique
 						if (isSubGraphType)

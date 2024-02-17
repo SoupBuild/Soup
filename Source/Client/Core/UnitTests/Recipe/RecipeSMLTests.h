@@ -25,8 +25,8 @@ namespace Soup::Core::UnitTests
 			auto recipeFile = Path("Recipe.sml");
 			auto recipe = std::stringstream(
 				R"(
-					Name: "MyPackage"
-					Language: "C++|1"
+					Name: 'MyPackage'
+					Language: 'C++|1'
 				)");
 			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
@@ -46,8 +46,8 @@ namespace Soup::Core::UnitTests
 			auto recipe = std::stringstream(
 				R"(
 					# This is an awesome project
-					Name: "MyPackage"
-					Language: "C++|1"
+					Name: 'MyPackage'
+					Language: 'C++|1'
 				)");
 			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
@@ -66,9 +66,9 @@ namespace Soup::Core::UnitTests
 			auto recipeFile = Path("Recipe.sml");
 			auto recipe = std::stringstream(
 				R"(
-					Name: "MyPackage"
-					Language: "C++|1"
-					Version: "1.2.3"
+					Name: 'MyPackage'
+					Language: 'C++|1'
+					Version: '1.2.3'
 					Dependencies: {
 						Runtime: []
 						Build: []
@@ -110,8 +110,8 @@ namespace Soup::Core::UnitTests
 			RecipeSML::Serialize(recipe.GetTable(), actual);
 
 			auto expected = 
-R"(Name: "MyPackage"
-Language: "C++|1"
+R"(Name: 'MyPackage'
+Language: 'C++|1'
 )";
 
 			Assert::AreEqual(expected, actual.str(), "Verify matches expected.");
@@ -141,9 +141,9 @@ Language: "C++|1"
 			RecipeSML::Serialize(recipe.GetTable(), actual);
 
 			auto expected = 
-R"(Name: "MyPackage"
-Language: "C++|1"
-Version: "1.2.3"
+R"(Name: 'MyPackage'
+Language: 'C++|1'
+Version: '1.2.3'
 Dependencies: {Build: []
 Runtime: []
 Test: []

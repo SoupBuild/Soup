@@ -288,7 +288,7 @@ namespace Soup::Core
 				break;
 			case SMLValueType::String:
 				// TODO: Escape characters
-				stream << "\"" << value.AsString() << "\"";
+				stream << "'" << value.AsString() << "'";
 				break;
 			case SMLValueType::Array:
 				stream <<  value.AsArray();

@@ -23,17 +23,17 @@ public static partial class SMLExtensions
 		// Create a new item and matching syntax
 		var newValue = new SMLArrayValue(new SMLValue(new SMLStringValue(
 			value,
-			new SMLToken("\"")
+			new SMLToken("'")
 			{
 				// Array items must have newline
-				LeadingTrivia = new List<string>()
-				{
-						indent,
-				},
+				LeadingTrivia =
+				[
+					indent,
+				],
 			},
 			new SMLToken(value),
-			new SMLToken("\""))),
-			new List<SMLToken>());
+			new SMLToken("'"))),
+			[]);
 
 		// Update the previous last item to have a comma delimiter
 		if (array.Values.Count > 0)
@@ -123,7 +123,7 @@ public static partial class SMLExtensions
 
 		var newItem = new SMLArrayValue(
 			new SMLValue(newTable),
-			new List<SMLToken>());
+			[]);
 
 		// Update the previous last item to have a comma delimiter
 		if (array.Values.Count > 0)
@@ -145,31 +145,29 @@ public static partial class SMLExtensions
 		var newTable = new SMLTable(
 			new SMLToken("{")
 			{
-				LeadingTrivia = new List<string>()
-				{
-						indent,
-				},
+				LeadingTrivia =
+				[
+					indent,
+				],
 			},
-			new List<SMLToken>()
-			{
-					NewlineToken
-			},
+			[
+				NewlineToken
+			],
 			[],
-			new List<SMLToken>()
-			{
+			[
 					NewlineToken
-			},
+			],
 			new SMLToken("}")
 			{
 				// Arrays items should always force closing on newline
-				LeadingTrivia = new List<string>()
-				{
-						indent,
-				},
+				LeadingTrivia =
+				[
+					indent,
+				],
 			});
 		var newItem = new SMLArrayValue(
 			new SMLValue(newTable),
-			new List<SMLToken>());
+			[]);
 
 		// Update the previous last item to have a comma delimiter
 		if (array.Values.Count > 0)
@@ -198,9 +196,9 @@ public static partial class SMLExtensions
 		// Create a new item and matching syntax
 		var newValue = new SMLValue(new SMLStringValue(
 			value,
-			new SMLToken("\""),
+			new SMLToken("'"),
 			new SMLToken(value),
-			new SMLToken("\"")));
+			new SMLToken("'")));
 
 		// Update the previous last item to have a comma delimiter
 		if (document.Values.Count > 0)
@@ -242,17 +240,17 @@ public static partial class SMLExtensions
 		var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
 
 		// If this is the first item then place it on a newline
-		var leadingTrivia = new List<string>()
-			{
-				indent,
-			};
+		List<string> leadingTrivia =
+		[
+			indent,
+		];
 
 		// Create a new item and matching syntax
 		var newValue = new SMLValue(new SMLStringValue(
 			value,
-			new SMLToken("\""),
+			new SMLToken("'"),
 			new SMLToken(value),
-			new SMLToken("\"")));
+			new SMLToken("'")));
 
 		// Tables items should be on newline
 		var keyToken = new SMLToken(EnsureSafeKey(key))
@@ -276,17 +274,17 @@ public static partial class SMLExtensions
 		// Create a new item and matching syntax
 		var newValue = new SMLValue(new SMLStringValue(
 			value,
-			new SMLToken("\""),
+			new SMLToken("'"),
 			new SMLToken(value),
-			new SMLToken("\"")));
+			new SMLToken("'")));
 
 		// Tables items should be on newline
 		var keyToken = new SMLToken(EnsureSafeKey(key))
 		{
-			LeadingTrivia = new List<string>()
-				{
-					" ",
-				},
+			LeadingTrivia =
+			[
+				" ",
+			],
 		};
 
 		// Update the previous last item to have a comma delimiter
@@ -313,10 +311,10 @@ public static partial class SMLExtensions
 			key.Text,
 			new SMLToken(":")
 			{
-				TrailingTrivia = new List<string>() { " " },
+				TrailingTrivia = [" "],
 			},
 			value,
-			new List<SMLToken>());
+			[]);
 	}
 
 	private static SMLTableValue CreateTableValue(SMLToken key, SMLValue value)
@@ -326,10 +324,10 @@ public static partial class SMLExtensions
 			key.Text,
 			new SMLToken(":")
 			{
-				TrailingTrivia = new List<string>() { " " },
+				TrailingTrivia = [" "],
 			},
 			value,
-			new List<SMLToken>());
+			[]);
 	}
 
 	public static SMLTable AddTableWithSyntax(
@@ -342,30 +340,28 @@ public static partial class SMLExtensions
 		// Create a new table
 		var newTable = new SMLTable(
 			new SMLToken("{"),
-			new List<SMLToken>()
-			{
-					NewlineToken,
-			},
+			[
+				NewlineToken,
+			],
 			[],
-			new List<SMLToken>()
-			{
-					NewlineToken,
-			},
+			[
+				NewlineToken,
+			],
 			new SMLToken("}")
 			{
 				// Offset the closing brace
-				LeadingTrivia = new List<string>()
-				{
-						indent,
-				},
+				LeadingTrivia =
+				[
+					indent,
+				],
 			});
 
 		var keyToken = new SMLToken(EnsureSafeKey(name))
 		{
-			LeadingTrivia = new List<string>()
-				{
-					indent,
-				},
+			LeadingTrivia =
+			[
+				indent,
+			],
 		};
 
 		// Update the previous last item to have a comma delimiter
@@ -392,10 +388,10 @@ public static partial class SMLExtensions
 			new SMLToken("}")
 			{
 				// Space out the inline table
-				LeadingTrivia = new List<string>()
-				{
-						" ",
-				},
+				LeadingTrivia =
+				[
+					" ",
+				],
 			});
 		return newTable;
 	}
@@ -410,12 +406,12 @@ public static partial class SMLExtensions
 		// Create a new table
 		var newTable = CreateInlineTable([]);
 
-		var keyToken = new SMLToken(name)
+		var keyToken = new SMLToken(EnsureSafeKey(name))
 		{
-			LeadingTrivia = new List<string>()
-				{
-					indent,
-				},
+			LeadingTrivia =
+			[
+				indent,
+			],
 		};
 
 		// Update the previous last item to have a comma delimiter
@@ -440,29 +436,27 @@ public static partial class SMLExtensions
 
 		var newArray = new SMLArray(
 			new SMLToken("["),
-			new List<SMLToken>()
-			{
-					NewlineToken,
-			},
-			new List<SMLArrayValue>(),
-			new List<SMLToken>()
-			{
-					NewlineToken,
-			},
+			[
+				NewlineToken,
+			],
+			[],
+			[
+				NewlineToken,
+			],
 			new SMLToken("]")
 			{
-				LeadingTrivia = new List<string>()
-				{
-						indent,
-				},
+				LeadingTrivia =
+				[
+					indent,
+				],
 			});
 
 		var keyToken = new SMLToken(EnsureSafeKey(name))
 		{
-			LeadingTrivia = new List<string>()
-				{
-					indent,
-				},
+			LeadingTrivia =
+			[
+				indent,
+			],
 		};
 
 		// Update the previous last item to have a comma delimiter
@@ -485,7 +479,7 @@ public static partial class SMLExtensions
 		// If the key contains unsafe characters, wrap in string key
 		var keyTokenText = name;
 		if (!SafeKeyRegex().IsMatch(keyTokenText))
-			keyTokenText = $"\"{keyTokenText}\"";
+			keyTokenText = $"'{keyTokenText}'";
 
 		return keyTokenText;
 	}

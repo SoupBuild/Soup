@@ -1,12 +1,12 @@
-Name: "mkdir"
-Language: "C++|0.1"
-Version: "1.0.0"
-Type: "Executable"
+Name: 'mkdir'
+Language: 'C++|0'
+Version: '1.1.0'
+Type: 'Executable'
 Source: [
-	"Main.cpp"
+	'Main.cpp'
 ]
 Dependencies: {
 	Runtime: [
-		"Opal@0.5"
+		'mwasplund|Opal@0'
 	]
 }

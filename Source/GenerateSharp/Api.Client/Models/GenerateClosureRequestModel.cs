@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -28,7 +27,7 @@ public class GenerateClosureRequestModel
 	[JsonPropertyName("localPackages")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public ICollection<PackageLocalReferenceModel> LocalPackages { get; init; } = new Collection<PackageLocalReferenceModel>();
+	public ICollection<PackageLocalReferenceModel> LocalPackages { get; init; } = [];
 
 	/// <summary>
 	/// Gets or sets the collection of known public packages that will be resolved.
@@ -38,7 +37,7 @@ public class GenerateClosureRequestModel
 
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public ICollection<PackagePublicReferenceModel> PublicPackages { get; init; } = new Collection<PackagePublicReferenceModel>();
+	public ICollection<PackagePublicReferenceModel> PublicPackages { get; init; } = [];
 
 	/// <summary>
 	/// Gets or sets the collection of preferred versions for public packages.
@@ -46,5 +45,5 @@ public class GenerateClosureRequestModel
 	[JsonPropertyName("preferredVersions")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public ICollection<PackagePublicExactReferenceModel> PreferredVersions { get; init; } = new Collection<PackagePublicExactReferenceModel>();
+	public ICollection<PackagePublicExactReferenceModel> PreferredVersions { get; init; } = [];
 }

@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -34,5 +33,5 @@ public class SearchPackagesModel
 	[JsonPropertyName("packages")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public ICollection<PackageSummaryModel> Packages { get; init; } = new Collection<PackageSummaryModel>();
+	public ICollection<PackageSummaryModel> Packages { get; init; } = [];
 }
