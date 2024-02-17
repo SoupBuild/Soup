@@ -46,15 +46,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 1,
 					Build = "Build0",
 					Tool = "Tool0",
 				}
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -152,10 +152,10 @@ public class ClosureManagerUnitTests
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -163,7 +163,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 		mockMessageHandler.Verify(messageHandler =>
@@ -326,9 +326,9 @@ public class ClosureManagerUnitTests
 						},
 					},
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages =
+			[
 				new Api.Client.PackagePublicReferenceModel()
 				{
 					Id = 1,
@@ -345,9 +345,9 @@ public class ClosureManagerUnitTests
 					Name = "Package2",
 					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 				},
-			},
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -355,7 +355,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 		mockMessageHandler.Verify(messageHandler =>
@@ -407,8 +407,8 @@ public class ClosureManagerUnitTests
 		var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 3,
@@ -439,7 +439,7 @@ public class ClosureManagerUnitTests
 					Build = "Build0",
 					Tool = "Tool0",
 				},
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -592,9 +592,9 @@ public class ClosureManagerUnitTests
 					},
 				}
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages =
+			[
 				new Api.Client.PackagePublicReferenceModel()
 				{
 					Id = 1,
@@ -611,9 +611,9 @@ public class ClosureManagerUnitTests
 					Name = "Package2",
 					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 				},
-			},
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -621,7 +621,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 		mockMessageHandler.Verify(messageHandler =>
@@ -733,15 +733,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 2,
 					Build = "Build0",
 					Tool = "Tool0",
 				},
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -782,15 +782,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 1,
 					Build = "Build0",
 					Tool = "Tool0",
 				},
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -1007,9 +1007,9 @@ public class ClosureManagerUnitTests
 						},
 					}
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages =
+			[
 				new Api.Client.PackagePublicReferenceModel()
 				{
 					Id = 1,
@@ -1018,9 +1018,9 @@ public class ClosureManagerUnitTests
 					Name = "Package1",
 					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
-			},
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -1028,7 +1028,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1051,10 +1051,10 @@ public class ClosureManagerUnitTests
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -1062,7 +1062,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1240,15 +1240,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 2,
 					Build = "Build0",
 					Tool = "Tool0",
 				},
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -1289,15 +1289,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 1,
 					Build = "Build0",
 					Tool = "Tool0",
 				},
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -1328,15 +1328,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult3 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 2,
 					Build = "Build0",
 					Tool = "Tool0",
 				},
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -1379,15 +1379,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult4 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 1,
 					Build = "Build0",
 					Tool = "Tool0",
 				},
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -1670,9 +1670,9 @@ public class ClosureManagerUnitTests
 						},
 					}
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages =
+			[
 				new Api.Client.PackagePublicReferenceModel()
 				{
 					Id = 1,
@@ -1681,9 +1681,9 @@ public class ClosureManagerUnitTests
 					Name = "Package1",
 					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 				},
-			},
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -1691,7 +1691,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1714,10 +1714,10 @@ public class ClosureManagerUnitTests
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -1725,7 +1725,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1757,9 +1757,9 @@ public class ClosureManagerUnitTests
 					},
 				}
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages =
+			[
 				new Api.Client.PackagePublicReferenceModel()
 				{
 					Id = 1,
@@ -1768,9 +1768,9 @@ public class ClosureManagerUnitTests
 					Name = "Package2",
 					Version = new Api.Client.SemanticVersionModel() { Major = 2, Minor = 3, Patch = 4, },
 				},
-			},
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -1778,7 +1778,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1801,10 +1801,10 @@ public class ClosureManagerUnitTests
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -1812,7 +1812,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest4Value = JsonSerializer.Serialize(expectedGenerateRequest4);
 		mockMessageHandler.Verify(messageHandler =>
@@ -1998,15 +1998,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 2,
 					Build = "Build0",
 					Tool = "Tool0",
 				}
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -2041,15 +2041,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 1,
 					Build = "Build0",
 					Tool = "Tool0",
 				}
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -2197,8 +2197,8 @@ public class ClosureManagerUnitTests
 						},
 					}
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
-			{
+			LocalPackages =
+			[
 				new Api.Client.PackageLocalReferenceModel()
 				{
 					Id = 1,
@@ -2209,10 +2209,10 @@ public class ClosureManagerUnitTests
 					},
 					Dependencies = new Dictionary<string, ICollection<int>>(),
 				},
-			},
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -2220,7 +2220,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2243,10 +2243,10 @@ public class ClosureManagerUnitTests
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -2254,7 +2254,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2387,15 +2387,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult1 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 3,
 					Build = "Build0",
 					Tool = "Tool0",
 				}
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -2427,15 +2427,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult2 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 2,
 					Build = "Build0",
 					Tool = "Tool0",
 				}
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -2455,15 +2455,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult3 = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 1,
 					Build = "Build0",
 					Tool = "Tool0",
 				}
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -2621,8 +2621,8 @@ public class ClosureManagerUnitTests
 					},
 				},
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
-			{
+			LocalPackages =
+			[
 				new Api.Client.PackageLocalReferenceModel()
 				{
 					Id = 1,
@@ -2652,10 +2652,10 @@ public class ClosureManagerUnitTests
 						},
 					},
 				},
-			},
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -2663,7 +2663,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2695,8 +2695,8 @@ public class ClosureManagerUnitTests
 					}
 				},
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>()
-			{
+			LocalPackages =
+			[
 				new Api.Client.PackageLocalReferenceModel()
 				{
 					Id = 1,
@@ -2707,10 +2707,10 @@ public class ClosureManagerUnitTests
 					},
 					Dependencies = new Dictionary<string, ICollection<int>>(),
 				},
-			},
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -2718,7 +2718,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2741,10 +2741,10 @@ public class ClosureManagerUnitTests
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -2752,7 +2752,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
 		mockMessageHandler.Verify(messageHandler =>
@@ -2925,15 +2925,15 @@ public class ClosureManagerUnitTests
 		var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 		{
 			Result = Api.Client.GenerateClosureResult.Success,
-			RuntimeClosure = new List<Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel>()
-			{
+			RuntimeClosure =
+			[
 				new Api.Client.PackageLocalOrPublicExactReferenceWithSubGraphsModel()
 				{
 					LocalId = 1,
 					Build = "Build0",
 					Tool = "Tool0",
 				},
-			},
+			],
 			BuildClosures = new Dictionary<string, ICollection<Api.Client.PackageLocalOrPublicExactReferenceModel>>()
 			{
 				{
@@ -3086,10 +3086,10 @@ public class ClosureManagerUnitTests
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
-			LocalPackages = new List<Api.Client.PackageLocalReferenceModel>(),
-			PublicPackages = new List<Api.Client.PackagePublicReferenceModel>(),
-			PreferredVersions = new List<Api.Client.PackagePublicExactReferenceModel>()
-			{
+			LocalPackages = [],
+			PublicPackages = [],
+			PreferredVersions =
+			[
 				new Api.Client.PackagePublicExactReferenceModel()
 				{
 					Language = "Wren",
@@ -3097,7 +3097,7 @@ public class ClosureManagerUnitTests
 					Name = "Soup.Wren",
 					Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 				},
-			},
+			],
 		};
 		var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 		mockMessageHandler.Verify(messageHandler =>
@@ -3146,10 +3146,10 @@ public class ClosureManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/PackageStore/Wren/User1/Package1/1.2.4/"),
-			new List<DirectoryEntry>());
+			[]);
 		mockFileSystem.RegisterChildren(
 			new Path("C:/PackageStore/Wren/User1/Package2/3.2.1/"),
-			new List<DirectoryEntry>());
+			[]);
 
 		// Create the original file
 		var original =

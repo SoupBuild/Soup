@@ -47,10 +47,9 @@ public class RecipeUnitTests
 
 		Assert.True(uut.HasRuntimeDependencies);
 		Assert.Equal(
-			new List<PackageReference>()
-			{
+			[
 				new PackageReference(null, "Owner", "SomeDependency", null),
-			},
+			],
 			uut.RuntimeDependencies);
 	}
 }
