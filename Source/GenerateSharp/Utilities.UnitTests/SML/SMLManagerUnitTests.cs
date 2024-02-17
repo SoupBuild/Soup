@@ -201,12 +201,12 @@ public class SMLManagerUnitTests
 										new SMLToken("Test"),
 										"Test",
 										new SMLToken(":"),
-										new SMLValue(new SMLArray(new List<SMLArrayValue>()
-										{
+										new SMLValue(new SMLArray(
+										[
 											new SMLArrayValue(new SMLValue(new SMLIntegerValue(123))),
 											new SMLArrayValue(new SMLValue(new SMLBooleanValue(false))),
 											new SMLArrayValue(new SMLValue(new SMLStringValue("string"))),
-										})))
+										])))
 								},
 							})))
 					},
