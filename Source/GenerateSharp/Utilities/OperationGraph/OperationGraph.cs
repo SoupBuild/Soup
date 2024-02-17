@@ -21,8 +21,8 @@ public class OperationGraph
 	/// </summary>
 	public OperationGraph()
 	{
-		ReferencedFiles = new List<(FileId FileId, Path Path)>();
-		RootOperationIds = new List<OperationId>();
+		ReferencedFiles = [];
+		RootOperationIds = [];
 		_operations = [];
 		_operationLookup = [];
 	}

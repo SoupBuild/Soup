@@ -324,7 +324,7 @@ public partial class SMLParser : Parser {
 		{
 		}
 		public override int RuleIndex { get { return RULE_key; } }
-	 
+
 		public KeyContext() { }
 		public virtual void CopyFrom(KeyContext context) {
 			base.CopyFrom(context);
@@ -527,7 +527,7 @@ public partial class SMLParser : Parser {
 		{
 		}
 		public override int RuleIndex { get { return RULE_value; } }
-	 
+
 		public ValueContext() { }
 		public virtual void CopyFrom(ValueContext context) {
 			base.CopyFrom(context);
@@ -675,7 +675,7 @@ public partial class SMLParser : Parser {
 		{
 		}
 		public override int RuleIndex { get { return RULE_delimiter; } }
-	 
+
 		public DelimiterContext() { }
 		public virtual void CopyFrom(DelimiterContext context) {
 			base.CopyFrom(context);

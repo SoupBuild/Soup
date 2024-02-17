@@ -25,39 +25,39 @@ namespace Soup::Core
 			{
 				{
 					"C",
-					KnownLanguage("C", "Soup.C")
+					KnownLanguage("C", "mwasplund", "Soup.C")
 				},
 				{
 					"C++",
-					KnownLanguage("Cpp", "Soup.Cpp")
+					KnownLanguage("Cpp", "mwasplund", "Soup.Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "Soup.CSharp")
+					KnownLanguage("CSharp", "mwasplund", "Soup.CSharp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "Soup.Wren")
+					KnownLanguage("Wren", "mwasplund", "Soup.Wren")
 				},
 			});
 
 			return result;
 		}
 
-		static std::map<std::string, std::map<std::string, SemanticVersion>> GetBuiltInPackages()
+		static std::map<std::string, std::map<PackageName, SemanticVersion>> GetBuiltInPackages()
 		{
-			auto result = std::map<std::string, std::map<std::string, SemanticVersion>>(
+			auto result = std::map<std::string, std::map<PackageName, SemanticVersion>>(
 			{
 				{
 					"C++",
 					{
 						{
-							"copy",
-							SemanticVersion(1, 0, 0)
+							PackageName("mwasplund", "copy"),
+							SemanticVersion(1, 1, 0)
 						},
 						{
-							"mkdir",
-							SemanticVersion(1, 0, 0)
+							PackageName("mwasplund", "mkdir"),
+							SemanticVersion(1, 1, 0)
 						},
 					}
 				},
@@ -65,16 +65,8 @@ namespace Soup::Core
 					"Wren",
 					{
 						{
-							"Soup.Cpp",
-							SemanticVersion(0, 8, 2)
-						},
-						{
-							"Soup.CSharp",
-							SemanticVersion(0, 9, 0)
-						},
-						{
-							"Soup.Wren",
-							SemanticVersion(0, 2, 0)
+							PackageName("mwasplund", "Soup.Wren"),
+							SemanticVersion(0, 4, 1)
 						},
 					}
 				},

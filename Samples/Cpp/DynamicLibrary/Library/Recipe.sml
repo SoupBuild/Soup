@@ -1,21 +1,21 @@
-Name: "Samples.Cpp.DynamicLibrary.Library"
-Language: "C++|0.1"
-Version: "1.0.0"
-Type: "DynamicLibrary"
+Name: 'Samples.Cpp.DynamicLibrary.Library'
+Language: 'C++|0'
+Version: '1.0.0'
+Type: 'DynamicLibrary'
 Defines: [
-    "EXPORT_LIBRARY"
+	'EXPORT_LIBRARY'
 ]
 Source: [
-    "Library.cpp"
+	'Library.cpp'
 ]
 IncludePaths: [
-    "public/"
+	'public/'
 ]
 PublicHeaders: [
-    {
-        Root: "public/"
-        Files: [
-            "Library.h"
-        ]
-    }
+	{
+		Root: 'public/'
+		Files: [
+			'Library.h'
+		]
+	}
 ]

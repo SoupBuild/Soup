@@ -35,6 +35,7 @@ namespace Soup::Core
 		}
 
 		Path GetOutputDirectory(
+			const PackageName& name,
 			const Path& packageRoot,
 			const Recipe& recipe,
 			const ValueTable& globalParameters,
@@ -67,8 +68,19 @@ namespace Soup::Core
 					auto languageSafeName = GetLanguageSafeName(language);
 					rootOutput = rootOutput + Path(languageSafeName + "/");
 
+					if (name.HasOwner())
+					{
+						// Add the unique owner
+						rootOutput = rootOutput + Path(name.GetOwner() + "/");
+					}
+					else
+					{
+						// Label as local
+						rootOutput = rootOutput + Path("Local/");
+					}
+
 					// Add the unique recipe name/version
-					rootOutput = rootOutput + Path(recipe.GetName() + "/") + Path(recipe.GetVersion().ToString() + "/");
+					rootOutput = rootOutput + Path(name.GetName() + "/") + Path(recipe.GetVersion().ToString() + "/");
 
 					// Ensure there is a root relative to the file itself
 					if (!rootOutput.HasRoot())

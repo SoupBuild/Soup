@@ -8,6 +8,7 @@ using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -18,17 +19,16 @@ namespace Soup.Build.PackageManager;
 /// </summary>
 public class ClosureManager : IClosureManager
 {
-	private const int PackageLockVersion = 4;
+	private const int PackageLockVersion = 5;
 	private const string RootClosureName = "Root";
 	private const string BuiltInLanguageCSharp = "C#";
 	private const string BuiltInLanguageCpp = "C++";
 	private const string BuiltInLanguageWren = "Wren";
-	private const string BuiltInLanguagePackageCSharp = "Soup.CSharp";
-	private const string BuiltInLanguagePackageCpp = "Soup.Cpp";
 	private const string BuiltInLanguagePackageWren = "Soup.Wren";
 	private const string BuiltInLanguageSafeNameCSharp = "CSharp";
 	private const string BuiltInLanguageSafeNameCpp = "Cpp";
 	private const string BuiltInLanguageSafeNameWren = "Wren";
+	private const string BuiltInOwner = "mwasplund";
 	private const string DependencyTypeBuild = "Build";
 	private const string DependencyTypeTool = "Tool";
 
@@ -36,21 +36,15 @@ public class ClosureManager : IClosureManager
 
 	private readonly HttpClient _httpClient;
 
-	private readonly SemanticVersion _builtInLanguageVersionCSharp;
-	private readonly SemanticVersion _builtInLanguageVersionCpp;
 	private readonly SemanticVersion _builtInLanguageVersionWren;
 
 	public ClosureManager(
 		Uri apiEndpoint,
 		HttpClient httpClient,
-		SemanticVersion builtInLanguageVersionCSharp,
-		SemanticVersion builtInLanguageVersionCpp,
 		SemanticVersion builtInLanguageVersionWren)
 	{
 		_apiEndpoint = apiEndpoint;
 		_httpClient = httpClient;
-		_builtInLanguageVersionCSharp = builtInLanguageVersionCSharp;
-		_builtInLanguageVersionCpp = builtInLanguageVersionCpp;
 		_builtInLanguageVersionWren = builtInLanguageVersionWren;
 	}
 
@@ -71,6 +65,7 @@ public class ClosureManager : IClosureManager
 		var processedLocks = new HashSet<Path>();
 		await CheckGenerateAndRestoreRecursiveLocksAsync(
 			workingDirectory,
+			null,
 			packageLockPath,
 			packageStoreDirectory,
 			packageLockStoreDirectory,
@@ -80,6 +75,7 @@ public class ClosureManager : IClosureManager
 
 	private async Task CheckGenerateAndRestoreRecursiveLocksAsync(
 		Path workingDirectory,
+		string? owner,
 		Path packageLockPath,
 		Path packageStoreDirectory,
 		Path packageLockStoreDirectory,
@@ -94,6 +90,7 @@ public class ClosureManager : IClosureManager
 		{
 			var packageLock = await EnsurePackageLockAsync(
 				workingDirectory,
+				owner,
 				packageLockPath);
 			await RestorePackageLockAsync(
 				packageStoreDirectory,
@@ -125,26 +122,27 @@ public class ClosureManager : IClosureManager
 			{
 				foreach (var (languageName, languageProjects) in closure.Value.Value.AsTable().Values)
 				{
-					foreach (var project in languageProjects.Value.AsArray().Values)
+					foreach (var (projectUniqueName, project) in languageProjects.Value.AsTable().Values)
 					{
 						var projectTable = project.Value.AsTable();
-						var projectName = projectTable.Values[PackageLock.Property_Name].Value.AsString().Value;
+						var projectName = PackageName.Parse(projectUniqueName);
 						var projectVersion = projectTable.Values[PackageLock.Property_Version].Value.AsString().Value;
 						if (SemanticVersion.TryParse(projectVersion, out var version))
 						{
 							// Check if the package version already exists
-							if ((projectName == BuiltInLanguagePackageCpp && version == _builtInLanguageVersionCpp) ||
-								(projectName == BuiltInLanguagePackageCSharp && version == _builtInLanguageVersionCSharp) ||
-								(projectName == BuiltInLanguagePackageWren && version == _builtInLanguageVersionWren))
+							if (projectName.HasOwner && projectName.Owner == BuiltInOwner &&
+								projectName.Name == BuiltInLanguagePackageWren && version == _builtInLanguageVersionWren)
 							{
 								Log.HighPriority("Skip built in language version in build closure");
 							}
 							else
 							{
 								var languageSafeName = GetLanguageSafeName(languageName);
+								var userFolder = projectName.Owner is not null ? new Path(projectName.Owner) : new Path("Local");
 								var packageLanguageNameVersionPath =
 									new Path(languageSafeName) +
-									new Path(projectName) +
+									userFolder +
+									new Path(projectName.Name) +
 									new Path(version.ToString()) +
 									new Path();
 								var packageContentDirectory = packageStoreDirectory + packageLanguageNameVersionPath;
@@ -161,6 +159,7 @@ public class ClosureManager : IClosureManager
 
 								await CheckGenerateAndRestoreRecursiveLocksAsync(
 									packageContentDirectory,
+									projectName.Owner,
 									packageLockPath,
 									packageStoreDirectory,
 									packageLockStoreDirectory,
@@ -179,6 +178,7 @@ public class ClosureManager : IClosureManager
 
 							await CheckGenerateAndRestoreRecursiveLocksAsync(
 								dependencyPath,
+								null,
 								dependencyLockPath,
 								packageStoreDirectory,
 								packageLockStoreDirectory,
@@ -196,6 +196,7 @@ public class ClosureManager : IClosureManager
 	/// </summary>
 	private async Task<PackageLock> EnsurePackageLockAsync(
 		Path workingDirectory,
+		string? owner,
 		Path packageLockPath)
 	{
 		Log.Info($"Ensure Package Lock Exists: {packageLockPath}");
@@ -208,11 +209,12 @@ public class ClosureManager : IClosureManager
 		else
 		{
 			Log.Info("Discovering full closure");
-			var localPackageReverseLookup = new Dictionary<int, (string Language, string Name, Path Path)>();
+			var localPackageReverseLookup = new Dictionary<int, (string Language, string? Owner, string Name, Path Path)>();
 			var localPackageLookup = new Dictionary<Path, Api.Client.PackageLocalReferenceModel>();
 			var publicPackages = new List<Api.Client.PackagePublicReferenceModel>();
 			var rootPackageId = await EnsureDiscoverDependenciesAsync(
 				workingDirectory,
+				owner,
 				localPackageReverseLookup,
 				localPackageLookup,
 				publicPackages);
@@ -240,11 +242,11 @@ public class ClosureManager : IClosureManager
 	}
 
 	private async Task<(
-		IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure, string ToolClosure)>> RuntimeClosure,
-		IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> BuildClosures,
-		IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> ToolClosures)> GenerateServiceClosureAsync(
+		IDictionary<string, IDictionary<PackageName, (PackageReference Package, string BuildClosure, string ToolClosure)>> RuntimeClosure,
+		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> BuildClosures,
+		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> ToolClosures)> GenerateServiceClosureAsync(
 		int rootPackageId,
-		IDictionary<int, (string Language, string Name, Path Path)> localPackageReverseLookup,
+		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		IList<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
@@ -264,28 +266,7 @@ public class ClosureManager : IClosureManager
 			new Api.Client.PackagePublicExactReferenceModel()
 			{
 				Language = BuiltInLanguageWren,
-				Name = BuiltInLanguagePackageCSharp,
-				Version = new Api.Client.SemanticVersionExactModel()
-				{
-					Major = _builtInLanguageVersionCSharp.Major,
-					Minor = _builtInLanguageVersionCSharp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-					Patch = _builtInLanguageVersionCSharp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-				},
-			},
-			new Api.Client.PackagePublicExactReferenceModel()
-			{
-				Language = BuiltInLanguageWren,
-				Name = BuiltInLanguagePackageCpp,
-				Version = new Api.Client.SemanticVersionExactModel()
-				{
-					Major = _builtInLanguageVersionCpp.Major,
-					Minor = _builtInLanguageVersionCpp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-					Patch = _builtInLanguageVersionCpp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-				},
-			},
-			new Api.Client.PackagePublicExactReferenceModel()
-			{
-				Language = BuiltInLanguageWren,
+				Owner = BuiltInOwner,
 				Name = BuiltInLanguagePackageWren,
 				Version = new Api.Client.SemanticVersionExactModel()
 				{
@@ -327,27 +308,32 @@ public class ClosureManager : IClosureManager
 		}
 
 		// Convert back to resolved closures
-		var runtimeClosure = new Dictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure, string ToolClosure)>>();
+		var runtimeClosure = new Dictionary<string, IDictionary<PackageName, (PackageReference Package, string BuildClosure, string ToolClosure)>>();
 		foreach (var package in result.RuntimeClosure)
 		{
 			string language;
-			string name;
+			PackageName uniqueName;
 			PackageReference packageReference;
 			if (package.Public is not null)
 			{
 				language = package.Public.Language;
-				name = package.Public.Name;
+				var owner = package.Public.Owner;
+				var name = package.Public.Name;
+
+				// Create unique name from owner/name
+				uniqueName = new PackageName(owner, name);
+
 				var version = new SemanticVersion(
 					package.Public.Version.Major,
 					package.Public.Version.Minor,
 					package.Public.Version.Patch);
-				packageReference = new PackageReference(language, name, version);
+				packageReference = new PackageReference(owner, language, name, version);
 			}
 			else if (package.LocalId is not null)
 			{
 				var localReference = localPackageReverseLookup[package.LocalId.Value];
 				language = localReference.Language;
-				name = localReference.Name;
+				uniqueName = new PackageName(localReference.Owner, localReference.Name);
 				packageReference = new PackageReference(localReference.Path);
 			}
 			else
@@ -356,38 +342,47 @@ public class ClosureManager : IClosureManager
 			}
 
 			if (!runtimeClosure.ContainsKey(language))
-				runtimeClosure.Add(language, new Dictionary<string, (PackageReference Package, string BuildClosure, string ToolClosure)>());
+			{
+				runtimeClosure.Add(
+					language,
+					new Dictionary<PackageName, (PackageReference Package, string BuildClosure, string ToolClosure)>());
+			}
 
-			if (runtimeClosure[language].ContainsKey(name))
-				Log.Warning($"Duplicate reference seen in generate closure response {name}");
+			if (runtimeClosure[language].ContainsKey(uniqueName))
+				Log.Warning($"Duplicate reference seen in generate closure response {uniqueName}");
 			else
-				runtimeClosure[language].Add(name, (packageReference, package.Build, package.Tool));
+				runtimeClosure[language].Add(uniqueName, (packageReference, package.Build, package.Tool));
 		}
 
-		var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
+		var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>>();
 		foreach (var (closureName, closure) in result.BuildClosures)
 		{
-			var buildClosure = new Dictionary<string, IDictionary<string, PackageReference>>();
+			var buildClosure = new Dictionary<string, IDictionary<PackageName, PackageReference>>();
 			foreach (var package in closure)
 			{
 				string language;
-				string name;
+				PackageName uniqueName;
 				PackageReference packageReference;
 				if (package.Public is not null)
 				{
 					language = package.Public.Language;
-					name = package.Public.Name;
+					var owner = package.Public.Owner;
+					var name = package.Public.Name;
+
+					// Create unique name from owner/name
+					uniqueName = new PackageName(owner, name);
+
 					var version = new SemanticVersion(
 						package.Public.Version.Major,
 						package.Public.Version.Minor,
 						package.Public.Version.Patch);
-					packageReference = new PackageReference(language, name, version);
+					packageReference = new PackageReference(language, owner, name, version);
 				}
 				else if (package.LocalId is not null)
 				{
 					var localReference = localPackageReverseLookup[package.LocalId.Value];
 					language = localReference.Language;
-					name = localReference.Name;
+					uniqueName = new PackageName(localReference.Owner, localReference.Name);
 					packageReference = new PackageReference(localReference.Path);
 				}
 				else
@@ -396,38 +391,43 @@ public class ClosureManager : IClosureManager
 				}
 
 				if (!buildClosure.ContainsKey(language))
-					buildClosure.Add(language, new Dictionary<string, PackageReference>());
+					buildClosure.Add(language, new Dictionary<PackageName, PackageReference>());
 
-				buildClosure[language].Add(name, packageReference);
+				buildClosure[language].Add(uniqueName, packageReference);
 			}
 
 			buildClosures.Add(closureName, buildClosure);
 		}
 
-		var toolClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
+		var toolClosures = new Dictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>>();
 		foreach (var (closureName, closure) in result.ToolClosures)
 		{
-			var toolClosure = new Dictionary<string, IDictionary<string, PackageReference>>();
+			var toolClosure = new Dictionary<string, IDictionary<PackageName, PackageReference>>();
 			foreach (var package in closure)
 			{
 				string language;
-				string name;
+				PackageName uniqueName;
 				PackageReference packageReference;
 				if (package.Public is not null)
 				{
 					language = package.Public.Language;
-					name = package.Public.Name;
+					var owner = package.Public.Owner;
+					var name = package.Public.Name;
+
+					// Create unique name from owner/name
+					uniqueName = new PackageName(owner, name);
+
 					var version = new SemanticVersion(
 						package.Public.Version.Major,
 						package.Public.Version.Minor,
 						package.Public.Version.Patch);
-					packageReference = new PackageReference(language, name, version);
+					packageReference = new PackageReference(language, owner, name, version);
 				}
 				else if (package.LocalId is not null)
 				{
 					var localReference = localPackageReverseLookup[package.LocalId.Value];
 					language = localReference.Language;
-					name = localReference.Name;
+					uniqueName = new PackageName(localReference.Owner, localReference.Name);
 					packageReference = new PackageReference(localReference.Path);
 				}
 				else
@@ -436,9 +436,9 @@ public class ClosureManager : IClosureManager
 				}
 
 				if (!toolClosure.ContainsKey(language))
-					toolClosure.Add(language, new Dictionary<string, PackageReference>());
+					toolClosure.Add(language, new Dictionary<PackageName, PackageReference>());
 
-				toolClosure[language].Add(name, packageReference);
+				toolClosure[language].Add(uniqueName, packageReference);
 			}
 
 			toolClosures.Add(closureName, toolClosure);
@@ -449,9 +449,9 @@ public class ClosureManager : IClosureManager
 
 	private static PackageLock BuildPackageLock(
 		Path workingDirectory,
-		IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure, string ToolClosure)>> runtimeClosure,
-		IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures,
-		IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> toolClosures)
+		IDictionary<string, IDictionary<PackageName, (PackageReference Package, string BuildClosure, string ToolClosure)>> runtimeClosure,
+		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> buildClosures,
+		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> toolClosures)
 	{
 		var packageLock = new PackageLock();
 		packageLock.SetVersion(PackageLockVersion);
@@ -460,6 +460,7 @@ public class ClosureManager : IClosureManager
 			foreach (var (packageName, (package, buildClosure, toolClosure)) in languageClosure.OrderBy(value => value.Key))
 			{
 				var value = string.Empty;
+				var ownerName = string.Empty;
 				if (package.IsLocal)
 				{
 					value = package.Path.GetRelativeTo(workingDirectory).ToString();
@@ -469,6 +470,7 @@ public class ClosureManager : IClosureManager
 					if (package.Version == null)
 						throw new InvalidOperationException("Package lock closure must have version");
 					value = package.Version.ToString();
+					ownerName = package.Owner;
 				}
 
 				Log.Diag($"{RootClosureName}:{languageName} {packageName} -> {value}");
@@ -490,6 +492,7 @@ public class ClosureManager : IClosureManager
 				foreach (var (packageName, package) in languageClosure)
 				{
 					var value = string.Empty;
+					var ownerName = string.Empty;
 					if (package.IsLocal)
 					{
 						value = package.Path.GetRelativeTo(workingDirectory).ToString();
@@ -499,6 +502,7 @@ public class ClosureManager : IClosureManager
 						if (package.Version == null)
 							throw new InvalidOperationException("Package lock closure must have version");
 						value = package.Version.ToString();
+						ownerName = package.Owner;
 					}
 
 					Log.Diag($"{buildClosure.Key}:{languageName} {packageName} -> {value}");
@@ -552,7 +556,8 @@ public class ClosureManager : IClosureManager
 	/// </summary>
 	private async Task<int> EnsureDiscoverDependenciesAsync(
 		Path recipeDirectory,
-		IDictionary<int, (string Language, string Name, Path Path)> localPackageReverseLookup,
+		string? owner,
+		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		List<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
@@ -594,7 +599,7 @@ public class ClosureManager : IClosureManager
 				Dependencies = dependencyIds,
 			};
 
-			localPackageReverseLookup.Add(packageReference.Id, (recipe.Language.Name, recipe.Name, recipeDirectory));
+			localPackageReverseLookup.Add(packageReference.Id, (recipe.Language.Name, owner, recipe.Name, recipeDirectory));
 			localPackageLookup.Add(recipeDirectory, packageReference);
 			return packageReference.Id;
 		}
@@ -606,7 +611,7 @@ public class ClosureManager : IClosureManager
 	private async Task<IDictionary<string, ICollection<int>>> DiscoverDependenciesAsync(
 		Path recipeDirectory,
 		Recipe recipe,
-		IDictionary<int, (string Language, string Name, Path Path)> localPackageReverseLookup,
+		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		List<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
@@ -652,7 +657,7 @@ public class ClosureManager : IClosureManager
 		Recipe recipe,
 		string dependencyType,
 		string? implicitLanguage,
-		IDictionary<int, (string Language, string Name, Path Path)> localPackageReverseLookup,
+		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		List<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
@@ -667,8 +672,10 @@ public class ClosureManager : IClosureManager
 				if (!dependencyPath.HasRoot)
 					dependencyPath = recipeDirectory + dependencyPath;
 
+				string? owner = null;
 				var id = await EnsureDiscoverDependenciesAsync(
 					dependencyPath,
+					owner,
 					localPackageReverseLookup,
 					localPackageLookup,
 					publicPackages);
@@ -680,9 +687,11 @@ public class ClosureManager : IClosureManager
 					throw new ArgumentException("Local package version was null");
 
 				var language = (dependency.Language ?? implicitLanguage) ?? throw new ArgumentException("Language required for Tool dependency");
+				var owner = dependency.Owner ?? throw new ArgumentException("Owner required for Tool dependency");
 				var existingMatch = publicPackages
 					.FirstOrDefault(value =>
 						value.Name == dependency.Name &&
+						value.Owner == owner &&
 						value.Version.Major == dependency.Version.Major &&
 						value.Version.Minor == dependency.Version.Minor &&
 						value.Version.Patch == dependency.Version.Patch &&
@@ -697,6 +706,7 @@ public class ClosureManager : IClosureManager
 					{
 						Id = localPackageLookup.Count + publicPackages.Count + 1,
 						Name = dependency.Name,
+						Owner = owner,
 						Version = new Api.Client.SemanticVersionModel()
 						{
 							Major = dependency.Version.Major,
@@ -730,17 +740,18 @@ public class ClosureManager : IClosureManager
 			foreach (var (languageName, languageProjects) in closure.Value.Value.AsTable().Values)
 			{
 				Log.Info($"Restore Packages for Language {languageName}");
-				foreach (var project in languageProjects.Value.AsArray().Values)
+				foreach (var (projectUniqueName, project) in languageProjects.Value.AsTable().Values)
 				{
 					var projectTable = project.Value.AsTable();
-					var projectName = projectTable.Values[PackageLock.Property_Name].Value.AsString().Value;
+					var projectName = PackageName.Parse(projectUniqueName);
 					var projectVersion = projectTable.Values[PackageLock.Property_Version].Value.AsString().Value;
 					if (SemanticVersion.TryParse(projectVersion, out var version))
 					{
 						await EnsurePackageDownloadedAsync(
 							isRuntime,
+							projectName.Owner ?? throw new InvalidOperationException("Missing owner"),
 							languageName,
-							projectName,
+							projectName.Name,
 							version,
 							packageStore,
 							stagingDirectory);
@@ -759,24 +770,23 @@ public class ClosureManager : IClosureManager
 	/// </summary>
 	private async Task EnsurePackageDownloadedAsync(
 		bool isRuntime,
+		string ownerName,
 		string languageName,
 		string packageName,
 		SemanticVersion packageVersion,
 		Path packageStore,
 		Path stagingDirectory)
 	{
-		Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
+		Log.HighPriority($"Install Package: {languageName} {ownerName} {packageName}@{packageVersion}");
 
 		var languageSafeName = GetLanguageSafeName(languageName);
 		var languageRootFolder = packageStore + new Path(languageSafeName);
-		var packageRootFolder = languageRootFolder + new Path(packageName);
+		var packageRootFolder = languageRootFolder + new Path(ownerName) + new Path(packageName);
 		var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path();
 
 		// Check if the package version already exists
 		if (!isRuntime &&
-			((packageName == BuiltInLanguagePackageCpp && packageVersion == _builtInLanguageVersionCpp) ||
-			(packageName == BuiltInLanguagePackageCSharp && packageVersion == _builtInLanguageVersionCSharp) ||
-			(packageName == BuiltInLanguagePackageWren && packageVersion == _builtInLanguageVersionWren)))
+			packageName == BuiltInLanguagePackageWren && packageVersion == _builtInLanguageVersionWren)
 		{
 			Log.HighPriority("Skip built in language version in build closure");
 		}
@@ -797,7 +807,8 @@ public class ClosureManager : IClosureManager
 
 			try
 			{
-				var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
+				var result = await client.DownloadPackageVersionAsync(
+					languageName, ownerName, packageName, packageVersion.ToString());
 
 				// Write the contents to disk, scope cleanup
 				using var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true);
@@ -805,7 +816,7 @@ public class ClosureManager : IClosureManager
 			}
 			catch (Api.Client.ApiException ex)
 			{
-				if (ex.StatusCode == 404)
+				if (ex.StatusCode == HttpStatusCode.NotFound)
 				{
 					Log.HighPriority("Package Version Missing");
 					throw new HandledException();

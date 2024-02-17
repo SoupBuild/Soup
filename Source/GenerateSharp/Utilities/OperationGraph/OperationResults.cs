@@ -21,7 +21,7 @@ public class OperationResults
 	/// </summary>
 	public OperationResults()
 	{
-		ReferencedFiles = new List<(FileId FileId, Path Path)>();
+		ReferencedFiles = [];
 		_results = [];
 	}
 

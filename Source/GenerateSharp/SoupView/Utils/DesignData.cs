@@ -1,7 +1,6 @@
 ﻿
 using Opal;
 using Soup.Build.Utilities;
-using System.Collections.Generic;
 
 namespace Soup.View.ViewModels;
 
@@ -35,10 +34,10 @@ public static class DesignData
 					new OperationId(123),
 					"Operation123",
 					new CommandInfo(),
-					new List<FileId>(),
-					new List<FileId>(),
-					new List<FileId>(),
-					new List<FileId>()),
+					[],
+					[],
+					[],
+					[]),
 				null),
 		};
 }

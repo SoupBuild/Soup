@@ -76,7 +76,7 @@ public class SDKConfig
 			}
 			else
 			{
-				throw new InvalidOperationException("No SDKs.");
+				throw new InvalidOperationException("No SourceDirectories.");
 			}
 		}
 		set

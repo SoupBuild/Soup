@@ -19,7 +19,15 @@ public class PackageModel
 	[JsonPropertyName("name")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required(AllowEmptyStrings = true)]
-	public string Name { get; set; }
+	public required string Name { get; set; }
+
+	/// <summary>
+	/// Gets or sets the owner.
+	/// </summary>
+	[JsonPropertyName("owner")]
+	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+	[Required(AllowEmptyStrings = true)]
+	public required string Owner { get; set; }
 
 	/// <summary>
 	/// Gets or sets the description.

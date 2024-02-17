@@ -22,6 +22,6 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\PackageManager.Core\Soup.Build.PackageManager.Core.csproj" />
+		<ProjectReference Include="..\PackageManager.Core\Soup.Build.PackageManager.Core.csproj" />
 	</ItemGroup>
 </Project>

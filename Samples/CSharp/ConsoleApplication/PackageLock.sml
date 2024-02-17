@@ -1,19 +1,19 @@
-Version: 4
+Version: 5
 Closures: {
 	Root: {
-		"C#": [
-			{ Name: "Samples.CSharp.ConsoleApplication", Version: "./", Build: "Build0", Tool: "Tool0" }
-		]
+		'C#': {
+			'Samples.CSharp.ConsoleApplication': { Version: '../ConsoleApplication', Build: 'Build0', Tool: 'Tool0' }
+		}
 	}
 	Build0: {
-		Wren: [
-			{ Name: "Soup.CSharp", Version: "0.11.1" }
-		]
+		Wren: {
+			'mwasplund|Soup.CSharp': { Version: '0.13.0' }
+		}
 	}
 	Tool0: {
-		"C++": [
-			{ Name: "copy", Version: "1.0.0" }
-			{ Name: "mkdir", Version: "1.0.0" }
-		]
+		'C++': {
+			'mwasplund|copy': { Version: '1.1.0' }
+			'mwasplund|mkdir': { Version: '1.1.0' }
+		}
 	}
 }

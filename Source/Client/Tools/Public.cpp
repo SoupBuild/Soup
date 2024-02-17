@@ -63,7 +63,7 @@ json11::Json ConvertToJson(const PackageLookupMap& lookup)
 
 		auto jsonValue = json11::Json::object({
 			{ "Id", value.second.Id },
-			{ "Name", value.second.Name },
+			{ "Name", value.second.Name.ToString() },
 			{ "IsPrebuilt", value.second.IsPrebuilt },
 			{ "PackageRoot", value.second.PackageRoot.ToString() },
 			{ "TargetDirectory", value.second.TargetDirectory.ToString() },

@@ -14,7 +14,7 @@ namespace Soup.Build.Utilities;
 /// </summary>
 public static class PackageLockExtensions
 {
-	private const int PackageLockVersion = 4;
+	private const int PackageLockVersion = 5;
 
 	/// <summary>
 	/// Attempt to load the package lock from file

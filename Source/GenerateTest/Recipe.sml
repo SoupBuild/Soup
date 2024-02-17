@@ -1,14 +1,14 @@
-Name: "Soup.Generate.Test"
-Language: "C++|0.4"
-Type: "Executable"
-Version: "1.0.0"
+Name: 'Soup.Generate.Test'
+Language: 'C++|0'
+Type: 'Executable'
+Version: '1.0.0'
 Source: [
-	"Main.cpp"
+	'Main.cpp'
 ]
 Dependencies: {
 	Runtime: [
-		"../Client/Core/"
-		"wren@1.0.0"
-		"Opal@0.5.0"
+		'../Client/Core/'
+		'mwasplund|wren@1'
+		'mwasplund|Opal@0'
 	]
 }

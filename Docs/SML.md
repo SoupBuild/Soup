@@ -6,16 +6,16 @@ In SML newline characters (`\r\n`) and comma (`,`) characters can be used interc
 ## Example.sml
 ```sml
 # Here is a comment
-KeyName: "A String Value"
-"KeyWithSpecial#@": 1234
+KeyName: 'A String Value'
+'KeyWithSpecial#@': 1234
 IsEnabled: true
 AnArray: [
-    "Main.cpp"
+    'Main.cpp'
     1234
 ]
 
 Table1: {
-    ChildArray: [ "value1", "value2" ]
+    ChildArray: [ 'value1', 'value2' ]
 }
 ```
 
@@ -71,6 +71,6 @@ COMMENT             : '#'.*?'\r'?'\n' -> channel(HIDDEN) ;
 INTEGER             : DIGIT+ ;
 KEY_LITERAL         : [\p{L}\p{N}]+ ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
-STRING_LITERAL      : '"' BASIC_CHAR*? '"' ;
+STRING_LITERAL      : '\'' BASIC_CHAR*? '\'' ;
 WHITESPACE          : (' '|'\t')+ -> channel(HIDDEN) ;
 ```

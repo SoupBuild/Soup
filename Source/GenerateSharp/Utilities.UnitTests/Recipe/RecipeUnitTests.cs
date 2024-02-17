@@ -43,13 +43,13 @@ public class RecipeUnitTests
 						},
 				}));
 
-		uut.AddRuntimeDependency("SomeDependency");
+		uut.AddRuntimeDependency("Owner|SomeDependency");
 
 		Assert.True(uut.HasRuntimeDependencies);
 		Assert.Equal(
 			new List<PackageReference>()
 			{
-					new PackageReference(null, "SomeDependency", null),
+				new PackageReference(null, "Owner", "SomeDependency", null),
 			},
 			uut.RuntimeDependencies);
 	}

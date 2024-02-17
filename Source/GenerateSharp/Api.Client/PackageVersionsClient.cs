@@ -3,9 +3,9 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -21,28 +21,33 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class PackageVersionsClient
 {
-	private readonly HttpClient _httpClient;
-	private readonly string? _bearerToken;
+	private readonly HttpClient httpClient;
+	private readonly string? bearerToken;
 
 	public PackageVersionsClient(HttpClient httpClient, string? bearerToken)
 	{
-		_httpClient = httpClient;
-		_bearerToken = bearerToken;
+		this.httpClient = httpClient;
+		this.bearerToken = bearerToken;
 	}
 
-	public Uri BaseUrl { get; init; } = new Uri("http://localhost:7070");
+	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
 
 	/// <summary>
 	/// Get a package version.
 	/// </summary>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to get.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
-	public virtual Task<PackageVersionModel> GetPackageVersionAsync(string languageName, string packageName, string packageVersion)
+	public virtual Task<PackageVersionModel> GetPackageVersionAsync(
+		string languageName,
+		string ownerName,
+		string packageName,
+		string packageVersion)
 	{
-		return GetPackageVersionAsync(languageName, packageName, packageVersion, CancellationToken.None);
+		return GetPackageVersionAsync(languageName, ownerName, packageName, packageVersion, CancellationToken.None);
 	}
 
 	/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -50,72 +55,48 @@ public class PackageVersionsClient
 	/// Get a package version.
 	/// </summary>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to get.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
 	public virtual async Task<PackageVersionModel> GetPackageVersionAsync(
-		string languageName, string packageName, string packageVersion, CancellationToken cancellationToken)
+		string languageName,
+		string ownerName,
+		string packageName,
+		string packageVersion,
+		CancellationToken cancellationToken)
 	{
-		var urlBuilder_ = new StringBuilder();
-		_ = urlBuilder_
+		var urlBuilder = new StringBuilder();
+		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
-		_ = urlBuilder_.Replace(
-			"{languageName}",
-			Uri.EscapeDataString(languageName));
-		_ = urlBuilder_.Replace(
-			"{packageName}",
-			Uri.EscapeDataString(packageName));
-		_ = urlBuilder_.Replace(
-			"{packageVersion}",
-			Uri.EscapeDataString(packageVersion));
+			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
-		var client = _httpClient;
-		var disposeClient_ = false;
-		try
+		var client = this.httpClient;
+
+		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
+		requestMessage.Method = new HttpMethod("GET");
+		requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+		var url = urlBuilder.ToString();
+		requestMessage.RequestUri = new Uri(url, UriKind.RelativeOrAbsolute);
+
+		using var response = await client.SendAsync(
+			requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+
+		var status = (int)response.StatusCode;
+		if (status == 200)
 		{
-			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
-			request_.Method = new HttpMethod("GET");
-			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-			var url_ = urlBuilder_.ToString();
-			request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-			var response_ = await client.SendAsync(request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-			var disposeResponse_ = true;
-			try
-			{
-				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-				if (response_.Content != null && response_.Content.Headers != null)
-				{
-					foreach (var item_ in response_.Content.Headers)
-						headers_[item_.Key] = item_.Value;
-				}
-
-				var status_ = (int)response_.StatusCode;
-				if (status_ == 200)
-				{
-					var objectResponse = await ReadObjectResponseAsync<PackageVersionModel>(
-						response_, headers_, SourceGenerationContext.Default.PackageVersionModel, cancellationToken).ConfigureAwait(false);
-					return objectResponse;
-				}
-				else
-				{
-					throw new ApiException(
-						"The HTTP status code of the response was not expected.", status_, headers_, null);
-				}
-			}
-			finally
-			{
-				if (disposeResponse_)
-					response_.Dispose();
-			}
+			var objectResponse = await ReadObjectResponseAsync<PackageVersionModel>(
+				response,
+				SourceGenerationContext.Default.PackageVersionModel,
+				cancellationToken).ConfigureAwait(false);
+			return objectResponse;
 		}
-		finally
+		else
 		{
-			if (disposeClient_)
-				client.Dispose();
+			throw new ApiException(
+				"The HTTP status code of the response was not expected.", response.StatusCode, null, null);
 		}
 	}
 
@@ -123,14 +104,26 @@ public class PackageVersionsClient
 	/// Publish a new version of a package.
 	/// </summary>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to publish.</param>
 	/// <param name="file">The uploaded file.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
-	public virtual Task PublishPackageVersionAsync(string languageName, string packageName, string packageVersion, FileParameter file)
+	public virtual Task PublishPackageVersionAsync(
+		string languageName,
+		string ownerName,
+		string packageName,
+		string packageVersion,
+		FileParameter file)
 	{
-		return PublishPackageVersionAsync(languageName, packageName, packageVersion, file, CancellationToken.None);
+		return PublishPackageVersionAsync(
+			languageName,
+			ownerName,
+			packageName,
+			packageVersion,
+			file,
+			CancellationToken.None);
 	}
 
 	/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -138,80 +131,66 @@ public class PackageVersionsClient
 	/// Publish a new version of a package.
 	/// </summary>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to publish.</param>
 	/// <param name="file">The uploaded file.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
+	[SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Allow default handler")]
 	public virtual async Task PublishPackageVersionAsync(
-		string languageName, string packageName, string packageVersion, FileParameter file, CancellationToken cancellationToken)
+		string languageName,
+		string ownerName,
+		string packageName,
+		string packageVersion,
+		FileParameter file,
+		CancellationToken cancellationToken)
 	{
-		var urlBuilder_ = new StringBuilder();
-		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}");
-		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		_ = urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
-		_ = urlBuilder_.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
+		var urlBuilder = new StringBuilder();
+		_ = urlBuilder
+			.Append(BaseUrl.OriginalString.TrimEnd('/'))
+			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
-		var client_ = _httpClient;
-		var disposeClient_ = false;
-		try
+		var client = this.httpClient;
+
+		using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
+		using var content = new StreamContent(file.Data);
+
+		content.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+		request.Content = content;
+		request.Method = new HttpMethod("PUT");
+
+		var url = urlBuilder.ToString();
+		request.RequestUri = new Uri(url, UriKind.RelativeOrAbsolute);
+
+		using var response = await client.SendAsync(
+			request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+
+		switch (response.StatusCode)
 		{
-			using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
-			using var content = new StreamContent(file.Data);
-
-			content.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
-			request.Content = content;
-			request.Method = new HttpMethod("PUT");
-
-			var url_ = urlBuilder_.ToString();
-			request.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-			var response_ = await client_.SendAsync(
-				request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-			var disposeResponse_ = true;
-			try
-			{
-				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-				if (response_.Content != null && response_.Content.Headers != null)
-				{
-					foreach (var item_ in response_.Content.Headers)
-						headers_[item_.Key] = item_.Value;
-				}
-
-				var status_ = (int)response_.StatusCode;
-				if (status_ == 201)
-				{
-					return;
-				}
-				else
-				{
-					throw new ApiException("The HTTP status code of the response was not expected.", status_, headers_, null);
-				}
-			}
-			finally
-			{
-				if (disposeResponse_)
-					response_.Dispose();
-			}
-		}
-		finally
-		{
-			if (disposeClient_)
-				client_.Dispose();
-		}
+			case HttpStatusCode.Created:
+				break;
+			default:
+				throw new ApiException("The HTTP status code of the response was not expected.", response.StatusCode, null, null);
+		};
 	}
 
 	/// <summary>
 	/// Download a package version archive.
 	/// </summary>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to download.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
-	public virtual Task<FileResponse> DownloadPackageVersionAsync(string languageName, string packageName, string packageVersion)
+	public virtual Task<FileResponse> DownloadPackageVersionAsync(
+		string languageName,
+		string ownerName,
+		string packageName,
+		string packageVersion)
 	{
-		return DownloadPackageVersionAsync(languageName, packageName, packageVersion, CancellationToken.None);
+		return DownloadPackageVersionAsync(languageName, ownerName, packageName, packageVersion, CancellationToken.None);
 	}
 
 	/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -219,77 +198,64 @@ public class PackageVersionsClient
 	/// Download a package version archive.
 	/// </summary>
 	/// <param name="languageName">The name of the language.</param>
+	/// <param name="ownerName">The owner user name.</param>
 	/// <param name="packageName">The unique name of the package.</param>
 	/// <param name="packageVersion">The package version to download.</param>
 	/// <returns>The action result.</returns>
 	/// <exception cref="ApiException">A server side error occurred.</exception>
 	public virtual async Task<FileResponse> DownloadPackageVersionAsync(
-		string languageName, string packageName, string packageVersion, CancellationToken cancellationToken)
+		string languageName,
+		string ownerName,
+		string packageName,
+		string packageVersion,
+		CancellationToken cancellationToken)
 	{
-		var urlBuilder_ = new StringBuilder();
-		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/languages/{languageName}/packages/{packageName}/versions/{packageVersion}/download");
-		_ = urlBuilder_.Replace("{languageName}", Uri.EscapeDataString(languageName));
-		_ = urlBuilder_.Replace("{packageName}", Uri.EscapeDataString(packageName));
-		_ = urlBuilder_.Replace("{packageVersion}", Uri.EscapeDataString(packageVersion));
+		var urlBuilder = new StringBuilder();
+		_ = urlBuilder
+			.Append(BaseUrl.OriginalString.TrimEnd('/'))
+			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}/download");
 
-		var client_ = _httpClient;
-		var disposeClient_ = false;
+		var client = this.httpClient;
+
+		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
+		requestMessage.Method = new HttpMethod("GET");
+		requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+		var url = urlBuilder.ToString();
+		requestMessage.RequestUri = new Uri(url, UriKind.RelativeOrAbsolute);
+
+		var response = await client.SendAsync(
+			requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+		var disposeResponse = true;
 		try
 		{
-			using var request_ = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
-			request_.Method = new HttpMethod("GET");
-			request_.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-			var url_ = urlBuilder_.ToString();
-			request_.RequestUri = new Uri(url_, UriKind.RelativeOrAbsolute);
-
-			var response_ = await client_.SendAsync(
-				request_, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-			var disposeResponse_ = true;
-			try
+			var status = (int)response.StatusCode;
+			if (status is 200 or 206)
 			{
-				var headers_ = Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-				if (response_.Content != null && response_.Content.Headers != null)
-				{
-					foreach (var item_ in response_.Content.Headers)
-						headers_[item_.Key] = item_.Value;
-				}
+				var responseStream = response.Content == null ?
+					Stream.Null :
+					await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+				var fileResponse = new FileResponse(status, null, responseStream, null, response);
 
-				var status_ = (int)response_.StatusCode;
-				if (status_ is 200 or 206)
-				{
-					var responseStream_ = response_.Content == null ?
-						Stream.Null :
-						await response_.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-					var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+				// response is disposed by FileResponse
+				disposeResponse = false;
 
-					// response and client are disposed by FileResponse
-					disposeClient_ = false;
-					disposeResponse_ = false;
-
-					return fileResponse_;
-				}
-				else
-				{
-					throw new ApiException("The HTTP status code of the response was not expected.", status_, headers_, null);
-				}
+				return fileResponse;
 			}
-			finally
+			else
 			{
-				if (disposeResponse_)
-					response_.Dispose();
+				throw new ApiException("The HTTP status code of the response was not expected.", response.StatusCode, null, null);
 			}
 		}
 		finally
 		{
-			if (disposeClient_)
-				client_.Dispose();
+			if (disposeResponse)
+				response.Dispose();
 		}
 	}
 
 	protected virtual async Task<T> ReadObjectResponseAsync<T>(
 		HttpResponseMessage response,
-		IReadOnlyDictionary<string, IEnumerable<string>> headers,
 		JsonTypeInfo<T> jsonTypeInfo,
 		CancellationToken cancellationToken)
 	{
@@ -301,7 +267,7 @@ public class PackageVersionsClient
 			if (typedBody is null)
 			{
 				var message = "Response body was empty.";
-				throw new ApiException(message, (int)response.StatusCode, headers, null);
+				throw new ApiException(message, response.StatusCode, null, null);
 			}
 
 			return typedBody;
@@ -309,7 +275,7 @@ public class PackageVersionsClient
 		catch (JsonException exception)
 		{
 			var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-			throw new ApiException(message, (int)response.StatusCode, headers, exception);
+			throw new ApiException(message, response.StatusCode, null, exception);
 		}
 	}
 
@@ -319,9 +285,9 @@ public class PackageVersionsClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(_bearerToken))
+		if (!string.IsNullOrEmpty(this.bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
 		}
 
 		return Task.FromResult(request);

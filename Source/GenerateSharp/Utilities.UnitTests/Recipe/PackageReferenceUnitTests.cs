@@ -17,6 +17,7 @@ public class PackageReferenceUnitTests
 		Assert.True(uut.IsLocal);
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Language; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Owner; });
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Name; });
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Version; });
 	}
@@ -28,6 +29,7 @@ public class PackageReferenceUnitTests
 		Assert.True(uut.IsLocal);
 		Assert.Equal(new Path("../OtherFolder/"), uut.Path);
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Language; });
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Owner; });
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Name; });
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Version; });
 	}
@@ -35,21 +37,47 @@ public class PackageReferenceUnitTests
 	[Fact]
 	public void Parse_Public()
 	{
-		var uut = PackageReference.Parse("Other.Package@1.0.0");
+		var uut = PackageReference.Parse("Other@1.0.0");
 		Assert.False(uut.IsLocal);
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
 		Assert.Null(uut.Language);
-		Assert.Equal("Other.Package", uut.Name);
+		Assert.Null(uut.Owner);
+		Assert.Equal("Other", uut.Name);
+		Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);
+	}
+
+	[Fact]
+	public void Parse_Public_Owner()
+	{
+		var uut = PackageReference.Parse("User1|Other@1.0.0");
+		Assert.False(uut.IsLocal);
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
+		Assert.Null(uut.Language);
+		Assert.Equal("User1", uut.Owner);
+		Assert.Equal("Other", uut.Name);
+		Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);
+	}
+
+	[Fact]
+	public void Parse_Public_Owner_Language()
+	{
+		var uut = PackageReference.Parse("[C#]User1|Other@1.0.0");
+		Assert.False(uut.IsLocal);
+		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
+		Assert.Equal("C#", uut.Language);
+		Assert.Equal("User1", uut.Owner);
+		Assert.Equal("Other", uut.Name);
 		Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);
 	}
 
 	[Fact]
 	public void Parse_Public_Language()
 	{
-		var uut = PackageReference.Parse("C#|Other@1.0.0");
+		var uut = PackageReference.Parse("[C#]Other@1.0.0");
 		Assert.False(uut.IsLocal);
 		_ = Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
 		Assert.Equal("C#", uut.Language);
+		Assert.Null(uut.Owner);
 		Assert.Equal("Other", uut.Name);
 		Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);
 	}

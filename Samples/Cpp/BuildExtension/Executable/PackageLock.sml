@@ -1,20 +1,20 @@
-Version: 4
+Version: 5
 Closures: {
 	Root: {
-		"C++": [
-			{ Name: "Samples.SimpleBuildExtension.Executable", Version: "./", Build: "Build0", Tool: "Tool0" }
-		]
+		'C++': {
+			'Samples.SimpleBuildExtension.Executable': { Version: '../Executable', Build: 'Build0', Tool: 'Tool0' }
+		}
 	}
 	Build0: {
-		Wren: [
-			{ Name: "Samples.Cpp.BuildExtension.Extension", Version: "../Extension/" }
-			{ Name: "Soup.Cpp", Version: "0.10.1" }
-		]
+		Wren: {
+			'Samples.Cpp.BuildExtension.Extension': { Version: '../Extension/' }
+			'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+		}
 	}
 	Tool0: {
-		"C++": [
-			{ Name: "copy", Version: "1.0.0" }
-			{ Name: "mkdir", Version: "1.0.0" }
-		]
+		'C++': {
+			'mwasplund|copy': { Version: '1.1.0' }
+			'mwasplund|mkdir': { Version: '1.1.0' }
+		}
 	}
 }
