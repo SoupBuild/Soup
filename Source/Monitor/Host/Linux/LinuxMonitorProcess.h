@@ -22,6 +22,7 @@ namespace Monitor::Linux
 
 		// Runtime
 		pid_t m_processId;
+		int m_stdOutReadHandle;
 
 		// Result
 		bool m_isFinished;
@@ -50,9 +51,6 @@ namespace Monitor::Linux
 		/// </summary>
 		void Start() override final
 		{
-			posix_spawn_file_actions_t* fileActions = nullptr;
-			posix_spawnattr_t* attributes = nullptr;
-
 			std::vector<const char*> arguments;
 			arguments.push_back(m_executable.ToString().c_str());
 			for (auto& argument : m_arguments)
@@ -66,15 +64,41 @@ namespace Monitor::Linux
 				throw std::runtime_error("Failed to set working directory");
 			}
 
-			// Start the process
-			pid_t processId;
-			auto status = posix_spawn(
-				&processId,
-				m_executable.ToString().c_str(),
-				fileActions,
-				attributes,
-				const_cast<char**>(arguments.data()),
-				environ);
+			// Create a pipe to send stdout to parent
+			int stdOutPipe[2];
+			if (pipe(stdOutPipe) < 0)
+			{
+				throw std::runtime_error("Failed to create stdOutPipe");
+			}
+
+			// Create a child process
+			pid_t processId = fork();
+			if (processId == 0)
+			{
+				// We are the child process
+
+				// Close the read pipe
+				close(stdOutPipe[0]);
+
+				// Redirect stdout to the pipe write
+				if (dup2(stdOutPipe[1], STDOUT_FILENO) != STDOUT_FILENO)
+				{
+					throw std::runtime_error("dup2 error to stdout");
+				}
+
+				// Close our handle on the write end
+				close(stdOutPipe[1]);
+
+				// Replace runtime with child program
+				execve(
+					m_executable.ToString().c_str(),
+					const_cast<char**>(arguments.data()),
+					environ);
+
+				// Running in other program now
+			}
+
+			// Parent process still
 
 			// Reset working directory
 			if (chdir(currentWorkingDirectory.string().c_str()) == -1)
@@ -82,12 +106,11 @@ namespace Monitor::Linux
 				throw std::runtime_error("Failed to reset working directory");
 			}
 
-			if (status != 0)
-			{
-				throw std::runtime_error("Execute posix_spawn Failed: " + std::to_string(status));
-			}
-
 			m_processId = processId;
+			
+			// Close our handle on the write end
+			close(stdOutPipe[1]);
+			m_stdOutReadHandle = stdOutPipe[0];
 		}
 
 		/// <summary>
@@ -102,6 +125,38 @@ namespace Monitor::Linux
 			{
 				throw std::runtime_error("Execute waitpid Failed Unknown");
 			}
+
+			// Read all and write to stdout
+			// TODO: May want to switch over to a background thread with peak to read in order
+			int dwRead;
+			const int BufferSize = 256;
+			char buffer[BufferSize + 1];
+
+			// Read on output
+			while (true)
+			{
+				dwRead = read(m_stdOutReadHandle, buffer, BufferSize);
+				if(dwRead < 0)
+					break;
+				if (dwRead == 0)
+					break;
+
+				m_stdOut << std::string_view(buffer, dwRead);
+			}
+
+			close(m_stdOutReadHandle);
+
+			// Read all errors
+			// while (true)
+			// {
+			// 	if(!ReadFile(m_stdErrReadHandle.Get(), buffer, BufferSize, &dwRead, nullptr))
+			// 		break;
+			// 	if (dwRead == 0)
+			// 		break;
+
+			// 	// Make the string null terminated
+			// 	m_stdErr << std::string_view(buffer, dwRead);
+			// }
 
 			m_exitCode = status;
 			m_isFinished = true;

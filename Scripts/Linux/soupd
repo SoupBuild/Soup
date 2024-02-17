@@ -11,7 +11,7 @@ SOURCE_DIR=$ROOT_DIR/Source
 GLOBAL_PACKAGES_DIR=~/.soup/packages
 GLOBAL_OUT_DIR=~/.soup/out
 
-CONFIG_HASH=J_HqSstV55vlb-x6RWC_hLRFRDU
+CONFIG_HASH=OZlIVjblazFuKXg-raWUNoGEnG4
 
 OWNER=mwasplund
 

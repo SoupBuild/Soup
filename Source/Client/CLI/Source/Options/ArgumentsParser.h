@@ -35,7 +35,7 @@ namespace Soup::Client
 
 			// Copy the set of unused args to ensure we consume everything
 			std::vector<std::string> unusedArgs;
-			std::copy(args.begin()+2, args.end(), std::back_inserter(unusedArgs));
+			std::copy(args.begin() + 2, args.end(), std::back_inserter(unusedArgs));
 
 			// Handle the individual commands and their expected arguments
 			std::unique_ptr<SharedOptions> result = nullptr;
