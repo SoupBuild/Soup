@@ -375,14 +375,13 @@ public class PackageManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Root/MyPackage/"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry()
 				{
 					Path = new Path("C:/Root/MyPackage/Recipe.sml"),
 					IsDirectory = false,
 				},
-			});
+			]);
 
 		// Setup the mock authentication manager
 		var mockAuthenticationManager = new Mock<IAuthenticationManager>();
