@@ -95,11 +95,24 @@ namespace Monitor::Linux
 				close(stdOutPipe[1]);
 				close(stdErrPipe[1]);
 
+				auto environment = std::vector<std::string>();
+
+				environment.push_back("HOME=/");
+				environment.push_back("USER=USERNAME");
+
+				// Preload the monitor client first
+				environment.push_back("LD_PRELOAD=/home/mwasplund/dev/repos/Soup/out/run/Monitor.Client.64.so");
+
+				auto environmentArray = std::vector<const char*>();
+				for (auto& value : environment)
+					environmentArray.push_back(value.c_str());
+				environmentArray.push_back(nullptr);
+
 				// Replace runtime with child program
 				execve(
 					m_executable.ToString().c_str(),
 					const_cast<char**>(arguments.data()),
-					environ);
+					const_cast<char**>(environmentArray.data()));
 
 				// Running in other program now
 			}

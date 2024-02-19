@@ -27,15 +27,22 @@
 
 #elif defined(__linux__)
 
-#endif
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <stdarg.h>
 
-import Opal;
-import Monitor.Shared;
+#endif
 
 #ifdef _WIN32
 
+import Opal;
+import Monitor.Shared;
 import Detours;
 
 #include "Windows/DllMain.h"
+
+#elif defined(__linux__)
+
+#include "Linux/Startup.h"
 
 #endif

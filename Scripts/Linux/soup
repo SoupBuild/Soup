@@ -26,6 +26,7 @@ mkdir -p $RUN_DIR
 
 cp -p $OUT_DIR/Cpp/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.exe $RUN_DIR/soup
 cp -p $OUT_DIR/Cpp/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.Generate.exe $RUN_DIR/generate
+cp -p $OUT_DIR/Cpp/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/*.so $RUN_DIR/
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION
 cp -p $SOURCE_DIR/Tools/Copy/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/Recipe.sml
