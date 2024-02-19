@@ -61,23 +61,17 @@ namespace Monitor::Linux
 			// Set current working directory that will be inherited by the child process
 			auto currentWorkingDirectory = std::filesystem::current_path();
 			if (chdir(m_workingDirectory.ToString().c_str()) == -1)
-			{
 				throw std::runtime_error("Failed to set working directory");
-			}
 
 			// Create a pipe to send stdout to parent
 			int stdOutPipe[2];
 			if (pipe(stdOutPipe) < 0)
-			{
 				throw std::runtime_error("Failed to create stdOutPipe");
-			}
 
 			// Create a pipe to send stderr to parent
 			int stdErrPipe[2];
 			if (pipe(stdErrPipe) < 0)
-			{
 				throw std::runtime_error("Failed to create stdErrPipe");
-			}
 
 			// Create a child process
 			pid_t processId = fork();
@@ -91,15 +85,11 @@ namespace Monitor::Linux
 
 				// Redirect stdout to the pipe write
 				if (dup2(stdOutPipe[1], STDOUT_FILENO) != STDOUT_FILENO)
-				{
 					throw std::runtime_error("dup2 error to stdout");
-				}
 
 				// Redirect stderr to the pipe write
 				if (dup2(stdErrPipe[1], STDERR_FILENO) != STDERR_FILENO)
-				{
 					throw std::runtime_error("dup2 error to stderr");
-				}
 
 				// Close our handle on the write end
 				close(stdOutPipe[1]);
@@ -118,9 +108,7 @@ namespace Monitor::Linux
 
 			// Reset working directory
 			if (chdir(currentWorkingDirectory.string().c_str()) == -1)
-			{
 				throw std::runtime_error("Failed to reset working directory");
-			}
 
 			m_processId = processId;
 			
@@ -140,9 +128,7 @@ namespace Monitor::Linux
 			int status;
 			auto waitResult = waitpid(m_processId, &status, 0);
 			if (!waitResult)
-			{
 				throw std::runtime_error("Execute waitpid Failed Unknown");
-			}
 
 			// Read all and write to stdout
 			// TODO: May want to switch over to a background thread with peak to read in order
