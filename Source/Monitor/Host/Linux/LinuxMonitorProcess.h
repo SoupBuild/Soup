@@ -23,6 +23,7 @@ namespace Monitor::Linux
 		// Runtime
 		pid_t m_processId;
 		int m_stdOutReadHandle;
+		int m_stdErrReadHandle;
 
 		// Result
 		bool m_isFinished;
@@ -71,6 +72,13 @@ namespace Monitor::Linux
 				throw std::runtime_error("Failed to create stdOutPipe");
 			}
 
+			// Create a pipe to send stderr to parent
+			int stdErrPipe[2];
+			if (pipe(stdErrPipe) < 0)
+			{
+				throw std::runtime_error("Failed to create stdErrPipe");
+			}
+
 			// Create a child process
 			pid_t processId = fork();
 			if (processId == 0)
@@ -79,6 +87,7 @@ namespace Monitor::Linux
 
 				// Close the read pipe
 				close(stdOutPipe[0]);
+				close(stdErrPipe[0]);
 
 				// Redirect stdout to the pipe write
 				if (dup2(stdOutPipe[1], STDOUT_FILENO) != STDOUT_FILENO)
@@ -86,8 +95,15 @@ namespace Monitor::Linux
 					throw std::runtime_error("dup2 error to stdout");
 				}
 
+				// Redirect stderr to the pipe write
+				if (dup2(stdErrPipe[1], STDERR_FILENO) != STDERR_FILENO)
+				{
+					throw std::runtime_error("dup2 error to stderr");
+				}
+
 				// Close our handle on the write end
 				close(stdOutPipe[1]);
+				close(stdErrPipe[1]);
 
 				// Replace runtime with child program
 				execve(
@@ -110,7 +126,9 @@ namespace Monitor::Linux
 			
 			// Close our handle on the write end
 			close(stdOutPipe[1]);
+			close(stdErrPipe[1]);
 			m_stdOutReadHandle = stdOutPipe[0];
+			m_stdErrReadHandle = stdErrPipe[0];
 		}
 
 		/// <summary>
@@ -147,16 +165,19 @@ namespace Monitor::Linux
 			close(m_stdOutReadHandle);
 
 			// Read all errors
-			// while (true)
-			// {
-			// 	if(!ReadFile(m_stdErrReadHandle.Get(), buffer, BufferSize, &dwRead, nullptr))
-			// 		break;
-			// 	if (dwRead == 0)
-			// 		break;
+			while (true)
+			{
+				dwRead = read(m_stdErrReadHandle, buffer, BufferSize);
+				if(dwRead < 0)
+					break;
+				if (dwRead == 0)
+					break;
 
-			// 	// Make the string null terminated
-			// 	m_stdErr << std::string_view(buffer, dwRead);
-			// }
+				// Make the string null terminated
+				m_stdErr << std::string_view(buffer, dwRead);
+			}
+
+			close(m_stdErrReadHandle);
 
 			m_exitCode = status;
 			m_isFinished = true;
