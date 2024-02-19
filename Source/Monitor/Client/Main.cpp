@@ -33,10 +33,11 @@
 
 #endif
 
-#ifdef _WIN32
-
 import Opal;
 import Monitor.Shared;
+
+#ifdef _WIN32
+
 import Detours;
 
 #include "Windows/DllMain.h"

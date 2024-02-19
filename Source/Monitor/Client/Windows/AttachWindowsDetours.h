@@ -537,7 +537,7 @@ bool ProcessAttach(HMODULE hDll)
 		{
 			throw std::runtime_error("Failed to GetProcAddress PrivCopyFileExW");
 		}
-		
+
 		AttachDetours();
 	}
 	catch (const std::exception& ex)
