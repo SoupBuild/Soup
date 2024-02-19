@@ -1,3 +1,15 @@
+#pragma once
+
+#include "Helpers.h"
+
+#include "Functions/FileApiOverrides.h"
+#include "Functions/LibLoaderApiOverrides.h"
+#include "Functions/ProcessEnvOverrides.h"
+#include "Functions/ProcessThreadsApiOverrides.h"
+#include "Functions/UndocumentedApiOverrides.h"
+#include "Functions/WinBaseOverrides.h"
+
+#include "AttachWindowsDetours.h"
 
 bool APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
 {
