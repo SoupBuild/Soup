@@ -1,5 +1,6 @@
 #pragma once
 #include "ProcessThreadsApiCache.h"
+#include "WindowsHelpers.h"
 
 namespace Functions::ProcessThreadsApi::Overrides
 {
@@ -94,7 +95,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 			message.AppendValue(wasDetoured);
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -191,7 +192,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 			message.AppendValue(wasDetoured);
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -233,10 +234,10 @@ namespace Functions::ProcessThreadsApi::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessAsUserA));
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 
 			// TODO
-			Monitor::ConnectionManager::WriteError("Cannot detour process from CreateProcessAsUserA");
+			connectionManager.WriteError("Cannot detour process from CreateProcessAsUserA");
 		}
 
 		return result;
@@ -278,10 +279,10 @@ namespace Functions::ProcessThreadsApi::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessAsUserW));
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 
 			// TODO
-			Monitor::ConnectionManager::WriteError("Cannot detour process from CreateProcessAsUserW");
+			connectionManager.WriteError("Cannot detour process from CreateProcessAsUserW");
 		}
 
 		return result;
@@ -299,7 +300,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ExitProcess));
 			message.AppendValue(uExitCode);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 	}
 }

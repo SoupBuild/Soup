@@ -513,7 +513,7 @@ bool ProcessAttach(HMODULE hDll)
 		auto allowedWriteDirectories = ExtractStringList(s_Payload.zWriteAccessDirectories, s_Payload.cWriteAccessDirectories);
 
 		// Initialize the event pipe
-		Monitor::ConnectionManager::Initialize(traceProcessId);
+		connectionManager.Initialize(traceProcessId);
 		Monitor::FileSystemAccessSandbox::Initialize(
 			enableAccessChecks,
 			std::move(workingDirectory),
@@ -542,12 +542,12 @@ bool ProcessAttach(HMODULE hDll)
 	}
 	catch (const std::exception& ex)
 	{
-		Monitor::ConnectionManager::WriteError(ex.what());
+		connectionManager.WriteError(ex.what());
 		exit(-1234);
 	}
 	catch (...)
 	{
-		Monitor::ConnectionManager::WriteError("Unknown error attaching detours");
+		connectionManager.WriteError("Unknown error attaching detours");
 		exit(-1234);
 	}
 
@@ -566,16 +566,16 @@ bool ProcessDetach(HMODULE hDll)
 	}
 	catch (const std::exception& ex)
 	{
-		Monitor::ConnectionManager::WriteError(ex.what());
+		connectionManager.WriteError(ex.what());
 		exit(-1234);
 	}
 	catch (...)
 	{
-		Monitor::ConnectionManager::WriteError("Unknown error detaching detours");
+		connectionManager.WriteError("Unknown error detaching detours");
 		exit(-1234);
 	}
 
-	Monitor::ConnectionManager::Shutdown();
+	connectionManager.Shutdown();
 
 	return true;
 }

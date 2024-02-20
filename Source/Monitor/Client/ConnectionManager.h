@@ -18,7 +18,10 @@ namespace Monitor
 		void Initialize(int32_t traceProcessId)
 		{
 			DebugTrace("ConnectionManager::Initialize");
-			Connect(traceProcessId);
+			{
+				auto lock = std::lock_guard<std::mutex>(pipeMutex);
+				Connect(traceProcessId);
+			}
 
 			// Notify that we are connected
 			Monitor::Message message;

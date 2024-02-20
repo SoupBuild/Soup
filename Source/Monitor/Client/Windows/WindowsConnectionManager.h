@@ -21,7 +21,6 @@ namespace Monitor
 			pipeNameBuilder << TBLOG_PIPE_NAMEA << "." << traceProcessId;
 			auto pipeName = pipeNameBuilder.str();
 
-			auto lock = std::lock_guard<std::mutex>(s_pipeMutex);
 			for (int retries = 0; retries < 10; retries++)
 			{
 				// Wait up to 1 seconds for a pipe to appear.
@@ -31,7 +30,7 @@ namespace Monitor
 				{
 					// Attempt to open the pipe
 					DebugTrace("ConnectionManager::Connect CreateFileA");
-					s_pipeHandle = Functions::FileApi::Cache::CreateFileA(
+					pipeHandle = Functions::FileApi::Cache::CreateFileA(
 						pipeName.c_str(),
 						GENERIC_WRITE,
 						0,
@@ -39,11 +38,11 @@ namespace Monitor
 						OPEN_EXISTING,
 						0,
 						nullptr);
-					if (s_pipeHandle != INVALID_HANDLE_VALUE)
+					if (pipeHandle != INVALID_HANDLE_VALUE)
 					{
 						DWORD pipeMode = PIPE_READMODE_MESSAGE;
 						DebugTrace("ConnectionManager::Connect SetNamedPipeHandleState");
-						if (SetNamedPipeHandleState(s_pipeHandle, &pipeMode, nullptr, nullptr))
+						if (SetNamedPipeHandleState(pipeHandle, &pipeMode, nullptr, nullptr))
 						{
 							// All good!
 							return;
@@ -79,17 +78,17 @@ namespace Monitor
 
 		virtual void Disconnect()
 		{
-			if (s_pipeHandle != INVALID_HANDLE_VALUE)
+			if (pipeHandle != INVALID_HANDLE_VALUE)
 			{
-				FlushFileBuffers(s_pipeHandle);
-				CloseHandle(s_pipeHandle);
-				s_pipeHandle = INVALID_HANDLE_VALUE;
+				FlushFileBuffers(pipeHandle);
+				CloseHandle(pipeHandle);
+				pipeHandle = INVALID_HANDLE_VALUE;
 			}
 		}
 
 		virtual void UnsafeWriteMessage(const Monitor::Message& message)
 		{
-			if (s_pipeHandle == INVALID_HANDLE_VALUE)
+			if (pipeHandle == INVALID_HANDLE_VALUE)
 			{
 				DebugError("Handle not ready", (uint32_t)message.Type);
 				exit(-1234);
@@ -101,7 +100,7 @@ namespace Monitor
 				sizeof(Monitor::Message::ContentSize);
 			DWORD countBytesWritten = 0;
 			if (!Functions::FileApi::Cache::WriteFile(
-				s_pipeHandle,
+				pipeHandle,
 				&message,
 				countBytesToWrite,
 				&countBytesWritten,
@@ -122,3 +121,6 @@ namespace Monitor
 		HANDLE pipeHandle;
 	};
 }
+
+// Create a singleton
+static Monitor::WindowsConnectionManager connectionManager;

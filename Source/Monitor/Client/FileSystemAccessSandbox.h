@@ -14,7 +14,7 @@ namespace Monitor
 			std::vector<std::string> allowedReadDirectories,
 			std::vector<std::string> allowedWriteDirectories)
 		{
-			ConnectionManager::DebugTrace("FileSystemAccessSandbox::Initialize");
+			connectionManager.DebugTrace("FileSystemAccessSandbox::Initialize");
 
 			m_enableAccessChecks = enableAccessChecks;
 			m_workingDirectory = std::move(workingDirectory);

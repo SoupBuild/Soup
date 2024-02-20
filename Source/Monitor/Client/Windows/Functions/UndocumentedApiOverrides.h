@@ -48,7 +48,7 @@ namespace Functions::UndocumentedApi::Overrides
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -94,7 +94,7 @@ namespace Functions::UndocumentedApi::Overrides
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;

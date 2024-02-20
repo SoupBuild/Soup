@@ -18,7 +18,7 @@ namespace Functions::LibLoaderApi::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryA));
 			message.AppendValue(lpLibFileName);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -39,7 +39,7 @@ namespace Functions::LibLoaderApi::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryW));
 			message.AppendValue(lpLibFileName);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -64,7 +64,7 @@ namespace Functions::LibLoaderApi::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryExA));
 			message.AppendValue(lpLibFileName);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -89,7 +89,7 @@ namespace Functions::LibLoaderApi::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryExW));
 			message.AppendValue(lpLibFileName);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;

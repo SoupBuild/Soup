@@ -1,5 +1,6 @@
 #pragma once
 #include "ProcessEnvCache.h"
+#include "WindowsConnectionManager.h"
 
 namespace Functions::ProcessEnv::Overrides
 {
@@ -31,7 +32,7 @@ namespace Functions::ProcessEnv::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpExtension);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -65,7 +66,7 @@ namespace Functions::ProcessEnv::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpExtension);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;

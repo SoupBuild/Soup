@@ -39,7 +39,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(bFailIfExists);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -80,7 +80,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(bFailIfExists);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -120,7 +120,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(pwszNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -166,7 +166,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -212,7 +212,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -260,7 +260,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -308,7 +308,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -346,7 +346,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewDirectory);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -384,7 +384,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewDirectory);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -424,7 +424,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewDirectory);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -464,7 +464,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewDirectory);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -517,7 +517,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwShareMode);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -570,7 +570,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwShareMode);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -597,7 +597,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpExistingFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -624,7 +624,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpExistingFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -653,7 +653,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpExistingFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -682,7 +682,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpExistingFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -724,10 +724,10 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessWithLogonW));
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 
 			// TODO
-			Monitor::ConnectionManager::WriteError("Cannot detour process from CreateProcessWithLogonW");
+			connectionManager.WriteError("Cannot detour process from CreateProcessWithLogonW");
 		}
 
 		return result;
@@ -765,10 +765,10 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessWithTokenW));
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 
 			// TODO
-			Monitor::ConnectionManager::WriteError("Cannot detour process from CreateProcessWithTokenW");
+			connectionManager.WriteError("Cannot detour process from CreateProcessWithTokenW");
 		}
 
 		return result;
@@ -796,7 +796,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpTargetFileName);
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -824,7 +824,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpTargetFileName);
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -854,7 +854,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpTargetFileName);
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -884,7 +884,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpTargetFileName);
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -908,7 +908,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DecryptFileA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -932,7 +932,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DecryptFileW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -954,7 +954,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DeleteFile));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -989,7 +989,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1024,7 +1024,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1046,7 +1046,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::EncryptFileA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1068,7 +1068,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::EncryptFileW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1092,7 +1092,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FileEncryptionStatusA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1116,7 +1116,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FileEncryptionStatusW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1146,7 +1146,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileNameTransactedW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(dwFlags);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1179,7 +1179,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileTransactedA));
 			message.AppendValue(lpFileName);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1212,7 +1212,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileTransactedW));
 			message.AppendValue(lpFileName);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1241,7 +1241,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstStreamTransactedW));
 			message.AppendValue(lpFileName);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1265,7 +1265,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetBinaryTypeA));
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1289,7 +1289,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetBinaryTypeW));
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1315,7 +1315,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetCompressedFileSizeTransactedA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1341,7 +1341,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetCompressedFileSizeTransactedW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1364,7 +1364,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDllDirectoryA));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1387,7 +1387,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDllDirectoryW));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1413,7 +1413,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetEnvironmentVariableA));
 			message.AppendValue(lpName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1439,7 +1439,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetEnvironmentVariableW));
 			message.AppendValue(lpName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1478,7 +1478,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1517,7 +1517,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1548,7 +1548,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileBandwidthReservation));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1575,7 +1575,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileInformationByHandleEx));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1616,7 +1616,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1646,7 +1646,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFullPathNameTransactedA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1676,7 +1676,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFullPathNameTransactedW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1705,7 +1705,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpszShortPath);
 			message.AppendValue(lpszLongPath);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1734,7 +1734,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpszShortPath);
 			message.AppendValue(lpszLongPath);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1763,7 +1763,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetQueuedCompletionStatus));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1794,7 +1794,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetQueuedCompletionStatusEx));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1821,7 +1821,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpszLongPath);
 			message.AppendValue(lpszShortPath);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1845,7 +1845,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadModule));
 			message.AppendValue(lpModuleName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1868,7 +1868,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadPackagedLibrary));
 			message.AppendValue(lpwLibFileName);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1906,7 +1906,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1944,7 +1944,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -1985,7 +1985,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2026,7 +2026,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2073,7 +2073,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2120,7 +2120,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2165,7 +2165,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2210,7 +2210,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwFlags);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2237,7 +2237,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(ulFlags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2264,7 +2264,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpFileName);
 			message.AppendValue(ulFlags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2300,7 +2300,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::OpenFile));
 			message.AppendValue(lpFileName);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2330,7 +2330,7 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::Message();
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::OpenFileById));
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2355,7 +2355,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReadEncryptedFileRaw));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2390,7 +2390,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2425,7 +2425,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2451,7 +2451,7 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::Message();
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReOpenFile));
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2486,7 +2486,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpBackupFileName);
 			message.AppendValue(dwReplaceFlags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2521,7 +2521,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(lpBackupFileName);
 			message.AppendValue(dwReplaceFlags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2548,7 +2548,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetCurrentDirectoryA));
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2575,7 +2575,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetCurrentDirectoryW));
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2597,7 +2597,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetDllDirectoryA));
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2619,7 +2619,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetDllDirectoryW));
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2657,7 +2657,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwFileAttributes);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2695,7 +2695,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(dwFileAttributes);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2726,7 +2726,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileBandwidthReservation));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2749,7 +2749,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileCompletionNotificationModes));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2775,7 +2775,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileSecurityA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2799,7 +2799,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileShortNameA));
 			message.AppendValue(lpShortName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2823,7 +2823,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileShortNameW));
 			message.AppendValue(lpShortName);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2845,7 +2845,7 @@ namespace Functions::WinBase::Overrides
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetSearchPathMode));
 			message.AppendValue(Flags);
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
@@ -2870,7 +2870,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::MessageType::Detour;
 			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::WriteEncryptedFileRaw));
 			message.AppendValue(result);
-			Monitor::ConnectionManager::WriteMessage(message);
+			connectionManager.WriteMessage(message);
 		}
 
 		return result;
