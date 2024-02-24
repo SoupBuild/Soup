@@ -1,17 +1,12 @@
 #pragma once
 
 #include "LinuxConnectionManager.h"
-
-extern "C"
-{
-	typedef int  (*open_ptr) (const char *path, int oflag, ...);
-} 
+#include "Detours.h"
 
 class Startup
 {
 public:
 	Monitor::LinuxConnectionManager connectionManager;
-	open_ptr open;
 
 public:
 	Startup() :
@@ -19,7 +14,8 @@ public:
 	{
 		try
 		{
-			auto traceProcessId = 123; // s_Payload.nTraceProcessId;
+			DebugTrace("Startup");
+			size_t traceProcessId = 123; // s_Payload.nTraceProcessId;
 
 			// Extract the allowed read/write directories
 			auto workingDirectory = Opal::Path(); // Opal::Path(s_Payload.zWorkingDirectory);
@@ -27,15 +23,16 @@ public:
 			auto allowedReadDirectories = std::vector<std::string>(); // ExtractStringList(s_Payload.zReadAccessDirectories, s_Payload.cReadAccessDirectories);
 			auto allowedWriteDirectories = std::vector<std::string>(); // ExtractStringList(s_Payload.zWriteAccessDirectories, s_Payload.cWriteAccessDirectories);
 
+			detours.AttachDetours();
+
 			// Initialize the event pipe
+			DebugTrace("ConnectionManager");
 			connectionManager.Initialize(traceProcessId);
 			// Monitor::FileSystemAccessSandbox::Initialize(
 			// 	enableAccessChecks,
 			// 	std::move(workingDirectory),
 			// 	std::move(allowedReadDirectories),
 			// 	std::move(allowedWriteDirectories));
-
-			AttachDetours();
 		}
 		catch (const std::exception& ex)
 		{
@@ -50,18 +47,14 @@ public:
 	}
 
 private:
-	void AttachDetours()
+	void DebugTrace(std::string_view message)
 	{
-		open = (open_ptr)dlsym(RTLD_NEXT, "open");
+//#ifdef TRACE_MONITOR_HOST
+		std::cout << "Startup: " << message << std::endl;
+// #else
+// 		(message);
+// #endif
 	}
 };
 
 static Startup startup;
-
-int open(const char *path, int oflag, ...)
-{
-	va_list args;
-	va_start(args, oflag);
-	va_end(args);
-	return startup.open(path, oflag);
-}

@@ -24,6 +24,12 @@ namespace Monitor::Linux
 		pid_t m_processId;
 		int m_stdOutReadHandle;
 		int m_stdErrReadHandle;
+		int m_pipeHandle;
+
+		std::thread m_workerThread;
+		std::atomic<bool> m_processRunning;
+		std::atomic<bool> m_workerFailed;
+		std::exception_ptr m_workerException = nullptr;
 
 		// Result
 		bool m_isFinished;
@@ -42,6 +48,13 @@ namespace Monitor::Linux
 			m_executable(executable),
 			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
+			m_processId(),
+			m_stdOutReadHandle(),
+			m_stdErrReadHandle(),
+			m_pipeHandle(),
+			m_workerThread(),
+			m_processRunning(),
+			m_workerFailed(),
 			m_isFinished(false),
 			m_exitCode(-1)
 		{
@@ -73,11 +86,19 @@ namespace Monitor::Linux
 			if (pipe(stdErrPipe) < 0)
 				throw std::runtime_error("Failed to create stdErrPipe");
 
+			// Initialize the pipes so they are ready for the process and the worker thread
+			DebugTrace("Create fifo");
+			auto pipeName = std::string("/tmp/soupbuildfifo");
+			if (mkfifo(pipeName.c_str(), 0666) != 0)
+				throw std::runtime_error("Failed to create pipe");
+
 			// Create a child process
+			DebugTrace("Fork");
 			pid_t processId = fork();
 			if (processId == 0)
 			{
 				// We are the child process
+				DebugTrace("Child");
 
 				// Close the read pipe
 				close(stdOutPipe[0]);
@@ -109,6 +130,7 @@ namespace Monitor::Linux
 				environmentArray.push_back(nullptr);
 
 				// Replace runtime with child program
+				DebugTrace("child exec");
 				execve(
 					m_executable.ToString().c_str(),
 					const_cast<char**>(arguments.data()),
@@ -118,18 +140,27 @@ namespace Monitor::Linux
 			}
 
 			// Parent process still
+			DebugTrace("Parent");
 
 			// Reset working directory
 			if (chdir(currentWorkingDirectory.string().c_str()) == -1)
 				throw std::runtime_error("Failed to reset working directory");
 
 			m_processId = processId;
-			
+
 			// Close our handle on the write end
 			close(stdOutPipe[1]);
 			close(stdErrPipe[1]);
 			m_stdOutReadHandle = stdOutPipe[0];
 			m_stdErrReadHandle = stdErrPipe[0];
+
+			// Create the worker thread that will act as the pipe server
+			m_processRunning = true;
+			m_workerFailed = false;
+			DebugTrace("Thread");
+			m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this));
+			
+			DebugTrace("Parent done");
 		}
 
 		/// <summary>
@@ -140,6 +171,7 @@ namespace Monitor::Linux
 			// Wait until child process exits.
 			int status;
 			auto waitResult = waitpid(m_processId, &status, 0);
+			m_processRunning = false;
 			if (!waitResult)
 				throw std::runtime_error("Execute waitpid Failed Unknown");
 
@@ -180,6 +212,14 @@ namespace Monitor::Linux
 
 			m_exitCode = status;
 			m_isFinished = true;
+
+			// Wait for the worker thread to exit
+			m_workerThread.join();
+
+			if (m_workerFailed)
+			{
+				std::rethrow_exception(m_workerException);
+			}
 		}
 
 		/// <summary>
@@ -210,6 +250,85 @@ namespace Monitor::Linux
 			if (!m_isFinished)
 				throw std::runtime_error("Process has not finished.");
 			return m_stdErr.str();
+		}
+
+	private:
+		/// <summary>
+		/// The main entry point for the worker thread that will monitor incoming messages from all
+		/// client connections.
+		/// </summary>
+		void WorkerThread()
+		{
+			auto pipeName = std::string("/tmp/soupbuildfifo");
+
+			try
+			{
+				DebugTrace("WorkerThread Start");
+				
+				DebugTrace("Open");
+				m_pipeHandle = open(pipeName.c_str(), O_RDONLY);
+
+				// Read until we get a client and then all clients disconnect
+				while (m_processRunning)
+				{
+					Monitor::Message message;
+					int bytesRead = read(m_pipeHandle, &message, sizeof(message));
+					if (bytesRead > 0)
+					{
+						// Handle the event
+						DebugTrace("Handle Event");
+						
+						auto expectedSize = message.ContentSize +
+							sizeof(Monitor::Message::Type) +
+							sizeof(Monitor::Message::ContentSize);
+						if (bytesRead != expectedSize)
+						{
+							throw std::runtime_error("HandlePipeEvent - GetOverlappedResult - Size Mismatched: " + std::to_string(bytesRead) + " " + std::to_string(expectedSize));
+						}
+					}
+				}
+			}
+			catch (...)
+			{
+				DebugTrace("WorkerThread Failed");
+				m_workerException = std::current_exception();
+				m_workerFailed = true;
+			}
+
+			// Cleanup
+			DebugTrace("close pipe");
+			if (close(m_pipeHandle) != 0)
+				DebugTrace("Close pipe failed");
+
+			DebugTrace("delete pipe");
+			if (unlink(pipeName.c_str()) != 0)
+				DebugTrace("unlink pipe failed");
+		}
+
+		void LogMessage(Message& message)
+		{
+			DebugTrace("LogMessage");
+			// m_eventListener.LogMessage(message);
+		}
+		
+
+		void DebugTrace(std::string_view message, uint32_t value)
+		{
+#ifdef TRACE_MONITOR_HOST
+			std::cout << "Monitor-HOST: " << message << " " << value << std::endl;
+#else
+			(message);
+			(value);
+#endif
+		}
+
+		void DebugTrace(std::string_view message)
+		{
+#ifdef TRACE_MONITOR_HOST
+			std::cout << "Monitor-HOST: " << message << std::endl;
+#else
+			(message);
+#endif
 		}
 	};
 }

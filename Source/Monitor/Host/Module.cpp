@@ -18,8 +18,10 @@ module;
 
 #elif defined(__linux__)
 
-#include <spawn.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 // The existing environment for this process
 extern char **environ;

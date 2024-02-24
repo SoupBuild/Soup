@@ -30,6 +30,7 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 #endif
 

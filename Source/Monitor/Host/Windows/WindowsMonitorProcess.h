@@ -565,7 +565,7 @@ namespace Monitor::Windows
 			}
 
 			// Check the error to determine the actual result
-			DWORD error = GetLastError();
+			auto error = GetLastError();
 			switch (error)
 			{
 			case ERROR_PIPE_CONNECTED:
@@ -740,20 +740,20 @@ namespace Monitor::Windows
 
 		void DebugTrace(std::string_view message, uint32_t value)
 		{
-#ifdef TRACE_Monitor_HOST
+#ifdef TRACE_MONITOR_HOST
 			std::cout << "Monitor-HOST: " << message << " " << value << std::endl;
 #else
-		(message);
-		(value);
+			(message);
+			(value);
 #endif
 		}
 
 		void DebugTrace(std::string_view message)
 		{
-#ifdef TRACE_Monitor_HOST
+#ifdef TRACE_MONITOR_HOST
 			std::cout << "Monitor-HOST: " << message << std::endl;
 #else
-		(message);
+			(message);
 #endif
 		}
 

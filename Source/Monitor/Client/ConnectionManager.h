@@ -13,6 +13,7 @@ namespace Monitor
 		ConnectionManager() :
 			pipeMutex()
 		{
+			DebugTrace("ConnectionManager::ConnectionManager");
 		}
 
 		void Initialize(int32_t traceProcessId)
