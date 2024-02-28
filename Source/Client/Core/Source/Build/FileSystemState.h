@@ -210,6 +210,17 @@ namespace Soup::Core
 			_writeCache.erase(fileId);
 		}
 
+		std::string format(std::chrono::time_point<std::chrono::file_clock> time)
+		{
+			auto systemTime = std::chrono::file_clock::to_sys(time);
+			auto timeT = std::chrono::system_clock::to_time_t(systemTime);
+
+			std::stringstream ss;
+			ss << std::put_time(std::localtime(&timeT), "%Y-%m-%d %X");
+
+			return ss.str();
+		}
+
 		/// <summary>
 		/// Update the write times for the provided file
 		/// </summary>
@@ -225,6 +236,11 @@ namespace Soup::Core
 			{
 				lastWriteTime = lastWriteTimeValue;
 			}
+
+			// if (lastWriteTime.has_value())
+			// 	std::cout << "CheckFileWriteTime: " << filePath.ToString() << " " << format(lastWriteTime.value()) << std::endl;
+			// else
+			// 	std::cout << "CheckFileWriteTime: " << filePath.ToString() << " NONE" << std::endl;
 
 			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
 			return lastWriteTime;

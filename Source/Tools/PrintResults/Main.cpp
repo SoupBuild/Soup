@@ -6,7 +6,6 @@
 
 import Opal;
 import Soup.Core;
-import fmt;
 
 void PrintUsage()
 {
@@ -41,6 +40,16 @@ void PrintFiles(const Soup::Core::FileSystemState& fileSystemState)
 	}
 }
 
+std::string format(std::chrono::time_point<std::chrono::system_clock> time)
+{
+	auto timeT = std::chrono::system_clock::to_time_t(time);
+
+	std::stringstream ss;
+	ss << std::put_time(std::localtime(&timeT), "%Y-%m-%d %X");
+
+	return ss.str();
+}
+
 void PrintResults(Soup::Core::OperationResults& results)
 {
 	for (const auto& [key, operationResult] : results.GetResults())
@@ -52,7 +61,7 @@ void PrintResults(Soup::Core::OperationResults& results)
 		#endif
 
 		std::cout << "Operation: " << key << std::endl;
-		std::cout << "\tEvaluateTime: " << fmt::format("{}", evaluateTimeSystem) << std::endl;
+		std::cout << "\tEvaluateTime: " << format(evaluateTimeSystem) << std::endl;
 		std::cout << "\tWasSuccessfulRun: " << operationResult.WasSuccessfulRun << std::endl;
 		std::cout << "\tObservedInput: " << ToString(operationResult.ObservedInput) << std::endl;
 		std::cout << "\tObservedOutput: " << ToString(operationResult.ObservedOutput) << std::endl;

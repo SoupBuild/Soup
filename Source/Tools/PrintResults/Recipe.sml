@@ -10,6 +10,5 @@ Dependencies: {
 	Runtime: [
 		'mwasplund|Opal@0'
 		'../../Client/Core/'
-		'mwasplund|fmt@10'
 	]
 }
