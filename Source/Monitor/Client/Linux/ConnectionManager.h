@@ -1,14 +1,13 @@
 
 #pragma once
 #include "../ConnectionManager.h"
-#include "Detours.h"
 
 namespace Monitor::Linux
 {
 	class ConnectionManager : public ConnectionManagerBase
 	{
 	public:
-		LinuxConnectionManager() :
+		ConnectionManager() :
 		 	ConnectionManagerBase(),
 			pipeHandle()
 		{
@@ -57,3 +56,6 @@ namespace Monitor::Linux
 		int pipeHandle;
 	};
 }
+
+// Create a singleton
+static ConnectionManager connectionManager;

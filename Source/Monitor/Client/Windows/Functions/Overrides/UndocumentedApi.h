@@ -5,7 +5,7 @@ namespace Monitor::Windows::Functions::Overrides::UndocumentedApi
 {
 	int WINAPI EntryPoint(void)
 	{
-		return Cache::EntryPoint();
+		return Cache::UndocumentedApi::EntryPoint();
 	}
 
 	BOOL WINAPI PrivCopyFileExA(
@@ -30,7 +30,7 @@ namespace Monitor::Windows::Functions::Overrides::UndocumentedApi
 			}
 			else
 			{
-				result = Cache::PrivCopyFileExA(
+				result = Cache::UndocumentedApi::PrivCopyFileExA(
 					lpExistingFileName,
 					lpNewFileName,
 					lpProgressRoutine,
@@ -76,7 +76,7 @@ namespace Monitor::Windows::Functions::Overrides::UndocumentedApi
 			}
 			else
 			{
-				result = Cache::PrivCopyFileExW(
+				result = Cache::UndocumentedApi::PrivCopyFileExW(
 					lpExistingFileName,
 					lpNewFileName,
 					lpProgressRoutine,

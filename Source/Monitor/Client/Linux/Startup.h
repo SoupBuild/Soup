@@ -8,9 +8,6 @@ using namespace Monitor::Linux;
 class Startup
 {
 public:
-	Monitor::LinuxConnectionManager connectionManager;
-
-public:
 	Startup() :
 		connectionManager()
 	{

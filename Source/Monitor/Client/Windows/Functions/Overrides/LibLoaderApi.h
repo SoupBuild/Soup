@@ -1,5 +1,6 @@
 #pragma once
 #include "../Cache/LibLoaderApi.h"
+#include "Windows/ConnectionManager.h"
 
 namespace Monitor::Windows::Functions::Overrides::LibLoaderApi
 {
@@ -9,7 +10,7 @@ namespace Monitor::Windows::Functions::Overrides::LibLoaderApi
 		HMODULE result = 0;
 		__try
 		{
-			result = Cache::LoadLibraryA(
+			result = Cache::LibLoaderApi::LoadLibraryA(
 				lpLibFileName);
 		}
 		__finally
@@ -30,7 +31,7 @@ namespace Monitor::Windows::Functions::Overrides::LibLoaderApi
 		HMODULE result = 0;
 		__try
 		{
-			result = Cache::LoadLibraryW(
+			result = Cache::LibLoaderApi::LoadLibraryW(
 				lpLibFileName);
 		}
 		__finally
@@ -53,7 +54,7 @@ namespace Monitor::Windows::Functions::Overrides::LibLoaderApi
 		HMODULE result = 0;
 		__try
 		{
-			result = Cache::LoadLibraryExA(
+			result = Cache::LibLoaderApi::LoadLibraryExA(
 				lpLibFileName,
 				hFile,
 				dwFlags);
@@ -78,7 +79,7 @@ namespace Monitor::Windows::Functions::Overrides::LibLoaderApi
 		HMODULE result = 0;
 		__try
 		{
-			result = Cache::LoadLibraryExW(
+			result = Cache::LibLoaderApi::LoadLibraryExW(
 				lpLibFileName,
 				hFile,
 				dwFlags);

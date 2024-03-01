@@ -27,7 +27,7 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 
 			if (IsWhiteListProcess(applicationName))
 			{
-				result = Cache::CreateProcessA(
+				result = Cache::ProcessThreadsApi::CreateProcessA(
 					lpApplicationName,
 					lpCommandLine,
 					lpProcessAttributes,
@@ -65,7 +65,7 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 					lpStartupInfo,
 					lpInternalProcessInformation,
 					s_szDllPath,
-					Cache::CreateProcessA);
+					Cache::ProcessThreadsApi::CreateProcessA);
 
 				if (result)
 				{
@@ -124,7 +124,7 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 
 			if ( IsWhiteListProcess(applicationName))
 			{
-				result = Cache::CreateProcessW(
+				result = Cache::ProcessThreadsApi::CreateProcessW(
 					lpApplicationName,
 					lpCommandLine,
 					lpProcessAttributes,
@@ -162,7 +162,7 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 					lpStartupInfo,
 					lpInternalProcessInformation,
 					s_szDllPath,
-					Cache::CreateProcessW);
+					Cache::ProcessThreadsApi::CreateProcessW);
 
 				if (result)
 				{
@@ -214,7 +214,7 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateProcessAsUserA(
+			result = Cache::ProcessThreadsApi::CreateProcessAsUserA(
 				hToken,
 				lpApplicationName,
 				lpCommandLine,
@@ -259,7 +259,7 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateProcessAsUserW(
+			result = Cache::ProcessThreadsApi::CreateProcessAsUserW(
 				hToken,
 				lpApplicationName,
 				lpCommandLine,
@@ -292,7 +292,7 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 	{
 		__try
 		{
-			Cache::ExitProcess(uExitCode);
+			Cache::ProcessThreadsApi::ExitProcess(uExitCode);
 		}
 		__finally
 		{

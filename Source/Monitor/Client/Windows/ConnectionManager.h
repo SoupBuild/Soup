@@ -30,7 +30,7 @@ namespace Monitor::Windows
 				{
 					// Attempt to open the pipe
 					DebugTrace("ConnectionManager::Connect CreateFileA");
-					pipeHandle = Functions::FileApi::Cache::CreateFileA(
+					pipeHandle = Functions::Cache::FileApi::CreateFileA(
 						pipeName.c_str(),
 						GENERIC_WRITE,
 						0,
@@ -99,7 +99,7 @@ namespace Monitor::Windows
 				sizeof(Message::Type) +
 				sizeof(Message::ContentSize);
 			DWORD countBytesWritten = 0;
-			if (!Functions::FileApi::Cache::WriteFile(
+			if (!Functions::Cache::FileApi::WriteFile(
 				pipeHandle,
 				&message,
 				countBytesToWrite,
@@ -123,4 +123,4 @@ namespace Monitor::Windows
 }
 
 // Create a singleton
-static Monitor::WindowsConnectionManager connectionManager;
+static Monitor::Windows::ConnectionManager connectionManager;

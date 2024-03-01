@@ -9,7 +9,7 @@
 #include "Functions/Overrides/UndocumentedApi.h"
 #include "Functions/Overrides/WinBase.h"
 
-#include "AttachWindowsDetours.h"
+#include "AttachDetours.h"
 
 using namespace Monitor::Windows;
 

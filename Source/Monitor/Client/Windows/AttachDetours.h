@@ -473,16 +473,16 @@ namespace Monitor::Windows
 		s_hKernel32 = nullptr;
 
 		PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Functions::Cache::ProcessThreadsApi::CreateProcessW, nullptr);
-		Monitor::ProcessPayload* pPayload = nullptr;
+		ProcessPayload* pPayload = nullptr;
 
 		for (HMODULE hMod = nullptr; (hMod = DetourEnumerateModules(hMod)) != nullptr;)
 		{
 			ULONG cbData;
-			PVOID pvData = DetourFindPayload(hMod, Monitor::ProcessPayloadResourceId, &cbData);
+			PVOID pvData = DetourFindPayload(hMod, ProcessPayloadResourceId, &cbData);
 
 			if (pvData != nullptr && pPayload == nullptr)
 			{
-				pPayload = (Monitor::ProcessPayload*)pvData;
+				pPayload = (ProcessPayload*)pvData;
 			}
 
 			ULONG cbMod = DetourGetModuleSize(hMod);
