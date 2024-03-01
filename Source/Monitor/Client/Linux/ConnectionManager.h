@@ -3,13 +3,13 @@
 #include "../ConnectionManager.h"
 #include "Detours.h"
 
-namespace Monitor
+namespace Monitor::Linux
 {
-	class LinuxConnectionManager : public ConnectionManager
+	class ConnectionManager : public ConnectionManagerBase
 	{
 	public:
 		LinuxConnectionManager() :
-		 	ConnectionManager(),
+		 	ConnectionManagerBase(),
 			pipeHandle()
 		{
 		}

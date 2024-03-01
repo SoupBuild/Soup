@@ -4,21 +4,21 @@
 
 namespace Monitor
 {
-	class ConnectionManager
+	class ConnectionManagerBase
 	{
 	private:
 		std::mutex pipeMutex;
 
 	public:
-		ConnectionManager() :
+		ConnectionManagerBase() :
 			pipeMutex()
 		{
-			DebugTrace("ConnectionManager::ConnectionManager");
+			DebugTrace("ConnectionManagerBase::ConnectionManagerBase");
 		}
 
 		void Initialize(int32_t traceProcessId)
 		{
-			DebugTrace("ConnectionManager::Initialize");
+			DebugTrace("ConnectionManagerBase::Initialize");
 			{
 				auto lock = std::lock_guard<std::mutex>(pipeMutex);
 				Connect(traceProcessId);
@@ -33,7 +33,7 @@ namespace Monitor
 
 		void Shutdown()
 		{
-			DebugTrace("ConnectionManager::Shutdown");
+			DebugTrace("ConnectionManagerBase::Shutdown");
 			auto lock = std::lock_guard<std::mutex>(pipeMutex);
 			Message message;
 			message.Type = MessageType::Shutdown;

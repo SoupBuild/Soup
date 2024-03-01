@@ -1,14 +1,14 @@
 
 #pragma once
-#include "ConnectionManager.h"
+#include "ConnectionManagerBase.h"
 
-namespace Monitor
+namespace Monitor::Windows
 {
-	class WindowsConnectionManager : public ConnectionManager
+	class ConnectionManager : public ConnectionManagerBase
 	{
 	public:
-		WindowsConnectionManager() :
-		 	ConnectionManager(),
+		ConnectionManager() :
+		 	ConnectionManagerBase(),
 			pipeHandle(INVALID_HANDLE_VALUE)
 		{
 		}
@@ -24,9 +24,9 @@ namespace Monitor
 			for (int retries = 0; retries < 10; retries++)
 			{
 				// Wait up to 1 seconds for a pipe to appear.
-				auto timoutMilliseconds = 1000;
+				auto timeoutMilliseconds = 1000;
 				DebugTrace("ConnectionManager::Connect WaitNamedPipeA");
-				if (WaitNamedPipeA(pipeName.c_str(), timoutMilliseconds) != 0)
+				if (WaitNamedPipeA(pipeName.c_str(), timeoutMilliseconds) != 0)
 				{
 					// Attempt to open the pipe
 					DebugTrace("ConnectionManager::Connect CreateFileA");
