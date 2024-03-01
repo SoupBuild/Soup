@@ -1,7 +1,7 @@
 #pragma once
-#include "UndocumentedApiCache.h"
+#include "../Cache/UndocumentedApi.h"
 
-namespace Functions::UndocumentedApi::Overrides
+namespace Monitor::Windows::Functions::Overrides::UndocumentedApi
 {
 	int WINAPI EntryPoint(void)
 	{
@@ -17,8 +17,8 @@ namespace Functions::UndocumentedApi::Overrides
 		DWORD dwCopyFlags)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		bool result = 0;
 		__try
@@ -41,9 +41,9 @@ namespace Functions::UndocumentedApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::PrivCopyFileExA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::PrivCopyFileExA));
 			message.AppendValue(lpExistingFileName);
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);
@@ -63,8 +63,8 @@ namespace Functions::UndocumentedApi::Overrides
 		DWORD dwCopyFlags)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		bool result = 0;
 		__try
@@ -87,9 +87,9 @@ namespace Functions::UndocumentedApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::PrivCopyFileExW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::PrivCopyFileExW));
 			message.AppendValue(lpExistingFileName);
 			message.AppendValue(lpNewFileName);
 			message.AppendValue(result);

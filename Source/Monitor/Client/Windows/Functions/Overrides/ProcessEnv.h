@@ -1,8 +1,8 @@
 #pragma once
-#include "ProcessEnvCache.h"
+#include "../Cache/ProcessEnv.h"
 #include "WindowsConnectionManager.h"
 
-namespace Functions::ProcessEnv::Overrides
+namespace Monitor::Windows::Functions::Overrides::ProcessEnv
 {
 	DWORD WINAPI SearchPathA(
 		LPCSTR lpPath,
@@ -15,7 +15,7 @@ namespace Functions::ProcessEnv::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::SearchPathA(
+			result = Cache::ProcessEnv::SearchPathA(
 				lpPath,
 				lpFileName,
 				lpExtension,
@@ -25,9 +25,9 @@ namespace Functions::ProcessEnv::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SearchPathA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SearchPathA));
 			message.AppendValue(lpPath);
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpExtension);
@@ -49,7 +49,7 @@ namespace Functions::ProcessEnv::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::SearchPathW(
+			result = Cache::ProcessEnv::SearchPathW(
 				lpPath,
 				lpFileName,
 				lpExtension,
@@ -59,9 +59,9 @@ namespace Functions::ProcessEnv::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SearchPathW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SearchPathW));
 			message.AppendValue(lpPath);
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpExtension);

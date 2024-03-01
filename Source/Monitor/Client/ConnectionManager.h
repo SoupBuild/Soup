@@ -25,8 +25,8 @@ namespace Monitor
 			}
 
 			// Notify that we are connected
-			Monitor::Message message;
-			message.Type = Monitor::MessageType::Initialize;
+			Message message;
+			message.Type = MessageType::Initialize;
 			message.ContentSize = 0;
 			WriteMessage(message);
 		}
@@ -35,8 +35,8 @@ namespace Monitor
 		{
 			DebugTrace("ConnectionManager::Shutdown");
 			auto lock = std::lock_guard<std::mutex>(pipeMutex);
-			Monitor::Message message;
-			message.Type = Monitor::MessageType::Shutdown;
+			Message message;
+			message.Type = MessageType::Shutdown;
 			message.ContentSize = 0;
 			UnsafeWriteMessage(message);
 
@@ -47,14 +47,14 @@ namespace Monitor
 		{
 			DebugError(value.data());
 
-			Monitor::Message message;
-			message.Type = Monitor::MessageType::Error;
+			Message message;
+			message.Type = MessageType::Error;
 			message.ContentSize = 0;
 			message.AppendValue(value.data());
 			WriteMessage(message);
 		}
 
-		void WriteMessage(const Monitor::Message& message)
+		void WriteMessage(const Message& message)
 		{
 			auto lock = std::lock_guard<std::mutex>(pipeMutex);
 			UnsafeWriteMessage(message);
@@ -82,6 +82,6 @@ namespace Monitor
 	protected:
 		virtual void Connect(int32_t traceProcessId) = 0;
 		virtual void Disconnect() = 0;
-		virtual void UnsafeWriteMessage(const Monitor::Message& message) = 0;
+		virtual void UnsafeWriteMessage(const Message& message) = 0;
 	};
 }

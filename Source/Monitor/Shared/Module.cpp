@@ -38,9 +38,11 @@ module;
 export module Monitor.Shared;
 #endif
 
-#include "DetourEventType.h"
+#ifdef _WIN32
+#include "WIndows\DetourEventType.h"
+#include "Windows\ProcessPayload.h"
+#endif
 #include "Message.h"
-#include "ProcessPayload.h"
 
 #ifdef _WIN32
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "LibLoaderApiCache.h"
+#include "../Cache/LibLoaderApi.h"
 
-namespace Functions::LibLoaderApi::Overrides
+namespace Monitor::Windows::Functions::Overrides::LibLoaderApi
 {
 	HMODULE WINAPI LoadLibraryA(
 		LPCSTR lpLibFileName)
@@ -14,9 +14,9 @@ namespace Functions::LibLoaderApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LoadLibraryA));
 			message.AppendValue(lpLibFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -35,9 +35,9 @@ namespace Functions::LibLoaderApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LoadLibraryW));
 			message.AppendValue(lpLibFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -60,9 +60,9 @@ namespace Functions::LibLoaderApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryExA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LoadLibraryExA));
 			message.AppendValue(lpLibFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -85,9 +85,9 @@ namespace Functions::LibLoaderApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryExW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LoadLibraryExW));
 			message.AppendValue(lpLibFileName);
 			connectionManager.WriteMessage(message);
 		}

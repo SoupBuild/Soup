@@ -653,8 +653,8 @@ namespace Monitor::Windows
 					}
 
 					DWORD expectedSize = pipe.Message.ContentSize +
-						sizeof(Monitor::Message::Type) +
-						sizeof(Monitor::Message::ContentSize);
+						sizeof(Message::Type) +
+						sizeof(Message::ContentSize);
 					if (bytesTransferred != expectedSize)
 					{
 						DebugTrace("HandlePipeEvent - GetOverlappedResult - Size Mismatched");
@@ -708,8 +708,8 @@ namespace Monitor::Windows
 				}
 
 				DWORD expectedSize = pipe.Message.ContentSize +
-					sizeof(Monitor::Message::Type) +
-					sizeof(Monitor::Message::ContentSize);
+					sizeof(Message::Type) +
+					sizeof(Message::ContentSize);
 				if (bytesRead != expectedSize)
 				{
 					throw std::runtime_error("HandlePipeEvent - GetOverlappedResult - Size Mismatched");

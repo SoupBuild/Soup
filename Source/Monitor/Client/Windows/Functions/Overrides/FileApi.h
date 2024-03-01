@@ -1,22 +1,22 @@
 #pragma once
-#include "FileApiCache.h"
+#include "../Cache/FileApi.h"
 #include "WindowsConnectionManager.h"
 #include "FileSystemAccessSandbox.h"
 
-namespace Functions::FileApi::Overrides
+namespace Monitor::Windows::Functions::Overrides::FileApi
 {
 	BOOL WINAPI AreFileApisANSI()
 	{
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::AreFileApisANSI();
+			result = Cache::FileApi::AreFileApisANSI();
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::AreFileApisANSI));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::AreFileApisANSI));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -31,16 +31,16 @@ namespace Functions::FileApi::Overrides
 		LONG result = 0;
 		__try
 		{
-			result = Cache::CompareFileTime(
+			result = Cache::FileApi::CompareFileTime(
 				lpFileTime1,
 				lpFileTime2
 			);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CompareFileTime));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CompareFileTime));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -53,7 +53,7 @@ namespace Functions::FileApi::Overrides
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
@@ -64,16 +64,16 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::CreateDirectoryA(
+				result = Cache::FileApi::CreateDirectoryA(
 					lpPathName,
 					lpSecurityAttributes);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateDirectoryA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateDirectoryA));
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -88,7 +88,7 @@ namespace Functions::FileApi::Overrides
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
@@ -99,16 +99,16 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::CreateDirectoryW(
+				result = Cache::FileApi::CreateDirectoryW(
 					lpPathName,
 					lpSecurityAttributes);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateDirectoryW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateDirectoryW));
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -126,7 +126,7 @@ namespace Functions::FileApi::Overrides
 		LPCREATEFILE2_EXTENDED_PARAMETERS pCreateExParams)
 	{
 		// Check if this file is allowed access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
+		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
@@ -137,7 +137,7 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::CreateFile2(
+				result = Cache::FileApi::CreateFile2(
 					lpFileName,
 					dwDesiredAccess,
 					dwShareMode,
@@ -147,9 +147,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateFile2));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateFile2));
 			message.AppendValue(lpFileName);
 			message.AppendValue(dwDesiredAccess);
 			message.AppendValue(dwShareMode);
@@ -172,7 +172,7 @@ namespace Functions::FileApi::Overrides
 		HANDLE hTemplateFile)
 	{
 		// Check if this file is allowed access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
+		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
@@ -183,7 +183,7 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::CreateFileA(
+				result = Cache::FileApi::CreateFileA(
 					lpFileName,
 					dwDesiredAccess,
 					dwShareMode,
@@ -195,9 +195,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateFileA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateFileA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(dwDesiredAccess);
 			message.AppendValue(dwShareMode);
@@ -221,7 +221,7 @@ namespace Functions::FileApi::Overrides
 		HANDLE hTemplateFile)
 	{
 		// Check if this file is allowed access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
+		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
@@ -232,7 +232,7 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::CreateFileW(
+				result = Cache::FileApi::CreateFileW(
 					lpFileName,
 					dwDesiredAccess,
 					dwShareMode,
@@ -244,9 +244,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateFileW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateFileW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(dwDesiredAccess);
 			message.AppendValue(dwShareMode);
@@ -268,16 +268,16 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::DefineDosDeviceW(
+			result = Cache::FileApi::DefineDosDeviceW(
 				dwFlags,
 				lpDeviceName,
 				lpTargetPath);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DefineDosDeviceW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::DefineDosDeviceW));
 			message.AppendValue(dwFlags);
 			message.AppendValue(lpDeviceName);
 			message.AppendValue(lpTargetPath);
@@ -292,7 +292,7 @@ namespace Functions::FileApi::Overrides
 		LPCSTR lpFileName)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -303,15 +303,15 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::DeleteFileA(
+				result = Cache::FileApi::DeleteFileA(
 					lpFileName);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DeleteFileA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::DeleteFileA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -325,7 +325,7 @@ namespace Functions::FileApi::Overrides
 		LPCWSTR lpFileName)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -336,15 +336,15 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::DeleteFileW(
+				result = Cache::FileApi::DeleteFileW(
 					lpFileName);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DeleteFileW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::DeleteFileW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -360,14 +360,14 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::DeleteVolumeMountPointW(
+			result = Cache::FileApi::DeleteVolumeMountPointW(
 				lpszVolumeMountPoint);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DeleteVolumeMountPointW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::DeleteVolumeMountPointW));
 			message.AppendValue(lpszVolumeMountPoint);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -383,16 +383,16 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FileTimeToLocalFileTime(
+			result = Cache::FileApi::FileTimeToLocalFileTime(
 				lpFileTime,
 				lpLocalFileTime
 			);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FileTimeToLocalFileTime));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FileTimeToLocalFileTime));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -406,14 +406,14 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindClose(
+			result = Cache::FileApi::FindClose(
 				hFindFile);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindClose));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindClose));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -427,14 +427,14 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindCloseChangeNotification(
+			result = Cache::FileApi::FindCloseChangeNotification(
 				hChangeHandle);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindCloseChangeNotification));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindCloseChangeNotification));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -450,16 +450,16 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstChangeNotificationA(
+			result = Cache::FileApi::FindFirstChangeNotificationA(
 				lpPathName,
 				bWatchSubtree,
 				dwNotifyFilter);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstChangeNotificationA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstChangeNotificationA));
 			message.AppendValue(lpPathName);
 			message.AppendValue(bWatchSubtree);
 			message.AppendValue(dwNotifyFilter);
@@ -477,16 +477,16 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstChangeNotificationW(
+			result = Cache::FileApi::FindFirstChangeNotificationW(
 				lpPathName,
 				bWatchSubtree,
 				dwNotifyFilter);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstChangeNotificationW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstChangeNotificationW));
 			message.AppendValue(lpPathName);
 			message.AppendValue(bWatchSubtree);
 			message.AppendValue(dwNotifyFilter);
@@ -503,15 +503,15 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstFileA(
+			result = Cache::FileApi::FindFirstFileA(
 				lpFileName,
 				lpFindFileData);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstFileA));
 			message.AppendValue(lpFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -526,15 +526,15 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstFileW(
+			result = Cache::FileApi::FindFirstFileW(
 				lpFileName,
 				lpFindFileData);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstFileW));
 			message.AppendValue(lpFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -553,7 +553,7 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstFileExA(
+			result = Cache::FileApi::FindFirstFileExA(
 				lpFileName,
 				fInfoLevelId,
 				lpFindFileData,
@@ -563,9 +563,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileExA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstFileExA));
 			message.AppendValue(lpFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -584,7 +584,7 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstFileExW(
+			result = Cache::FileApi::FindFirstFileExW(
 				lpFileName,
 				fInfoLevelId,
 				lpFindFileData,
@@ -594,9 +594,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileExW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstFileExW));
 			message.AppendValue(lpFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -613,7 +613,7 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstFileNameW(
+			result = Cache::FileApi::FindFirstFileNameW(
 				lpFileName,
 				dwFlags,
 				StringLength,
@@ -621,9 +621,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileNameW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstFileNameW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(dwFlags);
 			connectionManager.WriteMessage(message);
@@ -641,7 +641,7 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstStreamW(
+			result = Cache::FileApi::FindFirstStreamW(
 				lpFileName,
 				InfoLevel,
 				lpFindStreamData,
@@ -649,9 +649,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstStreamW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstStreamW));
 			message.AppendValue(lpFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -666,15 +666,15 @@ namespace Functions::FileApi::Overrides
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::FindFirstVolumeW(
+			result = Cache::FileApi::FindFirstVolumeW(
 				lpszVolumeName,
 				cchBufferLength);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstVolumeW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindFirstVolumeW));
 			message.AppendValue(lpszVolumeName);
 			connectionManager.WriteMessage(message);
 		}
@@ -688,14 +688,14 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindNextChangeNotification(
+			result = Cache::FileApi::FindNextChangeNotification(
 				hChangeHandle);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindNextChangeNotification));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindNextChangeNotification));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -710,15 +710,15 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindNextFileA(
+			result = Cache::FileApi::FindNextFileA(
 				hFindFile,
 				lpFindFileData);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindNextFileA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindNextFileA));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -733,15 +733,15 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindNextFileW(
+			result = Cache::FileApi::FindNextFileW(
 				hFindFile,
 				lpFindFileData);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindNextFileW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindNextFileW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -757,16 +757,16 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindNextFileNameW(
+			result = Cache::FileApi::FindNextFileNameW(
 				hFindStream,
 				StringLength,
 				LinkName);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindNextFileNameW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindNextFileNameW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -781,15 +781,15 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindNextStreamW(
+			result = Cache::FileApi::FindNextStreamW(
 				hFindStream,
 				lpFindStreamData);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindNextStreamW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindNextStreamW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -805,16 +805,16 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindNextVolumeW(
+			result = Cache::FileApi::FindNextVolumeW(
 				hFindVolume,
 				lpszVolumeName,
 				cchBufferLength);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindNextVolumeW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindNextVolumeW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -828,14 +828,14 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FindVolumeClose(
+			result = Cache::FileApi::FindVolumeClose(
 				hFindVolume);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindVolumeClose));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FindVolumeClose));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -849,14 +849,14 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::FlushFileBuffers(
+			result = Cache::FileApi::FlushFileBuffers(
 				hFile);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FlushFileBuffers));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::FlushFileBuffers));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -871,15 +871,15 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetCompressedFileSizeA(
+			result = Cache::FileApi::GetCompressedFileSizeA(
 				lpFileName,
 				lpFileSizeHigh);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetCompressedFileSizeA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetCompressedFileSizeA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -895,15 +895,15 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetCompressedFileSizeW(
+			result = Cache::FileApi::GetCompressedFileSizeW(
 				lpFileName,
 				lpFileSizeHigh);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetCompressedFileSizeW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetCompressedFileSizeW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -922,7 +922,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetDiskFreeSpaceA(
+			result = Cache::FileApi::GetDiskFreeSpaceA(
 				lpRootPathName,
 				lpSectorsPerCluster,
 				lpBytesPerSector,
@@ -931,9 +931,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDiskFreeSpaceA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetDiskFreeSpaceA));
 			message.AppendValue(lpRootPathName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -952,7 +952,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetDiskFreeSpaceW(
+			result = Cache::FileApi::GetDiskFreeSpaceW(
 				lpRootPathName,
 				lpSectorsPerCluster,
 				lpBytesPerSector,
@@ -961,9 +961,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDiskFreeSpaceW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetDiskFreeSpaceW));
 			message.AppendValue(lpRootPathName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -981,7 +981,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetDiskFreeSpaceExA(
+			result = Cache::FileApi::GetDiskFreeSpaceExA(
 				lpDirectoryName,
 				lpFreeBytesAvailableToCaller,
 				lpTotalNumberOfBytes,
@@ -989,9 +989,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDiskFreeSpaceExA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetDiskFreeSpaceExA));
 			message.AppendValue(lpDirectoryName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1009,7 +1009,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetDiskFreeSpaceExW(
+			result = Cache::FileApi::GetDiskFreeSpaceExW(
 				lpDirectoryName,
 				lpFreeBytesAvailableToCaller,
 				lpTotalNumberOfBytes,
@@ -1017,9 +1017,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDiskFreeSpaceExW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetDiskFreeSpaceExW));
 			message.AppendValue(lpDirectoryName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1034,14 +1034,14 @@ namespace Functions::FileApi::Overrides
 		UINT result = 0;
 		__try
 		{
-			result = Cache::GetDriveTypeA(
+			result = Cache::FileApi::GetDriveTypeA(
 				lpRootPathName);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDriveTypeA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetDriveTypeA));
 			message.AppendValue(lpRootPathName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1056,14 +1056,14 @@ namespace Functions::FileApi::Overrides
 		UINT result = 0;
 		__try
 		{
-			result = Cache::GetDriveTypeW(
+			result = Cache::FileApi::GetDriveTypeW(
 				lpRootPathName);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDriveTypeW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetDriveTypeW));
 			message.AppendValue(lpRootPathName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1076,7 +1076,7 @@ namespace Functions::FileApi::Overrides
 		LPCSTR lpFileName)
 	{
 		// Check if this file is allowed read access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpFileName);
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		DWORD result = 0;
 		__try
 		{
@@ -1087,15 +1087,15 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::GetFileAttributesA(
+				result = Cache::FileApi::GetFileAttributesA(
 					lpFileName);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileAttributesA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileAttributesA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -1109,7 +1109,7 @@ namespace Functions::FileApi::Overrides
 		LPCWSTR lpFileName)
 	{
 		// Check if this file is allowed read access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpFileName);
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		DWORD result = 0;
 		__try
 		{
@@ -1120,15 +1120,15 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::GetFileAttributesW(
+				result = Cache::FileApi::GetFileAttributesW(
 					lpFileName);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileAttributesW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileAttributesW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -1144,7 +1144,7 @@ namespace Functions::FileApi::Overrides
 		LPVOID lpFileInformation)
 	{
 		// Check if this file is allowed read access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpFileName);
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -1155,7 +1155,7 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::GetFileAttributesExA(
+				result = Cache::FileApi::GetFileAttributesExA(
 					lpFileName,
 					fInfoLevelId,
 					lpFileInformation);
@@ -1163,9 +1163,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileAttributesExA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileAttributesExA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -1181,7 +1181,7 @@ namespace Functions::FileApi::Overrides
 		LPVOID lpFileInformation)
 	{
 		// Check if this file is allowed read access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpFileName);
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -1192,7 +1192,7 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::GetFileAttributesExW(
+				result = Cache::FileApi::GetFileAttributesExW(
 					lpFileName,
 					fInfoLevelId,
 					lpFileInformation);
@@ -1200,9 +1200,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileAttributesExW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileAttributesExW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -1219,15 +1219,15 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetFileInformationByHandle(
+			result = Cache::FileApi::GetFileInformationByHandle(
 				hFile,
 				lpFileInformation);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileInformationByHandle));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileInformationByHandle));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1242,15 +1242,15 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetFileSize(
+			result = Cache::FileApi::GetFileSize(
 				hFile,
 				lpFileSizeHigh);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileSize));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileSize));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1265,15 +1265,15 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetFileSizeEx(
+			result = Cache::FileApi::GetFileSizeEx(
 				hFile,
 				lpFileSize);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileSizeEx));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileSizeEx));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1290,7 +1290,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetFileTime(
+			result = Cache::FileApi::GetFileTime(
 				hFile,
 				lpCreationTime,
 				lpLastAccessTime,
@@ -1298,9 +1298,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileTime));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileTime));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1314,14 +1314,14 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetFileType(
+			result = Cache::FileApi::GetFileType(
 				hFile);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileType));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFileType));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1338,7 +1338,7 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetFinalPathNameByHandleA(
+			result = Cache::FileApi::GetFinalPathNameByHandleA(
 				hFile,
 				lpszFilePath,
 				cchFilePath,
@@ -1346,9 +1346,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFinalPathNameByHandleA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFinalPathNameByHandleA));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1365,7 +1365,7 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetFinalPathNameByHandleW(
+			result = Cache::FileApi::GetFinalPathNameByHandleW(
 				hFile,
 				lpszFilePath,
 				cchFilePath,
@@ -1373,9 +1373,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFinalPathNameByHandleW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFinalPathNameByHandleW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1392,7 +1392,7 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetFullPathNameA(
+			result = Cache::FileApi::GetFullPathNameA(
 				lpFileName,
 				nBufferLength,
 				lpBuffer,
@@ -1400,9 +1400,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFullPathNameA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFullPathNameA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1420,7 +1420,7 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetFullPathNameW(
+			result = Cache::FileApi::GetFullPathNameW(
 				lpFileName,
 				nBufferLength,
 				lpBuffer,
@@ -1428,9 +1428,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFullPathNameW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetFullPathNameW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(lpBuffer);
 			message.AppendValue(result);
@@ -1445,13 +1445,13 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetLogicalDrives();
+			result = Cache::FileApi::GetLogicalDrives();
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetLogicalDrives));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetLogicalDrives));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1466,15 +1466,15 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetLogicalDriveStringsW(
+			result = Cache::FileApi::GetLogicalDriveStringsW(
 				nBufferLength,
 				lpBuffer);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetLogicalDriveStringsW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetLogicalDriveStringsW));
 			message.AppendValue(lpBuffer);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1491,16 +1491,16 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetLongPathNameA(
+			result = Cache::FileApi::GetLongPathNameA(
 				lpszShortPath,
 				lpszLongPath,
 				cchBuffer);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetLongPathNameA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetLongPathNameA));
 			message.AppendValue(lpszShortPath);
 			message.AppendValue(lpszLongPath);
 			message.AppendValue(result);
@@ -1518,16 +1518,16 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetLongPathNameW(
+			result = Cache::FileApi::GetLongPathNameW(
 				lpszShortPath,
 				lpszLongPath,
 				cchBuffer);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetLongPathNameW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetLongPathNameW));
 			message.AppendValue(lpszShortPath);
 			message.AppendValue(lpszLongPath);
 			message.AppendValue(result);
@@ -1545,16 +1545,16 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetShortPathNameW(
+			result = Cache::FileApi::GetShortPathNameW(
 				lpszLongPath,
 				lpszShortPath,
 				cchBuffer);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetShortPathNameW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetShortPathNameW));
 			message.AppendValue(lpszLongPath);
 			message.AppendValue(lpszShortPath);
 			message.AppendValue(result);
@@ -1573,7 +1573,7 @@ namespace Functions::FileApi::Overrides
 		UINT result = 0;
 		__try
 		{
-			result = Cache::GetTempFileNameA(
+			result = Cache::FileApi::GetTempFileNameA(
 				lpPathName,
 				lpPrefixString,
 				uUnique,
@@ -1581,9 +1581,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetTempFileNameA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetTempFileNameA));
 			message.AppendValue(lpPathName);
 			message.AppendValue(lpPrefixString);
 			message.AppendValue(uUnique);
@@ -1604,7 +1604,7 @@ namespace Functions::FileApi::Overrides
 		UINT result = 0;
 		__try
 		{
-			result = Cache::GetTempFileNameW(
+			result = Cache::FileApi::GetTempFileNameW(
 				lpPathName,
 				lpPrefixString,
 				uUnique,
@@ -1612,9 +1612,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetTempFileNameW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetTempFileNameW));
 			message.AppendValue(lpPathName);
 			message.AppendValue(lpPrefixString);
 			message.AppendValue(uUnique);
@@ -1633,15 +1633,15 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetTempPathA(
+			result = Cache::FileApi::GetTempPathA(
 				nBufferLength,
 				lpBuffer);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetTempPathA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetTempPathA));
 			message.AppendValue(lpBuffer);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1657,15 +1657,15 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetTempPathW(
+			result = Cache::FileApi::GetTempPathW(
 				nBufferLength,
 				lpBuffer);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetTempPathW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetTempPathW));
 			message.AppendValue(lpBuffer);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1687,7 +1687,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetVolumeInformationA(
+			result = Cache::FileApi::GetVolumeInformationA(
 				lpRootPathName,
 				lpVolumeNameBuffer,
 				nVolumeNameSize,
@@ -1699,9 +1699,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetVolumeInformationA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetVolumeInformationA));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1722,7 +1722,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetVolumeInformationW(
+			result = Cache::FileApi::GetVolumeInformationW(
 				lpRootPathName,
 				lpVolumeNameBuffer,
 				nVolumeNameSize,
@@ -1734,9 +1734,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetVolumeInformationW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetVolumeInformationW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1757,7 +1757,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetVolumeInformationByHandleW(
+			result = Cache::FileApi::GetVolumeInformationByHandleW(
 				hFile,
 				lpVolumeNameBuffer,
 				nVolumeNameSize,
@@ -1769,9 +1769,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetVolumeInformationByHandleW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetVolumeInformationByHandleW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1787,16 +1787,16 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetVolumeNameForVolumeMountPointW(
+			result = Cache::FileApi::GetVolumeNameForVolumeMountPointW(
 				lpszVolumeMountPoint,
 				lpszVolumeName,
 				cchBufferLength);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetVolumeNameForVolumeMountPointW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetVolumeNameForVolumeMountPointW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1813,7 +1813,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetVolumePathNamesForVolumeNameW(
+			result = Cache::FileApi::GetVolumePathNamesForVolumeNameW(
 				lpszVolumeName,
 				lpszVolumePathNames,
 				cchBufferLength,
@@ -1821,9 +1821,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetVolumePathNamesForVolumeNameW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetVolumePathNamesForVolumeNameW));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1839,16 +1839,16 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetVolumePathNameW(
+			result = Cache::FileApi::GetVolumePathNameW(
 				lpszFileName,
 				lpszVolumePathName,
 				cchBufferLength);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetVolumePathNameW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::GetVolumePathNameW));
 			message.AppendValue(lpszFileName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1864,15 +1864,15 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::LocalFileTimeToFileTime(
+			result = Cache::FileApi::LocalFileTimeToFileTime(
 				lpLocalFileTime,
 				lpFileTime);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LocalFileTimeToFileTime));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LocalFileTimeToFileTime));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1890,7 +1890,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::LockFile(
+			result = Cache::FileApi::LockFile(
 				hFile,
 				dwFileOffsetLow,
 				dwFileOffsetHigh,
@@ -1899,9 +1899,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LockFile));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LockFile));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1920,7 +1920,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::LockFileEx(
+			result = Cache::FileApi::LockFileEx(
 				hFile,
 				dwFlags,
 				dwReserved,
@@ -1930,9 +1930,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LockFileEx));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LockFileEx));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -1948,16 +1948,16 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::QueryDosDeviceW(
+			result = Cache::FileApi::QueryDosDeviceW(
 				lpDeviceName,
 				lpTargetPath,
 				ucchMax);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::QueryDosDeviceW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::QueryDosDeviceW));
 			message.AppendValue(lpDeviceName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -1976,7 +1976,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::ReadFile(
+			result = Cache::FileApi::ReadFile(
 				hFile,
 				lpBuffer,
 				nNumberOfBytesToRead,
@@ -1985,9 +1985,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReadFile));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::ReadFile));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2005,7 +2005,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::ReadFileEx(
+			result = Cache::FileApi::ReadFileEx(
 				hFile,
 				lpBuffer,
 				nNumberOfBytesToRead,
@@ -2014,9 +2014,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReadFileEx));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::ReadFileEx));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2034,7 +2034,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::ReadFileScatter(
+			result = Cache::FileApi::ReadFileScatter(
 				hFile,
 				aSegmentArray,
 				nNumberOfBytesToRead,
@@ -2043,9 +2043,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReadFileScatter));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::ReadFileScatter));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2057,7 +2057,7 @@ namespace Functions::FileApi::Overrides
 		LPCSTR lpPathName)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
@@ -2068,15 +2068,15 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::RemoveDirectoryA(
+				result = Cache::FileApi::RemoveDirectoryA(
 					lpPathName);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::RemoveDirectoryA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::RemoveDirectoryA));
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -2090,7 +2090,7 @@ namespace Functions::FileApi::Overrides
 		LPCWSTR lpPathName)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
@@ -2101,15 +2101,15 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::RemoveDirectoryW(
+				result = Cache::FileApi::RemoveDirectoryW(
 					lpPathName);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::RemoveDirectoryW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::RemoveDirectoryW));
 			message.AppendValue(lpPathName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -2125,14 +2125,14 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetEndOfFile(
+			result = Cache::FileApi::SetEndOfFile(
 				hFile);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetEndOfFile));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetEndOfFile));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2144,13 +2144,13 @@ namespace Functions::FileApi::Overrides
 	{
 		__try
 		{
-			Cache::SetFileApisToANSI();
+			Cache::FileApi::SetFileApisToANSI();
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileApisToANSI));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFileApisToANSI));
 			connectionManager.WriteMessage(message);
 		}
 	}
@@ -2159,13 +2159,13 @@ namespace Functions::FileApi::Overrides
 	{
 		__try
 		{
-			Cache::SetFileApisToOEM();
+			Cache::FileApi::SetFileApisToOEM();
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileApisToOEM));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFileApisToOEM));
 			connectionManager.WriteMessage(message);
 		}
 	}
@@ -2175,7 +2175,7 @@ namespace Functions::FileApi::Overrides
 		DWORD  dwFileAttributes)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -2186,16 +2186,16 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::SetFileAttributesA(
+				result = Cache::FileApi::SetFileAttributesA(
 					lpFileName,
 					dwFileAttributes);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileAttributesA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFileAttributesA));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -2210,7 +2210,7 @@ namespace Functions::FileApi::Overrides
 		DWORD  dwFileAttributes)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -2221,16 +2221,16 @@ namespace Functions::FileApi::Overrides
 			}
 			else
 			{
-				result = Cache::SetFileAttributesW(
+				result = Cache::FileApi::SetFileAttributesW(
 					lpFileName,
 					dwFileAttributes);
 			}
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileAttributesW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFileAttributesW));
 			message.AppendValue(lpFileName);
 			message.AppendValue(result);
 			message.AppendValue(blockAccess);
@@ -2249,7 +2249,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFileInformationByHandle(
+			result = Cache::FileApi::SetFileInformationByHandle(
 				hFile,
 				FileInformationClass,
 				lpFileInformation,
@@ -2257,9 +2257,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileInformationByHandle));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFileInformationByHandle));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2275,16 +2275,16 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFileIoOverlappedRange(
+			result = Cache::FileApi::SetFileIoOverlappedRange(
 				FileHandle,
 				OverlappedRangeStart,
 				Length);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileIoOverlappedRange));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFileIoOverlappedRange));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2301,7 +2301,7 @@ namespace Functions::FileApi::Overrides
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::SetFilePointer(
+			result = Cache::FileApi::SetFilePointer(
 				hFile,
 				lDistanceToMove,
 				lpDistanceToMoveHigh,
@@ -2309,9 +2309,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFilePointer));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFilePointer));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2328,7 +2328,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFilePointerEx(
+			result = Cache::FileApi::SetFilePointerEx(
 				hFile,
 				liDistanceToMove,
 				lpNewFilePointer,
@@ -2336,9 +2336,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFilePointerEx));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFilePointerEx));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2355,7 +2355,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFileTime(
+			result = Cache::FileApi::SetFileTime(
 				hFile,
 				lpCreationTime,
 				lpLastAccessTime,
@@ -2363,9 +2363,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileTime));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFileTime));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2380,15 +2380,15 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFileValidData(
+			result = Cache::FileApi::SetFileValidData(
 				hFile,
 				ValidDataLength);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileValidData));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::SetFileValidData));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2406,7 +2406,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::UnlockFile(
+			result = Cache::FileApi::UnlockFile(
 				hFile,
 				dwFileOffsetLow,
 				dwFileOffsetHigh,
@@ -2415,9 +2415,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::UnlockFile));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::UnlockFile));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2435,7 +2435,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::UnlockFileEx(
+			result = Cache::FileApi::UnlockFileEx(
 				hFile,
 				dwReserved,
 				nNumberOfBytesToUnlockLow,
@@ -2444,9 +2444,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::UnlockFileEx));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::UnlockFileEx));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2464,7 +2464,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::WriteFile(
+			result = Cache::FileApi::WriteFile(
 				hFile,
 				lpBuffer,
 				nNumberOfBytesToWrite,
@@ -2473,9 +2473,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::WriteFile));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::WriteFile));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2493,7 +2493,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::WriteFileEx(
+			result = Cache::FileApi::WriteFileEx(
 				hFile,
 				lpBuffer,
 				nNumberOfBytesToWrite,
@@ -2502,9 +2502,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::WriteFileEx));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::WriteFileEx));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}
@@ -2522,7 +2522,7 @@ namespace Functions::FileApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::WriteFileGather(
+			result = Cache::FileApi::WriteFileGather(
 				hFile,
 				aSegmentArray,
 				nNumberOfBytesToWrite,
@@ -2531,9 +2531,9 @@ namespace Functions::FileApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::WriteFileGather));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::WriteFileGather));
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
 		}

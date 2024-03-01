@@ -29,13 +29,13 @@ namespace Monitor
 			close(pipeHandle);
 		}
 
-		virtual void UnsafeWriteMessage(const Monitor::Message& message)
+		virtual void UnsafeWriteMessage(const Message& message)
 		{
 			DebugTrace("ConnectionManager::UnsafeWriteMessage");
 			// Write the message
 			size_t countBytesToWrite = message.ContentSize +
-				sizeof(Monitor::Message::Type) +
-				sizeof(Monitor::Message::ContentSize);
+				sizeof(Message::Type) +
+				sizeof(Message::ContentSize);
 			auto countBytesWritten = write(
 				pipeHandle,
 				&message,

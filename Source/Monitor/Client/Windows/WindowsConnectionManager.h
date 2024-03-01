@@ -86,7 +86,7 @@ namespace Monitor
 			}
 		}
 
-		virtual void UnsafeWriteMessage(const Monitor::Message& message)
+		virtual void UnsafeWriteMessage(const Message& message)
 		{
 			if (pipeHandle == INVALID_HANDLE_VALUE)
 			{
@@ -96,8 +96,8 @@ namespace Monitor
 
 			// Write the message
 			DWORD countBytesToWrite = message.ContentSize +
-				sizeof(Monitor::Message::Type) +
-				sizeof(Monitor::Message::ContentSize);
+				sizeof(Message::Type) +
+				sizeof(Message::ContentSize);
 			DWORD countBytesWritten = 0;
 			if (!Functions::FileApi::Cache::WriteFile(
 				pipeHandle,
