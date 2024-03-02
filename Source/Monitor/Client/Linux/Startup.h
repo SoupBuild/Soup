@@ -2,6 +2,7 @@
 
 #include "LinuxConnectionManager.h"
 #include "Detours.h"
+#include "../FileSystemAccessSandbox.h"
 
 class Startup
 {
@@ -28,11 +29,11 @@ public:
 			// Initialize the event pipe
 			DebugTrace("ConnectionManager");
 			connectionManager.Initialize(traceProcessId);
-			// Monitor::FileSystemAccessSandbox::Initialize(
-			// 	enableAccessChecks,
-			// 	std::move(workingDirectory),
-			// 	std::move(allowedReadDirectories),
-			// 	std::move(allowedWriteDirectories));
+			Monitor::FileSystemAccessSandbox::Initialize(
+				enableAccessChecks,
+				std::move(workingDirectory),
+				std::move(allowedReadDirectories),
+				std::move(allowedWriteDirectories));
 		}
 		catch (const std::exception& ex)
 		{
@@ -49,11 +50,11 @@ public:
 private:
 	void DebugTrace(std::string_view message)
 	{
-//#ifdef TRACE_MONITOR_HOST
+#ifdef TRACE_DETOUR_CLIENT
 		std::cout << "Startup: " << message << std::endl;
-// #else
-// 		(message);
-// #endif
+#else
+		(message);
+#endif
 	}
 };
 
