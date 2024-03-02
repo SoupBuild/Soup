@@ -1,8 +1,8 @@
 #pragma once
-#include "ProcessThreadsApiCache.h"
+#include "../Cache/ProcessThreadsApi.h"
 #include "WindowsHelpers.h"
 
-namespace Functions::ProcessThreadsApi::Overrides
+namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 {
 	BOOL WINAPI CreateProcessA(
 		LPCSTR lpApplicationName,
@@ -27,7 +27,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 
 			if (IsWhiteListProcess(applicationName))
 			{
-				result = Cache::CreateProcessA(
+				result = Cache::ProcessThreadsApi::CreateProcessA(
 					lpApplicationName,
 					lpCommandLine,
 					lpProcessAttributes,
@@ -65,7 +65,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 					lpStartupInfo,
 					lpInternalProcessInformation,
 					s_szDllPath,
-					Cache::CreateProcessA);
+					Cache::ProcessThreadsApi::CreateProcessA);
 
 				if (result)
 				{
@@ -89,9 +89,9 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateProcessA));
 			message.AppendValue(wasDetoured);
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
@@ -124,7 +124,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 
 			if ( IsWhiteListProcess(applicationName))
 			{
-				result = Cache::CreateProcessW(
+				result = Cache::ProcessThreadsApi::CreateProcessW(
 					lpApplicationName,
 					lpCommandLine,
 					lpProcessAttributes,
@@ -162,7 +162,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 					lpStartupInfo,
 					lpInternalProcessInformation,
 					s_szDllPath,
-					Cache::CreateProcessW);
+					Cache::ProcessThreadsApi::CreateProcessW);
 
 				if (result)
 				{
@@ -186,9 +186,9 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateProcessW));
 			message.AppendValue(wasDetoured);
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
@@ -214,7 +214,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateProcessAsUserA(
+			result = Cache::ProcessThreadsApi::CreateProcessAsUserA(
 				hToken,
 				lpApplicationName,
 				lpCommandLine,
@@ -229,9 +229,9 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessAsUserA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateProcessAsUserA));
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -259,7 +259,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateProcessAsUserW(
+			result = Cache::ProcessThreadsApi::CreateProcessAsUserW(
 				hToken,
 				lpApplicationName,
 				lpCommandLine,
@@ -274,9 +274,9 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessAsUserW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::CreateProcessAsUserW));
 			message.AppendValue(lpApplicationName);
 			message.AppendValue(result);
 			connectionManager.WriteMessage(message);
@@ -292,13 +292,13 @@ namespace Functions::ProcessThreadsApi::Overrides
 	{
 		__try
 		{
-			Cache::ExitProcess(uExitCode);
+			Cache::ProcessThreadsApi::ExitProcess(uExitCode);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ExitProcess));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::ExitProcess));
 			message.AppendValue(uExitCode);
 			connectionManager.WriteMessage(message);
 		}

@@ -42,12 +42,16 @@ void PrintFiles(const Soup::Core::FileSystemState& fileSystemState)
 
 std::string format(std::chrono::time_point<std::chrono::system_clock> time)
 {
+#ifdef _WIN32
+	return std::format("{:%Y-%m-%d %H:%M:%S %z}", time);
+#else
 	auto timeT = std::chrono::system_clock::to_time_t(time);
 
 	std::stringstream ss;
-	ss << std::put_time(std::localtime(&timeT), "%Y-%m-%d %X");
+	ss << std::put_time(std::localtime(&timeT), "%Y-%m-%d %H:%M:%S %z");
 
 	return ss.str();
+#endif
 }
 
 void PrintResults(Soup::Core::OperationResults& results)

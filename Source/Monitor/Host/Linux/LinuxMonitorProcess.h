@@ -271,7 +271,7 @@ namespace Monitor::Linux
 				// Read until we get a client and then all clients disconnect
 				while (m_processRunning)
 				{
-					Monitor::Message message;
+					Message message;
 					int bytesRead = read(m_pipeHandle, &message, sizeof(message));
 					if (bytesRead > 0)
 					{
@@ -279,8 +279,8 @@ namespace Monitor::Linux
 						DebugTrace("Handle Event");
 						
 						auto expectedSize = message.ContentSize +
-							sizeof(Monitor::Message::Type) +
-							sizeof(Monitor::Message::ContentSize);
+							sizeof(Message::Type) +
+							sizeof(Message::ContentSize);
 						if (bytesRead != expectedSize)
 						{
 							throw std::runtime_error("HandlePipeEvent - GetOverlappedResult - Size Mismatched: " + std::to_string(bytesRead) + " " + std::to_string(expectedSize));

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Functions::WinBase::Cache
+namespace Monitor::Windows::Functions::Cache::WinBase
 {
 	/// <summary>
 	/// Copies an existing file to a new file.

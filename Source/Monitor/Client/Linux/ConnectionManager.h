@@ -1,15 +1,14 @@
 
 #pragma once
 #include "../ConnectionManager.h"
-#include "Detours.h"
 
-namespace Monitor
+namespace Monitor::Linux
 {
-	class LinuxConnectionManager : public ConnectionManager
+	class ConnectionManager : public ConnectionManagerBase
 	{
 	public:
-		LinuxConnectionManager() :
-		 	ConnectionManager(),
+		ConnectionManager() :
+		 	ConnectionManagerBase(),
 			pipeHandle()
 		{
 		}
@@ -29,13 +28,13 @@ namespace Monitor
 			close(pipeHandle);
 		}
 
-		virtual void UnsafeWriteMessage(const Monitor::Message& message)
+		virtual void UnsafeWriteMessage(const Message& message)
 		{
 			DebugTrace("ConnectionManager::UnsafeWriteMessage");
 			// Write the message
 			size_t countBytesToWrite = message.ContentSize +
-				sizeof(Monitor::Message::Type) +
-				sizeof(Monitor::Message::ContentSize);
+				sizeof(Message::Type) +
+				sizeof(Message::ContentSize);
 			auto countBytesWritten = write(
 				pipeHandle,
 				&message,
@@ -57,3 +56,6 @@ namespace Monitor
 		int pipeHandle;
 	};
 }
+
+// Create a singleton
+static ConnectionManager connectionManager;

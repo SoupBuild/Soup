@@ -38,11 +38,10 @@ module;
 export module Monitor.Shared;
 #endif
 
-#include "DetourEventType.h"
-#include "Message.h"
-#include "ProcessPayload.h"
-
 #ifdef _WIN32
+
+#include "Windows\DetourEventType.h"
+#include "Windows\ProcessPayload.h"
 
 export void ThrowIfFailed(int32_t result, std::string_view message)
 {
@@ -52,4 +51,10 @@ export void ThrowIfFailed(int32_t result, std::string_view message)
 	}
 }
 
+#elif defined(__linux__)
+
+#include "Linux\DetourEventType.h"
+
 #endif
+
+#include "Message.h"

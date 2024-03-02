@@ -1,7 +1,8 @@
 #pragma once
-#include "LibLoaderApiCache.h"
+#include "../Cache/LibLoaderApi.h"
+#include "Windows/ConnectionManager.h"
 
-namespace Functions::LibLoaderApi::Overrides
+namespace Monitor::Windows::Functions::Overrides::LibLoaderApi
 {
 	HMODULE WINAPI LoadLibraryA(
 		LPCSTR lpLibFileName)
@@ -9,14 +10,14 @@ namespace Functions::LibLoaderApi::Overrides
 		HMODULE result = 0;
 		__try
 		{
-			result = Cache::LoadLibraryA(
+			result = Cache::LibLoaderApi::LoadLibraryA(
 				lpLibFileName);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LoadLibraryA));
 			message.AppendValue(lpLibFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -30,14 +31,14 @@ namespace Functions::LibLoaderApi::Overrides
 		HMODULE result = 0;
 		__try
 		{
-			result = Cache::LoadLibraryW(
+			result = Cache::LibLoaderApi::LoadLibraryW(
 				lpLibFileName);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LoadLibraryW));
 			message.AppendValue(lpLibFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -53,16 +54,16 @@ namespace Functions::LibLoaderApi::Overrides
 		HMODULE result = 0;
 		__try
 		{
-			result = Cache::LoadLibraryExA(
+			result = Cache::LibLoaderApi::LoadLibraryExA(
 				lpLibFileName,
 				hFile,
 				dwFlags);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryExA));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LoadLibraryExA));
 			message.AppendValue(lpLibFileName);
 			connectionManager.WriteMessage(message);
 		}
@@ -78,16 +79,16 @@ namespace Functions::LibLoaderApi::Overrides
 		HMODULE result = 0;
 		__try
 		{
-			result = Cache::LoadLibraryExW(
+			result = Cache::LibLoaderApi::LoadLibraryExW(
 				lpLibFileName,
 				hFile,
 				dwFlags);
 		}
 		__finally
 		{
-			auto message = Monitor::Message();
-			message.Type = Monitor::MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryExW));
+			auto message = Message();
+			message.Type = MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(DetourEventType::LoadLibraryExW));
 			message.AppendValue(lpLibFileName);
 			connectionManager.WriteMessage(message);
 		}

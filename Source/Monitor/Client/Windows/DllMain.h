@@ -2,14 +2,16 @@
 
 #include "Helpers.h"
 
-#include "Functions/FileApiOverrides.h"
-#include "Functions/LibLoaderApiOverrides.h"
-#include "Functions/ProcessEnvOverrides.h"
-#include "Functions/ProcessThreadsApiOverrides.h"
-#include "Functions/UndocumentedApiOverrides.h"
-#include "Functions/WinBaseOverrides.h"
+#include "Functions/Overrides/FileApi.h"
+#include "Functions/Overrides/LibLoaderApi.h"
+#include "Functions/Overrides/ProcessEnv.h"
+#include "Functions/Overrides/ProcessThreadsApi.h"
+#include "Functions/Overrides/UndocumentedApi.h"
+#include "Functions/Overrides/WinBase.h"
 
-#include "AttachWindowsDetours.h"
+#include "AttachDetours.h"
+
+using namespace Monitor::Windows;
 
 bool APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
 {
@@ -31,7 +33,7 @@ bool APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
 		DetourRestoreAfterWith();
-		Functions::UndocumentedApi::Cache::EntryPoint = (int (WINAPI *)(void))DetourGetEntryPoint(nullptr);
+		Functions::Cache::UndocumentedApi::EntryPoint = (int (WINAPI *)(void))DetourGetEntryPoint(nullptr);
 		return ProcessAttach(hModule);
 	}
 	else if (dwReason == DLL_PROCESS_DETACH)

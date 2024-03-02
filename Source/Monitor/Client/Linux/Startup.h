@@ -1,14 +1,12 @@
 #pragma once
 
-#include "LinuxConnectionManager.h"
-#include "Detours.h"
-#include "../FileSystemAccessSandbox.h"
+#include "ConnectionManager.h"
+#include "AttachDetours.h"
+
+using namespace Monitor::Linux;
 
 class Startup
 {
-public:
-	Monitor::LinuxConnectionManager connectionManager;
-
 public:
 	Startup() :
 		connectionManager()
@@ -24,7 +22,7 @@ public:
 			auto allowedReadDirectories = std::vector<std::string>(); // ExtractStringList(s_Payload.zReadAccessDirectories, s_Payload.cReadAccessDirectories);
 			auto allowedWriteDirectories = std::vector<std::string>(); // ExtractStringList(s_Payload.zWriteAccessDirectories, s_Payload.cWriteAccessDirectories);
 
-			detours.AttachDetours();
+			AttachDetours();
 
 			// Initialize the event pipe
 			DebugTrace("ConnectionManager");
