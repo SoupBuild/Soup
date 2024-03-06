@@ -43,17 +43,6 @@ namespace Monitor
 			Disconnect();
 		}
 
-		void WriteError(std::string_view value)
-		{
-			DebugError(value.data());
-
-			Message message;
-			message.Type = MessageType::Error;
-			message.ContentSize = 0;
-			message.AppendValue(value.data());
-			WriteMessage(message);
-		}
-
 		void WriteMessage(const Message& message)
 		{
 			auto lock = std::lock_guard<std::mutex>(pipeMutex);

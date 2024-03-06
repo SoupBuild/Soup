@@ -727,7 +727,10 @@ namespace Monitor::Windows::Functions::Overrides::WinBase
 			connectionManager.WriteMessage(message);
 
 			// TODO
-			connectionManager.WriteError("Cannot detour process from CreateProcessWithLogonW");
+			{
+				auto errorMessage = MessageSender(MessageType::Error);
+				errorMessage.AppendValue("Cannot detour process from CreateProcessWithLogonW");
+			}
 		}
 
 		return result;
@@ -768,7 +771,10 @@ namespace Monitor::Windows::Functions::Overrides::WinBase
 			connectionManager.WriteMessage(message);
 
 			// TODO
-			connectionManager.WriteError("Cannot detour process from CreateProcessWithTokenW");
+			{
+				auto errorMessage = MessageSender(MessageType::Error);
+				errorMessage.AppendValue("Cannot detour process from CreateProcessWithTokenW");
+			}
 		}
 
 		return result;

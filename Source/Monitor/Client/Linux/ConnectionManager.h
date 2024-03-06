@@ -1,6 +1,7 @@
 
 #pragma once
-#include "../ConnectionManager.h"
+#include "../ConnectionManagerBase.h"
+#include "Functions/Cache/FileApi.h"
 
 namespace Monitor::Linux
 {
@@ -19,7 +20,7 @@ namespace Monitor::Linux
 			DebugTrace("ConnectionManager::Connect");
 
 			auto pipeName = std::string("/tmp/soupbuildfifo");
-			pipeHandle = detours.open(pipeName.c_str(), O_WRONLY);
+			pipeHandle = Functions::Cache::FileApi::open(pipeName.c_str(), O_WRONLY);
 		}
 
 		virtual void Disconnect()
@@ -58,4 +59,4 @@ namespace Monitor::Linux
 }
 
 // Create a singleton
-static ConnectionManager connectionManager;
+static Monitor::Linux::ConnectionManager connectionManager;

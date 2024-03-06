@@ -237,7 +237,10 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 			connectionManager.WriteMessage(message);
 
 			// TODO
-			connectionManager.WriteError("Cannot detour process from CreateProcessAsUserA");
+			{
+				auto errorMessage = MessageSender(MessageType::Error);
+				errorMessage.AppendValue("Cannot detour process from CreateProcessAsUserA");
+			}
 		}
 
 		return result;
@@ -282,7 +285,10 @@ namespace Monitor::Windows::Functions::Overrides::ProcessThreadsApi
 			connectionManager.WriteMessage(message);
 
 			// TODO
-			connectionManager.WriteError("Cannot detour process from CreateProcessAsUserW");
+			{
+				auto errorMessage = MessageSender(MessageType::Error);
+				errorMessage.AppendValue("Cannot detour process from CreateProcessAsUserW");
+			}
 		}
 
 		return result;

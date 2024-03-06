@@ -41,10 +41,12 @@ import Monitor.Shared;
 
 import Detours;
 
+#include "Windows/ConnectionManager.h"
 #include "Windows/DllMain.h"
 
 #elif defined(__linux__)
 
+#include "Linux/ConnectionManager.h"
 #include "Linux/Startup.h"
 
 #endif

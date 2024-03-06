@@ -544,12 +544,20 @@ namespace Monitor::Windows
 		}
 		catch (const std::exception& ex)
 		{
-			connectionManager.WriteError(ex.what());
+			{
+				auto message = MessageSender(MessageType::Error);
+				message.AppendValue(ex.what());
+			}
+
 			exit(-1234);
 		}
 		catch (...)
 		{
-			connectionManager.WriteError("Unknown error attaching detours");
+			{
+				auto message = MessageSender(MessageType::Error);
+				message.AppendValue("Unknown error attaching detours");
+			}
+
 			exit(-1234);
 		}
 
@@ -568,12 +576,20 @@ namespace Monitor::Windows
 		}
 		catch (const std::exception& ex)
 		{
-			connectionManager.WriteError(ex.what());
+			{
+				auto message = MessageSender(MessageType::Error);
+				message.AppendValue(ex.what());
+			}
+
 			exit(-1234);
 		}
 		catch (...)
 		{
-			connectionManager.WriteError("Unknown error detaching detours");
+			{
+				auto message = MessageSender(MessageType::Error);
+				message.AppendValue("Unknown error detaching detours");
+			}
+
 			exit(-1234);
 		}
 

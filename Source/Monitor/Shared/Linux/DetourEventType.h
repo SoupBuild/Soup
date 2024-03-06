@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Monitor::Windows
+namespace Monitor::Linux
 {
 	#ifdef SOUP_BUILD
 	export
