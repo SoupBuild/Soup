@@ -241,10 +241,12 @@ namespace Soup::Core
 				lastWriteTime = lastWriteTimeValue;
 			}
 
-			// if (lastWriteTime.has_value())
-			// 	std::cout << "CheckFileWriteTime: " << filePath.ToString() << " " << format(lastWriteTime.value()) << std::endl;
-			// else
-			// 	std::cout << "CheckFileWriteTime: " << filePath.ToString() << " NONE" << std::endl;
+#ifdef TRACE_FILE_SYSTEM_STATE
+			if (lastWriteTime.has_value())
+				std::cout << "CheckFileWriteTime: " << filePath.ToString() << " " << format(lastWriteTime.value()) << std::endl;
+			else
+				std::cout << "CheckFileWriteTime: " << filePath.ToString() << " NONE" << std::endl;
+#endif
 
 			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
 			return lastWriteTime;

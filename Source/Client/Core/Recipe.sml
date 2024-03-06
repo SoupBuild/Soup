@@ -4,6 +4,7 @@ Version: '0.1.1'
 Defines: [
 	# 'LOCAL_DEBUG'
 	# 'TRACE_SYSTEM_ACCESS'
+	# 'TRACE_FILE_SYSTEM_STATE'
 ]
 IncludePaths: [
 	'Source/'

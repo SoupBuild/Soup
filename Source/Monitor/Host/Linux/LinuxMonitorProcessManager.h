@@ -40,7 +40,8 @@ namespace Monitor::Linux
 			return std::make_shared<LinuxMonitorProcess>(
 				executable,
 				std::move(arguments),
-				workingDirectory);
+				workingDirectory,
+				std::move(callback));
 		}
 	};
 }

@@ -58,7 +58,7 @@ namespace Monitor::Linux
 		void DebugTrace(std::string_view message)
 		{
 	#ifdef TRACE_DETOUR_CLIENT
-			std::cout << "Startup: " << message << std::endl;
+			std::cout << "DETOUR-CLIENT: " << message << std::endl;
 	#else
 			(message);
 	#endif

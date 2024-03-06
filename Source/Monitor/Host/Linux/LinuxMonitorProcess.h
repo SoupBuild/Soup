@@ -3,6 +3,10 @@
 // </copyright>
 
 #pragma once
+#include "DetourMonitorCallback.h"
+#include "DetourCallbackLogger.h"
+#include "DetourForkCallback.h"
+#include "EventListener.h"
 
 namespace Monitor::Linux
 {
@@ -19,6 +23,7 @@ namespace Monitor::Linux
 		Path m_executable;
 		std::vector<std::string> m_arguments;
 		Path m_workingDirectory;
+		EventListener m_eventListener;
 
 		// Runtime
 		pid_t m_processId;
@@ -44,10 +49,18 @@ namespace Monitor::Linux
 		LinuxMonitorProcess(
 			const Path& executable,
 			std::vector<std::string> arguments,
-			const Path& workingDirectory) :
+			const Path& workingDirectory,
+			std::shared_ptr<IMonitorCallback> callback) :
 			m_executable(executable),
 			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
+#ifdef TRACE_DETOUR_SERVER
+			m_eventListener(std::make_shared<DetourForkCallback>(
+				std::make_shared<DetourCallbackLogger>(std::cout),
+				std::make_shared<DetourMonitorCallback>(std::move(callback)))),
+#else
+			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
+#endif
 			m_processId(),
 			m_stdOutReadHandle(),
 			m_stdErrReadHandle(),
@@ -265,7 +278,7 @@ namespace Monitor::Linux
 			{
 				DebugTrace("WorkerThread Start");
 				
-				DebugTrace("Open");
+				DebugTrace("Open read pipe");
 				m_pipeHandle = open(pipeName.c_str(), O_RDONLY);
 
 				// Read until we get a client and then all clients disconnect
@@ -285,6 +298,8 @@ namespace Monitor::Linux
 						{
 							throw std::runtime_error("HandlePipeEvent - GetOverlappedResult - Size Mismatched: " + std::to_string(bytesRead) + " " + std::to_string(expectedSize));
 						}
+
+						LogMessage(message);
 					}
 				}
 			}
@@ -308,9 +323,8 @@ namespace Monitor::Linux
 		void LogMessage(Message& message)
 		{
 			DebugTrace("LogMessage");
-			// m_eventListener.LogMessage(message);
+			m_eventListener.LogMessage(message);
 		}
-		
 
 		void DebugTrace(std::string_view message, uint32_t value)
 		{

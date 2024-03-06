@@ -32,6 +32,7 @@ namespace Monitor::Linux
 		virtual void UnsafeWriteMessage(const Message& message)
 		{
 			DebugTrace("ConnectionManager::UnsafeWriteMessage");
+
 			// Write the message
 			size_t countBytesToWrite = message.ContentSize +
 				sizeof(Message::Type) +
@@ -42,7 +43,7 @@ namespace Monitor::Linux
 				countBytesToWrite);
 			if (countBytesWritten == -1)
 			{
-				DebugError("DETOURS-CLIENT-ERROR: Failed write event logger");
+				DebugError("Failed write event logger");
 				exit(-1234);
 			}
 

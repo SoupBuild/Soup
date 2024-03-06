@@ -29,6 +29,44 @@ namespace Monitor::Windows
 	/// </summary>
 	class WindowsMonitorProcess : public Opal::System::IProcess
 	{
+	private:
+		// Input
+		Path m_executable;
+		std::vector<std::string> m_arguments;
+		Path m_workingDirectory;
+		std::map<std::string, std::string> m_environmentVariables;
+		EventListener m_eventListener;
+
+		bool m_enableAccessChecks;
+		std::vector<Path> m_allowedReadAccess;
+		std::vector<Path> m_allowedWriteAccess;
+
+		// Runtime
+		std::thread m_workerThread;
+		std::array<ServerPipeInstance, 4> m_pipes;
+		std::array<HANDLE, 4> m_rawEventHandles;
+		bool m_hasAnyClients;
+		int m_activeClientCount;
+
+		std::atomic<bool> m_processRunning;
+		std::atomic<bool> m_workerFailed;
+		std::exception_ptr m_workerException = nullptr;
+
+		Opal::System::SmartHandle m_processHandle;
+		Opal::System::SmartHandle m_threadHandle;
+		Opal::System::SmartHandle m_stdOutReadHandle;
+		Opal::System::SmartHandle m_stdOutWriteHandle;
+		Opal::System::SmartHandle m_stdErrReadHandle;
+		Opal::System::SmartHandle m_stdErrWriteHandle;
+		Opal::System::SmartHandle m_stdInReadHandle;
+		Opal::System::SmartHandle m_stdInWriteHandle;
+
+		// Result
+		bool m_isFinished;
+		std::stringstream m_stdOut;
+		std::stringstream m_stdErr;
+		int m_exitCode;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref='WindowsMonitorProcess'/> class.
@@ -756,43 +794,5 @@ namespace Monitor::Windows
 			(message);
 #endif
 		}
-
-	private:
-		// Input
-		Path m_executable;
-		std::vector<std::string> m_arguments;
-		Path m_workingDirectory;
-		std::map<std::string, std::string> m_environmentVariables;
-		EventListener m_eventListener;
-
-		bool m_enableAccessChecks;
-		std::vector<Path> m_allowedReadAccess;
-		std::vector<Path> m_allowedWriteAccess;
-
-		// Runtime
-		std::thread m_workerThread;
-		std::array<ServerPipeInstance, 4> m_pipes;
-		std::array<HANDLE, 4> m_rawEventHandles;
-		bool m_hasAnyClients;
-		int m_activeClientCount;
-
-		std::atomic<bool> m_processRunning;
-		std::atomic<bool> m_workerFailed;
-		std::exception_ptr m_workerException = nullptr;
-
-		Opal::System::SmartHandle m_processHandle;
-		Opal::System::SmartHandle m_threadHandle;
-		Opal::System::SmartHandle m_stdOutReadHandle;
-		Opal::System::SmartHandle m_stdOutWriteHandle;
-		Opal::System::SmartHandle m_stdErrReadHandle;
-		Opal::System::SmartHandle m_stdErrWriteHandle;
-		Opal::System::SmartHandle m_stdInReadHandle;
-		Opal::System::SmartHandle m_stdInWriteHandle;
-
-		// Result
-		bool m_isFinished;
-		std::stringstream m_stdOut;
-		std::stringstream m_stdErr;
-		int m_exitCode;
 	};
 }

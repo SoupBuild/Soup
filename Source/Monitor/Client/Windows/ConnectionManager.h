@@ -107,7 +107,7 @@ namespace Monitor::Windows
 				&countBytesWritten,
 				nullptr))
 			{
-				DebugError("DETOURS-CLIENT-ERROR: Failed write event logger");
+				DebugError("Failed write event logger");
 				exit(-1234);
 			}
 
