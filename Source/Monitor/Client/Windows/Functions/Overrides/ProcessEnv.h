@@ -12,28 +12,21 @@ namespace Monitor::Windows::Functions::Overrides::ProcessEnv
 		LPSTR lpBuffer,
 		LPSTR *lpFilePart)
 	{
-		DWORD result = 0;
-		__try
-		{
-			result = Cache::ProcessEnv::SearchPathA(
-				lpPath,
-				lpFileName,
-				lpExtension,
-				nBufferLength,
-				lpBuffer,
-				lpFilePart);
-		}
-		__finally
-		{
-			auto message = Message();
-			message.Type = MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(DetourEventType::SearchPathA));
-			message.AppendValue(lpPath);
-			message.AppendValue(lpFileName);
-			message.AppendValue(lpExtension);
-			message.AppendValue(result);
-			connectionManager.WriteMessage(message);
-		}
+		auto message = MessageSender(MessageType::Detour);
+		message.AppendValue(static_cast<uint32_t>(DetourEventType::SearchPathA));
+
+		DWORD result = Cache::ProcessEnv::SearchPathA(
+			lpPath,
+			lpFileName,
+			lpExtension,
+			nBufferLength,
+			lpBuffer,
+			lpFilePart);
+
+		message.AppendValue(lpPath);
+		message.AppendValue(lpFileName);
+		message.AppendValue(lpExtension);
+		message.AppendValue(result);
 
 		return result;
 	}
@@ -46,28 +39,21 @@ namespace Monitor::Windows::Functions::Overrides::ProcessEnv
 		LPWSTR lpBuffer,
 		LPWSTR *lpFilePart)
 	{
-		DWORD result = 0;
-		__try
-		{
-			result = Cache::ProcessEnv::SearchPathW(
-				lpPath,
-				lpFileName,
-				lpExtension,
-				nBufferLength,
-				lpBuffer,
-				lpFilePart);
-		}
-		__finally
-		{
-			auto message = Message();
-			message.Type = MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(DetourEventType::SearchPathW));
-			message.AppendValue(lpPath);
-			message.AppendValue(lpFileName);
-			message.AppendValue(lpExtension);
-			message.AppendValue(result);
-			connectionManager.WriteMessage(message);
-		}
+		auto message = MessageSender(MessageType::Detour);
+		message.AppendValue(static_cast<uint32_t>(DetourEventType::SearchPathW));
+
+		DWORD result = Cache::ProcessEnv::SearchPathW(
+			lpPath,
+			lpFileName,
+			lpExtension,
+			nBufferLength,
+			lpBuffer,
+			lpFilePart);
+
+		message.AppendValue(lpPath);
+		message.AppendValue(lpFileName);
+		message.AppendValue(lpExtension);
+		message.AppendValue(result);
 
 		return result;
 	}

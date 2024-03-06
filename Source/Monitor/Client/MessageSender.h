@@ -33,7 +33,8 @@ namespace Monitor
 					throw std::runtime_error("Message content too long for const char* value");
 				}
 
-				stringValue.copy(reinterpret_cast<char*>(message.Content + startIndex), size);
+				stringValue.copy(reinterpret_cast<char*>(message.Content + startIndex), stringValue.size());
+				message.Content[message.ContentSize - 1] = 0;
 			}
 			else
 			{
@@ -54,7 +55,9 @@ namespace Monitor
 					throw std::runtime_error("Message content too long for const wchar_t* value");
 				}
 
-				stringValue.copy(reinterpret_cast<wchar_t*>(message.Content + startIndex), size);
+				stringValue.copy(reinterpret_cast<wchar_t*>(message.Content + startIndex), stringValue.size());
+				message.Content[message.ContentSize - 1] = 0;
+				message.Content[message.ContentSize - 2] = 0;
 			}
 			else
 			{

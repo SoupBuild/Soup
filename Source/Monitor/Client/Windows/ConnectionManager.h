@@ -1,6 +1,7 @@
 
 #pragma once
 #include "ConnectionManagerBase.h"
+#include "Functions/Cache/FileApi.h"
 
 namespace Monitor::Windows
 {

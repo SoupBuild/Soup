@@ -16,40 +16,34 @@ namespace Monitor::Windows::Functions::Overrides::UndocumentedApi
 		LPBOOL pbCancel,
 		DWORD dwCopyFlags)
 	{
+		auto message = MessageSender(MessageType::Detour);
+		message.AppendValue(static_cast<uint32_t>(DetourEventType::PrivCopyFileExA));
+
 		// Check if this file is allowed access
 		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
 		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		bool result = 0;
-		__try
+		if (blockAccess)
 		{
-			if (blockAccess)
-			{
-				result = FALSE;
-				SetLastError(ERROR_ACCESS_DENIED);
-			}
-			else
-			{
-				result = Cache::UndocumentedApi::PrivCopyFileExA(
-					lpExistingFileName,
-					lpNewFileName,
-					lpProgressRoutine,
-					lpData,
-					pbCancel,
-					dwCopyFlags);
-			}
+			result = FALSE;
+			SetLastError(ERROR_ACCESS_DENIED);
 		}
-		__finally
+		else
 		{
-			auto message = Message();
-			message.Type = MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(DetourEventType::PrivCopyFileExA));
-			message.AppendValue(lpExistingFileName);
-			message.AppendValue(lpNewFileName);
-			message.AppendValue(result);
-			message.AppendValue(blockAccess);
-			connectionManager.WriteMessage(message);
+			result = Cache::UndocumentedApi::PrivCopyFileExA(
+				lpExistingFileName,
+				lpNewFileName,
+				lpProgressRoutine,
+				lpData,
+				pbCancel,
+				dwCopyFlags);
 		}
+
+		message.AppendValue(lpExistingFileName);
+		message.AppendValue(lpNewFileName);
+		message.AppendValue(result);
+		message.AppendValue(blockAccess);
 
 		return result;
 	}
@@ -62,40 +56,34 @@ namespace Monitor::Windows::Functions::Overrides::UndocumentedApi
 		LPBOOL pbCancel,
 		DWORD dwCopyFlags)
 	{
+		auto message = MessageSender(MessageType::Detour);
+		message.AppendValue(static_cast<uint32_t>(DetourEventType::PrivCopyFileExW));
+
 		// Check if this file is allowed access
 		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
 		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		bool result = 0;
-		__try
+		if (blockAccess)
 		{
-			if (blockAccess)
-			{
-				result = FALSE;
-				SetLastError(ERROR_ACCESS_DENIED);
-			}
-			else
-			{
-				result = Cache::UndocumentedApi::PrivCopyFileExW(
-					lpExistingFileName,
-					lpNewFileName,
-					lpProgressRoutine,
-					lpData,
-					pbCancel,
-					dwCopyFlags);
-			}
+			result = FALSE;
+			SetLastError(ERROR_ACCESS_DENIED);
 		}
-		__finally
+		else
 		{
-			auto message = Message();
-			message.Type = MessageType::Detour;
-			message.AppendValue(static_cast<uint32_t>(DetourEventType::PrivCopyFileExW));
-			message.AppendValue(lpExistingFileName);
-			message.AppendValue(lpNewFileName);
-			message.AppendValue(result);
-			message.AppendValue(blockAccess);
-			connectionManager.WriteMessage(message);
+			result = Cache::UndocumentedApi::PrivCopyFileExW(
+				lpExistingFileName,
+				lpNewFileName,
+				lpProgressRoutine,
+				lpData,
+				pbCancel,
+				dwCopyFlags);
 		}
+
+		message.AppendValue(lpExistingFileName);
+		message.AppendValue(lpNewFileName);
+		message.AppendValue(result);
+		message.AppendValue(blockAccess);
 
 		return result;
 	}

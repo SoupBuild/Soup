@@ -48,8 +48,8 @@ namespace Monitor::Windows
 			m_environmentVariables(environmentVariables),
 #ifdef TRACE_DETOUR_SERVER
 			m_eventListener(std::make_shared<DetourForkCallback>(
-				std::make_shared<DetourMonitorCallback>(std::move(callback)),
-				std::make_shared<DetourCallbackLogger>(std::cout))),
+				std::make_shared<DetourCallbackLogger>(std::cout),
+				std::make_shared<DetourMonitorCallback>(std::move(callback)))),
 #else
 			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
 #endif
