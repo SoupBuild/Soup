@@ -27,9 +27,29 @@ namespace Monitor::Linux
 		}
 
 		// FileApi
-		virtual void OnOpen() override final
+		void OnOpen(std::string_view path) override final
 		{
-			m_stream << "open: " << std::endl;
+			m_stream << "open: " << path << std::endl;
+		}
+
+		void OnFOpen(std::string_view pathname, std::string_view mode) override final
+		{
+			m_stream << "fopen: " << pathname << std::endl;
+		}
+
+		void OnFDOpen(int32_t fd, std::string_view mode) override final
+		{
+			m_stream << "fdopen: " << std::endl;
+		}
+
+		void OnFReopen(std::string_view pathname, std::string_view mode) override final
+		{
+			m_stream << "freopen: " << pathname << std::endl;
+		}
+
+		void OnMkdir(std::string_view path, std::string_view mode) override final
+		{
+			m_stream << "mkdir: " << path << std::endl;
 		}
 
 	private:

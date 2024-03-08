@@ -72,12 +72,42 @@ namespace Monitor::Linux
 		void HandleDetourMessage(Message& message, uint32_t& offset)
 		{
 			auto eventType = static_cast<DetourEventType>(ReadUInt32Value(message, offset));
+			std::cout << "HandleDetourMessage: " << (uint32_t)eventType << std::endl; 
 			switch (eventType)
 			{
 				// FileApi
 				case DetourEventType::open:
 				{
-					m_callback->OnOpen();
+					auto path = ReadStringValue(message, offset);
+					m_callback->OnOpen(path);
+					break;
+				}
+				case DetourEventType::fopen:
+				{
+					auto pathname = ReadStringValue(message, offset);
+					auto mode = ReadStringValue(message, offset);
+					m_callback->OnFOpen(pathname, mode);
+					break;
+				}
+				case DetourEventType::fdopen:
+				{
+					auto fd = ReadInt32Value(message, offset);
+					auto mode = ReadStringValue(message, offset);
+					m_callback->OnFDOpen(fd, mode);
+					break;
+				}
+				case DetourEventType::freopen:
+				{
+					auto pathname = ReadStringValue(message, offset);
+					auto mode = ReadStringValue(message, offset);
+					m_callback->OnFReopen(pathname, mode);
+					break;
+				}
+				case DetourEventType::mkdir:
+				{
+					auto path = ReadStringValue(message, offset);
+					auto mode = ReadStringValue(message, offset);
+					m_callback->OnMkdir(path, mode);
 					break;
 				}
 				default:

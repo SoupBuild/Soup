@@ -9,5 +9,11 @@ namespace Monitor::Linux
 	{
 		// FileApi
 		open,
+
+		fopen,
+		fdopen,
+		freopen,
+
+		mkdir,
 	};
 }

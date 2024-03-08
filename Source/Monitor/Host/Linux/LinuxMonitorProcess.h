@@ -285,18 +285,27 @@ namespace Monitor::Linux
 				while (m_processRunning)
 				{
 					Message message;
-					int bytesRead = read(m_pipeHandle, &message, sizeof(message));
+					int expectedHeaderSize = sizeof(Message::Type) + sizeof(Message::ContentSize);
+					int bytesRead = read(m_pipeHandle, &message, expectedHeaderSize);
+					std::cout << "read: " << bytesRead << std::endl;
 					if (bytesRead > 0)
 					{
 						// Handle the event
 						DebugTrace("Handle Event");
-						
+						if (bytesRead != expectedHeaderSize)
+						{
+							throw std::runtime_error("HandlePipeEvent - Header size wrong: " + std::to_string(bytesRead) + " " + std::to_string(expectedHeaderSize));
+						}
+
+						// Read the raw content
 						auto expectedSize = message.ContentSize +
 							sizeof(Message::Type) +
 							sizeof(Message::ContentSize);
-						if (bytesRead != expectedSize)
+						bytesRead = read(m_pipeHandle, &(message.Content), message.ContentSize);
+					std::cout << "read content: " << bytesRead << std::endl;
+						if (bytesRead != message.ContentSize)
 						{
-							throw std::runtime_error("HandlePipeEvent - GetOverlappedResult - Size Mismatched: " + std::to_string(bytesRead) + " " + std::to_string(expectedSize));
+							throw std::runtime_error("HandlePipeEvent - Size Mismatched: " + std::to_string(bytesRead) + " " + std::to_string(message.ContentSize));
 						}
 
 						LogMessage(message);
