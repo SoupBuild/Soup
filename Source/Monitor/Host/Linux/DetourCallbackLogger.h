@@ -27,9 +27,9 @@ namespace Monitor::Linux
 		}
 
 		// FileApi
-		void OnOpen(std::string_view path) override final
+		void OnOpen(std::string_view path, int32_t oflag, int32_t result) override final
 		{
-			m_stream << "open: " << path << std::endl;
+			m_stream << "open: " << path << " " << oflag << std::endl;
 		}
 
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final

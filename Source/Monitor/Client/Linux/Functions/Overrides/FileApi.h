@@ -9,10 +9,12 @@ int open(const char* path, int oflag, ...)
 
 	va_list args;
 	va_start(args, oflag);
+	auto result = Monitor::Linux::Functions::Cache::FileApi::open(path, oflag, args);
 	va_end(args);
-	auto result = Monitor::Linux::Functions::Cache::FileApi::open(path, oflag);
 
 	message.AppendValue(path);
+	message.AppendValue(oflag);
+	message.AppendValue(result);
 
 	return result;
 }

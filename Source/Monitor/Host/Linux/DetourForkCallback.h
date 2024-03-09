@@ -30,10 +30,10 @@ namespace Monitor::Linux
 		}
 
 		// FileApi
-		void OnOpen(std::string_view path) override final
+		void OnOpen(std::string_view path, int32_t oflag, int32_t result) override final
 		{
-			_callback1->OnOpen(path);
-			_callback2->OnOpen(path);
+			_callback1->OnOpen(path, oflag, result);
+			_callback2->OnOpen(path, oflag, result);
 		}
 
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final

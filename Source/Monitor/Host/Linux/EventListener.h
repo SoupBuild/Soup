@@ -79,7 +79,9 @@ namespace Monitor::Linux
 				case DetourEventType::open:
 				{
 					auto path = ReadStringValue(message, offset);
-					m_callback->OnOpen(path);
+					auto oflag = ReadInt32Value(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnOpen(path, oflag, result);
 					break;
 				}
 				case DetourEventType::fopen:

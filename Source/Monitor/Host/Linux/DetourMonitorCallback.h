@@ -32,9 +32,19 @@ namespace Monitor::Linux
 		}
 
 		// FileApi
-		void OnOpen(std::string_view path) override final
+		void OnOpen(std::string_view path, int32_t oflag, int32_t result) override final
 		{
-			// TouchFileWrite(pathName, wasBlocked);
+			bool isWrite = (oflag & O_WRONLY) != 0 || (oflag & O_RDWR) != 0;
+			bool wasBlocked = false;
+			if (isWrite)
+			{
+				TouchFileWrite(path, wasBlocked);
+			}
+			else
+			{
+				bool exists = result != -1;
+				TouchFileRead(path, exists, wasBlocked);
+			}
 		}
 
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final
