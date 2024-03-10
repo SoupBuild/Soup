@@ -59,8 +59,6 @@ namespace Monitor::Linux
 		{
 	#ifdef TRACE_DETOUR_CLIENT
 			std::cout << "DETOUR-CLIENT: " << message << std::endl;
-	#else
-			(message);
 	#endif
 		}
 	};

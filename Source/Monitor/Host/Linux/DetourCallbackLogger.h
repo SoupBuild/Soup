@@ -32,6 +32,16 @@ namespace Monitor::Linux
 			m_stream << "open: " << path << " " << oflag << std::endl;
 		}
 
+		void OnCreat(std::string_view pathname, int32_t result) override final
+		{
+			m_stream << "creat: " << pathname << std::endl;
+		}
+
+		void OnOpenat(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) override final
+		{
+			m_stream << "openat: " << pathname << " " << flags << std::endl;
+		}
+
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final
 		{
 			m_stream << "fopen: " << pathname << std::endl;

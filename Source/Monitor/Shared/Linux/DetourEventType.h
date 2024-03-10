@@ -9,6 +9,8 @@ namespace Monitor::Linux
 	{
 		// FileApi
 		open,
+		creat,
+		openat,
 		fopen,
 		fdopen,
 		freopen,

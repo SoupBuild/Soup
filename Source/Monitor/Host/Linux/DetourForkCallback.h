@@ -36,6 +36,18 @@ namespace Monitor::Linux
 			_callback2->OnOpen(path, oflag, result);
 		}
 
+		void OnCreat(std::string_view pathname, int32_t result) override final
+		{
+			_callback1->OnCreat(pathname, result);
+			_callback2->OnCreat(pathname, result);
+		}
+
+		void OnOpenat(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) override final
+		{
+			_callback1->OnOpenat(dirfd, pathname, flags, result);
+			_callback2->OnOpenat(dirfd, pathname, flags, result);
+		}
+
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final
 		{
 			_callback1->OnFOpen(pathname, mode);

@@ -47,6 +47,27 @@ namespace Monitor::Linux
 			}
 		}
 
+		void OnCreat(std::string_view pathname, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileWrite(pathname, wasBlocked);
+		}
+
+		void OnOpenat(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) override final
+		{
+			bool isWrite = (flags & O_WRONLY) != 0 || (flags & O_RDWR) != 0;
+			bool wasBlocked = false;
+			if (isWrite)
+			{
+				TouchFileWrite(pathname, wasBlocked);
+			}
+			else
+			{
+				bool exists = result != -1;
+				TouchFileRead(pathname, exists, wasBlocked);
+			}
+		}
+
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final
 		{
 			// TouchFileWrite(pathName, wasBlocked);

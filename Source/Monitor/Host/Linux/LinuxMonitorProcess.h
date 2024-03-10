@@ -287,7 +287,6 @@ namespace Monitor::Linux
 					Message message;
 					int expectedHeaderSize = sizeof(Message::Type) + sizeof(Message::ContentSize);
 					int bytesRead = read(m_pipeHandle, &message, expectedHeaderSize);
-					std::cout << "read: " << bytesRead << std::endl;
 					if (bytesRead > 0)
 					{
 						// Handle the event
@@ -302,7 +301,6 @@ namespace Monitor::Linux
 							sizeof(Message::Type) +
 							sizeof(Message::ContentSize);
 						bytesRead = read(m_pipeHandle, &(message.Content), message.ContentSize);
-					std::cout << "read content: " << bytesRead << std::endl;
 						if (bytesRead != message.ContentSize)
 						{
 							throw std::runtime_error("HandlePipeEvent - Size Mismatched: " + std::to_string(bytesRead) + " " + std::to_string(message.ContentSize));
@@ -339,9 +337,6 @@ namespace Monitor::Linux
 		{
 #ifdef TRACE_MONITOR_HOST
 			std::cout << "Monitor-HOST: " << message << " " << value << std::endl;
-#else
-			(message);
-			(value);
 #endif
 		}
 
@@ -349,8 +344,6 @@ namespace Monitor::Linux
 		{
 #ifdef TRACE_MONITOR_HOST
 			std::cout << "Monitor-HOST: " << message << std::endl;
-#else
-			(message);
 #endif
 		}
 	};

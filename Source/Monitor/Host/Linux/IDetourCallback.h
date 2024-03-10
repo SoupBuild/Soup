@@ -11,6 +11,8 @@ namespace Monitor::Linux
 
 		// FileApi
 		virtual void OnOpen(std::string_view path, int32_t oflag, int32_t result) = 0;
+		virtual void OnCreat(std::string_view pathname, int32_t result) = 0;
+		virtual void OnOpenat(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) = 0;
 		virtual void OnFOpen(std::string_view pathname, std::string_view mode) = 0;
 		virtual void OnFDOpen(int32_t fd, std::string_view mode) = 0;
 		virtual void OnFReopen(std::string_view pathname, std::string_view mode) = 0;

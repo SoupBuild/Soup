@@ -2,18 +2,76 @@
 
 #include "../Cache/FileApi.h"
 
-int open(const char* path, int oflag, ...)
+int open(const char* path, int oflag, ... /* mode_t mode */ )
 {
+	std::cout << "got open" << std::endl;
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::open));
 
-	va_list args;
-	va_start(args, oflag);
-	auto result = Monitor::Linux::Functions::Cache::FileApi::open(path, oflag, args);
-	va_end(args);
+	// TODO: Bigly hack since Clang does not support __builtin_va_arg_pack
+	// To whomever thought variadic optional parameters were a good idea. Why?
+	bool requiresMode = (oflag & O_CREAT) != 0 || (oflag & __O_TMPFILE) == __O_TMPFILE;
+	int result;
+	if (requiresMode)
+	{
+		va_list args;
+		va_start(args, oflag);
+		auto mode = va_arg(args, mode_t);
+		va_end(args);
+		result = Monitor::Linux::Functions::Cache::FileApi::open(path, oflag, mode);
+	}
+	else
+	{
+		result = Monitor::Linux::Functions::Cache::FileApi::open(path, oflag);
+	}
 
 	message.AppendValue(path);
 	message.AppendValue(oflag);
+	message.AppendValue(result);
+
+	return result;
+}
+
+int creat(const char *pathname, mode_t mode)
+{
+	std::cout << "got creat" << std::endl;
+	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
+	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::creat));
+
+	auto result = Monitor::Linux::Functions::Cache::FileApi::creat(pathname, mode);
+
+	message.AppendValue(pathname);
+	message.AppendValue(result);
+
+	return result;
+}
+
+int openat(int dirfd, const char *pathname, int flags, ... /* mode_t mode */ )
+{
+	std::cout << "got openat" << std::endl;
+	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
+	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::openat));
+
+	// TODO: Bigly hack since Clang does not support __builtin_va_arg_pack
+	// To whomever thought variadic optional parameters were a good idea. Why?
+	bool requiresMode = (flags & O_CREAT) != 0 || (flags & __O_TMPFILE) == __O_TMPFILE;
+	int result;
+	if (requiresMode)
+	{
+		va_list args;
+		va_start(args, flags);
+		auto mode = va_arg(args, mode_t);
+		va_end(args);
+		result = Monitor::Linux::Functions::Cache::FileApi::openat(dirfd, pathname, flags, mode);
+	}
+	else
+	{
+		result = Monitor::Linux::Functions::Cache::FileApi::openat(dirfd, pathname, flags);
+	}
+
+	message.AppendValue(dirfd);
+	message.AppendValue(pathname);
+	message.AppendValue(flags);
 	message.AppendValue(result);
 
 	return result;

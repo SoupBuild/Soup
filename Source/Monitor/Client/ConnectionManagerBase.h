@@ -63,8 +63,6 @@ namespace Monitor
 		{
 	#ifdef TRACE_DETOUR_CLIENT
 			printf("DETOUR-CLIENT: %s\n", message.data());
-	#else
-			(message);
 	#endif
 		}
 
