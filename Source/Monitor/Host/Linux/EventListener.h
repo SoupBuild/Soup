@@ -112,6 +112,60 @@ namespace Monitor::Linux
 					m_callback->OnMkdir(path, mode);
 					break;
 				}
+				// ProcessApi
+				case DetourEventType::system:
+				{
+					auto command = ReadStringValue(message, offset);
+					m_callback->OnSystem(command);
+					break;
+				}
+				case DetourEventType::fork:
+				{
+					m_callback->OnFork();
+					break;
+				}
+				case DetourEventType::execl:
+				{
+					auto path = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecl(path, result);
+					break;
+				}
+				case DetourEventType::execlp:
+				{
+					auto file = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExeclp(file, result);
+					break;
+				}
+				case DetourEventType::execle:
+				{
+					auto path = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecle(path, result);
+					break;
+				}
+				case DetourEventType::execv:
+				{
+					auto path = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecv(path, result);
+					break;
+				}
+				case DetourEventType::execvp:
+				{
+					auto file = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecvp(file, result);
+					break;
+				}
+				case DetourEventType::execvpe:
+				{
+					auto file = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecvpe(file, result);
+					break;
+				}
 				default:
 				{
 					throw std::runtime_error("Unknown detour event type");

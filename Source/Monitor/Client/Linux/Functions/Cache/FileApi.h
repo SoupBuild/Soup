@@ -2,7 +2,7 @@
 
 extern "C"
 {
-	typedef int  (*open_ptr) (const char *path, int oflag, ...);
+	typedef int (*open_ptr) (const char *path, int oflag, ...);
 	
 	typedef FILE* (*fopen_ptr) (const char * pathname, const char * mode);
 	typedef FILE* (*fdopen_ptr) (int fd, const char *mode);

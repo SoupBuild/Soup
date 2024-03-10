@@ -52,6 +52,47 @@ namespace Monitor::Linux
 			m_stream << "mkdir: " << path << std::endl;
 		}
 
+		// ProcessApi
+		void OnSystem(std::string_view command) override final
+		{
+			m_stream << "system: " << command << std::endl;
+		}
+
+		void OnFork() override final
+		{
+			m_stream << "fork: " << std::endl;
+		}
+
+		void OnExecl(std::string_view path, int32_t result) override final
+		{
+			m_stream << "execl: " << path << std::endl;
+		}
+
+		void OnExeclp(std::string_view file, int32_t result) override final
+		{
+			m_stream << "execlp: " << file << std::endl;
+		}
+
+		void OnExecle(std::string_view path, int32_t result) override final
+		{
+			m_stream << "execle: " << path << std::endl;
+		}
+
+		void OnExecv(std::string_view path, int32_t result) override final
+		{
+			m_stream << "execv: " << path << std::endl;
+		}
+
+		void OnExecvp(std::string_view file, int32_t result) override final
+		{
+			m_stream << "execvp: " << file << std::endl;
+		}
+
+		void OnExecvpe(std::string_view file, int32_t result) override final
+		{
+			m_stream << "execvpe: " << file << std::endl;
+		}
+
 	private:
 		std::ostream& m_stream;
 	};

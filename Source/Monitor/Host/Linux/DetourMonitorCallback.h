@@ -67,6 +67,39 @@ namespace Monitor::Linux
 			// TouchFileWrite(pathName, wasBlocked);
 		}
 
+		// ProcessApi
+		void OnSystem(std::string_view command) override final
+		{
+		}
+
+		void OnFork() override final
+		{
+		}
+
+		void OnExecl(std::string_view path, int32_t result) override final
+		{
+		}
+
+		void OnExeclp(std::string_view file, int32_t result) override final
+		{
+		}
+
+		void OnExecle(std::string_view path, int32_t result) override final
+		{
+		}
+
+		void OnExecv(std::string_view path, int32_t result) override final
+		{
+		}
+
+		void OnExecvp(std::string_view file, int32_t result) override final
+		{
+		}
+
+		void OnExecvpe(std::string_view file, int32_t result) override final
+		{
+		}
+
 	private:
 		void OnCreateProcess(bool wasDetoured, std::wstring_view applicationName)
 		{

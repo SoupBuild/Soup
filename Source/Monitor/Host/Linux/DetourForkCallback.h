@@ -60,6 +60,55 @@ namespace Monitor::Linux
 			_callback2->OnMkdir(path, mode);
 		}
 
+		// ProcessApi
+		void OnSystem(std::string_view command) override final
+		{
+			_callback1->OnSystem(command);
+			_callback2->OnSystem(command);
+		}
+
+		void OnFork() override final
+		{
+			_callback1->OnFork();
+			_callback2->OnFork();
+		}
+
+		void OnExecl(std::string_view path, int32_t result) override final
+		{
+			_callback1->OnExecl(path, result);
+			_callback2->OnExecl(path, result);
+		}
+
+		void OnExeclp(std::string_view file, int32_t result) override final
+		{
+			_callback1->OnExeclp(file, result);
+			_callback2->OnExeclp(file, result);
+		}
+
+		void OnExecle(std::string_view path, int32_t result) override final
+		{
+			_callback1->OnExecle(path, result);
+			_callback2->OnExecle(path, result);
+		}
+
+		void OnExecv(std::string_view path, int32_t result) override final
+		{
+			_callback1->OnExecv(path, result);
+			_callback2->OnExecv(path, result);
+		}
+
+		void OnExecvp(std::string_view file, int32_t result) override final
+		{
+			_callback1->OnExecvp(file, result);
+			_callback2->OnExecvp(file, result);
+		}
+
+		void OnExecvpe(std::string_view file, int32_t result) override final
+		{
+			_callback1->OnExecvpe(file, result);
+			_callback2->OnExecvpe(file, result);
+		}
+
 	private:
 		std::shared_ptr<IDetourCallback> _callback1;
 		std::shared_ptr<IDetourCallback> _callback2;

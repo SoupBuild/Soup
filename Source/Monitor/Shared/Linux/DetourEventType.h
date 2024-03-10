@@ -9,11 +9,19 @@ namespace Monitor::Linux
 	{
 		// FileApi
 		open,
-
 		fopen,
 		fdopen,
 		freopen,
-
 		mkdir,
+
+		// ProcessApi
+		system,
+		fork,
+		execl,
+		execlp,
+		execle,
+		execv,
+		execvp,
+		execvpe,
 	};
 }
