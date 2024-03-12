@@ -63,6 +63,8 @@ namespace Monitor
 		{
 	#ifdef TRACE_DETOUR_CLIENT
 			printf("DETOUR-CLIENT: %s\n", message.data());
+	#elif defined(_WIN32)
+			(message);
 	#endif
 		}
 
