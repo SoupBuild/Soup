@@ -99,6 +99,39 @@ namespace Monitor::Linux
 					m_callback->OnOpenat(dirfd, path, oflag, result);
 					break;
 				}
+				case DetourEventType::link:
+				{
+					auto oldpath = ReadStringValue(message, offset);
+					auto newpath = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnLink(oldpath, newpath, result);
+					break;
+				}
+				case DetourEventType::linkat:
+				{
+					auto olddirfd = ReadInt32Value(message, offset);
+					auto oldpath = ReadStringValue(message, offset);
+					auto newdirfd = ReadInt32Value(message, offset);
+					auto newpath = ReadStringValue(message, offset);
+					auto flags = ReadInt32Value(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
+					break;
+				}
+				case DetourEventType::unlink:
+				{
+					auto pathname = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnUnlink(pathname, result);
+					break;
+				}
+				case DetourEventType::remove:
+				{
+					auto pathname = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnRemove(pathname, result);
+					break;
+				}
 				case DetourEventType::fopen:
 				{
 					auto pathname = ReadStringValue(message, offset);
@@ -125,6 +158,13 @@ namespace Monitor::Linux
 					auto path = ReadStringValue(message, offset);
 					auto mode = ReadStringValue(message, offset);
 					m_callback->OnMkdir(path, mode);
+					break;
+				}
+				case DetourEventType::rmdir:
+				{
+					auto pathname = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnRmdir(pathname, result);
 					break;
 				}
 				// ProcessApi

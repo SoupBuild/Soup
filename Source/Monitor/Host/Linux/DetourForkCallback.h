@@ -48,6 +48,30 @@ namespace Monitor::Linux
 			_callback2->OnOpenat(dirfd, pathname, flags, result);
 		}
 
+		void OnLink(std::string_view oldpath, std::string_view newpath, int32_t result) override final
+		{
+			_callback1->OnLink(oldpath, newpath, result);
+			_callback2->OnLink(oldpath, newpath, result);
+		}
+
+		void OnLinkat(int32_t olddirfd, std::string_view oldpath, int32_t newdirfd, std::string_view newpath, int32_t flags, int32_t result) override final
+		{
+			_callback1->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
+			_callback2->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
+		}
+
+		void OnUnlink(std::string_view pathname, int32_t result) override final
+		{
+			_callback1->OnUnlink(pathname, result);
+			_callback2->OnUnlink(pathname, result);
+		}
+
+		void OnRemove(std::string_view pathname, int32_t result) override final
+		{
+			_callback1->OnRemove(pathname, result);
+			_callback2->OnRemove(pathname, result);
+		}
+
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final
 		{
 			_callback1->OnFOpen(pathname, mode);
@@ -70,6 +94,12 @@ namespace Monitor::Linux
 		{
 			_callback1->OnMkdir(path, mode);
 			_callback2->OnMkdir(path, mode);
+		}
+
+		void OnRmdir(std::string_view pathname, int32_t result) override final
+		{
+			_callback1->OnRmdir(pathname, result);
+			_callback2->OnRmdir(pathname, result);
 		}
 
 		// ProcessApi

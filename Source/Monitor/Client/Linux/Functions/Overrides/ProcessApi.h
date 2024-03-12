@@ -4,7 +4,6 @@
 
 int system(const char *command)
 {
-	std::cout << "got system" << std::endl;
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::system));
 
@@ -17,7 +16,6 @@ int system(const char *command)
 
 pid_t fork(void)
 {
-	std::cout << "got fork" << std::endl;
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::fork));
 
@@ -28,7 +26,6 @@ pid_t fork(void)
 
 // int execl(const char *path, const char *arg, ...)
 // {
-// 	std::cout << "got execl" << std::endl;
 // 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 // 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::execl));
 
@@ -45,7 +42,6 @@ pid_t fork(void)
 
 // int execlp(const char *file, const char *arg, ...)
 // {
-// 	std::cout << "got execlp" << std::endl;
 // 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 // 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::execlp));
 
@@ -62,7 +58,6 @@ pid_t fork(void)
 
 // int execle(const char *path, const char *arg, ..., char * const envp[])
 // {
-//	std::cout << "got execle" << std::endl;
 // 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 // 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::execle));
 
@@ -79,7 +74,6 @@ pid_t fork(void)
 
 int execv(const char *path, char *const argv[])
 {
-	std::cout << "got execv" << std::endl;
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::execv));
 
@@ -93,7 +87,6 @@ int execv(const char *path, char *const argv[])
 
 int execvp(const char *file, char *const argv[])
 {
-	std::cout << "got execvp" << std::endl;
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::execvp));
 
@@ -107,7 +100,6 @@ int execvp(const char *file, char *const argv[])
 
 int execvpe(const char *file, char *const argv[], char *const envp[])
 {
-	std::cout << "got execvpe" << std::endl;
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::execvpe));
 

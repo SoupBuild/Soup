@@ -4,7 +4,7 @@
 
 int open(const char* path, int oflag, ... /* mode_t mode */ )
 {
-	std::cout << "got open" << std::endl;
+	connectionManager.DebugTrace("open");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::open));
 
@@ -34,7 +34,7 @@ int open(const char* path, int oflag, ... /* mode_t mode */ )
 
 int creat(const char *pathname, mode_t mode)
 {
-	std::cout << "got creat" << std::endl;
+	connectionManager.DebugTrace("create");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::creat));
 
@@ -48,7 +48,7 @@ int creat(const char *pathname, mode_t mode)
 
 int openat(int dirfd, const char *pathname, int flags, ... /* mode_t mode */ )
 {
-	std::cout << "got openat" << std::endl;
+	connectionManager.DebugTrace("openat");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::openat));
 
@@ -77,9 +77,70 @@ int openat(int dirfd, const char *pathname, int flags, ... /* mode_t mode */ )
 	return result;
 }
 
+int link(const char *oldpath, const char *newpath)
+{
+	connectionManager.DebugTrace("link");
+	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
+	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::link));
+
+	auto result = Monitor::Linux::Functions::Cache::FileApi::link(oldpath, newpath);
+
+	message.AppendValue(oldpath);
+	message.AppendValue(newpath);
+	message.AppendValue(result);
+
+	return result;
+}
+
+int linkat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags)
+{
+	connectionManager.DebugTrace("unlink");
+	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
+	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::linkat));
+
+	auto result = Monitor::Linux::Functions::Cache::FileApi::linkat(olddirfd, oldpath, newdirfd, newpath, flags);
+
+	message.AppendValue(olddirfd);
+	message.AppendValue(oldpath);
+	message.AppendValue(newdirfd);
+	message.AppendValue(newpath);
+	message.AppendValue(flags);
+	message.AppendValue(result);
+
+	return result;
+}
+
+int unlink(const char *pathname)
+{
+	connectionManager.DebugTrace("unlink");
+	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
+	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::unlink));
+
+	auto result = Monitor::Linux::Functions::Cache::FileApi::unlink(pathname);
+
+	message.AppendValue(pathname);
+	message.AppendValue(result);
+
+	return result;
+}
+
+int remove(const char *pathname)
+{
+	connectionManager.DebugTrace("remove");
+	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
+	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::remove));
+
+	auto result = Monitor::Linux::Functions::Cache::FileApi::remove(pathname);
+
+	message.AppendValue(pathname);
+	message.AppendValue(result);
+
+	return result;
+}
+
 FILE* fopen(const char * pathname, const char * mode)
 {
-	std::cout << "got fopen" << std::endl;
+	connectionManager.DebugTrace("fopen");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::fopen));
 
@@ -93,7 +154,7 @@ FILE* fopen(const char * pathname, const char * mode)
 
 FILE* fdopen(int fd, const char *mode)
 {
-	std::cout << "got fdopen" << std::endl;
+	connectionManager.DebugTrace("fdopen");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::fdopen));
 
@@ -110,7 +171,7 @@ FILE* freopen(
 	const char * mode,
 	FILE*  stream)
 {
-	std::cout << "got freopen" << std::endl;
+	connectionManager.DebugTrace("freopen");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::freopen));
 
@@ -124,7 +185,7 @@ FILE* freopen(
 
 int mkdir(const char *path, mode_t mode)
 {
-	std::cout << "got mkdir" << std::endl;
+	connectionManager.DebugTrace("mkdir");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::mkdir));
 
@@ -132,6 +193,20 @@ int mkdir(const char *path, mode_t mode)
 
 	message.AppendValue(path);
 	message.AppendValue(mode);
+
+	return result;
+}
+
+int rmdir(const char *pathname)
+{
+	connectionManager.DebugTrace("rmdir");
+	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
+	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::rmdir));
+
+	auto result = Monitor::Linux::Functions::Cache::FileApi::rmdir(pathname);
+
+	message.AppendValue(pathname);
+	message.AppendValue(result);
 
 	return result;
 }

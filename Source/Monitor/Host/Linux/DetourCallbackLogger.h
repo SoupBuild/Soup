@@ -42,6 +42,26 @@ namespace Monitor::Linux
 			m_stream << "openat: " << pathname << " " << flags << std::endl;
 		}
 
+		void OnLink(std::string_view oldpath, std::string_view newpath, int32_t result) override final
+		{
+			m_stream << "link: " << oldpath << " " << newpath << std::endl;
+		}
+
+		void OnLinkat(int32_t olddirfd, std::string_view oldpath, int32_t newdirfd, std::string_view newpath, int32_t flags, int32_t result) override final
+		{
+			m_stream << "linkat: " << oldpath << " " << newpath << std::endl;
+		}
+
+		void OnUnlink(std::string_view pathname, int32_t result) override final
+		{
+			m_stream << "unlink: " << pathname << std::endl;
+		}
+
+		void OnRemove(std::string_view pathname, int32_t result) override final
+		{
+			m_stream << "remove: " << pathname << std::endl;
+		}
+
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final
 		{
 			m_stream << "fopen: " << pathname << std::endl;
@@ -60,6 +80,11 @@ namespace Monitor::Linux
 		void OnMkdir(std::string_view path, std::string_view mode) override final
 		{
 			m_stream << "mkdir: " << path << std::endl;
+		}
+
+		void OnRmdir(std::string_view pathname, int32_t result) override final
+		{
+			m_stream << "rmdir: " << pathname << std::endl;
 		}
 
 		// ProcessApi

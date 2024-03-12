@@ -68,6 +68,26 @@ namespace Monitor::Linux
 			}
 		}
 
+		void OnLink(std::string_view oldpath, std::string_view newpath, int32_t result) override final
+		{
+		}
+
+		void OnLinkat(int32_t olddirfd, std::string_view oldpath, int32_t newdirfd, std::string_view newpath, int32_t flags, int32_t result) override final
+		{
+		}
+
+		void OnUnlink(std::string_view pathname, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileDelete(pathname, wasBlocked);
+		}
+
+		void OnRemove(std::string_view pathname, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileDelete(pathname, wasBlocked);
+		}
+
 		void OnFOpen(std::string_view pathname, std::string_view mode) override final
 		{
 			// TouchFileWrite(pathName, wasBlocked);
@@ -85,7 +105,14 @@ namespace Monitor::Linux
 
 		void OnMkdir(std::string_view path, std::string_view mode) override final
 		{
-			// TouchFileWrite(pathName, wasBlocked);
+			bool wasBlocked = false;
+			TouchFileWrite(path, wasBlocked);
+		}
+
+		void OnRmdir(std::string_view pathname, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileDelete(pathname, wasBlocked);
 		}
 
 		// ProcessApi

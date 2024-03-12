@@ -11,10 +11,15 @@ namespace Monitor::Linux
 		open,
 		creat,
 		openat,
+		link,
+		linkat,
+		unlink,
+		remove,
 		fopen,
 		fdopen,
 		freopen,
 		mkdir,
+		rmdir,
 
 		// ProcessApi
 		system,
