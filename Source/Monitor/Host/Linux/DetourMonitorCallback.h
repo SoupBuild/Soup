@@ -222,8 +222,7 @@ namespace Monitor::Linux
 		bool IsSpecialFile(std::string_view fileName)
 		{
 			// Check if the file name is a pipe or the standard input/output streams
-			return fileName == "/dev/random" ||
-				fileName == "/dev/urandom";
+			return false;
 		}
 
 		void SearchPath(std::wstring_view path, std::wstring_view filename)
