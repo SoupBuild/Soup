@@ -52,6 +52,11 @@ namespace Monitor::Linux
 			m_stream << "linkat: " << oldpath << " " << newpath << std::endl;
 		}
 
+		void OnRename(std::string_view oldpath, std::string_view newpath, int32_t result) override final
+		{
+			m_stream << "rename: " << oldpath << " " << newpath << std::endl;
+		}
+
 		void OnUnlink(std::string_view pathname, int32_t result) override final
 		{
 			m_stream << "unlink: " << pathname << std::endl;

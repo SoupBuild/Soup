@@ -76,6 +76,13 @@ namespace Monitor::Linux
 		{
 		}
 
+		void OnRename(std::string_view oldpath, std::string_view newpath, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileDelete(oldpath, wasBlocked);
+			TouchFileWrite(newpath, wasBlocked);
+		}
+
 		void OnUnlink(std::string_view pathname, int32_t result) override final
 		{
 			bool wasBlocked = false;

@@ -15,6 +15,7 @@ namespace Monitor::Linux
 		virtual void OnOpenat(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) = 0;
 		virtual void OnLink(std::string_view oldpath, std::string_view newpath, int32_t result) = 0;
 		virtual void OnLinkat(int32_t olddirfd, std::string_view oldpath, int32_t newdirfd, std::string_view newpath, int32_t flags, int32_t result) = 0;
+		virtual void OnRename(std::string_view oldpath, std::string_view newpath, int32_t result) = 0;
 		virtual void OnUnlink(std::string_view pathname, int32_t result) = 0;
 		virtual void OnRemove(std::string_view pathname, int32_t result) = 0;
 		virtual void OnFOpen(std::string_view pathname, std::string_view mode) = 0;

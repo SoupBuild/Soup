@@ -13,6 +13,7 @@ namespace Monitor::Linux
 		openat,
 		link,
 		linkat,
+		rename,
 		unlink,
 		remove,
 		fopen,

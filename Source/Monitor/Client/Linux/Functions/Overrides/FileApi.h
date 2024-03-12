@@ -110,6 +110,21 @@ int linkat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath,
 	return result;
 }
 
+int rename(const char *oldpath, const char *newpath)
+{
+	connectionManager.DebugTrace("rename");
+	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
+	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::rename));
+
+	auto result = Monitor::Linux::Functions::Cache::FileApi::rename(oldpath, newpath);
+
+	message.AppendValue(oldpath);
+	message.AppendValue(newpath);
+	message.AppendValue(result);
+
+	return result;
+}
+
 int unlink(const char *pathname)
 {
 	connectionManager.DebugTrace("unlink");

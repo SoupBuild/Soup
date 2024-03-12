@@ -118,6 +118,14 @@ namespace Monitor::Linux
 					m_callback->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
 					break;
 				}
+				case DetourEventType::rename:
+				{
+					auto oldpath = ReadStringValue(message, offset);
+					auto newpath = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnRename(oldpath, newpath, result);
+					break;
+				}
 				case DetourEventType::unlink:
 				{
 					auto pathname = ReadStringValue(message, offset);

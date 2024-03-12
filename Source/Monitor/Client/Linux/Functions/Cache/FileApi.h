@@ -7,6 +7,7 @@ extern "C"
 	typedef int (*openat_ptr) (int dirfd, const char *pathname, int flags, ... /* mode_t mode */ );
 	typedef int (*link_ptr) (const char *oldpath, const char *newpath);
 	typedef int (*linkat_ptr) (int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
+	typedef int (*rename_ptr) (const char *oldpath, const char *newpath); 
 	typedef int (*unlink_ptr) (const char *pathname);
 	typedef int (*remove_ptr) (const char *pathname);
 
@@ -25,6 +26,7 @@ namespace Monitor::Linux::Functions::Cache::FileApi
 	openat_ptr openat;
 	link_ptr link;
 	linkat_ptr linkat;
+	rename_ptr rename;
 	unlink_ptr unlink;
 	remove_ptr remove;
 

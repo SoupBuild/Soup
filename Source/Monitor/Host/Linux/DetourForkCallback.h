@@ -60,6 +60,12 @@ namespace Monitor::Linux
 			_callback2->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
 		}
 
+		void OnRename(std::string_view oldpath, std::string_view newpath, int32_t result) override final
+		{
+			_callback1->OnRename(oldpath, newpath, result);
+			_callback2->OnRename(oldpath, newpath, result);
+		}
+
 		void OnUnlink(std::string_view pathname, int32_t result) override final
 		{
 			_callback1->OnUnlink(pathname, result);

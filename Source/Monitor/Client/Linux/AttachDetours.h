@@ -11,6 +11,9 @@ namespace Monitor::Linux
 		Functions::Cache::FileApi::open = (open_ptr)dlsym(RTLD_NEXT, "open");
 		Functions::Cache::FileApi::creat = (creat_ptr)dlsym(RTLD_NEXT, "creat");
 		Functions::Cache::FileApi::openat = (openat_ptr)dlsym(RTLD_NEXT, "openat");
+		Functions::Cache::FileApi::link = (link_ptr)dlsym(RTLD_NEXT, "link");
+		Functions::Cache::FileApi::linkat = (linkat_ptr)dlsym(RTLD_NEXT, "linkat");
+		Functions::Cache::FileApi::rename = (rename_ptr)dlsym(RTLD_NEXT, "rename");
 		Functions::Cache::FileApi::unlink = (unlink_ptr)dlsym(RTLD_NEXT, "unlink");
 		Functions::Cache::FileApi::remove = (remove_ptr)dlsym(RTLD_NEXT, "remove");
 		Functions::Cache::FileApi::fopen = (fopen_ptr)dlsym(RTLD_NEXT, "fopen");
