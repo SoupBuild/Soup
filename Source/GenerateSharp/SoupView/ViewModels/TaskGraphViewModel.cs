@@ -16,7 +16,7 @@ using ValueType = Soup.Build.Utilities.ValueType;
 
 namespace Soup.View.ViewModels;
 
-public class TaskGraphViewModel : ViewModelBase
+public class TaskGraphViewModel : ContentPaneViewModel
 {
 	private sealed class TaskDetails
 	{
@@ -28,17 +28,9 @@ public class TaskGraphViewModel : ViewModelBase
 
 	private GraphNodeViewModel? selectedNode;
 	private TaskDetailsViewModel? selectedTask;
-	private string errorBarMessage = string.Empty;
 	private uint uniqueId;
-	private bool isErrorBarOpen;
 	private IList<GraphNodeViewModel>? graph;
 	private readonly Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = [];
-
-	public string ErrorBarMessage
-	{
-		get => errorBarMessage;
-		set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
-	}
 
 	public IList<GraphNodeViewModel>? Graph
 	{
@@ -62,12 +54,6 @@ public class TaskGraphViewModel : ViewModelBase
 	{
 		get => selectedTask;
 		set => this.RaiseAndSetIfChanged(ref selectedTask, value);
-	}
-
-	public bool IsErrorBarOpen
-	{
-		get => isErrorBarOpen;
-		set => this.RaiseAndSetIfChanged(ref isErrorBarOpen, value);
 	}
 
 	public async Task LoadProjectAsync(Path? packageFolder)
@@ -105,12 +91,6 @@ public class TaskGraphViewModel : ViewModelBase
 		});
 
 		Graph = activeGraph;
-	}
-
-	private void NotifyError(string message)
-	{
-		ErrorBarMessage = message;
-		IsErrorBarOpen = true;
 	}
 
 	private List<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)

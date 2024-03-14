@@ -11,18 +11,12 @@ Closures: {
 			'mwasplund|Soup.Test.Assert': { Version: '0.4.0', Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|wren': { Version: '1.0.5', Build: 'Build0', Tool: 'Tool0' }
 			printvaluetable: { Version: '../PrintValueTable', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.Core': { Version: '../../Client/Core/', Build: 'Build1', Tool: 'Tool0' }
+			'Soup.Core': { Version: '../../Client/Core/', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
 		Wren: {
 			'mwasplund|Soup.Cpp': { Version: '0.12.0' }
-		}
-	}
-	Build1: {
-		Wren: {
-			'mwasplund|Soup.Cpp': { Version: '0.12.0' }
-			'mwasplund|Soup.Test.Cpp': { Version: '0.11.0' }
 		}
 	}
 	Tool0: {

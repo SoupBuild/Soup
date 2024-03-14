@@ -63,7 +63,6 @@ namespace Soup::Core
 			else
 			{
 				auto value = filePath.ToString();
-				ToUpper(value);
 
 				#ifdef TRACE_SYSTEM_ACCESS
 				Log::Diag("TouchFileRead " + value);
@@ -90,7 +89,6 @@ namespace Soup::Core
 			else
 			{
 				auto value = filePath.ToString();
-				ToUpper(value);
 
 				#ifdef TRACE_SYSTEM_ACCESS
 				Log::Diag("TouchFileWrite " + value);
@@ -110,7 +108,6 @@ namespace Soup::Core
 			else
 			{
 				auto value = filePath.ToString();
-				ToUpper(value);
 
 				#ifdef TRACE_SYSTEM_ACCESS
 				Log::Diag("TouchFileDelete " + value);
@@ -126,7 +123,6 @@ namespace Soup::Core
 		virtual void TouchFileDeleteOnClose(Path filePath) override final
 		{
 			auto value = filePath.ToString();
-			ToUpper(value);
 
 			#ifdef TRACE_SYSTEM_ACCESS
 			Log::Diag("TouchFileDeleteOnClose " + value);
@@ -138,16 +134,6 @@ namespace Soup::Core
 		virtual void SearchPath(std::string_view path, std::string_view filename) override final
 		{
 			Log::Warning("Search Path encountered: " + std::string(path) + " - " + std::string(filename));
-		}
-
-	private:
-		void ToUpper(std::string& value)
-		{
-			std::transform(
-				value.begin(),
-				value.end(),
-				value.begin(),
-				[](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
 		}
 	};
 }

@@ -53,9 +53,7 @@ namespace Soup::Core
 			// Build up the reverse lookup for new files
 			for (const auto& [key, value] : _files)
 			{
-				auto normalizedFilePath = value.ToString();
-				ToUpper(normalizedFilePath);
-				auto insertResult = _fileLookup.emplace(std::move(normalizedFilePath), key);
+				auto insertResult = _fileLookup.emplace(value.ToString(), key);
 				if (!insertResult.second)
 					throw std::runtime_error("The file was not unique in the provided set.");
 			}
@@ -142,9 +140,7 @@ namespace Soup::Core
 				if (!insertResult.second)
 					throw std::runtime_error("The provided file id already exists in the file system state");
 
-				auto normalizedFilePath = file.ToString();
-				ToUpper(normalizedFilePath);
-				auto insertLookupResult = _fileLookup.emplace(std::move(normalizedFilePath), result);
+				auto insertLookupResult = _fileLookup.emplace(file.ToString(), result);
 				if (!insertLookupResult.second)
 					throw std::runtime_error("The file was not unique even though we just failed to find it");
 			}
@@ -157,9 +153,7 @@ namespace Soup::Core
 		/// </summary>
 		bool TryFindFileId(const Path& file, FileId& fileId) const
 		{
-			auto normalizedFilePath = file.ToString();
-			ToUpper(normalizedFilePath);
-			auto findResult = _fileLookup.find(normalizedFilePath);
+			auto findResult = _fileLookup.find(file.ToString());
 			if (findResult != _fileLookup.end())
 			{
 				fileId = findResult->second;
@@ -210,6 +204,21 @@ namespace Soup::Core
 			_writeCache.erase(fileId);
 		}
 
+		std::string format(std::chrono::time_point<std::chrono::file_clock> time)
+		{
+		#ifdef _WIN32
+			return std::format("{:%Y-%m-%d %H:%M:%S %z}", time);
+		#else
+			auto systemTime = std::chrono::file_clock::to_sys(time);
+			auto timeT = std::chrono::system_clock::to_time_t(systemTime);
+
+			std::stringstream ss;
+			ss << std::put_time(std::localtime(&timeT), "%Y-%m-%d %H:%M:%S %z");
+
+			return ss.str();
+		#endif
+		}
+
 		/// <summary>
 		/// Update the write times for the provided file
 		/// </summary>
@@ -225,6 +234,13 @@ namespace Soup::Core
 			{
 				lastWriteTime = lastWriteTimeValue;
 			}
+
+#ifdef TRACE_FILE_SYSTEM_STATE
+			if (lastWriteTime.has_value())
+				std::cout << "CheckFileWriteTime: " << filePath.ToString() << " " << format(lastWriteTime.value()) << std::endl;
+			else
+				std::cout << "CheckFileWriteTime: " << filePath.ToString() << " NONE" << std::endl;
+#endif
 
 			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
 			return lastWriteTime;
@@ -255,15 +271,6 @@ namespace Soup::Core
 				});
 
 			return _writeCache[fileId];
-		}
-
-		static void ToUpper(std::string& value)
-		{
-			std::transform(
-				value.begin(),
-				value.end(),
-				value.begin(),
-				[](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
 		}
 
 	private:

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Functions::ProcessThreadsApi::Cache
+namespace Monitor::Windows::Functions::Cache::ProcessThreadsApi
 {
 	/// <summary>
 	/// Creates a new process and its primary thread. The new process runs

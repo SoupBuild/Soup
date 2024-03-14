@@ -29,6 +29,44 @@ namespace Monitor::Windows
 	/// </summary>
 	class WindowsMonitorProcess : public Opal::System::IProcess
 	{
+	private:
+		// Input
+		Path m_executable;
+		std::vector<std::string> m_arguments;
+		Path m_workingDirectory;
+		std::map<std::string, std::string> m_environmentVariables;
+		EventListener m_eventListener;
+
+		bool m_enableAccessChecks;
+		std::vector<Path> m_allowedReadAccess;
+		std::vector<Path> m_allowedWriteAccess;
+
+		// Runtime
+		std::thread m_workerThread;
+		std::array<ServerPipeInstance, 4> m_pipes;
+		std::array<HANDLE, 4> m_rawEventHandles;
+		bool m_hasAnyClients;
+		int m_activeClientCount;
+
+		std::atomic<bool> m_processRunning;
+		std::atomic<bool> m_workerFailed;
+		std::exception_ptr m_workerException = nullptr;
+
+		Opal::System::SmartHandle m_processHandle;
+		Opal::System::SmartHandle m_threadHandle;
+		Opal::System::SmartHandle m_stdOutReadHandle;
+		Opal::System::SmartHandle m_stdOutWriteHandle;
+		Opal::System::SmartHandle m_stdErrReadHandle;
+		Opal::System::SmartHandle m_stdErrWriteHandle;
+		Opal::System::SmartHandle m_stdInReadHandle;
+		Opal::System::SmartHandle m_stdInWriteHandle;
+
+		// Result
+		bool m_isFinished;
+		std::stringstream m_stdOut;
+		std::stringstream m_stdErr;
+		int m_exitCode;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref='WindowsMonitorProcess'/> class.
@@ -48,8 +86,8 @@ namespace Monitor::Windows
 			m_environmentVariables(environmentVariables),
 #ifdef TRACE_DETOUR_SERVER
 			m_eventListener(std::make_shared<DetourForkCallback>(
-				std::make_shared<DetourMonitorCallback>(std::move(callback)),
-				std::make_shared<DetourCallbackLogger>(std::cout))),
+				std::make_shared<DetourCallbackLogger>(std::cout),
+				std::make_shared<DetourMonitorCallback>(std::move(callback)))),
 #else
 			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
 #endif
@@ -565,7 +603,7 @@ namespace Monitor::Windows
 			}
 
 			// Check the error to determine the actual result
-			DWORD error = GetLastError();
+			auto error = GetLastError();
 			switch (error)
 			{
 			case ERROR_PIPE_CONNECTED:
@@ -653,8 +691,8 @@ namespace Monitor::Windows
 					}
 
 					DWORD expectedSize = pipe.Message.ContentSize +
-						sizeof(Monitor::Message::Type) +
-						sizeof(Monitor::Message::ContentSize);
+						sizeof(Message::Type) +
+						sizeof(Message::ContentSize);
 					if (bytesTransferred != expectedSize)
 					{
 						DebugTrace("HandlePipeEvent - GetOverlappedResult - Size Mismatched");
@@ -708,8 +746,8 @@ namespace Monitor::Windows
 				}
 
 				DWORD expectedSize = pipe.Message.ContentSize +
-					sizeof(Monitor::Message::Type) +
-					sizeof(Monitor::Message::ContentSize);
+					sizeof(Message::Type) +
+					sizeof(Message::ContentSize);
 				if (bytesRead != expectedSize)
 				{
 					throw std::runtime_error("HandlePipeEvent - GetOverlappedResult - Size Mismatched");
@@ -740,59 +778,21 @@ namespace Monitor::Windows
 
 		void DebugTrace(std::string_view message, uint32_t value)
 		{
-#ifdef TRACE_Monitor_HOST
+#ifdef TRACE_MONITOR_HOST
 			std::cout << "Monitor-HOST: " << message << " " << value << std::endl;
 #else
-		(message);
-		(value);
+			(message);
+			(value);
 #endif
 		}
 
 		void DebugTrace(std::string_view message)
 		{
-#ifdef TRACE_Monitor_HOST
+#ifdef TRACE_MONITOR_HOST
 			std::cout << "Monitor-HOST: " << message << std::endl;
 #else
-		(message);
+			(message);
 #endif
 		}
-
-	private:
-		// Input
-		Path m_executable;
-		std::vector<std::string> m_arguments;
-		Path m_workingDirectory;
-		std::map<std::string, std::string> m_environmentVariables;
-		EventListener m_eventListener;
-
-		bool m_enableAccessChecks;
-		std::vector<Path> m_allowedReadAccess;
-		std::vector<Path> m_allowedWriteAccess;
-
-		// Runtime
-		std::thread m_workerThread;
-		std::array<ServerPipeInstance, 4> m_pipes;
-		std::array<HANDLE, 4> m_rawEventHandles;
-		bool m_hasAnyClients;
-		int m_activeClientCount;
-
-		std::atomic<bool> m_processRunning;
-		std::atomic<bool> m_workerFailed;
-		std::exception_ptr m_workerException = nullptr;
-
-		Opal::System::SmartHandle m_processHandle;
-		Opal::System::SmartHandle m_threadHandle;
-		Opal::System::SmartHandle m_stdOutReadHandle;
-		Opal::System::SmartHandle m_stdOutWriteHandle;
-		Opal::System::SmartHandle m_stdErrReadHandle;
-		Opal::System::SmartHandle m_stdErrWriteHandle;
-		Opal::System::SmartHandle m_stdInReadHandle;
-		Opal::System::SmartHandle m_stdInWriteHandle;
-
-		// Result
-		bool m_isFinished;
-		std::stringstream m_stdOut;
-		std::stringstream m_stdErr;
-		int m_exitCode;
 	};
 }

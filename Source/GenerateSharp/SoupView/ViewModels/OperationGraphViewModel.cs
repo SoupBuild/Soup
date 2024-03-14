@@ -15,21 +15,13 @@ using System.Threading.Tasks;
 
 namespace Soup.View.ViewModels;
 
-public class OperationGraphViewModel : ViewModelBase
+public class OperationGraphViewModel : ContentPaneViewModel
 {
 	private readonly FileSystemState fileSystemState = new FileSystemState();
 	private GraphNodeViewModel? selectedNode;
 	private OperationDetailsViewModel? selectedOperation;
-	private string errorBarMessage = string.Empty;
-	private bool isErrorBarOpen;
 	private IList<GraphNodeViewModel>? graph;
 	private readonly Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = [];
-
-	public string ErrorBarMessage
-	{
-		get => errorBarMessage;
-		set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
-	}
 
 	public IList<GraphNodeViewModel>? Graph
 	{
@@ -53,12 +45,6 @@ public class OperationGraphViewModel : ViewModelBase
 	{
 		get => selectedOperation;
 		set => this.RaiseAndSetIfChanged(ref selectedOperation, value);
-	}
-
-	public bool IsErrorBarOpen
-	{
-		get => isErrorBarOpen;
-		set => this.RaiseAndSetIfChanged(ref isErrorBarOpen, value);
 	}
 
 	public async Task LoadProjectAsync(Path? packageFolder)
@@ -105,15 +91,6 @@ public class OperationGraphViewModel : ViewModelBase
 		});
 
 		Graph = activeGraph;
-	}
-
-	private void NotifyError(string message)
-	{
-		if (Debugger.IsAttached)
-			Debugger.Break();
-
-		ErrorBarMessage = message;
-		IsErrorBarOpen = true;
 	}
 
 	private List<GraphNodeViewModel> BuildGraph(

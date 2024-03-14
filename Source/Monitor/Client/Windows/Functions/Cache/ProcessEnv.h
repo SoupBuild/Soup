@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Functions::ProcessEnv::Cache
+namespace Monitor::Windows::Functions::Cache::ProcessEnv
 {
 	/// <summary>
 	/// Searches for a specified file in a specified path.

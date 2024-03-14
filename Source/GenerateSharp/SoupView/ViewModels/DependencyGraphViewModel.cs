@@ -13,20 +13,12 @@ using System.Threading.Tasks;
 
 namespace Soup.View.ViewModels;
 
-public class DependencyGraphViewModel : ViewModelBase
+public class DependencyGraphViewModel : ContentPaneViewModel
 {
 	private GraphNodeViewModel? selectedNode;
 	private ProjectDetailsViewModel? selectedProject;
-	private string errorBarMessage = string.Empty;
-	private bool isErrorBarOpen;
 	private IList<GraphNodeViewModel>? graph;
 	private readonly Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = [];
-
-	public string ErrorBarMessage
-	{
-		get => errorBarMessage;
-		set => this.RaiseAndSetIfChanged(ref errorBarMessage, value);
-	}
 
 	public IList<GraphNodeViewModel>? Graph
 	{
@@ -44,12 +36,6 @@ public class DependencyGraphViewModel : ViewModelBase
 				SelectedProject = selectedNode is not null ? this.projectDetailsLookup[selectedNode.Id] : null;
 			}
 		}
-	}
-
-	public bool IsErrorBarOpen
-	{
-		get => isErrorBarOpen;
-		set => this.RaiseAndSetIfChanged(ref isErrorBarOpen, value);
 	}
 
 	public ProjectDetailsViewModel? SelectedProject

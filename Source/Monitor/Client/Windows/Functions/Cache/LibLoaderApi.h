@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Functions::LibLoaderApi::Cache
+namespace Monitor::Windows::Functions::Cache::LibLoaderApi
 {
 	/// <summary>
 	/// Loads the specified module into the address space of the calling process.
