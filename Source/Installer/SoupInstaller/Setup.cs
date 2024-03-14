@@ -5,7 +5,7 @@ class Script
 {
 	static public void Main()
 	{
-		var soupVersion = new Version(0, 37, 1);
+		var soupVersion = new Version(0, 38, 0);
 
 		var soupOutFolder = "../../../out";
 		var soupRunFolder = $"{soupOutFolder}/run";
