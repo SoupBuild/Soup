@@ -154,7 +154,7 @@ public class Value
 			ValueType.Integer => this.AsInteger().ToString(CultureInfo.InvariantCulture),
 			ValueType.Float => this.AsFloat().ToString(CultureInfo.InvariantCulture),
 			ValueType.Boolean => this.AsBoolean().ToString(),
-			ValueType.Empty => throw new NotImplementedException(),
+			ValueType.Empty => string.Empty,
 			_ => "UNKNOWN",
 		};
 	}

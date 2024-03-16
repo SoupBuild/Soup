@@ -20,6 +20,7 @@
   <PropertyGroup>
     <AnalysisLevel>8.0</AnalysisLevel>
     <AnalysisLevelStyle>8.0-all</AnalysisLevelStyle>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

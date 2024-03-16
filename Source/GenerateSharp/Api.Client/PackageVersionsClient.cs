@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -70,7 +71,7 @@ public class PackageVersionsClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
+			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
 		var client = this.httpClient;
 
@@ -149,7 +150,7 @@ public class PackageVersionsClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
+			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
 		var client = this.httpClient;
 
@@ -213,7 +214,7 @@ public class PackageVersionsClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}/download");
+			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}/download");
 
 		var client = this.httpClient;
 

@@ -42,7 +42,7 @@ public class InitializeCommand
 		var workingFolder = new Path(workingFolderValue);
 
 		var recipe = new Recipe(
-			workingFolder.GetFileName(),
+			workingFolder.FileName,
 			new LanguageReference(
 				BuiltInLanguageCpp,
 				new SemanticVersion(

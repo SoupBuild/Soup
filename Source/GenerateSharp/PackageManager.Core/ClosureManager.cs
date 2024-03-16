@@ -7,6 +7,7 @@ using Opal.System;
 using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -241,6 +242,7 @@ public class ClosureManager : IClosureManager
 		}
 	}
 
+	[SuppressMessage("Performance", "CA1854:Prefer the 'IDictionary.TryGetValue(TKey, out TValue)' method", Justification = "False positive")]
 	private async Task<(
 		IDictionary<string, IDictionary<PackageName, (PackageReference Package, string BuildClosure, string ToolClosure)>> RuntimeClosure,
 		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> BuildClosures,

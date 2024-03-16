@@ -324,7 +324,7 @@ public class PackageManager
 			if (child.IsDirectory)
 			{
 				// Ignore undesirables
-				if (!ignoreFolderList.Contains(child.Path.GetFileName()))
+				if (!ignoreFolderList.Contains(child.Path.FileName))
 				{
 					AddAllFilesRecursive(child.Path, workingDirectory, archive);
 				}
@@ -332,7 +332,7 @@ public class PackageManager
 			else
 			{
 				// Ignore undesirables
-				if (!ignoreFileList.Contains(child.Path.GetFileName()))
+				if (!ignoreFileList.Contains(child.Path.FileName))
 				{
 					var relativePath = child.Path.GetRelativeTo(workingDirectory);
 					var relativeName = relativePath.ToString()[2..];

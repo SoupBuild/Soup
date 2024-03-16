@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -52,7 +53,7 @@ public class LanguagesClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append($"/v1/languages/{Uri.EscapeDataString(languageName)}");
+			.Append(CultureInfo.InvariantCulture, $"/v1/languages/{Uri.EscapeDataString(languageName)}");
 
 		var client = this.httpClient;
 

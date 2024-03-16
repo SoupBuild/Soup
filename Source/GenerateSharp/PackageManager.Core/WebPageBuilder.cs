@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
+using System.Globalization;
+using System.Text;
+
 namespace Soup.Build.PackageManager;
 
 /// <summary>
@@ -9,7 +12,7 @@ namespace Soup.Build.PackageManager;
 /// </summary>
 public static class WebPageBuilder
 {
-	private static readonly string PageFormat =
+	private static readonly CompositeFormat PageFormat = CompositeFormat.Parse(
 		"""
 		<!DOCTYPE html>
 		<html lang="en" class="h-100">
@@ -48,11 +51,11 @@ public static class WebPageBuilder
 			<script src="https://auth.soupbuild.com/Shared/js/bootstrap.bundle.min.js"></script>
 		</body>
 		</html>
-		""";
+		""");
 
 	public static string BuildWebPage(string title, string content)
 	{
-		var result = string.Format(PageFormat, title, content);
+		var result = string.Format(CultureInfo.InvariantCulture, PageFormat, title, content);
 
 		return result;
 	}
