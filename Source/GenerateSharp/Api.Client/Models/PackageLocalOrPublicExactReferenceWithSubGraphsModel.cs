@@ -24,7 +24,7 @@ public class PackageLocalOrPublicExactReferenceWithSubGraphsModel
 	/// </summary>
 	[JsonPropertyName("public")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public PackagePublicExactReferenceModel Public { get; set; }
+	public PackagePublicExactReferenceModel? Public { get; set; }
 
 	/// <summary>
 	/// Gets or sets the build.
@@ -32,7 +32,7 @@ public class PackageLocalOrPublicExactReferenceWithSubGraphsModel
 	[JsonPropertyName("build")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required(AllowEmptyStrings = true)]
-	public string Build { get; set; }
+	public required string Build { get; set; }
 
 	/// <summary>
 	/// Gets or sets the build.
@@ -40,5 +40,5 @@ public class PackageLocalOrPublicExactReferenceWithSubGraphsModel
 	[JsonPropertyName("tool")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required(AllowEmptyStrings = true)]
-	public string Tool { get; set; }
+	public required string Tool { get; set; }
 }

@@ -23,26 +23,26 @@ public class GenerateClosureResultModel
 	/// </summary>
 	[JsonPropertyName("message")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public string Message { get; set; }
+	public string? Message { get; set; }
 
 	/// <summary>
 	/// Gets or sets the runtime closure.
 	/// </summary>
 	[JsonPropertyName("runtimeClosure")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public ICollection<PackageLocalOrPublicExactReferenceWithSubGraphsModel> RuntimeClosure { get; init; }
+	public ICollection<PackageLocalOrPublicExactReferenceWithSubGraphsModel>? RuntimeClosure { get; init; }
 
 	/// <summary>
 	/// Gets or sets the collection of build closures.
 	/// </summary>
 	[JsonPropertyName("buildClosures")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public IDictionary<string, ICollection<PackageLocalOrPublicExactReferenceModel>> BuildClosures { get; init; }
+	public IDictionary<string, ICollection<PackageLocalOrPublicExactReferenceModel>>? BuildClosures { get; init; }
 
 	/// <summary>
 	/// Gets or sets the collection of tool closures.
 	/// </summary>
 	[JsonPropertyName("toolClosures")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public IDictionary<string, ICollection<PackageLocalOrPublicExactReferenceModel>> ToolClosures { get; init; }
+	public IDictionary<string, ICollection<PackageLocalOrPublicExactReferenceModel>>? ToolClosures { get; init; }
 }

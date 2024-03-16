@@ -33,19 +33,19 @@ public class PackageModel
 	/// </summary>
 	[JsonPropertyName("description")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public string Description { get; set; }
+	public string? Description { get; set; }
 
 	/// <summary>
 	/// Gets or sets the latest published version.
 	/// </summary>
 	[JsonPropertyName("latest")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public SemanticVersion Latest { get; set; }
+	public SemanticVersion? Latest { get; set; }
 
 	/// <summary>
 	/// Gets or sets the list of versions.
 	/// </summary>
 	[JsonPropertyName("versions")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public ICollection<PackageVersionModel> Versions { get; init; }
+	public ICollection<PackageVersionModel>? Versions { get; init; }
 }

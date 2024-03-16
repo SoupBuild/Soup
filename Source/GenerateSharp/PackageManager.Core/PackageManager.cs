@@ -121,7 +121,12 @@ public class PackageManager
 		{
 			var ownerName = targetPackageReference.Owner ?? throw new InvalidOperationException("Owner was not set");
 			var packageModel = await GetPackageModelAsync(recipe.Language.Name, ownerName, packageName);
-			var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
+			if (packageModel.Latest is null)
+				throw new InvalidOperationException("Package did not have a latest version");
+			var latestVersion = new SemanticVersion(
+				packageModel.Latest.Major,
+				packageModel.Latest.Minor,
+				packageModel.Latest.Patch);
 			Log.HighPriority("Latest Version: " + latestVersion.ToString());
 			targetPackageReference = new PackageReference(null, packageModel.Owner, packageModel.Name, latestVersion);
 		}

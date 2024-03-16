@@ -23,5 +23,5 @@ public class PackageLocalOrPublicExactReferenceModel
 	/// </summary>
 	[JsonPropertyName("public")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public PackagePublicExactReferenceModel Public { get; set; }
+	public PackagePublicExactReferenceModel? Public { get; set; }
 }

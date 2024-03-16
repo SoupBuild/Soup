@@ -11,7 +11,7 @@ public sealed class FileResponse : IDisposable
 
 	public int StatusCode { get; private set; }
 
-	public IReadOnlyDictionary<string, IEnumerable<string>> Headers { get; private set; }
+	public IReadOnlyDictionary<string, IEnumerable<string>>? Headers { get; private set; }
 
 	public Stream Stream { get; private set; }
 
@@ -19,7 +19,7 @@ public sealed class FileResponse : IDisposable
 
 	public FileResponse(
 		int statusCode,
-		IReadOnlyDictionary<string, IEnumerable<string>> headers,
+		IReadOnlyDictionary<string, IEnumerable<string>>? headers,
 		Stream stream,
 		IDisposable? client,
 		IDisposable response)

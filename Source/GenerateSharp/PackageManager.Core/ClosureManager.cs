@@ -305,6 +305,13 @@ public class ClosureManager : IClosureManager
 			throw new HandledException();
 		}
 
+		if (result.RuntimeClosure is null)
+			throw new InvalidOperationException("RuntimeClosure was null");
+		if (result.BuildClosures is null)
+			throw new InvalidOperationException("BuildClosures was null");
+		if (result.ToolClosures is null)
+			throw new InvalidOperationException("ToolClosures was null");
+
 		// Convert back to resolved closures
 		var runtimeClosure = new Dictionary<string, IDictionary<PackageName, (PackageReference Package, string BuildClosure, string ToolClosure)>>();
 		foreach (var package in result.RuntimeClosure)

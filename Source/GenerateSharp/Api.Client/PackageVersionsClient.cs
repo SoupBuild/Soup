@@ -142,6 +142,8 @@ public class PackageVersionsClient
 		FileParameter file,
 		CancellationToken cancellationToken)
 	{
+		ArgumentNullException.ThrowIfNull(file.ContentType);
+
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
@@ -151,6 +153,7 @@ public class PackageVersionsClient
 
 		using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		using var content = new StreamContent(file.Data);
+
 
 		content.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
 		request.Content = content;
