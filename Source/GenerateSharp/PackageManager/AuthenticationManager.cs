@@ -4,7 +4,6 @@
 
 using IdentityModel.OidcClient;
 using System.Globalization;
-using System.Threading.Tasks;
 
 namespace Soup.Build.PackageManager;
 

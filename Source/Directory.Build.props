@@ -1,4 +1,9 @@
 <Project>
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
   <!-- Common Project Directories -->
   <PropertyGroup>
     <SourceDirectory>$(MSBuildThisFileDirectory.TrimEnd('\'))</SourceDirectory>

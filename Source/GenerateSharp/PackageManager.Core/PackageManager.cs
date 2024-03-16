@@ -5,12 +5,9 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager;
 

@@ -7,7 +7,6 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Soup.Build.Utilities;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
 
 namespace Soup.View.ViewModels;
 

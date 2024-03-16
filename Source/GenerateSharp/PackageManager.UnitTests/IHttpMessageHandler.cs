@@ -2,9 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.Net.Http;
-
 namespace Soup.Build.PackageManager.UnitTests;
 
 public interface IHttpMessageHandler

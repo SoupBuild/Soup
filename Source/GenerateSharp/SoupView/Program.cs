@@ -4,7 +4,6 @@ using Opal;
 using Opal.System;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
-using System;
 
 namespace Soup.View;
 

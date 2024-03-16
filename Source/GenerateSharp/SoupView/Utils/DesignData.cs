@@ -1,6 +1,6 @@
 ﻿
-using Opal;
 using Soup.Build.Utilities;
+using Path = Opal.Path;
 
 namespace Soup.View.ViewModels;
 

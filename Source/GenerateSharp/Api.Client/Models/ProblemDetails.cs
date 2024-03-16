@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Soup.Build.Api.Client;

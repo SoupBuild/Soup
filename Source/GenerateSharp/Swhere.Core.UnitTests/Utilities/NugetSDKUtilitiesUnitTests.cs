@@ -5,9 +5,9 @@
 using Opal;
 using Opal.System;
 using Swhere.Core.Nuget;
-using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover.UnitTests;
 

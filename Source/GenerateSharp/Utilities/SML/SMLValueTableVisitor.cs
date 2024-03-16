@@ -4,9 +4,7 @@
 
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 namespace Soup.Build.Utilities;
 
