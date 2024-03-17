@@ -244,7 +244,7 @@ public class ClosureManager : IClosureManager
 		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> BuildClosures,
 		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> ToolClosures)> GenerateServiceClosureAsync(
 		int rootPackageId,
-		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
+		Dictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
 		IDictionary<Path, Api.Client.PackageLocalReferenceModel> localPackageLookup,
 		IList<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
