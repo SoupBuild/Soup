@@ -260,6 +260,13 @@ namespace Soup::Core
 			/////////////////////////////////////////////
 			if (!_arguments.SkipGenerate)
 			{
+				// Ensure the target directories exists
+				if (!System::IFileSystem::Current().Exists(soupTargetDirectory))
+				{
+					Log::Info("Create Directory: " + soupTargetDirectory.ToString());
+					System::IFileSystem::Current().CreateDirectory2(soupTargetDirectory);
+				}
+
 				auto ranGenerate = RunIncrementalGenerate(
 					packageInfo,
 					macroPackageDirectory,

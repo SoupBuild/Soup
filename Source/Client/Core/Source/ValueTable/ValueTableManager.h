@@ -62,13 +62,6 @@ namespace Soup::Core
 		{
 			auto targetFolder = valueTableFile.GetParent();
 
-			// Ensure the target directories exists
-			if (!System::IFileSystem::Current().Exists(targetFolder))
-			{
-				Log::Info("Create Directory: " + targetFolder.ToString());
-				System::IFileSystem::Current().CreateDirectory2(targetFolder);
-			}
-
 			// Open the file to write to
 			auto file = System::IFileSystem::Current().OpenWrite(valueTableFile, true);
 
