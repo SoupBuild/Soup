@@ -573,7 +573,7 @@ public class Path : IEquatable<Path>
 	/// Convert the components of the path into the string value.
 	/// </summary>
 	private void SetState(
-		IList<string> directories,
+		List<string> directories,
 		string? root,
 		string? fileName)
 	{

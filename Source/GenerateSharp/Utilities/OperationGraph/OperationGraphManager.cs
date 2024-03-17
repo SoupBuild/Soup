@@ -110,7 +110,7 @@ public static class OperationGraphManager
 		OperationGraphWriter.Serialize(state, writer);
 	}
 
-	private static void UpdateFileIds(IList<FileId> fileIds, IDictionary<FileId, FileId> activeFileIdMap)
+	private static void UpdateFileIds(IList<FileId> fileIds, Dictionary<FileId, FileId> activeFileIdMap)
 	{
 		for (var i = 0; i < fileIds.Count; i++)
 		{
