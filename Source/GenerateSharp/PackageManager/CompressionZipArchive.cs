@@ -2,8 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
-using Opal;
 using System.IO.Compression;
+using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager;
 

@@ -18,5 +18,5 @@ public class PackageCreateOrUpdateModel
 	[JsonPropertyName("description")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 	[StringLength(1024)]
-	public string Description { get; set; }
+	public string? Description { get; set; }
 }

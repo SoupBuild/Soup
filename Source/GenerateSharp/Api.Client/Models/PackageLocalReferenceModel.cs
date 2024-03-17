@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -26,7 +25,7 @@ public class PackageLocalReferenceModel
 	[JsonPropertyName("language")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public LanguageReferenceModel Language { get; set; } = new LanguageReferenceModel();
+	public required LanguageReferenceModel Language { get; set; }
 
 	/// <summary>
 	/// Gets or sets the list of dependencies.

@@ -5,12 +5,9 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager;
 
@@ -241,6 +238,7 @@ public class ClosureManager : IClosureManager
 		}
 	}
 
+	[SuppressMessage("Performance", "CA1854:Prefer the 'IDictionary.TryGetValue(TKey, out TValue)' method", Justification = "False positive")]
 	private async Task<(
 		IDictionary<string, IDictionary<PackageName, (PackageReference Package, string BuildClosure, string ToolClosure)>> RuntimeClosure,
 		IDictionary<string, IDictionary<string, IDictionary<PackageName, PackageReference>>> BuildClosures,
@@ -306,6 +304,13 @@ public class ClosureManager : IClosureManager
 			Log.Error($"Unable to create closure: {result.Message}");
 			throw new HandledException();
 		}
+
+		if (result.RuntimeClosure is null)
+			throw new InvalidOperationException("RuntimeClosure was null");
+		if (result.BuildClosures is null)
+			throw new InvalidOperationException("BuildClosures was null");
+		if (result.ToolClosures is null)
+			throw new InvalidOperationException("ToolClosures was null");
 
 		// Convert back to resolved closures
 		var runtimeClosure = new Dictionary<string, IDictionary<PackageName, (PackageReference Package, string BuildClosure, string ToolClosure)>>();

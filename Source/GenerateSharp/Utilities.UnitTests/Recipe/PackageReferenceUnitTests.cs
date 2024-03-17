@@ -3,8 +3,8 @@
 // </copyright>
 
 using Opal;
-using System;
 using Xunit;
+using Path = Opal.Path;
 
 namespace Soup.Build.Utilities.UnitTests;
 

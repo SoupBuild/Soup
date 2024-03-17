@@ -4,14 +4,13 @@
 
 using IdentityModel.OidcClient;
 using System.Globalization;
-using System.Threading.Tasks;
 
 namespace Soup.Build.PackageManager;
 
 internal sealed class AuthenticationManager : IAuthenticationManager
 {
-	private static readonly string _authority = "https://auth.soupbuild.com/";
-	// private static readonly string _authority = "https://localhost:5001/";
+	private const string _authority = "https://auth.soupbuild.com/";
+	// private const string _authority = "https://localhost:5001/";
 
 	/// <summary>
 	/// Ensure the user is logged in

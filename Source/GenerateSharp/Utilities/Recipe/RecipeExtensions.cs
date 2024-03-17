@@ -4,8 +4,7 @@
 
 using Opal;
 using Opal.System;
-using System;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.Build.Utilities;
 

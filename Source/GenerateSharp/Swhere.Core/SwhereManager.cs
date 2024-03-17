@@ -5,9 +5,8 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
 

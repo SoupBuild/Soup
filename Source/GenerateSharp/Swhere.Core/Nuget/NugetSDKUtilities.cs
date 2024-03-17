@@ -5,10 +5,8 @@
 using Opal;
 using Opal.System;
 using Swhere.Core.Nuget;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
 
@@ -27,7 +25,7 @@ public static class NugetSDKUtilities
 			var packages = new List<NugetPackage>();
 			foreach (var nugetPackageDirectory in fileSystem.GetChildDirectories(nugetPackagesDirectory))
 			{
-				var packageName = nugetPackageDirectory.Path.GetFileName();
+				var packageName = nugetPackageDirectory.Path.FileName;
 				NugetPackage? package = null;
 				foreach (var nugetPackageVersionDirectory in fileSystem.GetChildDirectories(nugetPackageDirectory.Path))
 				{
@@ -178,7 +176,7 @@ public static class NugetSDKUtilities
 		{
 			foreach (var file in fileSystem.GetChildFiles(targetLibrariesPath))
 			{
-				if (file.Path.GetFileExtension() == ".dll")
+				if (file.Path.FileExtension == ".dll")
 				{
 					var relativeFile = file.Path.GetRelativeTo(directory);
 					libraries.Add(relativeFile.ToString());

@@ -2,7 +2,6 @@
 using Avalonia.Controls.Templates;
 using Soup.View.ViewModels;
 using Soup.View.Views;
-using System;
 
 namespace Soup.View;
 

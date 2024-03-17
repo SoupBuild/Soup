@@ -1,4 +1,9 @@
 <Project>
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
   <!-- Common Project Directories -->
   <PropertyGroup>
     <SourceDirectory>$(MSBuildThisFileDirectory.TrimEnd('\'))</SourceDirectory>
@@ -20,6 +25,7 @@
   <PropertyGroup>
     <AnalysisLevel>8.0</AnalysisLevel>
     <AnalysisLevelStyle>8.0-all</AnalysisLevelStyle>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

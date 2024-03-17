@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -19,7 +18,7 @@ public class GenerateClosureRequestModel
 	[JsonPropertyName("rootPackage")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required]
-	public PackageLocalReferenceModel RootPackage { get; set; } = new PackageLocalReferenceModel();
+	public required PackageLocalReferenceModel RootPackage { get; set; }
 
 	/// <summary>
 	/// Gets or sets the collection of local packages that will be resolved.

@@ -14,11 +14,11 @@ public class PathUnitTests
 		var uut = new Path();
 		Assert.False(uut.HasRoot);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.GetFileName());
+		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.GetFileStem());
+		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.GetFileExtension());
+		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("./", uut.ToString());
 		Assert.Equal(".\\", uut.ToAlternateString());
 	}
@@ -29,11 +29,11 @@ public class PathUnitTests
 		var uut = new Path("");
 		Assert.False(uut.HasRoot);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.GetFileName());
+		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.GetFileStem());
+		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.GetFileExtension());
+		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("./", uut.ToString());
 		Assert.Equal(".\\", uut.ToAlternateString());
 	}
@@ -44,11 +44,11 @@ public class PathUnitTests
 		var uut = new Path("./");
 		Assert.False(uut.HasRoot);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.GetFileName());
+		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.GetFileStem());
+		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.GetFileExtension());
+		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("./", uut.ToString());
 		Assert.Equal(".\\", uut.ToAlternateString());
 	}
@@ -59,11 +59,11 @@ public class PathUnitTests
 		var uut = new Path("../");
 		Assert.False(uut.HasRoot);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.GetFileName());
+		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.GetFileStem());
+		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.GetFileExtension());
+		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("../", uut.ToString());
 		Assert.Equal("..\\", uut.ToAlternateString());
 	}
@@ -74,11 +74,11 @@ public class PathUnitTests
 		var uut = new Path("myfolder/anotherFolder/file.txt");
 		Assert.False(uut.HasRoot);
 		Assert.True(uut.HasFileName);
-		Assert.Equal("file.txt", uut.GetFileName());
+		Assert.Equal("file.txt", uut.FileName);
 		Assert.True(uut.HasFileStem);
-		Assert.Equal("file", uut.GetFileStem());
+		Assert.Equal("file", uut.FileStem);
 		Assert.True(uut.HasFileExtension);
-		Assert.Equal(".txt", uut.GetFileExtension());
+		Assert.Equal(".txt", uut.FileExtension);
 		Assert.Equal("./myfolder/anotherFolder/file.txt", uut.ToString());
 		Assert.Equal(".\\myfolder\\anotherFolder\\file.txt", uut.ToAlternateString());
 	}
@@ -88,13 +88,13 @@ public class PathUnitTests
 	{
 		var uut = new Path("/");
 		Assert.True(uut.HasRoot);
-		Assert.Equal("", uut.GetRoot());
+		Assert.Equal("", uut.Root);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.GetFileName());
+		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.GetFileStem());
+		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.GetFileExtension());
+		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("/", uut.ToString());
 		Assert.Equal("\\", uut.ToAlternateString());
 	}
@@ -104,13 +104,13 @@ public class PathUnitTests
 	{
 		var uut = new Path("C:/myfolder/anotherFolder/file.txt");
 		Assert.True(uut.HasRoot, "Verify is root.");
-		Assert.Equal("C:", uut.GetRoot());
+		Assert.Equal("C:", uut.Root);
 		Assert.True(uut.HasFileName);
-		Assert.Equal("file.txt", uut.GetFileName());
+		Assert.Equal("file.txt", uut.FileName);
 		Assert.True(uut.HasFileStem);
-		Assert.Equal("file", uut.GetFileStem());
+		Assert.Equal("file", uut.FileStem);
 		Assert.True(uut.HasFileExtension);
-		Assert.Equal(".txt", uut.GetFileExtension());
+		Assert.Equal(".txt", uut.FileExtension);
 		Assert.Equal("C:/myfolder/anotherFolder/file.txt", uut.ToString());
 	}
 
@@ -119,13 +119,13 @@ public class PathUnitTests
 	{
 		var uut = new Path("C:\\myfolder/anotherFolder\\file.txt");
 		Assert.True(uut.HasRoot, "Verify is root.");
-		Assert.Equal("C:", uut.GetRoot());
+		Assert.Equal("C:", uut.Root);
 		Assert.True(uut.HasFileName);
-		Assert.Equal("file.txt", uut.GetFileName());
+		Assert.Equal("file.txt", uut.FileName);
 		Assert.True(uut.HasFileStem);
-		Assert.Equal("file", uut.GetFileStem());
+		Assert.Equal("file", uut.FileStem);
 		Assert.True(uut.HasFileExtension);
-		Assert.Equal(".txt", uut.GetFileExtension());
+		Assert.Equal(".txt", uut.FileExtension);
 		Assert.Equal("C:/myfolder/anotherFolder/file.txt", uut.ToString());
 	}
 

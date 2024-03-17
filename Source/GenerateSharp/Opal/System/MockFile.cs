@@ -2,8 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.IO;
-
 namespace Opal.System;
 
 public class MockFile

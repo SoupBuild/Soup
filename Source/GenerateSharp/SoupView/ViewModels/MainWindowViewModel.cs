@@ -1,11 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
-using Opal;
 using ReactiveUI;
-using System;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using Path = Opal.Path;
 
 namespace Soup.View.ViewModels;
 

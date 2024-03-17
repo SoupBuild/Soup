@@ -3,13 +3,9 @@
 // </copyright>
 
 using GraphShape;
-using Opal;
 using ReactiveUI;
 using Soup.View.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.View.ViewModels;
 

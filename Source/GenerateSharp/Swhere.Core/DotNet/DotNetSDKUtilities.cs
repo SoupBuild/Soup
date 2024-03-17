@@ -4,11 +4,8 @@
 
 using Opal;
 using Opal.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
 
@@ -150,7 +147,7 @@ public static class DotNetSDKUtilities
 		{
 			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetPacksPath))
 			{
-				var folderName = child.Path.GetFileName();
+				var folderName = child.Path.FileName;
 				versions.Add((folderName, dotnetPacksPath));
 			}
 		}
