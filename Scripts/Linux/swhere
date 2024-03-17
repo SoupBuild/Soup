@@ -7,5 +7,4 @@ SCRIPTS_DIR=$(dirname "$0")
 ROOT_DIR=$SCRIPTS_DIR/../..
 OUT_DIR=$ROOT_DIR/Source/out
 
-
 eval $OUT_DIR/msbuild/bin/Swhere/Release/net8.0/linux-x64/publish/Swhere "$@"
