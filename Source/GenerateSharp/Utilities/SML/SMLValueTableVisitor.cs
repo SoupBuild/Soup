@@ -100,7 +100,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var colon = BuildToken(context.COLON());
 		var values = (SMLValue)context.value().Accept(this);
 
-		return new SMLTableValue(key, keyContent, colon, values, new List<SMLToken>());
+		return new SMLTableValue(key, keyContent, colon, values, []);
 	}
 
 	public virtual object VisitKeyLiteral(SMLParser.KeyLiteralContext context)

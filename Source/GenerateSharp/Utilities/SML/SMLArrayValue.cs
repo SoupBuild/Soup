@@ -15,7 +15,7 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 	public SMLArrayValue(SMLValue value)
 	{
 		Value = value;
-		Delimiter = new List<SMLToken>();
+		Delimiter = [];
 	}
 
 	public SMLArrayValue(
