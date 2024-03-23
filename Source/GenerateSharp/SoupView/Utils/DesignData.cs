@@ -1,12 +1,16 @@
 ﻿
-using Opal;
 using Soup.Build.Utilities;
-using System.Collections.Generic;
+using Path = Opal.Path;
 
 namespace Soup.View.ViewModels;
 
 public static class DesignData
 {
+	public static MainWindowViewModel ExampleMainWindow { get; } =
+		new MainWindowViewModel(null)
+		{
+		};
+
 	public static DependencyGraphViewModel ExampleDependencyGraph { get; } =
 		new DependencyGraphViewModel()
 		{
@@ -30,10 +34,10 @@ public static class DesignData
 					new OperationId(123),
 					"Operation123",
 					new CommandInfo(),
-					new List<FileId>(),
-					new List<FileId>(),
-					new List<FileId>(),
-					new List<FileId>()),
+					[],
+					[],
+					[],
+					[]),
 				null),
 		};
 }

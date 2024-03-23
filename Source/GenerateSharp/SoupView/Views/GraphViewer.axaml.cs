@@ -5,12 +5,10 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Soup.View.ViewModels;
-using System.Collections.Generic;
-using System.Linq;
+using Path = Avalonia.Controls.Shapes.Path;
 
 namespace Soup.View.Views;
 

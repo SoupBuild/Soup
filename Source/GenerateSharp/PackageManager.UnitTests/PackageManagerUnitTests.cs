@@ -5,14 +5,11 @@
 using Moq;
 using Opal;
 using Opal.System;
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Xunit;
+using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager.UnitTests;
 
@@ -375,14 +372,13 @@ public class PackageManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Root/MyPackage/"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry()
 				{
 					Path = new Path("C:/Root/MyPackage/Recipe.sml"),
 					IsDirectory = false,
 				},
-			});
+			]);
 
 		// Setup the mock authentication manager
 		var mockAuthenticationManager = new Mock<IAuthenticationManager>();

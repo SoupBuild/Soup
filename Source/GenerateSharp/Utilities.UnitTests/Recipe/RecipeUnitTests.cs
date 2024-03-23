@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
 using Xunit;
 
 namespace Soup.Build.Utilities.UnitTests;
@@ -47,10 +46,9 @@ public class RecipeUnitTests
 
 		Assert.True(uut.HasRuntimeDependencies);
 		Assert.Equal(
-			new List<PackageReference>()
-			{
+			[
 				new PackageReference(null, "Owner", "SomeDependency", null),
-			},
+			],
 			uut.RuntimeDependencies);
 	}
 }

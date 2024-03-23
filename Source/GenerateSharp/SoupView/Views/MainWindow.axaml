@@ -11,10 +11,8 @@
 	x:DataType="vm:MainWindowViewModel"
 	x:Class="Soup.View.MainWindow"
 	Icon="/Assets/Soup.ico"
-	Title="Soup View">
-	<Design.DataContext>
-		<vm:MainWindowViewModel />
-	</Design.DataContext>
+	Title="Soup View"
+	d:DataContext="{x:Static vm:DesignData.ExampleMainWindow}">
 	<Grid RowDefinitions="Auto,*">
 		<Grid
 			Grid.Row="0"
@@ -74,5 +72,6 @@
 		<ContentControl
 			Grid.Row="1"
 			Content="{Binding Content}" />
+		
 	</Grid>
 </Window>

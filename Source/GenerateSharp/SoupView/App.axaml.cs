@@ -2,7 +2,6 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Soup.View.ViewModels;
-using System.Linq;
 
 namespace Soup.View;
 

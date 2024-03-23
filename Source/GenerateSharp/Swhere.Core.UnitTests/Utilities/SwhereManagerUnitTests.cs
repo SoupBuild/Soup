@@ -4,10 +4,9 @@
 
 using Opal;
 using Opal.System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover.UnitTests;
 
@@ -47,10 +46,9 @@ public class SwhereManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"), IsDirectory = true, },
-			});
+			]);
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
@@ -58,14 +56,13 @@ public class SwhereManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
-			});
+			]);
 
 		bool includePrerelease = false;
 		await SwhereManager.DiscoverAsync(includePrerelease);
@@ -313,10 +310,9 @@ public class SwhereManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"), IsDirectory = true, },
-			});
+			]);
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
@@ -324,14 +320,13 @@ public class SwhereManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
-			});
+			]);
 
 		bool includePrerelease = true;
 		await SwhereManager.DiscoverAsync(includePrerelease);
@@ -640,10 +635,9 @@ public class SwhereManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"), IsDirectory = true, },
-			});
+			]);
 
 		mockFileSystem.CreateMockFile(
 			new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
@@ -651,14 +645,13 @@ public class SwhereManagerUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
-			});
+			]);
 
 		bool includePrerelease = false;
 		await SwhereManager.DiscoverAsync(includePrerelease);

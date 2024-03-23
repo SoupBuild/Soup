@@ -2,8 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Soup.Build.Utilities;
@@ -240,10 +238,10 @@ public static partial class SMLExtensions
 		var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
 
 		// If this is the first item then place it on a newline
-		var leadingTrivia = new List<string>()
-		{
+		List<string> leadingTrivia =
+		[
 			indent,
-		};
+		];
 
 		// Create a new item and matching syntax
 		var newValue = new SMLValue(new SMLStringValue(
@@ -454,9 +452,9 @@ public static partial class SMLExtensions
 		var keyToken = new SMLToken(EnsureSafeKey(name))
 		{
 			LeadingTrivia =
-				[
-					indent,
-				],
+			[
+				indent,
+			],
 		};
 
 		// Update the previous last item to have a comma delimiter

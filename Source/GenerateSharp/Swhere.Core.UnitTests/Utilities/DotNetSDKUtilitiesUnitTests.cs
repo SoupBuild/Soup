@@ -4,9 +4,8 @@
 
 using Opal;
 using Opal.System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover.UnitTests;
 
@@ -37,27 +36,26 @@ public class DotNetSDKUtilitiesUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7"), IsDirectory = true, },
-			});
+			]);
 
 		var result = await DotNetSDKUtilities.FindDotNetAsync();
 
 		Assert.Equal(new Path("C:/Program Files/dotnet/dotnet.exe"), result.DotNetExecutable);
-		Assert.Equal(new List<(string Version, Path InstallDirectory)>()
-			{
+		Assert.Equal(
+			[
 				("5.0.0", new Path("C:/Program Files/dotnet/sdk")),
 				("6.0.8", new Path("C:/Program Files/dotnet/sdk")),
 				("7.0.201", new Path("C:/Program Files/dotnet/sdk")),
 				("7.0.300-preview.23179.2", new Path("C:/Program Files/dotnet/sdk")),
 				("7.0.304", new Path("C:/Program Files/dotnet/sdk")),
 				("7.0.400-preview.23274.1", new Path("C:/Program Files/dotnet/sdk")),
-			},
+			],
 			result.SDKVersions);
 		Assert.Equal(
 			new Dictionary<string, IList<(string Version, Path InstallDirectory)>>()

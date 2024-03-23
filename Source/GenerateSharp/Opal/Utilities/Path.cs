@@ -2,9 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Opal;
@@ -103,7 +100,7 @@ public class Path : IEquatable<Path>
 		// Convert the left hand side filename to a directory
 		if (lhs.HasFileName)
 		{
-			resultDirectories.Add(lhs.GetFileName());
+			resultDirectories.Add(lhs.FileName);
 		}
 
 		var rhsDirectories = DecomposeDirectoriesString(rhs.GetDirectories());
@@ -115,8 +112,8 @@ public class Path : IEquatable<Path>
 		var result = new Path();
 		result.SetState(
 			resultDirectories,
-			lhs.HasRoot ? lhs.GetRoot() : null,
-			rhs.HasFileName ? rhs.GetFileName() : null);
+			lhs.HasRoot ? lhs.Root : null,
+			rhs.HasFileName ? rhs.FileName : null);
 
 		return result;
 	}
@@ -124,11 +121,14 @@ public class Path : IEquatable<Path>
 	/// <summary>
 	/// Gets the path root.
 	/// </summary>
-	public string GetRoot()
+	public string Root
 	{
-		if (rootEndLocation < 0)
-			throw new InvalidOperationException("Cannot access root on path that has none");
-		return this.value[..this.rootEndLocation];
+		get
+		{
+			if (rootEndLocation < 0)
+				throw new InvalidOperationException("Cannot access root on path that has none");
+			return this.value[..this.rootEndLocation];
+		}
 	}
 
 	/// <summary>
@@ -178,7 +178,7 @@ public class Path : IEquatable<Path>
 			// Set the state of the result path
 			result.SetState(
 				directories,
-				this.HasRoot ? this.GetRoot() : null,
+				this.HasRoot ? this.Root : null,
 				null);
 		}
 
@@ -193,50 +193,59 @@ public class Path : IEquatable<Path>
 	/// <summary>
 	/// Gets the file name.
 	/// </summary>
-	public string GetFileName()
+	public string FileName
 	{
-		// Use the start location to return the end of the value that is the filename
-		return this.value[this.fileNameStartLocation..];
+		get
+		{
+			// Use the start location to return the end of the value that is the filename
+			return this.value[this.fileNameStartLocation..];
+		}
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the file name has a stem.
 	/// </summary>
-	public bool HasFileStem => !string.IsNullOrEmpty(this.GetFileStem());
+	public bool HasFileStem => !string.IsNullOrEmpty(this.FileStem);
 
 	/// <summary>
 	/// Gets the file name minus the extension.
 	/// </summary>
-	public string GetFileStem()
+	public string FileStem
 	{
-		// Everything before the last period is the stem
-		var fileName = this.GetFileName();
-		var lastSeparator = fileName.LastIndexOf(FileExtensionSeparator);
-		if (lastSeparator != -1)
+		get
 		{
-			return fileName[..lastSeparator];
-		}
-		else
-		{
-			// Return the entire filename if no extension
-			return fileName;
+			// Everything before the last period is the stem
+			var fileName = this.FileName;
+			var lastSeparator = fileName.LastIndexOf(FileExtensionSeparator);
+			if (lastSeparator != -1)
+			{
+				return fileName[..lastSeparator];
+			}
+			else
+			{
+				// Return the entire filename if no extension
+				return fileName;
+			}
 		}
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the file name has an extension.
 	/// </summary>
-	public bool HasFileExtension => !string.IsNullOrEmpty(this.GetFileExtension());
+	public bool HasFileExtension => !string.IsNullOrEmpty(this.FileExtension);
 
 	/// <summary>
 	/// Gets the file extension.
 	/// </summary>
-	public string GetFileExtension()
+	public string FileExtension
 	{
-		// Everything after and including the last period is the extension
-		var fileName = this.GetFileName();
-		var lastSeparator = fileName.LastIndexOf(FileExtensionSeparator);
-		return lastSeparator != -1 ? fileName[lastSeparator..] : string.Empty;
+		get
+		{
+			// Everything after and including the last period is the extension
+			var fileName = this.FileName;
+			var lastSeparator = fileName.LastIndexOf(FileExtensionSeparator);
+			return lastSeparator != -1 ? fileName[lastSeparator..] : string.Empty;
+		}
 	}
 
 	/// <summary>
@@ -248,7 +257,7 @@ public class Path : IEquatable<Path>
 		// Build the new final string
 		this.SetState(
 			DecomposeDirectoriesString(this.GetDirectories()),
-			this.HasRoot ? this.GetRoot() : null,
+			this.HasRoot ? this.Root : null,
 			value);
 	}
 
@@ -259,7 +268,7 @@ public class Path : IEquatable<Path>
 	public void SetFileExtension(string value)
 	{
 		// Build up the new filename and set the active state
-		this.SetFilename($"{this.GetFileStem()}{FileExtensionSeparator}{value}");
+		this.SetFilename($"{this.FileStem}{FileExtensionSeparator}{value}");
 	}
 
 	/// <summary>
@@ -270,7 +279,7 @@ public class Path : IEquatable<Path>
 	{
 		// If the root does not match then there is no way to get a relative path
 		// simply return a copy of this path
-		if ((basePath.HasRoot && this.HasRoot && basePath.GetRoot() != this.GetRoot()) ||
+		if ((basePath.HasRoot && this.HasRoot && basePath.Root != this.Root) ||
 			(basePath.HasRoot ^ this.HasRoot))
 		{
 			return this;
@@ -280,7 +289,7 @@ public class Path : IEquatable<Path>
 		var baseDirectories = DecomposeDirectoriesString(basePath.GetDirectories());
 		if (basePath.HasFileName)
 		{
-			baseDirectories.Add(basePath.GetFileName());
+			baseDirectories.Add(basePath.FileName);
 		}
 
 		// Determine how many of the directories match
@@ -323,7 +332,7 @@ public class Path : IEquatable<Path>
 		result.SetState(
 			resultDirectories,
 			null,
-			this.HasFileName ? this.GetFileName() : null);
+			this.HasFileName ? this.FileName : null);
 
 		return result;
 	}
@@ -564,7 +573,7 @@ public class Path : IEquatable<Path>
 	/// Convert the components of the path into the string value.
 	/// </summary>
 	private void SetState(
-		IList<string> directories,
+		List<string> directories,
 		string? root,
 		string? fileName)
 	{

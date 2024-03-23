@@ -1,8 +1,6 @@
 #!/bin/bash
 echo "Linux Build PackageManager!"
 
-OUT_DIR=~/repos/Soup/out
-
 # Stop on first error
 set -e
 

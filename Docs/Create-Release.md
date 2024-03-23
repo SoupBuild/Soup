@@ -23,8 +23,8 @@ Manually build ./Source/Installer/Installer.sln
 
 ## Create a GitHub Release
 Tag the new release
-* title: "Soup 0.\*.\* (Alpha)"
-* tag: "v0.\*.\*-alpha
+* title: "Soup 0.\*.\* (Beta)"
+* tag: "v0.\*.\*-beta
 
 Upload artifacts:
 * soup-build-[version]-linux-[architecture].tar.gz

@@ -18,12 +18,12 @@ public class PackageSummaryModel
 	[JsonPropertyName("name")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.Never)]
 	[Required(AllowEmptyStrings = true)]
-	public string Name { get; set; }
+	public required string Name { get; set; }
 
 	/// <summary>
 	/// Gets or sets the description.
 	/// </summary>
 	[JsonPropertyName("description")]
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-	public string Description { get; set; }
+	public string? Description { get; set; }
 }

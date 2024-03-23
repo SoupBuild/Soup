@@ -29,6 +29,8 @@ module;
 
 #ifdef _WIN32
 
+#include <format>
+
 #include <Windows.h>
 #undef max
 #undef min

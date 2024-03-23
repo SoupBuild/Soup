@@ -2,10 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Soup.Build.Utilities.UnitTests;
@@ -201,12 +197,12 @@ public class SMLManagerUnitTests
 										new SMLToken("Test"),
 										"Test",
 										new SMLToken(":"),
-										new SMLValue(new SMLArray(new List<SMLArrayValue>()
-										{
+										new SMLValue(new SMLArray(
+										[
 											new SMLArrayValue(new SMLValue(new SMLIntegerValue(123))),
 											new SMLArrayValue(new SMLValue(new SMLBooleanValue(false))),
 											new SMLArrayValue(new SMLValue(new SMLStringValue("string"))),
-										})))
+										])))
 								},
 							})))
 					},

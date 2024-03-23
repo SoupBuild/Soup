@@ -2,15 +2,13 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace Soup.View;
 
 public class LoadBuildGraph
 {
 	public int RootPackageGraphId { get; set; }
-	public IList<PackageGraph> PackageGraphs { get; init; } = new List<PackageGraph>();
-	public IList<PackageInfo> Packages { get; init; } = new List<PackageInfo>();
+	public IList<PackageGraph> PackageGraphs { get; init; } = [];
+	public IList<PackageInfo> Packages { get; init; } = [];
 }
 
 public class LoadBuildGraphResult

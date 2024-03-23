@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Functions::UndocumentedApi::Cache
+namespace Monitor::Windows::Functions::Cache::UndocumentedApi
 {
 	/// <summary>
 	/// Entry Point

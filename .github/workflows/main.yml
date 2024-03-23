@@ -72,6 +72,11 @@ jobs:
     - name: Soup Build PrintGraph
       if: matrix.os != 'ubuntu-22.04'
       run: soup build ./Soup/Source/Tools/PrintGraph/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Restore PrintResults
+      run: soup restore ./Soup/Source/Tools/PrintResults/
+    - name: Soup Build PrintResults
+      if: matrix.os != 'ubuntu-22.04'
+      run: soup build ./Soup/Source/Tools/PrintResults/ -flavor ${{matrix.config}} -v:d
     - name: Soup Restore PrintValueTable
       run: soup restore ./Soup/Source/Tools/PrintValueTable/
     - name: Soup Build PrintValueTable

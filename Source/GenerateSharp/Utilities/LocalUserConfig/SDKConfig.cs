@@ -2,10 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Opal;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Path = Opal.Path;
 
 namespace Soup.Build.Utilities;
 
@@ -76,7 +74,7 @@ public class SDKConfig
 			}
 			else
 			{
-				throw new InvalidOperationException("No SDKs.");
+				throw new InvalidOperationException("No SourceDirectories.");
 			}
 		}
 		set

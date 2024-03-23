@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Functions::FileApi::Cache
+namespace Monitor::Windows::Functions::Cache::FileApi
 {
 	/// <summary>
 	/// Determines whether the file I/O functions are using the ANSI or OEM character set code page.

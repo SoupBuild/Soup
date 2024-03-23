@@ -3,8 +3,6 @@
 // </copyright>
 
 using Opal;
-using System;
-using System.Collections.Generic;
 
 namespace Soup.Build.Utilities;
 

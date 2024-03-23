@@ -5,9 +5,9 @@
 using Opal;
 using Opal.System;
 using Swhere.Core.Nuget;
-using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover.UnitTests;
 
@@ -31,9 +31,7 @@ public class NugetSDKUtilitiesUnitTests
 			new Path("C:/Users/Me/.nuget/packages"),
 			result.NugetPackagesPath);
 		Assert.Equal(
-			new List<NugetPackage>()
-			{
-			},
+			[],
 			result.Packages);
 
 		// Verify expected logs
@@ -66,17 +64,15 @@ public class NugetSDKUtilitiesUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Users/Me/.nuget/packages"),
-			new List<DirectoryEntry>()
-			{
-					new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1"), IsDirectory = true, },
-			});
+			[
+				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1"), IsDirectory = true, },
+			]);
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Users/Me/.nuget/packages/Package1"),
-			new List<DirectoryEntry>()
-			{
-					new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3"), IsDirectory = true, },
-			});
+			[
+				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3"), IsDirectory = true, },
+			]);
 
 		var result = NugetSDKUtilities.FindNugetPackages();
 
@@ -85,9 +81,7 @@ public class NugetSDKUtilitiesUnitTests
 			new Path("C:/Users/Me/.nuget/packages"),
 			result.NugetPackagesPath);
 		Assert.Equal(
-			new List<NugetPackage>()
-			{
-			},
+			[],
 			result.Packages);
 
 		// Verify expected logs
@@ -124,17 +118,15 @@ public class NugetSDKUtilitiesUnitTests
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Users/Me/.nuget/packages"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1"), IsDirectory = true, },
-			});
+			]);
 
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Users/Me/.nuget/packages/Package1"),
-			new List<DirectoryEntry>()
-			{
+			[
 				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3"), IsDirectory = true, },
-			});
+			]);
 
 		var nuspecContent =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
@@ -184,46 +176,46 @@ public class NugetSDKUtilitiesUnitTests
 				new NugetPackage()
 				{
 					Id = "Package1",
-					Versions = new List<NugetPackageVersion>()
-					{
+					Versions =
+					[
 						new NugetPackageVersion()
 						{
 							Version = "1.2.3",
-							TargetFrameworks = new List<NugetPackageTargetFramework>()
-							{
+							TargetFrameworks =
+							[
 								new NugetPackageTargetFramework()
 								{
 									Name = "net461",
-									Libraries = new List<string>(),
-									Dependencies = new List<NugetPackageDependency>(),
+									Libraries = [],
+									Dependencies = [],
 								},
 								new NugetPackageTargetFramework()
 								{
 									Name = "netcoreapp2.1",
-									Libraries = new List<string>(),
-									Dependencies = new List<NugetPackageDependency>(),
+									Libraries = [],
+									Dependencies = [],
 								},
 								new NugetPackageTargetFramework()
 								{
 									Name = "net5.0",
-									Libraries = new List<string>(),
-									Dependencies = new List<NugetPackageDependency>(),
+									Libraries = [],
+									Dependencies = [],
 								},
 								new NugetPackageTargetFramework()
 								{
 									Name = "net6.0",
-									Libraries = new List<string>(),
-									Dependencies = new List<NugetPackageDependency>(),
+									Libraries = [],
+									Dependencies = [],
 								},
 								new NugetPackageTargetFramework()
 								{
 									Name = "netstandard2.0",
-									Libraries = new List<string>(),
-									Dependencies = new List<NugetPackageDependency>(),
+									Libraries = [],
+									Dependencies = [],
 								},
-							},
+							],
 						},
-					},
+					],
 				},
 			};
 

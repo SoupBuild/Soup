@@ -5,8 +5,7 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
-using System;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager;
 
@@ -42,7 +41,7 @@ public class InitializeCommand
 		var workingFolder = new Path(workingFolderValue);
 
 		var recipe = new Recipe(
-			workingFolder.GetFileName(),
+			workingFolder.FileName,
 			new LanguageReference(
 				BuiltInLanguageCpp,
 				new SemanticVersion(

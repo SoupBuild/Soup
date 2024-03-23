@@ -4,8 +4,8 @@
 
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
-using Opal;
 using System.Collections.ObjectModel;
+using Path = Opal.Path;
 
 namespace Soup.View.ViewModels;
 

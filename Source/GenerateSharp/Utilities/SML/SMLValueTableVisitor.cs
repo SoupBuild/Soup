@@ -4,9 +4,7 @@
 
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 namespace Soup.Build.Utilities;
 
@@ -134,7 +132,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	public virtual object VisitArrayContent(SMLParser.ArrayContentContext context)
 	{
-		var arrayContent = new List<SMLArrayValue>();
+		List<SMLArrayValue> arrayContent = [];
 		var arrayValues = context.value();
 		var delimiters = context.delimiter();
 		for (var i = 0; i < arrayValues.Length; i++)
@@ -246,15 +244,15 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 	public virtual object VisitCommaDelimiter(SMLParser.CommaDelimiterContext context)
 	{
 		return new List<SMLToken>()
-			{
-				BuildToken(context.COMMA()),
-			};
+		{
+			BuildToken(context.COMMA()),
+		};
 	}
 
 	private SMLToken BuildToken(ITerminalNode node)
 	{
 		var leadingTrivia = GetLeadingTrivia(node);
-		var trailingTrivia = new List<string>();
+		List<string> trailingTrivia = [];
 		return new SMLToken(
 			leadingTrivia,
 			node.Symbol.Text,

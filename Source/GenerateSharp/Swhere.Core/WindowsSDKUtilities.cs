@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
 
@@ -31,7 +32,7 @@ internal static class WindowsSDKUtilities
 		var currentVersion = new SemanticVersion(0, 0, 0);
 		foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(windowsSDKIncludePath))
 		{
-			var name = child.Path.GetFileName();
+			var name = child.Path.FileName;
 			Log.Info("CheckFile: " + name);
 			var platformVersion = name[..3];
 			if (platformVersion == "10.")

@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
@@ -94,13 +93,13 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 	public override int GetHashCode()
 	{
 		var ownerHash = Owner is null ? 0 : Owner.GetHashCode(StringComparison.Ordinal) * 0x1000;
-		var nameHash = Name.GetHashCode();
+		var nameHash = Name.GetHashCode(StringComparison.Ordinal);
 		return ownerHash + nameHash;
 	}
 
 	public int CompareTo(PackageName? other)
 	{
-		return ToString().CompareTo(other?.ToString());
+		return string.Compare(ToString(), other?.ToString(), StringComparison.Ordinal);
 	}
 
 	public static bool operator ==(PackageName? lhs, PackageName? rhs)
@@ -130,4 +129,24 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 
 	[GeneratedRegex(@"^(?:(?<Owner>[A-Za-z][\w.]*)\|)?(?<Name>[A-Za-z][\w.]*)$")]
 	private static partial Regex ParseRegex();
+
+	public static bool operator <(PackageName left, PackageName right)
+	{
+		return left is null ? right is not null : left.CompareTo(right) < 0;
+	}
+
+	public static bool operator <=(PackageName left, PackageName right)
+	{
+		return left is null || left.CompareTo(right) <= 0;
+	}
+
+	public static bool operator >(PackageName left, PackageName right)
+	{
+		return left is not null && left.CompareTo(right) > 0;
+	}
+
+	public static bool operator >=(PackageName left, PackageName right)
+	{
+		return left is null ? right is null : left.CompareTo(right) >= 0;
+	}
 }

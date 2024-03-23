@@ -5,9 +5,8 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
 
@@ -82,10 +81,10 @@ public static class SwhereManager
 	{
 		var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
 		var msvcSDK = userConfig.EnsureSDK("MSVC");
-		msvcSDK.SourceDirectories = new List<Path>()
-			{
-				msvcInstallPath,
-			};
+		msvcSDK.SourceDirectories =
+		[
+			msvcInstallPath,
+		];
 		msvcSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
@@ -95,10 +94,10 @@ public static class SwhereManager
 
 		var (windowsSDKVersion, windowsSDKInstallPath) = WindowsSDKUtilities.FindWindows10Kit();
 		var windowsSDK = userConfig.EnsureSDK("Windows");
-		windowsSDK.SourceDirectories = new List<Path>()
-			{
-				windowsSDKInstallPath,
-			};
+		windowsSDK.SourceDirectories =
+		[
+			windowsSDKInstallPath,
+		];
 		windowsSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
@@ -108,10 +107,10 @@ public static class SwhereManager
 
 		var netFXToolsPath = WindowsSDKUtilities.FindNetFXTools();
 		var netFXToolsSDK = userConfig.EnsureSDK("NetFXTools");
-		netFXToolsSDK.SourceDirectories = new List<Path>()
-			{
-				netFXToolsPath,
-			};
+		netFXToolsSDK.SourceDirectories =
+		[
+			netFXToolsPath,
+		];
 		netFXToolsSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
@@ -122,15 +121,15 @@ public static class SwhereManager
 		if (hasNuget)
 		{
 			var nugetSDK = userConfig.EnsureSDK("Nuget");
-			nugetSDK.SourceDirectories.AddRange(new List<Path>()
-				{
+			nugetSDK.SourceDirectories.AddRange(
+				[
 					nugetPackagesPath,
-				});
+				]);
 
 			nugetSDK.SetProperties(
 				new Dictionary<string, string>()
 				{
-						{ "PackagesDirectory", nugetPackagesPath.ToString() },
+					{ "PackagesDirectory", nugetPackagesPath.ToString() },
 				});
 
 			var packagesTable = nugetSDK.Properties.EnsureTableWithSyntax("Packages", 3);
@@ -187,12 +186,12 @@ public static class SwhereManager
 		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync("g++");
 
 		var gccSDK = userConfig.EnsureSDK("GCC");
-		gccSDK.SourceDirectories.Clear();
+		gccSDK.SourceDirectories = [];
 		gccSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-					{ "CCompiler", cCompilerPath.ToString() },
-					{ "CppCompiler", cppCompilerPath.ToString() },
+				{ "CCompiler", cCompilerPath.ToString() },
+				{ "CppCompiler", cppCompilerPath.ToString() },
 			});
 	}
 
@@ -204,13 +203,13 @@ public static class SwhereManager
 		var archiverPath = await WhereIsUtilities.FindExecutableAsync("ar");
 
 		var clangSDK = userConfig.EnsureSDK("Clang");
-		clangSDK.SourceDirectories.Clear();
+		clangSDK.SourceDirectories = [];
 		clangSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-					{ "CCompiler", cCompilerPath.ToString() },
-					{ "CppCompiler", cppCompilerPath.ToString() },
-					{ "Archiver", archiverPath.ToString() },
+				{ "CCompiler", cCompilerPath.ToString() },
+				{ "CppCompiler", cppCompilerPath.ToString() },
+				{ "Archiver", archiverPath.ToString() },
 			});
 	}
 }

@@ -2,17 +2,13 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
+using System.Globalization;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Soup.Build.Api.Client;
 
@@ -70,7 +66,7 @@ public class PackageVersionsClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
+			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
 		var client = this.httpClient;
 
@@ -146,15 +142,18 @@ public class PackageVersionsClient
 		FileParameter file,
 		CancellationToken cancellationToken)
 	{
+		ArgumentNullException.ThrowIfNull(file.ContentType);
+
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
+			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
 		var client = this.httpClient;
 
 		using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		using var content = new StreamContent(file.Data);
+
 
 		content.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
 		request.Content = content;
@@ -213,7 +212,7 @@ public class PackageVersionsClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append($"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}/download");
+			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}/download");
 
 		var client = this.httpClient;
 

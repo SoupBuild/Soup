@@ -3,8 +3,8 @@
 // </copyright>
 
 using Opal;
-using System;
 using System.Text.RegularExpressions;
+using Path = Opal.Path;
 
 namespace Soup.Build;
 

@@ -4,11 +4,8 @@
 
 using Opal;
 using Opal.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
 
@@ -58,7 +55,7 @@ public static class DotNetSDKUtilities
 		Log.HighPriority("Find DotNet SDK Versions");
 		var sdksOutput = await ExecutableUtilities.RunExecutableAsync(
 			dotnetExecutablePath,
-			new List<string>() { "--list-sdks" });
+			["--list-sdks"]);
 		var sdks = new List<(string, Path)>();
 		foreach (var sdkValue in sdksOutput.Split(Environment.NewLine).SkipLast(1))
 		{
@@ -87,7 +84,7 @@ public static class DotNetSDKUtilities
 		Log.HighPriority("Find DotNet Runtime Versions");
 		var runtimesOutput = await ExecutableUtilities.RunExecutableAsync(
 			dotnetExecutablePath,
-			new List<string>() { "--list-runtimes" });
+			["--list-runtimes"]);
 		var runtimes = new Dictionary<string, IList<(string, Path)>>();
 		foreach (var runtimeValue in runtimesOutput.Split(Environment.NewLine).SkipLast(1))
 		{
@@ -112,7 +109,7 @@ public static class DotNetSDKUtilities
 			}
 			else
 			{
-				runtimes.Add(name, new List<(string, Path)>() { (version, installationPath) });
+				runtimes.Add(name, [(version, installationPath)]);
 			}
 		}
 
@@ -150,7 +147,7 @@ public static class DotNetSDKUtilities
 		{
 			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetPacksPath))
 			{
-				var folderName = child.Path.GetFileName();
+				var folderName = child.Path.FileName;
 				versions.Add((folderName, dotnetPacksPath));
 			}
 		}

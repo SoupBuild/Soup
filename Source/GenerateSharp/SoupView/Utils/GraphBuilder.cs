@@ -5,8 +5,6 @@
 using GraphShape;
 using GraphShape.Algorithms.Layout;
 using QuikGraph;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Soup.View;
 

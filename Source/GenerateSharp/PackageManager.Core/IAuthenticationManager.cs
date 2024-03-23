@@ -2,8 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Threading.Tasks;
-
 namespace Soup.Build.PackageManager;
 
 /// <summary>

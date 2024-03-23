@@ -2,14 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.Net.Http;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Soup.Build.Api.Client;
 
@@ -52,7 +49,7 @@ public class LanguagesClient
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
-			.Append($"/v1/languages/{Uri.EscapeDataString(languageName)}");
+			.Append(CultureInfo.InvariantCulture, $"/v1/languages/{Uri.EscapeDataString(languageName)}");
 
 		var client = this.httpClient;
 
