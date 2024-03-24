@@ -5,49 +5,49 @@ This is the smallest amount of code to get a console application building using 
 
 ## Recipe.sml
 The Recipe file that sets the name, type, version and the single source file.
-```
-Name: "Samples.C.ConsoleApplication"
-Language: "C|0"
-Type: "Executable"
-Version: "1.0.0"
+```sml
+Name: 'Samples.C.ConsoleApplication'
+Language: 'C|0'
+Type: 'Executable'
+Version: '1.0.0'
 Source: [
-    "Main.c"
+  'Main.c'
 ]
 ```
 
 ## PackageLock.sml
 The package lock that was generated to capture the unique dependencies required to build this project.
-```
-Version: 4
+```sml
+Version: 5
 Closures: {
-    Root: {
-        C: [
-            { Name: "Samples.C.ConsoleApplication", Version: "./", Build: "Build0", Tool: "Tool0" }
-        ]
+  Root: {
+    C: {
+      'Samples.C.ConsoleApplication': { Version: '../ConsoleApplication', Build: 'Build0', Tool: 'Tool0' }
     }
-    Build0: {
-        Wren: [
-            { Name: "Soup.C", Version: "0.1.0" }
-        ]
+  }
+  Build0: {
+    Wren: {
+      'mwasplund|Soup.C': { Version: '0.3.0' }
     }
-    Tool0: {
-        "C++": [
-            { Name: "copy", Version: "1.0.0" }
-            { Name: "mkdir", Version: "1.0.0" }
-        ]
+  }
+  Tool0: {
+    'C++': {
+      'mwasplund|copy': { Version: '1.1.0' }
+      'mwasplund|mkdir': { Version: '1.1.0' }
     }
+  }
 }
 ```
 
 ## Main.c
 A simple main method that prints our "Hello World, Soup Style!" and returns a success status.
-```
+```c
 #include <stdio.h>
 
 int main()
 {
-    printf("Hello World, Soup Style!");
-    return 0;
+  printf("Hello World, Soup Style!");
+  return 0;
 }
 ```
 

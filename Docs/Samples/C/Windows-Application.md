@@ -5,15 +5,39 @@ This is a windows application that demonstrates creating a GUI windows applicati
 
 ## Library/Recipe.sml
 The Recipe file that defines the sample application.
-```
-Name: "Samples.C.WindowsApplication"
-Language: "C|0.1"
-Type: "Windows"
-Version: "1.0.0"
-Resources: "WindowsProject.rc"
+```sml
+Name: 'Samples.C.WindowsApplication'
+Language: 'C|0'
+Type: 'Windows'
+Version: '1.0.0'
+Resources: 'WindowsProject.rc'
 Source: [
-    "WindowsProject.c"
+  'WindowsProject.c'
 ]
+```
+
+## Library/PackageLock.sml
+The package lock that was generated to capture the unique dependencies required to build this project.
+```sml
+Version: 5
+Closures: {
+  Root: {
+    C: {
+      'Samples.C.WindowsApplication': { Version: '../WindowsApplication', Build: 'Build0', Tool: 'Tool0' }
+    }
+  }
+  Build0: {
+    Wren: {
+      'mwasplund|Soup.C': { Version: '0.3.0' }
+    }
+  }
+  Tool0: {
+    'C++': {
+      'mwasplund|copy': { Version: '1.1.0' }
+      'mwasplund|mkdir': { Version: '1.1.0' }
+    }
+  }
+}
 ```
 
 ## Content
