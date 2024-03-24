@@ -13,6 +13,12 @@ This is a console application that demonstrates a more complex graphics applicat
 ## [Dynamic Library](Cpp/Dynamic-Library.md)
 This is a console application that has a single dynamic library dependency.
 
+## [Header Library](Cpp/HEader-Library.md)
+This is a console application that has a single header library dependency.
+
+## [Module Dynamic Library](Cpp/Module-Dynamic-Library.md)
+This is a console application that has a single dynamic library dependency that exports a module interface.
+
 ## [Module Interface](Cpp/Module-Interface.md)
 This is a console application that uses a single module interface file used inside the same projects.
 
