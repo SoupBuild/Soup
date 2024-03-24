@@ -5,84 +5,113 @@ This is a console application that has a single dynamic library dependency.
 
 ## Library/Recipe.sml
 The Recipe file that defines the static library "Samples.Cpp.DynamicLibrary.Library".
+```sml
+Name: 'Samples.Cpp.DynamicLibrary.Library'
+Language: 'C++|0'
+Version: '1.0.0'
+Type: 'DynamicLibrary'
+Defines: [
+  'EXPORT_LIBRARY'
+]
+Source: [
+  'Library.cpp'
+]
+IncludePaths: [
+  'public/'
+]
+PublicHeaders: [
+  {
+    Root: 'public/'
+    Files: [
+      'Library.h'
+    ]
+  }
+]
 ```
-Name: "Samples.Cpp.DynamicLibrary.Library"
-Language: "C++|0.1"
-Version: "1.0.0"
-Interface: "Module.cpp"
-Type: "DynamicLibrary"
-```
 
-## Library/Module.cpp
-A module interface file that exports a single sample class.
-```
-module;
+## Library/Public/Library.h
+A module header file that declares a single sample class.
+```cpp
+#ifdef _WIN32
+  #ifdef EXPORT_LIBRARY
+    #define LIBRARY_API __declspec(dllexport)
+  #else
+    #define LIBRARY_API __declspec(dllimport)
+  #endif
+#else
+  #define LIBRARY_API
+#endif
 
-// Include all standard library headers in the global module
-#include <string>
-
-export module Samples.Cpp.DynamicLibrary.Library;
-
-// Note: The namespace does not have to match the module name
-export namespace Samples.Cpp.DynamicLibrary.Library
+namespace Samples::Cpp::DynamicLibrary::Library
 {
   class Helper
   {
   public:
-    __declspec(dllexport) static std::string GetName()
-    {
-      return "Soup";
-    }
+    LIBRARY_API static const char* GetName();
   };
+}
+```
+
+## Library/Library.cpp
+A library file implements a sample class.
+```cpp
+#include "Library.h"
+
+namespace Samples::Cpp::DynamicLibrary::Library
+{
+  const char* Helper::GetName()
+  {
+    return "Soup";
+  }
 }
 ```
 
 ## Application/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.DynamicLibrary.Application".
-```
-Name: "Samples.Cpp.DynamicLibrary.Application"
-Language: "C++|0.1"
-Type: "Executable"
-Version: "1.0.0"
+```sml
+Name: 'Samples.Cpp.DynamicLibrary.Application'
+Language: 'C++|0'
+Type: 'Executable'
+Version: '1.0.0'
 Source: [
-  "Main.cpp"
+  'Main.cpp'
 ]
 
 Dependencies: {
   Runtime: [
-    "../Library/"
+    '../Library/'
   ]
 }
 ```
 
 ## Application/PackageLock.sml
 The package lock that was generated to capture the unique dependencies required to build this project and the dynamic library dependency.
-```
-Version: 4
+```sml
+Version: 5
 Closures: {
   Root: {
-    "C++": [
-      { Name: "Samples.Cpp.DynamicLibrary.Application", Version: "../Application", Build: "Build0", Tool: "Tool0" }
-      { Name: "Samples.Cpp.DynamicLibrary.Library", Version: "../Library/", Build: "Build0", Tool: "Tool0" }
-    ]
+    'C++': {
+      'Samples.Cpp.DynamicLibrary.Application': { Version: '../Application', Build: 'Build0', Tool: 'Tool0' }
+      'Samples.Cpp.DynamicLibrary.Library': { Version: '../Library/', Build: 'Build0', Tool: 'Tool0' }
+    }
   }
   Build0: {
-    Wren: [
-      { Name: "Soup.Cpp", Version: "0.10.1" }
-    ]
+    Wren: {
+      'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+    }
   }
   Tool0: {
-    "C++": [
-      { Name: "copy", Version: "1.0.0" }
-      { Name: "mkdir", Version: "1.0.0" }
-    ]
+    'C++': {
+      'mwasplund|copy': { Version: '1.1.0' }
+      'mwasplund|mkdir': { Version: '1.1.0' }
+    }
   }
 }
 ```
 
 ## Application/Main.cpp
 A simple main method that prints our "Hello World, Soup Style!" by using the module from the library.
-```
+```cpp
 #include <iostream>
 
 import Samples.Cpp.DynamicLibrary.Library;

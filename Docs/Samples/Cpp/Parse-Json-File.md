@@ -5,18 +5,18 @@ A console application that reads in a json file using the an external module and
 
 ## Recipe.sml
 The Recipe file that sets the standard name, type, version, as well as the single external dependency of the [json11](https://github.com/dropbox/json11) project.
-```
-Name: "Samples.Cpp.ParseJsonFile"
-Language: "C++|0.1"
-Version: "1.0.0"
-Type: "Executable"
+```sml
+Name: 'Samples.Cpp.ParseJsonFile'
+Language: 'C++|0'
+Version: '1.0.0'
+Type: 'Executable'
 Source: [
-  "Main.cpp"
+  'Main.cpp'
 ]
 
 Dependencies: {
   Runtime: [
-    "json11@1.1.0"
+    'mwasplund|json11@1'
   ]
 }
 ```
@@ -24,31 +24,31 @@ Dependencies: {
 ## PackageLock.sml
 The package lock that was generated to capture the unique dependencies required to build this project.
 ```
-Version: 4
+Version: 5
 Closures: {
   Root: {
-    "C++": [
-      { Name: "json11", Version: "1.1.0", Build: "Build0", Tool: "Tool0" }
-      { Name: "Samples.Cpp.ParseJsonFile", Version: "../ParseJsonFile", Build: "Build0", Tool: "Tool0" }
-    ]
+    'C++': {
+      'mwasplund|json11': { Version: '1.1.1', Build: 'Build0', Tool: 'Tool0' }
+      'Samples.Cpp.ParseJsonFile': { Version: '../ParseJsonFile', Build: 'Build0', Tool: 'Tool0' }
+    }
   }
   Build0: {
-    Wren: [
-      { Name: "Soup.Cpp", Version: "0.10.1" }
-    ]
+    Wren: {
+      'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+    }
   }
   Tool0: {
-    "C++": [
-      { Name: "copy", Version: "1.0.0" }
-      { Name: "mkdir", Version: "1.0.0" }
-    ]
+    'C++': {
+      'mwasplund|copy': { Version: '1.1.0' }
+      'mwasplund|mkdir': { Version: '1.1.0' }
+    }
   }
 }
 ```
 
 ## Message.json
 A json file containing a single property containing a message for the application to print.
-```
+```json
 {
   "message": "Hello!"
 }
@@ -56,7 +56,7 @@ A json file containing a single property containing a message for the applicatio
 
 ## Main.cpp
 A simple main method that reads the contents of a single json file, parses the json content and prints a single message from a known property.
-```
+```cpp
 #include <fstream>
 #include <iostream>
 #include <streambuf>
@@ -67,7 +67,7 @@ import json11;
 int main()
 {
   // Read in the contents of the json file
-  auto jsonFile = std::ifstream("Message.json");
+  auto jsonFile = std::ifstream("./Message.json");
   auto jsonContent = std::string(
     std::istreambuf_iterator<char>(jsonFile),
     std::istreambuf_iterator<char>());
