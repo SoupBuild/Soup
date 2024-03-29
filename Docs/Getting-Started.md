@@ -12,6 +12,13 @@ The end goal is to have Soup running on all three major operating systems, and b
 ## Setup
 You can either install Soup or download a reference the archive.
 
+* Winget (recommended)
+  ```cmd
+  winget install SoupBuild.Soup
+  ```
+
+  ![Demo Video Executing WinGet Command](.assets/getting-started-winget.gif)
+
 * Installer
 
   Download and run the SoupBuild.msi installer from the [Latest Release](https://github.com/SoupBuild/Soup/releases/latest). 
@@ -24,7 +31,7 @@ You can either install Soup or download a reference the archive.
 
   Unzip the Soup release somewhere safe and add it to your path in a command prompt.
 
-  ```
+  ```cmd
   set PATH=%PATH%;C:\Soup\bin\
   ```
   Or add it to the "Path" System Environment Variable to always have it available!
@@ -39,7 +46,7 @@ swhere
 
 ## Create First Project
 Run Initialize command to create a new project!
-```
+```cmd
 mkdir MyApp
 cd MyApp
 soup init
@@ -48,14 +55,14 @@ soup init
 ![Demo Video Executing Init Command](.assets/getting-started-init.gif)
 
 ## Build First Project
-```
+```cmd
 soup build
 ```
 
 ![Demo Video Executing Build Command](.assets/getting-started-build.gif)
 
 ## Run First Project
-```
+```cmd
 soup run
 ```
 
