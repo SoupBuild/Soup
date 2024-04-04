@@ -6,6 +6,7 @@
 		<SelfContained>true</SelfContained>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishTrimmed>false</PublishTrimmed>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />

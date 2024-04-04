@@ -6,6 +6,7 @@
 		<SelfContained>true</SelfContained>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishTrimmed>true</PublishTrimmed>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
