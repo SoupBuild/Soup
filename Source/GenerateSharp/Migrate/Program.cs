@@ -4,8 +4,9 @@
 
 using Opal;
 using Opal.System;
+using Path = Opal.Path;
 
-namespace Soup.Build.Discover;
+namespace Soup.Build.Migrate;
 
 public static class Program
 {
@@ -24,28 +25,25 @@ public static class Program
 
 			LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();
 
-			if (args.Length == 0)
-			{
-			}
-			else
+			if (args.Length != 1)
 			{
 				PrintUsage();
 				return -1;
 			}
 
-			await Task.CompletedTask;
-			// await SwhereManager.DiscoverAsync(includePrerelease);
+			var target = new Path(args[0]);
+			await MigrationManager.RunAsync(target);
 
 			return 0;
 		}
 		catch (HandledException)
 		{
-			return -1;
+			return -2;
 		}
 	}
 
 	private static void PrintUsage()
 	{
-		Log.Info("swhere [-prerelease]");
+		Log.Info("migrate <PATH>");
 	}
 }
