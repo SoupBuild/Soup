@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using Soup.Build.Utilities;
 using System.Xml;
 using Path = Opal.Path;
 
@@ -25,13 +26,33 @@ public static class MigrationManager
 
 	private static async Task MigrateCSProjAsync(Path target)
 	{
-		using var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(target);
+		using var readFile = LifetimeManager.Get<IFileSystem>().OpenRead(target);
 
-		using var reader = XmlReader.Create(readArchiveFile.GetInStream(), new XmlReaderSettings() { Async = true });
+		using var reader = XmlReader.Create(readFile.GetInStream(), new XmlReaderSettings() { Async = true });
 
 		var parser = new CSProjParser();
 		parser.Deserialize(reader);
 
-		await Task.CompletedTask;
+		var projectName = target.FileStem;
+		var targetRecipe = target.GetParent() + new Path("Recipe.sml");
+
+		var recipe = new Recipe(projectName, new LanguageReference("C#", new SemanticVersion(0)))
+		{
+			Version = new SemanticVersion(1, 0, 0)
+		};
+
+		switch (parser.OutputType)
+		{
+			case "":
+				// Leave default empty
+				break;
+			case "Exe":
+				recipe.Type = "Executable";
+				break;
+			default:
+				throw new InvalidOperationException($"Unknown output type {parser.OutputType}");
+		}
+
+		await RecipeExtensions.SaveToFileAsync(targetRecipe, recipe);
 	}
 }
