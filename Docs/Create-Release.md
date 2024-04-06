@@ -8,11 +8,11 @@ Create a PR with this change.
 ## Build Windows Release
 ```
 ./Scripts/Windows/build.cmd Release
-./Scripts/Windows/soup.cmd version
+./Scripts/Windows/soup-release.cmd version
+./Scripts/Windows/SignRuntime.cmd
 ./Scripts/Windows/release.cmd
+./Scripts/Windows/SignInstaller.cmd
 ```
-
-Manually build ./Source/Installer/Installer.sln
 
 ## Build Linux Release
 ```
