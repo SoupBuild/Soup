@@ -18,7 +18,10 @@ public class CSProjParser
 	public bool PublishReadyToRun { get; private set; }
 	public bool PublishTrimmed { get; private set; }
 	public string Platforms { get; private set; } = string.Empty;
-	public Collection<ProjectReference> ProjectReferences { get; } = [];
+	public Collection<ProjectReferenceItem> ProjectReferenceItems { get; } = [];
+	public Collection<PackageReferenceItem> PackageReferenceItems { get; } = [];
+	public Collection<CompileItem> CompileItems { get; } = [];
+	public string NoWarn { get; private set; } = string.Empty;
 
 	public CSProjParser()
 	{
@@ -96,6 +99,9 @@ public class CSProjParser
 			case "Platforms":
 				this.Platforms = node.InnerText;
 				return true;
+			case "NoWarn":
+				this.NoWarn = node.InnerText;
+				return true;
 			default:
 				return false;
 		}
@@ -106,21 +112,58 @@ public class CSProjParser
 		switch (node.Name)
 		{
 			case "ProjectReference":
-				var projectReference = new ProjectReference();
+				var projectReference = new ProjectReferenceItem();
 				DeserializeNode(node, null, (node) => HandleProjectReferenceAttribute(node, projectReference));
-				ProjectReferences.Add(projectReference);
+				ProjectReferenceItems.Add(projectReference);
+				return true;
+			case "PackageReference":
+				var packageReference = new PackageReferenceItem();
+				DeserializeNode(node, null, (node) => HandlePackageReferenceAttribute(node, packageReference));
+				PackageReferenceItems.Add(packageReference);
+				return true;
+			case "Compile":
+				var compile = new CompileItem();
+				DeserializeNode(node, null, (node) => HandleCompileAttribute(node, compile));
+				CompileItems.Add(compile);
 				return true;
 			default:
 				return false;
 		}
 	}
 
-	private static bool HandleProjectReferenceAttribute(XmlAttribute attribute, ProjectReference projectReference)
+	private static bool HandleProjectReferenceAttribute(XmlAttribute attribute, ProjectReferenceItem projectReference)
 	{
 		switch (attribute.Name)
 		{
 			case "Include":
 				projectReference.Include = new Path(attribute.Value);
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	private static bool HandlePackageReferenceAttribute(XmlAttribute attribute, PackageReferenceItem packageReference)
+	{
+		switch (attribute.Name)
+		{
+			case "Include":
+				packageReference.Include = attribute.Value;
+				return true;
+			case "Version":
+				packageReference.Version = attribute.Value;
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	private static bool HandleCompileAttribute(XmlAttribute attribute, CompileItem compile)
+	{
+		switch (attribute.Name)
+		{
+			case "Remove":
+				compile.Remove = attribute.Value;
 				return true;
 			default:
 				return false;

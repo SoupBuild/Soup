@@ -26,6 +26,29 @@ public static class MigrationManager
 
 	private static async Task MigrateCSProjAsync(Path target)
 	{
+		var parser = ParseCSProj(target);
+
+		await BuildRecipeAsync(target, parser);
+
+		foreach (var reference in parser.ProjectReferenceItems)
+		{
+			if (reference.Include is null)
+				throw new InvalidOperationException("Missing include on project reference");
+
+			switch (reference.Include.FileExtension)
+			{
+				case ".csproj":
+					var referenceTarget = target.GetParent() + reference.Include;
+					await MigrateCSProjAsync(referenceTarget);
+					break;
+				default:
+					throw new InvalidOperationException($"Unknown project reference type {reference.Include.FileExtension}");
+			}
+		}
+	}
+
+	private static CSProjParser ParseCSProj(Path target)
+	{
 		using var readFile = LifetimeManager.Get<IFileSystem>().OpenRead(target);
 
 		using var reader = XmlReader.Create(readFile.GetInStream(), new XmlReaderSettings() { Async = true });
@@ -33,6 +56,11 @@ public static class MigrationManager
 		var parser = new CSProjParser();
 		parser.Deserialize(reader);
 
+		return parser;
+	}
+
+	private static async Task BuildRecipeAsync(Path target, CSProjParser parser)
+	{
 		var projectName = target.FileStem;
 		var targetRecipe = target.GetParent() + new Path("Recipe.sml");
 
@@ -44,6 +72,7 @@ public static class MigrationManager
 		switch (parser.OutputType)
 		{
 			case "":
+			case "Library":
 				// Leave default empty
 				break;
 			case "Exe":
@@ -53,7 +82,7 @@ public static class MigrationManager
 				throw new InvalidOperationException($"Unknown output type {parser.OutputType}");
 		}
 
-		foreach (var reference in parser.ProjectReferences)
+		foreach (var reference in parser.ProjectReferenceItems)
 		{
 			if (reference.Include is null)
 				throw new InvalidOperationException("Missing include on project reference");
