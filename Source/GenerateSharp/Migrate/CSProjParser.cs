@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using System.Xml;
+using Path = Opal.Path;
 
 namespace Soup.Build.Migrate;
 
@@ -119,7 +120,7 @@ public class CSProjParser
 		switch (attribute.Name)
 		{
 			case "Include":
-				projectReference.Include = attribute.Value;
+				projectReference.Include = new Path(attribute.Value);
 				return true;
 			default:
 				return false;

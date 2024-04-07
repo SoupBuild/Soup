@@ -53,6 +53,15 @@ public static class MigrationManager
 				throw new InvalidOperationException($"Unknown output type {parser.OutputType}");
 		}
 
+		foreach (var reference in parser.ProjectReferences)
+		{
+			if (reference.Include is null)
+				throw new InvalidOperationException("Missing include on project reference");
+
+			var referencePath = reference.Include.GetParent();
+			recipe.AddRuntimeDependency(referencePath.ToString());
+		}
+
 		await RecipeExtensions.SaveToFileAsync(targetRecipe, recipe);
 	}
 }
