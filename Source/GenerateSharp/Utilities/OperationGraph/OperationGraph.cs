@@ -22,8 +22,8 @@ public class OperationGraph
 	{
 		ReferencedFiles = [];
 		RootOperationIds = [];
-		_operations = [];
-		_operationLookup = [];
+		this._operations = [];
+		this._operationLookup = [];
 	}
 
 	/// <summary>
@@ -36,8 +36,8 @@ public class OperationGraph
 	{
 		ReferencedFiles = referencedFiles;
 		RootOperationIds = rootOperations;
-		_operations = [];
-		_operationLookup = [];
+		this._operations = [];
+		this._operationLookup = [];
 
 		// Store the incoming vector of operations as a lookup for fast checks
 		foreach (var info in operations)
@@ -59,14 +59,14 @@ public class OperationGraph
 	/// <summary>
 	/// Get Operations
 	/// </summary>
-	public IReadOnlyDictionary<OperationId, OperationInfo> Operations => _operations;
+	public IReadOnlyDictionary<OperationId, OperationInfo> Operations => this._operations;
 
 	/// <summary>
 	/// Find an operation info
 	/// </summary>
 	public bool HasCommand(CommandInfo command)
 	{
-		return _operationLookup.ContainsKey(command);
+		return this._operationLookup.ContainsKey(command);
 	}
 
 	/// <summary>
@@ -76,7 +76,7 @@ public class OperationGraph
 		CommandInfo command,
 		out OperationInfo operation)
 	{
-		if (_operationLookup.TryGetValue(command, out var operationId))
+		if (this._operationLookup.TryGetValue(command, out var operationId))
 		{
 			operation = GetOperationInfo(operationId);
 			return true;
@@ -93,7 +93,7 @@ public class OperationGraph
 	/// </summary>
 	public OperationInfo GetOperationInfo(OperationId operationId)
 	{
-		return _operations[operationId];
+		return this._operations[operationId];
 	}
 
 	/// <summary>
@@ -101,7 +101,7 @@ public class OperationGraph
 	/// </summary>
 	public void AddOperation(OperationInfo info)
 	{
-		_operationLookup.Add(info.Command, info.Id);
-		_operations.Add(info.Id, info);
+		this._operationLookup.Add(info.Command, info.Id);
+		this._operations.Add(info.Id, info);
 	}
 }

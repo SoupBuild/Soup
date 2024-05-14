@@ -15,12 +15,12 @@ public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 
 	public ValueTable(IDictionary<string, Value> values)
 	{
-		_impl = new Dictionary<string, Value>(values);
+		this._impl = new Dictionary<string, Value>(values);
 	}
 
 	public ValueTable()
 	{
-		_impl = [];
+		this._impl = [];
 	}
 
 	public Value this[string key]
@@ -47,7 +47,7 @@ public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 
 	public ValueTable Clone()
 	{
-		return new ValueTable(_impl);
+		return new ValueTable(this._impl);
 	}
 
 	public IEnumerator<KeyValuePair<string, Value>> GetEnumerator()

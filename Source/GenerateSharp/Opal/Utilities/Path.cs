@@ -78,7 +78,7 @@ public class Path : IEquatable<Path>
 	/// </summary>
 	public int CompareTo(Path other)
 	{
-		return string.Compare(value, other.value, StringComparison.Ordinal);
+		return string.Compare(this.value, other.value, StringComparison.Ordinal);
 	}
 
 	/// <summary>
@@ -125,7 +125,7 @@ public class Path : IEquatable<Path>
 	{
 		get
 		{
-			if (rootEndLocation < 0)
+			if (this.rootEndLocation < 0)
 				throw new InvalidOperationException("Cannot access root on path that has none");
 			return this.value[..this.rootEndLocation];
 		}
@@ -355,7 +355,7 @@ public class Path : IEquatable<Path>
 
 	public override int GetHashCode()
 	{
-		return value.GetHashCode(StringComparison.Ordinal);
+		return this.value.GetHashCode(StringComparison.Ordinal);
 	}
 
 	/// <summary>
@@ -607,7 +607,7 @@ public class Path : IEquatable<Path>
 
 	private string GetDirectories()
 	{
-		if (rootEndLocation >= 0)
+		if (this.rootEndLocation >= 0)
 		{
 			return this.value[this.rootEndLocation..this.fileNameStartLocation];
 		}
