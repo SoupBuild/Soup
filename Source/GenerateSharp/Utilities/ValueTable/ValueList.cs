@@ -15,12 +15,12 @@ public class ValueList : IEnumerable, IEnumerable<Value>
 
 	public ValueList()
 	{
-		_impl = [];
+		this._impl = [];
 	}
 
 	public ValueList(IEnumerable<Value> collection)
 	{
-		_impl = new List<Value>(collection);
+		this._impl = new List<Value>(collection);
 	}
 
 	public Value this[int index] => this._impl[index];
@@ -39,7 +39,7 @@ public class ValueList : IEnumerable, IEnumerable<Value>
 
 	public ValueList Clone()
 	{
-		return new ValueList(_impl);
+		return new ValueList(this._impl);
 	}
 
 	public IEnumerator<Value> GetEnumerator()

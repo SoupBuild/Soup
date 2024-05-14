@@ -65,7 +65,7 @@ public class MockOutputFile : IOutputFile
 	{
 		if (!this.isDisposed)
 		{
-			isDisposed = true;
+			this.isDisposed = true;
 		}
 	}
 }
