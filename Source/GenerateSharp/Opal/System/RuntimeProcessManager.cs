@@ -2,8 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Reflection;
-
 namespace Opal.System;
 
 /// <summary>
@@ -23,7 +21,7 @@ public class RuntimeProcessManager : IProcessManager
 	/// </summary>
 	public Path GetCurrentProcessFileName()
 	{
-		return new Path(Assembly.GetEntryAssembly()?.Location ?? string.Empty);
+		return new Path(AppContext.BaseDirectory);
 	}
 
 	/// <summary>
