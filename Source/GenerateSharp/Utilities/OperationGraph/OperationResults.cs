@@ -21,7 +21,7 @@ public class OperationResults
 	public OperationResults()
 	{
 		ReferencedFiles = [];
-		_results = [];
+		this._results = [];
 	}
 
 	/// <summary>
@@ -32,7 +32,7 @@ public class OperationResults
 		Dictionary<OperationId, OperationResult> results)
 	{
 		ReferencedFiles = referencedFiles;
-		_results = results;
+		this._results = results;
 	}
 
 	/// <summary>
@@ -43,7 +43,7 @@ public class OperationResults
 	/// <summary>
 	/// Get Results
 	/// </summary>
-	public IDictionary<OperationId, OperationResult> Results => _results;
+	public IDictionary<OperationId, OperationResult> Results => this._results;
 
 	/// <summary>
 	/// Find an operation result
@@ -52,7 +52,7 @@ public class OperationResults
 		OperationId operationId,
 		[MaybeNullWhen(false)] out OperationResult result)
 	{
-		if (_results.TryGetValue(operationId, out var operationResult))
+		if (this._results.TryGetValue(operationId, out var operationResult))
 		{
 			result = operationResult;
 			return true;

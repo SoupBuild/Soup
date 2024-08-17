@@ -59,7 +59,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	public PackageIdentifier()
 	{
 		Language = null;
-		_name = new PackageName(null, string.Empty);
+		this._name = new PackageName(null, string.Empty);
 	}
 
 	/// <summary>
@@ -68,7 +68,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	public PackageIdentifier(string? language, string? owner, string name)
 	{
 		Language = language;
-		_name = new PackageName(owner, name);
+		this._name = new PackageName(owner, name);
 	}
 
 	/// <summary>
@@ -84,17 +84,17 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	/// <summary>
 	/// Gets a value indicating whether the identifier has an owner
 	/// </summary>
-	public bool HasOwner => _name.HasOwner;
+	public bool HasOwner => this._name.HasOwner;
 
 	/// <summary>
 	/// Gets or sets the Owner.
 	/// </summary>
-	public string? Owner => _name.Owner;
+	public string? Owner => this._name.Owner;
 
 	/// <summary>
 	/// Gets or sets the Name.
 	/// </summary>
-	public string Name => _name.Name;
+	public string Name => this._name.Name;
 
 	/// <summary>
 	/// Equality operator
@@ -104,7 +104,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 		if (other is null)
 			return false;
 		return Language == other.Language &&
-			_name == other._name;
+			this._name == other._name;
 	}
 
 	public override bool Equals(object? obj)
@@ -115,7 +115,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	public override int GetHashCode()
 	{
 		var languageHash = Language is null ? 0 : Language.GetHashCode(StringComparison.Ordinal) * 0x1000;
-		var nameHash = _name.GetHashCode();
+		var nameHash = this._name.GetHashCode();
 		return languageHash + nameHash;
 	}
 
@@ -137,11 +137,11 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 		// Build up the language/owner/name reference
 		if (Language is not null)
 		{
-			return $"[{Language}]{_name}";
+			return $"[{Language}]{this._name}";
 		}
 		else
 		{
-			return _name.ToString();
+			return this._name.ToString();
 		}
 	}
 

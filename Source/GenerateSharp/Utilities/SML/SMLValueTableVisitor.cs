@@ -20,8 +20,8 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	public SMLValueTableVisitor(CommonTokenStream tokens)
 	{
-		_tokens = tokens;
-		_lastToken = null;
+		this._tokens = tokens;
+		this._lastToken = null;
 	}
 
 	public virtual object VisitDocument(SMLParser.DocumentContext context)
@@ -31,10 +31,10 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
 
 		// Attack any trailing content ot the last token
-		if (_lastToken != null)
+		if (this._lastToken != null)
 		{
 			var endTrailingContent = GetLeadingTrivia(context.Eof());
-			_lastToken.TrailingTrivia.AddRange(endTrailingContent);
+			this._lastToken.TrailingTrivia.AddRange(endTrailingContent);
 		}
 
 		return new SMLDocument(
@@ -52,7 +52,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var closeBraceToken = BuildToken(context.CLOSE_BRACE());
 
 		// Cache the last seen token
-		_lastToken = closeBraceToken;
+		this._lastToken = closeBraceToken;
 
 		return new SMLTable(
 			openBraceToken,
@@ -120,7 +120,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var closeBracketToken = BuildToken(context.CLOSE_BRACKET());
 
 		// Cache the last seen token
-		_lastToken = closeBracketToken;
+		this._lastToken = closeBracketToken;
 
 		return new SMLArray(
 			openBracketToken,
@@ -160,7 +160,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var integerToken = BuildToken(integerNode);
 
 		// Cache the last seen token
-		_lastToken = integerToken;
+		this._lastToken = integerToken;
 
 		return new SMLValue(
 			new SMLIntegerValue(
@@ -181,7 +181,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var closeQuoteToken = new SMLToken("'");
 
 		// Cache the last seen token
-		_lastToken = closeQuoteToken;
+		this._lastToken = closeQuoteToken;
 
 		return new SMLValue(new SMLStringValue(
 			content,
@@ -195,7 +195,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var booleanToken = BuildToken(context.TRUE());
 
 		// Cache the last seen token
-		_lastToken = booleanToken;
+		this._lastToken = booleanToken;
 
 		return new SMLValue(new SMLBooleanValue(
 			true,
@@ -207,7 +207,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var booleanToken = BuildToken(context.FALSE());
 
 		// Cache the last seen token
-		_lastToken = booleanToken;
+		this._lastToken = booleanToken;
 
 		return new SMLValue(
 			new SMLBooleanValue(false,
@@ -261,7 +261,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	private List<string> GetLeadingTrivia(ITerminalNode node)
 	{
-		var left = _tokens.GetHiddenTokensToLeft(node.Symbol.TokenIndex);
+		var left = this._tokens.GetHiddenTokensToLeft(node.Symbol.TokenIndex);
 		var leadingTrivia = left != null ? left.Select(value => value.Text).ToList() : [];
 		return leadingTrivia;
 	}

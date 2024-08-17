@@ -22,8 +22,8 @@ public class FileSystemState
 	public FileSystemState()
 	{
 		MaxFileId = new FileId(0);
-		_files = [];
-		_fileLookup = [];
+		this._files = [];
+		this._fileLookup = [];
 	}
 
 	/// <summary>
@@ -34,20 +34,20 @@ public class FileSystemState
 		Dictionary<FileId, Path> files)
 	{
 		MaxFileId = maxFileId;
-		_files = files;
-		_fileLookup = [];
+		this._files = files;
+		this._fileLookup = [];
 
 		// Build up the reverse lookup for new files
-		foreach (var file in _files)
+		foreach (var file in this._files)
 		{
-			_fileLookup.Add(file.Value.ToString(), file.Key);
+			this._fileLookup.Add(file.Value.ToString(), file.Key);
 		}
 	}
 
 	/// <summary>
 	/// Get Files
 	/// </summary>
-	public IReadOnlyDictionary<FileId, Path> Files => _files;
+	public IReadOnlyDictionary<FileId, Path> Files => this._files;
 
 	/// <summary>
 	/// Get the max unique file id
@@ -89,8 +89,8 @@ public class FileSystemState
 			MaxFileId = new FileId(MaxFileId.Value + 1);
 			result = MaxFileId;
 
-			_files.Add(result, file);
-			_fileLookup.Add(file.ToString(), result);
+			this._files.Add(result, file);
+			this._fileLookup.Add(file.ToString(), result);
 		}
 
 		return result;
@@ -101,7 +101,7 @@ public class FileSystemState
 	/// </summary>
 	public bool TryFindFileId(Path file, out FileId fileId)
 	{
-		if (_fileLookup.TryGetValue(file.ToString(), out var value))
+		if (this._fileLookup.TryGetValue(file.ToString(), out var value))
 		{
 			fileId = value;
 			return true;
@@ -118,7 +118,7 @@ public class FileSystemState
 	/// </summary>
 	public Path GetFilePath(FileId fileId)
 	{
-		return _files[fileId];
+		return this._files[fileId];
 	}
 
 	/// <summary>
