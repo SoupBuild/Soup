@@ -130,8 +130,7 @@ public class DotNetSDKUtilitiesUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: C:/Windows/System32/where.exe dotnet",
 				"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
 				"HIGH: Find DotNet SDK Versions",
@@ -172,22 +171,20 @@ public class DotNetSDKUtilitiesUnitTests
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App",
 				"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
 				"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
 				"ProcessStart: 1",
 				"WaitForExit: 1",
@@ -206,7 +203,7 @@ public class DotNetSDKUtilitiesUnitTests
 				"GetStandardOutput: 3",
 				"GetStandardError: 3",
 				"GetExitCode: 3",
-			},
+			],
 			mockProcessManager.Requests);
 	}
 }

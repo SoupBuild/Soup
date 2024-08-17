@@ -22,6 +22,9 @@ namespace Soup::Core
 	public:
 		static OperationGraph Deserialize(std::istream& stream, FileSystemState& fileSystemState)
 		{
+			// BUG: Why does this need to be at the start of the file?
+			auto activeFileIdMap = std::unordered_map<FileId, FileId>();
+
 			// Read the entire file for fastest read operation
 			stream.seekg(0, std::ios_base::end);
 			auto size = stream.tellg();
@@ -60,7 +63,6 @@ namespace Soup::Core
 
 			// Map up the incoming file ids to the active file system state ids
 			auto fileCount = ReadUInt32(content);
-			auto activeFileIdMap = std::unordered_map<FileId, FileId>();
 			for (auto i = 0u; i < fileCount; i++)
 			{
 				// Read the command working directory

@@ -36,19 +36,17 @@ public class NugetSDKUtilitiesUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
-					"INFO: Nuget not found",
-			},
+			[
+				"INFO: Nuget not found",
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
-					"GetUserProfileDirectory",
-					"Exists: C:/Users/Me/.nuget/packages",
-			},
+			[
+				"GetUserProfileDirectory",
+				"Exists: C:/Users/Me/.nuget/packages",
+			],
 			mockFileSystem.Requests);
 	}
 
@@ -86,23 +84,21 @@ public class NugetSDKUtilitiesUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
-					"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages",
-					"WARN: Missing Nuspec file: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
-			},
+			[
+				"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages",
+				"WARN: Missing Nuspec file: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
-					"GetUserProfileDirectory",
-					"Exists: C:/Users/Me/.nuget/packages",
-					"GetChildDirectories: C:/Users/Me/.nuget/packages",
-					"GetChildDirectories: C:/Users/Me/.nuget/packages/Package1",
-					"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
-			},
+			[
+				"GetUserProfileDirectory",
+				"Exists: C:/Users/Me/.nuget/packages",
+				"GetChildDirectories: C:/Users/Me/.nuget/packages",
+				"GetChildDirectories: C:/Users/Me/.nuget/packages/Package1",
+				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
+			],
 			mockFileSystem.Requests);
 	}
 
@@ -223,16 +219,14 @@ public class NugetSDKUtilitiesUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
-					"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages",
-			},
+			[
+				"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages",
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"GetUserProfileDirectory",
 				"Exists: C:/Users/Me/.nuget/packages",
 				"GetChildDirectories: C:/Users/Me/.nuget/packages",
@@ -244,7 +238,7 @@ public class NugetSDKUtilitiesUnitTests
 				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/net5.0/",
 				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/net6.0/",
 				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/netstandard2.0/",
-			},
+			],
 			mockFileSystem.Requests);
 	}
 }
