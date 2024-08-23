@@ -363,6 +363,10 @@ namespace Soup::Core
 			// Generate the dependencies input state
 			globalState.emplace("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
 
+			// Pass along the file system state
+			auto fileSystemRoot = BuildDirectoryStructure(packageInfo.PackageRoot);
+			globalState.emplace("FileSystem", std::move(fileSystemRoot));
+
 			inputTable.emplace("GlobalState", std::move(globalState));
 
 			// Build up the input state for the generate call
@@ -825,6 +829,35 @@ namespace Soup::Core
 			}
 
 			return targetSet;
+		}
+
+		ValueList BuildDirectoryStructure(const Path& directory)
+		{
+			auto children = System::IFileSystem::Current().GetDirectoryChildren(directory);
+
+			auto result = ValueList();
+			auto childDirectories = ValueTable();
+			for (auto& child : children)
+			{
+				if (child.IsDirectory)
+				{
+					auto childDirectoryStructure = BuildDirectoryStructure(child.Path);
+					childDirectories.emplace(
+						std::string(child.Path.GetFileName()),
+						std::move(childDirectoryStructure));
+				}
+				else
+				{
+					result.push_back(std::string(child.Path.GetFileName()));
+				}
+			}
+
+			if (!childDirectories.empty())
+			{
+				result.push_back(std::move(childDirectories));
+			}
+
+			return result;
 		}
 	};
 }
