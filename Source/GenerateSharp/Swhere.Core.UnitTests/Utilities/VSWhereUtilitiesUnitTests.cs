@@ -46,35 +46,32 @@ public class VSWhereUtilitiesUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
 				"HIGH: Using VC Version: 14.33.31629",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 				"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"ProcessStart: 1",
 				"WaitForExit: 1",
 				"GetStandardOutput: 1",
 				"GetStandardError: 1",
 				"GetExitCode: 1",
-			},
+			],
 			mockProcessManager.Requests);
 	}
 
@@ -111,35 +108,32 @@ public class VSWhereUtilitiesUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 				"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
 				"HIGH: Using VC Version: 14.34.31823",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 				"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 				"ProcessStart: 1",
 				"WaitForExit: 1",
 				"GetStandardOutput: 1",
 				"GetStandardError: 1",
 				"GetExitCode: 1",
-			},
+			],
 			mockProcessManager.Requests);
 	}
 }

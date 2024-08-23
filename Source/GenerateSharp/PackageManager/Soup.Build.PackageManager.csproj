@@ -9,8 +9,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-		<PackageReference Include="IdentityModel" Version="6.2.0" />
-		<PackageReference Include="IdentityModel.OidcClient" Version="5.2.1" />
+		<PackageReference Include="IdentityModel" Version="7.0.0" />
+		<PackageReference Include="IdentityModel.OidcClient" Version="6.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PackageManager.Core\Soup.Build.PackageManager.Core.csproj" />

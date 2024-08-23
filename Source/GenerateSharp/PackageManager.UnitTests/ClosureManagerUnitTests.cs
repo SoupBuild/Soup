@@ -103,8 +103,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
@@ -122,18 +121,17 @@ public class ClosureManagerUnitTests
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
 				"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -278,8 +276,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
@@ -287,17 +284,16 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Generate final service closure",
 				"ERRO: Unable to create closure: Something went horribly wrong!",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -502,8 +498,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
@@ -527,13 +522,12 @@ public class ClosureManagerUnitTests
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -552,7 +546,7 @@ public class ClosureManagerUnitTests
 				"Exists: C:/PackageStore/Wren/User1/Package2",
 				"CreateDirectory: C:/PackageStore/Wren/User1/Package2",
 				"Rename: [C:/Staging/Wren_Package2_3.2.1/] -> [C:/PackageStore/Wren/User1/Package2/3.2.1/]",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify zip requests
@@ -874,8 +868,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
@@ -931,13 +924,12 @@ public class ClosureManagerUnitTests
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure"
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -968,7 +960,7 @@ public class ClosureManagerUnitTests
 				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"OpenRead: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"OpenWriteTruncate: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify zip requests
@@ -1494,8 +1486,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
@@ -1574,13 +1565,12 @@ public class ClosureManagerUnitTests
 				"INFO: Restore Packages for Closure Tool0",
 				"DIAG: Create Directory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
 				"INFO: Root already processed",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -1627,7 +1617,7 @@ public class ClosureManagerUnitTests
 				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
 				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
 				"CreateDirectory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify zip requests
@@ -2113,8 +2103,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
@@ -2152,13 +2141,12 @@ public class ClosureManagerUnitTests
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -2169,7 +2157,7 @@ public class ClosureManagerUnitTests
 				"Exists: C:/Root/Package1/Recipe.sml",
 				"OpenRead: C:/Root/Package1/Recipe.sml",
 				"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -2521,8 +2509,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
@@ -2568,13 +2555,12 @@ public class ClosureManagerUnitTests
 				"INFO: Skip Package: Package2 -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Closure Tool0",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
@@ -2593,7 +2579,7 @@ public class ClosureManagerUnitTests
 				"Exists: C:/Root/Package2/Recipe.sml",
 				"OpenRead: C:/Root/Package2/Recipe.sml",
 				"OpenWriteTruncate: C:/Root/Package2/PackageLock.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -2982,8 +2968,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Restore from package lock",
@@ -3017,13 +3002,12 @@ public class ClosureManagerUnitTests
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
 				"HIGH: Skip built in language version in build closure",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"OpenRead: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.4/",
@@ -3053,7 +3037,7 @@ public class ClosureManagerUnitTests
 				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Wren/4.5.5/Recipe.sml",
 				"OpenRead: C:/PackageStore/Wren/mwasplund/Soup.Wren/4.5.5/Recipe.sml",
 				"OpenWriteTruncate: C:/LockStore/Wren/mwasplund/Soup.Wren/4.5.5/PackageLock.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify zip requests
@@ -3192,8 +3176,7 @@ public class ClosureManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 				"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 				"INFO: Restore from package lock",
@@ -3209,18 +3192,17 @@ public class ClosureManagerUnitTests
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
 				"HIGH: Skip built in language version in build closure",
 				"HIGH: Skip built in language version in build closure",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/PackageLock.sml",
 				"OpenRead: C:/Root/MyPackage/PackageLock.sml",
 				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.4/",
 				"Exists: C:/PackageStore/Wren/User1/Package2/3.2.1/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests

@@ -69,8 +69,7 @@ public class SwhereManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"WARN: Local User Config file does not exist",
 				"INFO: No existing local user config.",
@@ -121,13 +120,12 @@ public class SwhereManagerUnitTests
 				"INFO: CheckFile: 10.0.19041.0",
 				"INFO: Nuget not found",
 				"INFO: Creating directory C:/Users/Me/.soup/",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"GetUserProfileDirectory",
 				"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
@@ -141,13 +139,12 @@ public class SwhereManagerUnitTests
 				"Exists: C:/Users/Me/.soup/",
 				"CreateDirectory: C:/Users/Me/.soup/",
 				"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
 				"ProcessStart: 1",
 				"WaitForExit: 1",
@@ -172,7 +169,7 @@ public class SwhereManagerUnitTests
 				"GetStandardOutput: 4",
 				"GetStandardError: 4",
 				"GetExitCode: 4",
-			},
+			],
 			mockProcessManager.Requests);
 
 		// Verify the contents of the local user config file
@@ -333,8 +330,7 @@ public class SwhereManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"WARN: Local User Config file does not exist",
 				"INFO: No existing local user config.",
@@ -385,13 +381,12 @@ public class SwhereManagerUnitTests
 				"INFO: CheckFile: 10.0.19041.0",
 				"INFO: Nuget not found",
 				"INFO: Creating directory C:/Users/Me/.soup/",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"GetUserProfileDirectory",
 				"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref",
@@ -405,13 +400,12 @@ public class SwhereManagerUnitTests
 				"Exists: C:/Users/Me/.soup/",
 				"CreateDirectory: C:/Users/Me/.soup/",
 				"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
 				"ProcessStart: 1",
 				"WaitForExit: 1",
@@ -437,7 +431,7 @@ public class SwhereManagerUnitTests
 				"GetStandardError: 4",
 				"GetExitCode: 4",
 
-			},
+			],
 			mockProcessManager.Requests);
 
 		// Verify the contents of the local user config file
@@ -658,8 +652,7 @@ public class SwhereManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"INFO: C:/Windows/System32/where.exe dotnet",
 				"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
@@ -708,13 +701,12 @@ public class SwhereManagerUnitTests
 				"INFO: CheckFile: 10.0.19041.0",
 				"INFO: Nuget not found",
 				"INFO: Creating directory C:/Users/Me/.soup/",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"GetUserProfileDirectory",
 				"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
@@ -729,13 +721,12 @@ public class SwhereManagerUnitTests
 				"Exists: C:/Users/Me/.soup/",
 				"CreateDirectory: C:/Users/Me/.soup/",
 				"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify expected process requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"CreateProcess: 1 [./] C:/Windows/System32/where.exe dotnet",
 				"ProcessStart: 1",
 				"WaitForExit: 1",
@@ -760,7 +751,7 @@ public class SwhereManagerUnitTests
 				"GetStandardOutput: 4",
 				"GetStandardError: 4",
 				"GetExitCode: 4",
-			},
+			],
 			mockProcessManager.Requests);
 
 		// Verify the contents of the local user config file

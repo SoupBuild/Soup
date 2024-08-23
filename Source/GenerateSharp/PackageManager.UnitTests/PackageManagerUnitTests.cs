@@ -52,23 +52,21 @@ public class PackageManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
 				"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 				"DIAG: Deleting staging directory",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"GetUserProfileDirectory",
 				"Exists: C:/Users/Me/.soup/packages/.staging/",
 				"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 				"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -142,20 +140,18 @@ public class PackageManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
 				"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 				"INFO: Adding reference to recipe",
 				"INFO: Deleting staging directory",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
 				"GetUserProfileDirectory",
@@ -163,7 +159,7 @@ public class PackageManagerUnitTests
 				"Exists: C:/Users/Me/.soup/packages/.staging/",
 				"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 				"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -279,21 +275,19 @@ public class PackageManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
 				"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 				"HIGH: Latest Version: 1.2.3",
 				"INFO: Adding reference to recipe",
 				"INFO: Deleting staging directory",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
 				"GetUserProfileDirectory",
@@ -301,7 +295,7 @@ public class PackageManagerUnitTests
 				"Exists: C:/Users/Me/.soup/packages/.staging/",
 				"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 				"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -431,8 +425,7 @@ public class PackageManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Publish Project: C:/Root/MyPackage/",
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
@@ -440,13 +433,12 @@ public class PackageManagerUnitTests
 				"INFO: Publish package",
 				"INFO: Package published",
 				"INFO: Cleanup staging directory",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
 				"GetUserProfileDirectory",
@@ -455,7 +447,7 @@ public class PackageManagerUnitTests
 				"GetChildren: C:/Root/MyPackage/",
 				"OpenRead: C:/Users/Me/.soup/packages/.staging/MyPackage.zip",
 				"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify authentication requests
