@@ -833,31 +833,35 @@ namespace Soup::Core
 
 		ValueList BuildDirectoryStructure(const Path& directory)
 		{
-			auto children = System::IFileSystem::Current().GetDirectoryChildren(directory);
+			auto directoryState = _fileSystemState.GetDirectoryState(directory);
 
 			auto result = ValueList();
-			auto childDirectories = ValueTable();
-			for (auto& child : children)
-			{
-				if (child.IsDirectory)
-				{
-					auto childDirectoryStructure = BuildDirectoryStructure(child.Path);
-					childDirectories.emplace(
-						std::string(child.Path.GetFileName()),
-						std::move(childDirectoryStructure));
-				}
-				else
-				{
-					result.push_back(std::string(child.Path.GetFileName()));
-				}
-			}
-
-			if (!childDirectories.empty())
-			{
-				result.push_back(std::move(childDirectories));
-			}
+			BuildDirectoryStructure(directoryState, result);
 
 			return result;
+		}
+
+		void BuildDirectoryStructure(DirectoryState& activeDirectory, ValueList& result)
+		{
+			for (auto& file : activeDirectory.Files)
+			{
+				result.push_back(file);
+			}
+
+			if (!activeDirectory.ChildDirectories.empty())
+			{
+				auto childDirectories = ValueTable();
+				for (auto& childDirectory : activeDirectory.ChildDirectories)
+				{
+					auto childDirectoryStructure = ValueList();
+					BuildDirectoryStructure(childDirectory.second, childDirectoryStructure);
+					childDirectories.emplace(
+						childDirectory.first,
+						std::move(childDirectoryStructure));
+				}
+
+				result.push_back(std::move(childDirectories));
+			}
 		}
 	};
 }

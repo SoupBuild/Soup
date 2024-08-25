@@ -11,6 +11,22 @@ namespace Soup::Core
 {
 	using FileId = uint32_t;
 
+	struct string_hash
+	{
+		using hash_type = std::hash<std::string_view>;
+		using is_transparent = void;
+	
+		std::size_t operator()(const char* str) const { return hash_type{}(str); }
+		std::size_t operator()(std::string_view str) const { return hash_type{}(str); }
+		std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
+	};
+
+	struct DirectoryState
+	{
+		std::set<std::string> Files;
+		std::unordered_map<std::string, DirectoryState, string_hash, std::equal_to<>> ChildDirectories;
+	};
+
 	/// <summary>
 	/// The complete set of known files that tracking the active change state during execution
 	/// </summary>
@@ -24,6 +40,7 @@ namespace Soup::Core
 			_maxFileId(0),
 			_files(),
 			_fileLookup(),
+			_directoryLookup(),
 			_writeCache()
 		{
 		}
@@ -48,6 +65,7 @@ namespace Soup::Core
 			_maxFileId(maxFileId),
 			_files(std::move(files)),
 			_fileLookup(),
+			_directoryLookup(),
 			_writeCache(std::move(writeCache))
 		{
 			// Build up the reverse lookup for new files
@@ -195,7 +213,92 @@ namespace Soup::Core
 			}
 		}
 
+		void PreloadDirectory(Path& directory)
+		{
+			auto directoryId = ToFileId(directory);
+			
+			// Add the requested file as null
+			// This will be replaced if the file exists with the find all callback
+			auto insertResult = _writeCache.insert_or_assign(directoryId, std::nullopt);
+
+			std::function<void(const Path& file, std::chrono::time_point<std::chrono::file_clock>)> callback =
+				[&](const Path& file, std::chrono::time_point<std::chrono::file_clock> lastWriteTime)
+				{
+					auto& absolutePath = file.HasRoot() ? file : directory + file;
+					FileId fileId = ToFileId(absolutePath);
+					auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
+					UpdateDirectoryLookup(absolutePath);
+				};
+
+			// Load the write times for all files in the directory
+			// This optimization assumes that most files in a directory are relevant to the build
+			// and on windows it is a lot faster to iterate over the files instead of making individual calls
+			System::IFileSystem::Current().GetDirectoryFilesLastWriteTime(
+				directory,
+				callback);
+		}
+
+		DirectoryState& GetDirectoryState(const Path& directory)
+		{
+			auto activeDirectory = GetDirectoryState(_directoryLookup, directory.GetRoot());
+			const auto directories = directory.DecomposeDirectories();
+			for (auto currentDirectory : directories)
+			{
+				activeDirectory = GetDirectoryState(activeDirectory->ChildDirectories, currentDirectory);
+			}
+
+			return *activeDirectory;
+		}
+
 	private:
+		DirectoryState* GetDirectoryState(
+			std::unordered_map<std::string, DirectoryState, string_hash, std::equal_to<>>& activeDirectory,
+			const std::string_view name)
+		{
+			auto findResult = activeDirectory.find(name);
+			if (findResult != activeDirectory.end())
+			{
+				return &findResult->second;
+			}
+			else
+			{
+				throw std::runtime_error("Missing directory state");
+			}
+		}
+
+		DirectoryState* EnsureDirectoryExists(
+			std::unordered_map<std::string, DirectoryState, string_hash, std::equal_to<>>& activeDirectory,
+			const std::string_view name)
+		{
+			auto findResult = activeDirectory.find(name);
+			if (findResult != activeDirectory.end())
+			{
+				return &findResult->second;
+			}
+			else
+			{
+				auto insertResult = activeDirectory.emplace(name, DirectoryState());
+				return &insertResult.first->second;
+			}
+		}
+
+		void UpdateDirectoryLookup(const Path& file)
+		{
+			auto activeDirectory = EnsureDirectoryExists(_directoryLookup, file.GetRoot());
+
+			const auto directories = file.DecomposeDirectories();
+			for (auto directory : directories)
+			{
+				activeDirectory = EnsureDirectoryExists(activeDirectory->ChildDirectories, directory);
+			}
+
+			if (file.HasFileName())
+			{
+				activeDirectory->Files.insert(
+					std::string(file.GetFileName()));
+			}
+		}
+
 		/// <summary>
 		/// Invalidate the write time for the provided file
 		/// </summary>
@@ -246,33 +349,6 @@ namespace Soup::Core
 			return lastWriteTime;
 		}
 
-		std::optional<std::chrono::time_point<std::chrono::file_clock>> CheckDirectoryFileWriteTimes(FileId fileId)
-		{
-			auto& filePath = GetFilePath(fileId);
-			
-			// Add the requested file as null
-			// This will be replaced if the file exists with the find all callback
-			auto insertResult = _writeCache.insert_or_assign(fileId, std::nullopt);
-
-			// Load the write times for all files in the directory
-			// This optimization assumes that most files in a directory are relevant to the build
-			// and on windows it is a lot faster to iterate over the files instead of making individual calls
-			auto parentDirectory = filePath.GetParent();
-			System::IFileSystem::Current().GetDirectoryFilesLastWriteTime(
-				parentDirectory,
-				[&](const Path& file, std::chrono::time_point<std::chrono::file_clock> lastWriteTime)
-				{
-					auto& absolutePath = file.HasRoot() ? file : parentDirectory + file;
-					FileId result;
-					if (TryFindFileId(absolutePath, result))
-					{
-						auto insertResult = _writeCache.insert_or_assign(result, lastWriteTime);
-					}
-				});
-
-			return _writeCache[fileId];
-		}
-
 	private:
 		// The maximum id that has been used for files
 		// Used to ensure unique ids are generated across the entire system
@@ -280,6 +356,8 @@ namespace Soup::Core
 
 		std::unordered_map<FileId, Path> _files;
 		std::unordered_map<std::string, FileId> _fileLookup;
+		
+		std::unordered_map<std::string, DirectoryState, string_hash, std::equal_to<>> _directoryLookup;
 
 		std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>> _writeCache;
 	};
