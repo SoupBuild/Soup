@@ -216,6 +216,10 @@ namespace Soup::Core
 				macroTargetDirectory,
 				realTargetDirectory);
 
+			// Preload target
+			// TODO: Ideally this should be done in the preload step, but easier here with the graph id
+			_fileSystemState.PreloadDirectory(soupTargetDirectory);
+
 			//////////////////////////////////////////////
 			// SETUP
 			/////////////////////////////////////////////
