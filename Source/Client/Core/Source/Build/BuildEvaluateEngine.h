@@ -343,7 +343,7 @@ namespace Soup::Core
 			}
 
 			auto fileName = Path(operationInfo.Command.Arguments[0]);
-			Log::Info("WritFile: " + fileName.ToString());
+			Log::Info("WritFile: {}", fileName.ToString());
 
 			auto filePath = fileName.HasRoot() ? fileName : operationInfo.Command.WorkingDirectory + fileName;
 			auto& content = operationInfo.Command.Arguments[1];
@@ -441,7 +441,7 @@ namespace Soup::Core
 				for (auto& value : callback->GetInput())
 				{
 					auto path = Path(value);
-					// Log::Diag("ObservedInput: " + path.ToString());
+					// Log::Diag("ObservedInput: {}", path.ToString());
 					input.push_back(std::move(path));
 				}
 
@@ -449,7 +449,7 @@ namespace Soup::Core
 				for (auto& value : callback->GetOutput())
 				{
 					auto path = Path(value);
-					// Log::Diag("ObservedOutput: " + path.ToString());
+					// Log::Diag("ObservedOutput: {}", path.ToString());
 					output.push_back(std::move(path));
 				}
 
@@ -470,7 +470,7 @@ namespace Soup::Core
 			else
 			{
 				// Leave the previous state untouched and abandon the remaining operations
-				Log::Error("Operation exited with non-success code: " + std::to_string(exitCode));
+				Log::Error("Operation exited with non-success code: {}", exitCode);
 				throw BuildFailedException();
 			}
 		}
@@ -513,7 +513,7 @@ namespace Soup::Core
 				if (findObservedInput != operationResult.ObservedInput.end())
 				{
 					auto filePath = _fileSystemState.GetFilePath(fileId);
-					Log::Warning("File \"" + filePath.ToString() + "\" observed as both input and output for operation \"" + operationInfo.Title + "\"");
+					Log::Warning("File \"{}\" observed as both input and output for operation \"{}\"", filePath.ToString(), operationInfo.Title);
 					Log::Warning("Removing from input list for now. Will be treated as error in the future.");
 					operationResult.ObservedInput.erase(findObservedInput);
 				}

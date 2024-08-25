@@ -25,7 +25,7 @@ namespace Soup::Core
 			LocalUserConfig& result)
 		{
 			// Verify the requested file exists
-			Log::Diag("Load Local User Config: " + localUserConfigFile.ToString());
+			Log::Diag("Load Local User Config: {}", localUserConfigFile.ToString());
 			if (!System::IFileSystem::Current().Exists(localUserConfigFile))
 			{
 				Log::Warning("Local User Config file does not exist");
@@ -46,7 +46,7 @@ namespace Soup::Core
 			}
 			catch (std::exception& ex)
 			{
-				Log::Error(std::string("Deserialize Threw: ") + ex.what());
+				Log::Error("Deserialize Threw: {}", ex.what());
 				Log::Info("Failed to parse local user config.");
 				return false;
 			}

@@ -31,7 +31,7 @@ namespace Soup::Core::Generate
 		void RegisterExtensionTask(ExtensionTaskDetails extensionTaskDetails)
 		{
 			auto name = extensionTaskDetails.Name;
-			Log::Diag("RegisterExtensionTask: " + name);
+			Log::Diag("RegisterExtensionTask: {}", name);
 
 			auto runBeforeMessage = std::stringstream();
 			runBeforeMessage << "RunBefore [";
@@ -117,11 +117,11 @@ namespace Soup::Core::Generate
 				// Set the current state AFTER we initialize to prevent pre-loading
 				host->SetState(state);
 
-				Log::Info("TaskStart: " + currentTask->Name);
+				Log::Info("TaskStart: {}", currentTask->Name);
 
 				host->EvaluateTask(currentTask->Name);
 
-				Log::Info("TaskDone: " + currentTask->Name);
+				Log::Info("TaskDone: {}", currentTask->Name);
 
 				// Get the final state to be passed to the next extension
 				auto updatedActiveState = host->GetUpdatedActiveState();

@@ -54,7 +54,7 @@ namespace Soup::Client
 			const Core::Recipe* recipe;
 			if (!recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
-				Log::Error("The Recipe does not exist: " + recipePath.ToString());
+				Log::Error("The Recipe does not exist: {}", recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
 
 				// Nothing we can do, exit

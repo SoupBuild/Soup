@@ -48,12 +48,12 @@ namespace Soup::Core
 			Path rootRecipeFile;
 			if (RootRecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
 			{
-				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
+				Log::Info("Found Root Recipe: '{}'", rootRecipeFile.ToString());
 				const RootRecipe* rootRecipe;
 				if (!recipeCache.TryGetRootRecipe(rootRecipeFile, rootRecipe))
 				{
 					// Nothing we can do, exit
-					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
+					Log::Error("Failed to load the root recipe file: {}", rootRecipeFile.ToString());
 					throw HandledException(222);
 				}
 
@@ -88,7 +88,7 @@ namespace Soup::Core
 						rootOutput = rootRecipeFile.GetParent() + rootOutput;
 					}
 
-					Log::Info("Override root output: " + rootOutput.ToString());
+					Log::Info("Override root output: {}", rootOutput.ToString());
 				}
 			}
 

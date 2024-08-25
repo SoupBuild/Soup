@@ -25,7 +25,7 @@ namespace Soup::Core
 			Recipe& result)
 		{
 			// Verify the requested file exists
-			Log::Diag("Load Recipe: " + recipeFile.ToString());
+			Log::Diag("Load Recipe: {}", recipeFile.ToString());
 			if (!System::IFileSystem::Current().Exists(recipeFile))
 			{
 				Log::Info("Recipe file does not exist.");
@@ -46,7 +46,7 @@ namespace Soup::Core
 			}
 			catch (std::exception& ex)
 			{
-				Log::Error(std::string("Deserialize Threw: ") + ex.what());
+				Log::Error("Deserialize Threw: {}", ex.what());
 				Log::Info("Failed to parse Recipe.");
 				return false;
 			}

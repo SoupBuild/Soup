@@ -28,7 +28,7 @@ namespace Monitor::Linux
 
 		void OnError(std::string_view message) override final
 		{
-			Log::Error("DetourMonitorCallback::Error - " + std::string(message));
+			Log::Error("DetourMonitorCallback::Error - {}", message);
 		}
 
 		// FileApi

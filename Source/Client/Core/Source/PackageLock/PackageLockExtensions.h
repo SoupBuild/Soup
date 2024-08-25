@@ -25,7 +25,7 @@ namespace Soup::Core
 			PackageLock& result)
 		{
 			// Verify the requested file exists
-			Log::Diag("Load PackageLock: " + packageLockFile.ToString());
+			Log::Diag("Load PackageLock: {}", packageLockFile.ToString());
 			if (!System::IFileSystem::Current().Exists(packageLockFile))
 			{
 				Log::Info("PackageLock file does not exist");
@@ -46,7 +46,7 @@ namespace Soup::Core
 			}
 			catch (std::exception& ex)
 			{
-				Log::Error(std::string("Deserialize Threw: ") + ex.what());
+				Log::Error("Deserialize Threw: {}", ex.what());
 				Log::Info("Failed to parse PackageLock.");
 				return false;
 			}

@@ -309,7 +309,7 @@ namespace Soup::Client
 		static bool IsFlagSet(const char* name, std::vector<std::string>& unusedArgs)
 		{
 			auto flagValue = std::string("-") + name;
-			Log::Diag("IsFlagSet: " + flagValue);
+			Log::Diag("IsFlagSet: {}", flagValue);
 			auto flagLocation = std::find(unusedArgs.begin(), unusedArgs.end(), flagValue);
 			if (flagLocation != unusedArgs.end())
 			{
@@ -326,7 +326,7 @@ namespace Soup::Client
 		static void SplitArguments(const char* name, std::vector<std::string>& unusedArgs, std::vector<std::string>& splitArgs)
 		{
 			auto flagValue = std::string("-") + name;
-			Log::Diag("IsFlagSet: " + flagValue);
+			Log::Diag("IsFlagSet: {}", flagValue);
 			auto flagLocation = std::find(unusedArgs.begin(), unusedArgs.end(), flagValue);
 			if (flagLocation != unusedArgs.end())
 			{
@@ -343,7 +343,7 @@ namespace Soup::Client
 			std::string& value)
 		{
 			auto nameValue = std::string("-") + name;
-			Log::Diag("TryGetValueArgument: " + nameValue);
+			Log::Diag("TryGetValueArgument: {}", nameValue);
 			auto nameLocation = std::find(unusedArgs.begin(), unusedArgs.end(), nameValue);
 			if (nameLocation != unusedArgs.end())
 			{

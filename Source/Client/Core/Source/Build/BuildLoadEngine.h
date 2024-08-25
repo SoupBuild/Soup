@@ -108,7 +108,7 @@ namespace Soup::Core
 			const Recipe* recipe;
 			if (!_recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
-				Log::Error("The target Recipe does not exist: " + recipePath.ToString());
+				Log::Error("The target Recipe does not exist: {}", recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
 
 				// Nothing we can do, exit
@@ -149,7 +149,7 @@ namespace Soup::Core
 				toolDependencyProjects);
 
 			for (auto& toolDependency : toolDependencyProjects)
-				Log::Warning("Top Level Tool Dependency discarded: " + toolDependency.OriginalReference.ToString());
+				Log::Warning("Top Level Tool Dependency discarded: {}", toolDependency.OriginalReference.ToString());
 
 			return PackageProvider(rootGraphId, std::move(_packageGraphLookup), std::move(_packageLookup));
 		}
@@ -163,7 +163,7 @@ namespace Soup::Core
 			auto findKnownPackageLock = _knownPackageLocks.find(packageLockPath.ToString());
 			if (findKnownPackageLock != _knownPackageLocks.end())
 			{
-				Log::Diag("Package Lock already loaded: " + packageLockPath.ToString());
+				Log::Diag("Package Lock already loaded: {}", packageLockPath.ToString());
 				return findKnownPackageLock->second;
 			}
 			else
@@ -512,7 +512,7 @@ namespace Soup::Core
 				auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
 				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 				{
-					Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+					Log::Error("The dependency Recipe does not exist: {}", packageRecipePath.ToString());
 					Log::HighPriority("Make sure the path is correct and try again");
 
 					// Nothing we can do, exit
@@ -557,7 +557,7 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Implicit owner not allowed on local packages: " + parentIdentifier.ToString());
+						Log::Error("Implicit owner not allowed on local packages: {}", parentIdentifier.ToString());
 
 						// Nothing we can do, exit
 						throw HandledException(9571836);
@@ -583,7 +583,7 @@ namespace Soup::Core
 				auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
 				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 				{
-					Log::Error("The dependency Recipe version has not been installed: " + activeReference.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+					Log::Error("The dependency Recipe version has not been installed: {} -> {} [{}]", activeReference.ToString(), dependencyProjectRoot.ToString(), projectRoot.ToString());
 					Log::HighPriority("Run `restore` and try again");
 
 					// Nothing we can do, exit
@@ -594,7 +594,7 @@ namespace Soup::Core
 			// Ensure we do not have any circular dependencies
 			if (activeParentSet.contains(dependencyIdentifier.GetPackageName()))
 			{
-				Log::Error("Found circular dependency: " + parentIdentifier.ToString() + " -> " + dependencyIdentifier.ToString());
+				Log::Error("Found circular dependency: {} -> {}", parentIdentifier.ToString(), dependencyIdentifier.ToString());
 				throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 			}
 
@@ -605,12 +605,12 @@ namespace Soup::Core
 				// Verify the project name is unique
 				if (findKnownPackage->second.second != dependencyProjectRoot)
 				{
-					Log::Error("Recipe with this name already exists: " + dependencyIdentifier.ToString() + " [" + projectRoot.ToString() + "] [" + findKnownPackage->second.second.ToString() + "]");
+					Log::Error("Recipe with this name already exists: {} [{}] [{}]", dependencyIdentifier.ToString(), projectRoot.ToString(), findKnownPackage->second.second.ToString());
 					throw std::runtime_error("Recipe name not unique");
 				}
 				else
 				{
-					Log::Diag("Recipe already loaded: " + dependencyIdentifier.ToString());
+					Log::Diag("Recipe already loaded: {}", dependencyIdentifier.ToString());
 					return PackageChildInfo(activeReference, false, findKnownPackage->second.first, -1);
 				}
 			}
@@ -633,7 +633,7 @@ namespace Soup::Core
 					toolDependencyProjects);
 
 				for (auto& toolDependency : toolDependencyProjects)
-					Log::Warning("Runtime Dependency Tool Dependency discarded: " + toolDependency.OriginalReference.ToString());
+					Log::Warning("Runtime Dependency Tool Dependency discarded: {}", toolDependency.OriginalReference.ToString());
 
 				// Update the child project id
 				return PackageChildInfo(activeReference, false, childPackageId, -1);
@@ -718,7 +718,7 @@ namespace Soup::Core
 				const Recipe* dependencyRecipe;
 				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 				{
-					Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+					Log::Error("The dependency Recipe does not exist: {}", packageRecipePath.ToString());
 					Log::HighPriority("Make sure the path is correct and try again");
 
 					// Nothing we can do, exit
@@ -764,7 +764,7 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Implicit owner not allowed on local packages: " + parentIdentifier.ToString());
+						Log::Error("Implicit owner not allowed on local packages: {}", parentIdentifier.ToString());
 
 						// Nothing we can do, exit
 						throw HandledException(9571836);
@@ -846,7 +846,7 @@ namespace Soup::Core
 				const Recipe* dependencyRecipe;
 				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 				{
-					Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+					Log::Error("The dependency Recipe does not exist: {}", packageRecipePath.ToString());
 					Log::HighPriority("Make sure the path is correct and try again");
 
 					// Nothing we can do, exit
@@ -892,7 +892,7 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Implicit owner not allowed on local packages: " + parentIdentifier.ToString());
+						Log::Error("Implicit owner not allowed on local packages: {}", parentIdentifier.ToString());
 
 						// Nothing we can do, exit
 						throw HandledException(9571836);
@@ -937,7 +937,7 @@ namespace Soup::Core
 			}
 
 			for (auto& toolToolDependency : toolToolDependencies)
-				Log::Warning("Tool Tool Dependency discarded: " + toolToolDependency.OriginalReference.ToString());
+				Log::Warning("Tool Tool Dependency discarded: {}", toolToolDependency.OriginalReference.ToString());
 
 			return toolDependency;
 		}
@@ -973,7 +973,7 @@ namespace Soup::Core
 			if (findKnownGraph != _knownSubGraphSet.end())
 			{
 				// Verify the project name is unique
-				Log::Diag("Graph already loaded: " + dependencyProjectRoot.ToString());
+				Log::Diag("Graph already loaded: {}", dependencyProjectRoot.ToString());
 				return std::make_pair(
 					PackageChildInfo(activeReference, true, -1, findKnownGraph->second.first),
 					findKnownGraph->second.second);
@@ -986,12 +986,12 @@ namespace Soup::Core
 				{
 					if (activeReference.IsLocal())
 					{
-						Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+						Log::Error("The dependency Recipe does not exist: {}", packageRecipePath.ToString());
 						Log::HighPriority("Make sure the path is correct and try again");
 					}
 					else
 					{
-						Log::Error("The dependency Recipe version has not been installed: " + activeReference.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+						Log::Error("The dependency Recipe version has not been installed: {} -> {} [{}]", activeReference.ToString(), dependencyProjectRoot.ToString(), projectRoot.ToString());
 						Log::HighPriority("Run `restore` and try again");
 					}
 
@@ -1028,7 +1028,7 @@ namespace Soup::Core
 						}
 						else
 						{
-							Log::Error("Implicit owner not allowed on local packages: " + parentIdentifier.ToString());
+							Log::Error("Implicit owner not allowed on local packages: {}", parentIdentifier.ToString());
 
 							// Nothing we can do, exit
 							throw HandledException(9571836);
@@ -1125,7 +1125,7 @@ namespace Soup::Core
 			if (findKnownGraph != _knownSubGraphSet.end())
 			{
 				// Verify the project name is unique
-				Log::Diag("Graph already loaded: " + packageRoot.ToString());
+				Log::Diag("Graph already loaded: {}", packageRoot.ToString());
 				return std::make_pair(
 					PackageChildInfo(activeReference, true, -1, findKnownGraph->second.first),
 					findKnownGraph->second.second);
@@ -1136,7 +1136,7 @@ namespace Soup::Core
 				const Recipe* recipe;
 				if (!_recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 				{
-					Log::Error("The built in package Recipe does not exist: " + recipePath.ToString());
+					Log::Error("The built in package Recipe does not exist: {}", recipePath.ToString());
 					Log::HighPriority("The installation may be corrupted");
 
 					// Nothing we can do, exit

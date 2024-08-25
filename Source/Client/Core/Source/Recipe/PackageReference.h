@@ -34,7 +34,7 @@ namespace Soup::Core
 			if (parseValue.starts_with("C++|"))
 			{
 				parseValue = "[C++]mwasplund|" + parseValue.substr(4);
-				Log::Info("Replace C++| -> " + parseValue);
+				Log::Info("Replace C++| -> {}", parseValue);
 			}
 
 			// Attempt to parse Named reference
