@@ -131,8 +131,8 @@ namespace Soup::Core
 
 			for (auto package : packageProvider.GetPackageLookup())
 			{
-				fileSystemState.PreloadDirectory(package.second.PackageRoot);
-				// TODO: fileSystemState.PreloadDirectory(package.second.TargetDirectory);
+				fileSystemState.PreloadDirectory(package.second.PackageRoot, true);
+				// TODO: fileSystemState.PreloadDirectory(package.second.TargetDirectory, false);
 			}
 
 			auto endTime = std::chrono::high_resolution_clock::now();

@@ -213,29 +213,52 @@ namespace Soup::Core
 			}
 		}
 
-		void PreloadDirectory(Path& directory)
+		void PreloadDirectory(const Path& directory, bool trackDirectories)
 		{
-			auto directoryId = ToFileId(directory);
-			
-			// Add the requested file as null
-			// This will be replaced if the file exists with the find all callback
-			auto insertResult = _writeCache.insert_or_assign(directoryId, std::nullopt);
+			#ifdef TRACE_FILE_SYSTEM_STATE
+			std::cout << "PreloadDirectory: " << directory.ToString() << std::endl;
+			#endif
 
-			std::function<void(const Path& file, std::chrono::time_point<std::chrono::file_clock>)> callback =
-				[&](const Path& file, std::chrono::time_point<std::chrono::file_clock> lastWriteTime)
-				{
-					auto& absolutePath = file.HasRoot() ? file : directory + file;
-					FileId fileId = ToFileId(absolutePath);
-					auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
-					UpdateDirectoryLookup(absolutePath);
-				};
+			FileId directoryId;
+			if (!TryFindFileId(directory, directoryId))
+			{
+				directoryId = ToFileId(directory);
+				
+				// Add the requested file as null
+				// This will be replaced if the file exists with the find all callback
+				auto insertResult = _writeCache.insert_or_assign(directoryId, std::nullopt);
 
-			// Load the write times for all files in the directory
-			// This optimization assumes that most files in a directory are relevant to the build
-			// and on windows it is a lot faster to iterate over the files instead of making individual calls
-			System::IFileSystem::Current().GetDirectoryFilesLastWriteTime(
-				directory,
-				callback);
+				std::function<void(const Path& file, std::chrono::time_point<std::chrono::file_clock>)> callback =
+					[&](const Path& file, std::chrono::time_point<std::chrono::file_clock> lastWriteTime)
+					{
+						auto& absolutePath = file.HasRoot() ? file : directory + file;
+
+						#ifdef TRACE_FILE_SYSTEM_STATE
+						std::cout << "PreloadDirectory: File " << file.ToString() << std::endl;
+						#endif
+
+						// Recursively load child directories
+						if (!file.IsEmpty() && !absolutePath.HasFileName())
+						{
+							PreloadDirectory(absolutePath, trackDirectories);
+						}
+
+						if (trackDirectories)
+						{
+							UpdateDirectoryLookup(absolutePath);
+						}
+
+						FileId fileId = ToFileId(absolutePath);
+						auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
+					};
+
+				// Load the write times for all files in the directory
+				// This optimization assumes that most files in a directory are relevant to the build
+				// and on windows it is a lot faster to iterate over the files instead of making individual calls
+				System::IFileSystem::Current().GetDirectoryFilesLastWriteTime(
+					directory,
+					callback);
+			}
 		}
 
 		DirectoryState& GetDirectoryState(const Path& directory)
