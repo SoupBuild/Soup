@@ -228,8 +228,7 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			auto fileSystemState = FileSystemState(
 				1,
-				std::unordered_map<FileId, Path>({
-				}));
+				std::unordered_map<FileId, Path>({}));
 
 			// Register the test process manager
 			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
@@ -308,7 +307,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"DIAG: Allowed Read Access:",
 					"DIAG: Allowed Write Access:",
-					"WARN: File \"C:/TestWorkingDirectory/FILE.TXT\" observed as both input and output for operation \"TestCommand: 1\"",
+					"WARN: File \"C:/TestWorkingDirectory/File.txt\" observed as both input and output for operation \"TestCommand: 1\"",
 					"WARN: Removing from input list for now. Will be treated as error in the future.",
 					"DIAG: Build evaluation end",
 				}),
@@ -501,6 +500,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 3, executableInputTime },
 				}));
@@ -644,6 +644,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, std::nullopt },
@@ -788,6 +789,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },
@@ -932,6 +934,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },
@@ -1073,6 +1076,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },

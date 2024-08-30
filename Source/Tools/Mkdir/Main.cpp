@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			fileSystem.CreateDirectory2(directory);
+			fileSystem.CreateDirectory(directory);
 		}
 	}
 	catch(const std::exception& e)

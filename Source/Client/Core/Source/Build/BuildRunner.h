@@ -268,7 +268,7 @@ namespace Soup::Core
 				if (!System::IFileSystem::Current().Exists(soupTargetDirectory))
 				{
 					Log::Info("Create Directory: {}", soupTargetDirectory.ToString());
-					System::IFileSystem::Current().CreateDirectory2(soupTargetDirectory);
+					System::IFileSystem::Current().CreateDirectory(soupTargetDirectory);
 				}
 
 				auto ranGenerate = RunIncrementalGenerate(
@@ -569,7 +569,7 @@ namespace Soup::Core
 			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
 			{
 				Log::Info("Create Directory: {}", temporaryDirectory.ToString());
-				System::IFileSystem::Current().CreateDirectory2(temporaryDirectory);
+				System::IFileSystem::Current().CreateDirectory(temporaryDirectory);
 			}
 
 			try

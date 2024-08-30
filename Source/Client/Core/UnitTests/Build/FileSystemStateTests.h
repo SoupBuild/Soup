@@ -92,6 +92,7 @@ namespace Soup::Core::UnitTests
 				std::unordered_map<FileId, Path>({
 					{ 2, Path("C:/Root/DoStuff.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({}));
 
 			auto lastWriteTime = uut.GetLastWriteTime(2);
@@ -120,6 +121,7 @@ namespace Soup::Core::UnitTests
 				std::unordered_map<FileId, Path>({
 					{ 2, Path("C:/Root/DoStuff.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 2, setLastWriteTime },
 				}));

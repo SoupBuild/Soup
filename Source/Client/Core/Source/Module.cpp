@@ -34,6 +34,7 @@ module;
 #include <Windows.h>
 #undef max
 #undef min
+#undef CreateDirectory
 #undef CreateProcess
 #undef GetCurrentTime
 #undef GetClassName

@@ -499,7 +499,11 @@ namespace Soup::Core
 					{
 						auto filePath = _fileSystemState.GetFilePath(fileId);
 						auto& existingOperation = evaluateState.OperationGraph.GetOperationInfo(matchedOutputOperationId);
-						auto message = "File \"" + filePath.ToString() + "\" observed as input for operation \"" + operationInfo.Title + "\" was written to by operation \"" + existingOperation.Title + "\" and must be declared as input";
+						auto message = std::format(
+							"File \"{}\" observed as input for operation \"{}\" was written to by operation \"{}\" and must be declared as input",
+							filePath.ToString(),
+							operationInfo.Title,
+							existingOperation.Title);
 						throw std::runtime_error(message);
 					}
 				}
@@ -526,7 +530,11 @@ namespace Soup::Core
 					{
 						auto filePath = _fileSystemState.GetFilePath(fileId);
 						auto& existingOperation = evaluateState.OperationGraph.GetOperationInfo(matchedOutputOperationId);
-						auto message = "File \"" + filePath.ToString() + "\" observed as output for operation \"" + operationInfo.Title + "\" was already written by operation \"" + existingOperation.Title + "\"";
+						auto message = std::format(
+							"File \"{}\" observed as output for operation \"{}\" was already written by operation \"{}\"",
+							filePath.ToString(),
+							operationInfo.Title,
+							existingOperation.Title);
 						throw std::runtime_error(message);
 					}
 				}
@@ -539,7 +547,10 @@ namespace Soup::Core
 						if (!matchedInputOperationIds->contains(operationInfo.Id))
 						{
 							auto filePath = _fileSystemState.GetFilePath(fileId);
-							auto message = "File \"" + filePath.ToString() + "\" observed as output from operation \"" + operationInfo.Title + "\" creates new dependency to existing declared inputs";
+							auto message = std::format(
+								"File \"{}\" observed as output from operation \"{}\" creates new dependency to existing declared inputs",
+								filePath.ToString(),
+								operationInfo.Title);
 							throw std::runtime_error(message);
 						}
 					}
