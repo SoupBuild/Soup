@@ -297,10 +297,13 @@ namespace Soup::Core
 				auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 				auto activeVersionString = activeReference.GetVersion().ToString();
 				packagePath = packageStore +
-					Path(languageSafeName) +
-					Path(activeReference.GetOwner()) +
-					Path(activeReference.GetName()) +
-					Path(activeVersionString + "/");
+					Path(
+						std::format(
+							"{}/{}/{}/{}/",
+							languageSafeName,
+							activeReference.GetOwner(),
+							activeReference.GetName(),
+							activeVersionString));
 			}
 
 			return packagePath;
@@ -339,10 +342,12 @@ namespace Soup::Core
 					auto packageStore = _userDataPath + Path("locks/");
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 					packagePath = packageStore +
-						Path(languageSafeName) +
-						Path(activeReference.GetOwner()) +
-						Path(activeReference.GetName()) +
-						Path(activeReference.GetVersion().ToString() + "/");
+						Path(std::format(
+							"{}/{}/{}/{}/",
+							languageSafeName,
+							activeReference.GetOwner(),
+							activeReference.GetName(),
+							activeReference.GetVersion().ToString()));
 				}
 			}
 
@@ -1179,9 +1184,11 @@ namespace Soup::Core
 		{
 			// Use the prebuilt version in the install folder
 			auto packageRoot = _builtInPackageDirectory +
-				Path(activeReference.GetOwner()) +
-				Path(activeReference.GetName()) +
-				Path(activeReference.GetVersion().ToString() + "/");
+				Path(std::format(
+					"{}/{}/{}/",
+					activeReference.GetOwner(),
+					activeReference.GetName(),
+					activeReference.GetVersion().ToString()));
 
 			// Check if the package has already been processed from another graph
 			auto findKnownGraph = _knownSubGraphSet.find(packageRoot);

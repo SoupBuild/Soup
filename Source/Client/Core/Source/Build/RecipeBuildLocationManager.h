@@ -80,7 +80,8 @@ namespace Soup::Core
 					}
 
 					// Add the unique recipe name/version
-					rootOutput = rootOutput + Path(name.GetName() + "/") + Path(recipe.GetVersion().ToString() + "/");
+					rootOutput = rootOutput +
+						Path(std::format("{}/{}/", name.GetName(), recipe.GetVersion().ToString()));
 
 					// Ensure there is a root relative to the file itself
 					if (!rootOutput.HasRoot())

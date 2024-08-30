@@ -168,16 +168,12 @@ namespace Soup::Core
 			try
 			{
 				Log::SetActiveId(packageInfo.Id);
-				auto languagePackageName = std::format(
-					"[{}]{}",
-					packageInfo.Recipe->GetLanguage().GetName(),
-					packageInfo.Name.ToString());
-				Log::Diag("Running Build: {}", languagePackageName);
+				Log::Diag("Running Build: [{}]{}", packageInfo.Recipe->GetLanguage().GetName(), packageInfo.Name.ToString());
 
 				// Check if we already built this package down a different dependency path
 				if (_buildCache.contains(packageInfo.Id))
 				{
-					Log::Diag("Recipe already built: {}", languagePackageName);
+					Log::Diag("Recipe already built: [{}]{}", packageInfo.Recipe->GetLanguage().GetName(), packageInfo.Name.ToString());
 				}
 				else
 				{
