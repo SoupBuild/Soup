@@ -241,7 +241,7 @@ namespace Soup::Client
 			}
 			else
 			{
-				throw std::runtime_error("Unknown command argument: " + commandType);
+				throw std::runtime_error(std::format("Unknown command argument: {}", commandType));
 			}
 
 			if (!unusedArgs.empty())

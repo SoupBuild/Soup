@@ -220,22 +220,58 @@ namespace Soup::Core
 			// Find the required closure
 			auto findClosure = packageLockState.Closures.find(_rootClosureName);
 			if (findClosure == packageLockState.Closures.end())
-				throw std::runtime_error("Closure [" + _rootClosureName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Closure [{}] not found in lock [{}]",
+						_rootClosureName,
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			// Find the package version in the lock
 			auto findPackageLock = findClosure->second.find(packageIdentifier.GetLanguage());
 			if (findPackageLock == findClosure->second.end())
-				throw std::runtime_error("Language [" + _rootClosureName + "] [" + packageIdentifier.GetLanguage() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Language [{}] [{}] not found in lock [{}]",
+						_rootClosureName,
+						packageIdentifier.GetLanguage(),
+						packageLockState.RootDirectory.ToString()));
+			}
+
 			auto packageVersion = findPackageLock->second.find(packageIdentifier.GetPackageName());
 			if (packageVersion == findPackageLock->second.end())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageIdentifier.ToString() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Package [{}] [{}] not found in lock [{}]",
+						_rootClosureName,
+						packageIdentifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			auto& packageBuild = packageVersion->second.BuildValue;
 			auto& packageTool = packageVersion->second.ToolValue;
 			if (!packageBuild.has_value())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageIdentifier.ToString() + "] does not have build closure [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Package [{}] [{}] does not have build closure [{}]",
+						_rootClosureName,
+						packageIdentifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
+
 			if (!packageTool.has_value())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageIdentifier.ToString() + "] does not have tool closure [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Package [{}] [{}] does not have tool closure [{}]",
+						_rootClosureName,
+						packageIdentifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			return std::make_pair(packageBuild.value(), packageTool.value());
 		}
@@ -326,16 +362,36 @@ namespace Soup::Core
 			// Find the required closure
 			auto findClosure = packageLockState.Closures.find(closureName);
 			if (findClosure == packageLockState.Closures.end())
-				throw std::runtime_error("Closure [" + closureName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Closure [{}] not found in lock [{}]",
+						closureName,
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			// Find the package version in the lock
 			auto findPackageLock = findClosure->second.find(identifier.GetLanguage());
 			if (findPackageLock == findClosure->second.end())
-				throw std::runtime_error("Language [" + closureName + "] [" + identifier.ToString() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Language [{}] [{}] not found in lock [{}]",
+						closureName,
+						identifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			auto findPackageVersion = findPackageLock->second.find(identifier.GetPackageName());
 			if (findPackageVersion == findPackageLock->second.end())
-				throw std::runtime_error("Package [" + closureName + "] [" + identifier.ToString() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Package [{}] [{}] not found in lock [{}]",
+						closureName,
+						identifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			auto& lockReference = findPackageVersion->second.Reference;
 			if (lockReference.IsLocal())
@@ -874,7 +930,10 @@ namespace Soup::Core
 				{
 					// Tool dependencies do not inherit the parent language
 					// They must be explicitly defined
-					throw std::runtime_error("Tool dependency must have explicit language defined: " + originalReference.ToString());
+					throw std::runtime_error(
+						std::format(
+							"Tool dependency must have explicit language defined: {}",
+							originalReference.ToString()));
 				}
 
 				// Resolve the owner
@@ -1090,7 +1149,11 @@ namespace Soup::Core
 			// Get the active version
 			auto knownLanguageResult = _knownLanguageLookup.find(language.GetName());
 			if (knownLanguageResult == _knownLanguageLookup.end())
-				throw std::runtime_error("Unknown language: " + language.GetName());
+			{
+				throw std::runtime_error(
+					std::format("Unknown language: {}", language.GetName()));
+			}
+
 			auto& knownLanguage = knownLanguageResult->second;
 
 			auto builtInExtensionReference = PackageReference(
@@ -1202,7 +1265,10 @@ namespace Soup::Core
 			// Get the active version
 			auto knownLanguageResult = _knownLanguageLookup.find(language);
 			if (knownLanguageResult == _knownLanguageLookup.end())
-				throw std::runtime_error("Unknown language: " + language);
+			{
+				throw std::runtime_error(
+					std::format("Unknown language: {}", language));
+			}
 
 			return knownLanguageResult->second.LanguageSafeName;
 		}

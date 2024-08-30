@@ -252,7 +252,8 @@ namespace Monitor::Windows
 				case ERROR_PATH_NOT_FOUND:
 					throw std::runtime_error("Execute DetourCreateProcessWithDllExA the requested executable does not exist");
 				default:
-					throw std::runtime_error("Execute DetourCreateProcessWithDllExA Failed: " +  std::to_string(error));
+					throw std::runtime_error(
+						std::format("Execute DetourCreateProcessWithDllExA Failed: {}", error));
 				}
 			}
 
@@ -285,7 +286,8 @@ namespace Monitor::Windows
 				&payload,
 				sizeof(payload)))
 			{
-				throw std::runtime_error("DetourCopyPayloadToProcess failed: " + std::to_string(GetLastError()));
+				throw std::runtime_error(
+					std::format("DetourCopyPayloadToProcess failed: {}", GetLastError()));
 			}
 
 			// Initialize the pipes so they are ready for the process and the worker thread
@@ -324,7 +326,8 @@ namespace Monitor::Windows
 					throw std::runtime_error("Execute WaitForSingleObject Timeout");
 					break;
 				case WAIT_FAILED:
-					throw std::runtime_error("Execute WaitForSingleObject Failed: " + std::to_string(GetLastError()));
+					throw std::runtime_error(
+						std::format("Execute WaitForSingleObject Failed: {}", GetLastError()));
 					break;
 				default:
 					throw std::runtime_error("Execute WaitForSingleObject Failed Unknown");
@@ -335,7 +338,8 @@ namespace Monitor::Windows
 			if (!GetExitCodeProcess(m_processHandle.Get(), &exitCode))
 			{
 				auto error = GetLastError();
-				throw std::runtime_error("Execute GetExitCodeProcess Failed: " + std::to_string(error));
+				throw std::runtime_error(
+					std::format("Execute GetExitCodeProcess Failed: {}", error));
 			}
 			m_exitCode = exitCode;
 
@@ -484,7 +488,8 @@ namespace Monitor::Windows
 							}
 
 						case WAIT_FAILED:
-							throw std::runtime_error("WaitForMultipleObjects failed: " +  std::to_string(GetLastError()));
+							throw std::runtime_error(
+								std::format("WaitForMultipleObjects failed: {}", GetLastError()));
 					}
 
 					// Determine which pipe completed the operation.
@@ -530,7 +535,8 @@ namespace Monitor::Windows
 					eventName);
 				if (eventHandle == NULL)
 				{
-					throw std::runtime_error("CreateEventA failed: " +  std::to_string(GetLastError()));
+					throw std::runtime_error(
+						std::format("CreateEventA failed: {}", GetLastError()));
 				}
 
 				// Save the event handle on the pipe instance and register it in the raw array to
@@ -582,7 +588,8 @@ namespace Monitor::Windows
 			if (hPipe == INVALID_HANDLE_VALUE)
 			{
 				DWORD error = GetLastError();
-				throw std::runtime_error("CreateNamedPipeA failed: " + std::to_string(error));
+				throw std::runtime_error(
+					std::format("CreateNamedPipeA failed: {}", error));
 			}
 
 			return Opal::System::SmartHandle(hPipe);
@@ -618,7 +625,8 @@ namespace Monitor::Windows
 				// Signal the event manually to force the update loop to signal on wait all events
 				if (!SetEvent(pipe.EventHandle.Get()))
 				{
-					throw std::runtime_error("Client already connected -> SetEvent failed: " + std::to_string(GetLastError()));
+					throw std::runtime_error(
+						std::format("Client already connected -> SetEvent failed: {}", GetLastError()));
 				}
 	
 				break;
@@ -628,7 +636,8 @@ namespace Monitor::Windows
 				pipe.HasPendingIO = true;
 				break;
 			default:
-				throw std::runtime_error("ConnectNamedPipe failed: " + std::to_string(error));
+				throw std::runtime_error(
+					std::format("ConnectNamedPipe failed: {}", error));
 			}
 		}
 
@@ -641,7 +650,8 @@ namespace Monitor::Windows
 				DebugTrace("DisconnectAndReconnect");
 			if (!DisconnectNamedPipe(pipe.PipeHandle.Get()))
 			{
-				throw std::runtime_error("DisconnectNamedPipe failed: " + std::to_string(GetLastError()));
+				throw std::runtime_error(
+					std::format("DisconnectNamedPipe failed: {}", GetLastError()));
 			}
 
 			m_activeClientCount--;
@@ -669,7 +679,8 @@ namespace Monitor::Windows
 				{
 					if (!overlappedResult)
 					{
-						throw std::runtime_error("GetOverlappedResult failed when connecting: " + std::to_string(GetLastError()));
+						throw std::runtime_error(
+							std::format("GetOverlappedResult failed when connecting: {}", GetLastError()));
 					}
 
 					// Connected to a new client
@@ -685,7 +696,7 @@ namespace Monitor::Windows
 					DebugTrace("HandlePipeEvent - GetOverlappedResult - Read Finished");
 					if (!overlappedResult || bytesTransferred == 0)
 					{
-						DebugTrace("HandlePipeEvent - GetOverlappedResult - Error: " + std::to_string(GetLastError()));
+						DebugTrace("HandlePipeEvent - GetOverlappedResult - Error: {}", GetLastError());
 						DisconnectAndReconnect(pipe);
 						return;
 					}
@@ -732,7 +743,7 @@ namespace Monitor::Windows
 							break;
 						default:
 							// Unknown error
-							DebugTrace("HandlePipeEvent - ReadFile - Error: " + std::to_string(GetLastError()));
+							DebugTrace("HandlePipeEvent - ReadFile - Error: {}", GetLastError());
 							DisconnectAndReconnect(pipe);
 							break;
 					}

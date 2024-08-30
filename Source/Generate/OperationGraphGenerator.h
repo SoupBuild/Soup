@@ -451,7 +451,10 @@ namespace Soup::Core::Generate
 			{
 				auto& filePath = _fileSystemState.GetFilePath(file);
 				auto& existingOperation = _graph.GetOperationInfo(findResult->second);
-				throw std::runtime_error("File \"" +  filePath.ToString() + "\" already written to by operation \"" + existingOperation.Title + "\"");
+				throw std::runtime_error(
+					std::format("File \"{}\" already written to by operation \"{}\"",
+					filePath.ToString(),
+					existingOperation.Title));
 			}
 			else
 			{
@@ -468,7 +471,11 @@ namespace Soup::Core::Generate
 			{
 				auto& filePath = _fileSystemState.GetFilePath(file);
 				auto& existingOperation = _graph.GetOperationInfo(findResult->second);
-				throw std::runtime_error("Directory \"" + filePath.ToString() + "\" already written to by operation \"" + existingOperation.Title + "\"");
+				throw std::runtime_error(
+					std::format(
+						"Directory \"{}\" already written to by operation \"{}\"",
+						filePath.ToString(),
+						existingOperation.Title));
 			}
 			else
 			{

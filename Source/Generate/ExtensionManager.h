@@ -66,7 +66,7 @@ namespace Soup::Core::Generate
 			auto insertResult = _tasks.emplace(name, std::move(extensionTaskDetails));
 			if (!insertResult.second)
 			{
-				Log::HighPriority("An extension task with the provided name has already been registered: " + name);
+				Log::HighPriority("An extension task with the provided name has already been registered: {}", name);
 				throw std::runtime_error("An extension task with the provided name has already been registered");
 			}
 		}

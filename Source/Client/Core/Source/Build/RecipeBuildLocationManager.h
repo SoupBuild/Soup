@@ -108,7 +108,10 @@ namespace Soup::Core
 			// Get the active version
 			auto builtInLanguageResult = _knownLanguageLookup.find(language);
 			if (builtInLanguageResult == _knownLanguageLookup.end())
-				throw std::runtime_error("Unknown language: " + language);
+			{
+				throw std::runtime_error(
+					std::format("Unknown language: {}", language));
+			}
 
 			return builtInLanguageResult->second.LanguageSafeName;
 		}

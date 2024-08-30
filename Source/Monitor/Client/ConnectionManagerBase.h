@@ -59,14 +59,20 @@ namespace Monitor
 			printf("DETOUR-CLIENT-ERROR: %s\n", message.data());
 		}
 
-		void DebugTrace(std::string_view message)
-		{
 	#ifdef TRACE_DETOUR_CLIENT
-			printf("DETOUR-CLIENT: %s\n", message.data());
-	#elif defined(_WIN32)
-			(message);
-	#endif
+		template<typename... Args>
+		static void DebugTrace(std::string_view message, Args&&... args)
+		{
+			auto result = std::vformat(message, std::make_format_args(args...))
+			printf("DETOUR-CLIENT: %s\n", result.c_str());
 		}
+	#else
+		template<typename... Args>
+		static void DebugTrace(std::string_view, Args&&...)
+		{
+			// NO-OP
+		}
+	#endif
 
 	protected:
 		virtual void Connect(int32_t traceProcessId) = 0;

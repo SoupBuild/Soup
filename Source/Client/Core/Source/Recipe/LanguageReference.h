@@ -33,7 +33,8 @@ namespace Soup::Core
 			}
 			else
 			{
-				throw std::runtime_error("Invalid language reference: " + value);
+				throw std::runtime_error(
+					std::format("Invalid language reference: {}", value));
 			}
 		}
 
