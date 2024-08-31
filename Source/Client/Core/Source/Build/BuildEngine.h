@@ -76,7 +76,7 @@ namespace Soup::Core
 		}
 
 		/// <summary>
-		/// The Core Execute task
+		/// Load the build graph
 		/// </summary>
 		static PackageProvider LoadBuildGraph(
 			const Path& builtInDirectory,
@@ -93,7 +93,7 @@ namespace Soup::Core
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -113,9 +113,36 @@ namespace Soup::Core
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "BuildLoadEngine: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "BuildLoadEngine: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
 			return packageProvider;
+		}
+
+		/// <summary>
+		/// Preload the file system
+		/// </summary>
+		static FileSystemState PreloadFileSystemState(
+			PackageProvider& packageProvider)
+		{
+			auto startTime = std::chrono::high_resolution_clock::now();
+
+			// Initialize a shared File System State to cache file system access
+			auto fileSystemState = FileSystemState();
+
+			for (auto package : packageProvider.GetPackageLookup())
+			{
+				fileSystemState.PreloadDirectory(package.second.PackageRoot, true);
+				// TODO: fileSystemState.PreloadDirectory(package.second.TargetDirectory, false);
+			}
+
+			auto endTime = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+
+			std::cout << "PreloadFileSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
+
+			startTime = std::chrono::high_resolution_clock::now();
+
+			return fileSystemState;
 		}
 
 		static void Execute(
@@ -126,20 +153,20 @@ namespace Soup::Core
 		{
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			// Initialize a shared File System State to cache file system access
-			auto fileSystemState = FileSystemState();
-
-			// Initialize a shared Evaluate Engine
-			auto evaluateEngine = BuildEvaluateEngine(
-				arguments.ForceRebuild,
-				fileSystemState);
-
 			// Initialize shared location manager
 			auto knownLanguages = GetKnownLanguages();
 			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 
 			// Load the system specific state
 			auto systemReadAccess = LoadHostSystemAccess();
+
+			// Load the file system state
+			auto fileSystemState = PreloadFileSystemState(packageProvider);
+
+			// Initialize a shared Evaluate Engine
+			auto evaluateEngine = BuildEvaluateEngine(
+				arguments.ForceRebuild,
+				fileSystemState);
 
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package
@@ -157,7 +184,7 @@ namespace Soup::Core
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "BuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "BuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
 		}
 
 		static Path GetSoupUserDataPath()

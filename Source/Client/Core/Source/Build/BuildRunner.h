@@ -216,6 +216,10 @@ namespace Soup::Core
 				macroTargetDirectory,
 				realTargetDirectory);
 
+			// Preload target
+			// TODO: Ideally this should be done in the preload step, but easier here with the graph id
+			_fileSystemState.PreloadDirectory(realTargetDirectory, false);
+
 			//////////////////////////////////////////////
 			// SETUP
 			/////////////////////////////////////////////
@@ -362,6 +366,10 @@ namespace Soup::Core
 
 			// Generate the dependencies input state
 			globalState.emplace("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
+
+			// Pass along the file system state
+			auto fileSystemRoot = BuildDirectoryStructure(packageInfo.PackageRoot);
+			globalState.emplace("FileSystem", std::move(fileSystemRoot));
 
 			inputTable.emplace("GlobalState", std::move(globalState));
 
@@ -825,6 +833,39 @@ namespace Soup::Core
 			}
 
 			return targetSet;
+		}
+
+		ValueList BuildDirectoryStructure(const Path& directory)
+		{
+			auto directoryState = _fileSystemState.GetDirectoryState(directory);
+
+			auto result = ValueList();
+			BuildDirectoryStructure(directoryState, result);
+
+			return result;
+		}
+
+		void BuildDirectoryStructure(DirectoryState& activeDirectory, ValueList& result)
+		{
+			for (auto& file : activeDirectory.Files)
+			{
+				result.push_back(file);
+			}
+
+			if (!activeDirectory.ChildDirectories.empty())
+			{
+				auto childDirectories = ValueTable();
+				for (auto& childDirectory : activeDirectory.ChildDirectories)
+				{
+					auto childDirectoryStructure = ValueList();
+					BuildDirectoryStructure(childDirectory.second, childDirectoryStructure);
+					childDirectories.emplace(
+						childDirectory.first,
+						std::move(childDirectoryStructure));
+				}
+
+				result.push_back(std::move(childDirectories));
+			}
 		}
 	};
 }
