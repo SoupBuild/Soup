@@ -24,16 +24,14 @@ namespace Soup::Core
 			const Path& recipeFile,
 			Recipe& result)
 		{
-			// Verify the requested file exists
+			// Open the file to read from
 			Log::Diag("Load Recipe: {}", recipeFile.ToString());
-			if (!System::IFileSystem::Current().Exists(recipeFile))
+			std::shared_ptr<System::IInputFile> file;
+			if (!System::IFileSystem::Current().TryOpenRead(recipeFile, true, file))
 			{
 				Log::Info("Recipe file does not exist.");
 				return false;
 			}
-
-			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(recipeFile, true);
 
 			// Read the contents of the recipe file
 			try

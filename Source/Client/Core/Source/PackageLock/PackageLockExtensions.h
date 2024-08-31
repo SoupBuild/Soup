@@ -24,16 +24,14 @@ namespace Soup::Core
 			const Path& packageLockFile,
 			PackageLock& result)
 		{
-			// Verify the requested file exists
+			// Open the file to read from
 			Log::Diag("Load PackageLock: {}", packageLockFile.ToString());
-			if (!System::IFileSystem::Current().Exists(packageLockFile))
+			std::shared_ptr<System::IInputFile> file;
+			if (!System::IFileSystem::Current().TryOpenRead(packageLockFile, true, file))
 			{
 				Log::Info("PackageLock file does not exist");
 				return false;
 			}
-
-			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(packageLockFile, true);
 
 			// Read the contents of the recipe file
 			try

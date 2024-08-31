@@ -29,7 +29,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/NoFile/LocalUserConfig.sml",
+					"TryOpenReadBinary: ./TestFiles/NoFile/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -67,8 +67,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
-					"OpenReadBinary: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
+					"TryOpenReadBinary: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -112,8 +111,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
-					"OpenReadBinary: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
+					"TryOpenReadBinary: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

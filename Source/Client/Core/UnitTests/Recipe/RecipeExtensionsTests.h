@@ -29,7 +29,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/NoFile/Recipe.sml",
+					"TryOpenReadBinary: ./TestFiles/NoFile/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -67,8 +67,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/GarbageRecipe/Recipe.sml",
-					"OpenReadBinary: ./TestFiles/GarbageRecipe/Recipe.sml",
+					"TryOpenReadBinary: ./TestFiles/GarbageRecipe/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -118,8 +117,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleRecipe/Recipe.sml",
-					"OpenReadBinary: ./TestFiles/SimpleRecipe/Recipe.sml",
+					"TryOpenReadBinary: ./TestFiles/SimpleRecipe/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
