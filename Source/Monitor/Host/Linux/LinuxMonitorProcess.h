@@ -293,7 +293,10 @@ namespace Monitor::Linux
 						DebugTrace("Handle Event");
 						if (bytesRead != expectedHeaderSize)
 						{
-							throw std::runtime_error("HandlePipeEvent - Header size wrong: " + std::to_string(bytesRead) + " " + std::to_string(expectedHeaderSize));
+							throw std::runtime_error(
+								std::format("HandlePipeEvent - Header size wrong: {} {}",
+									bytesRead,
+									expectedHeaderSize));
 						}
 
 						// Read the raw content
@@ -303,7 +306,11 @@ namespace Monitor::Linux
 						bytesRead = read(m_pipeHandle, &(message.Content), message.ContentSize);
 						if (bytesRead != message.ContentSize)
 						{
-							throw std::runtime_error("HandlePipeEvent - Size Mismatched: " + std::to_string(bytesRead) + " " + std::to_string(message.ContentSize));
+							throw std::runtime_error(
+								std::format(
+									"HandlePipeEvent - Size Mismatched: {} {}",
+									bytesRead,
+									message.ContentSize));
 						}
 
 						LogMessage(message);

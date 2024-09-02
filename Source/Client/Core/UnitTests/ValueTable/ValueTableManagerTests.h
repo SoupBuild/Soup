@@ -155,8 +155,6 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/.soup/",
-					"CreateDirectory: ./TestFiles/.soup/",
 					"OpenWriteBinary: ./TestFiles/.soup/ValueTable.bin",
 				}),
 				fileSystem->GetRequests(),
@@ -164,9 +162,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify expected logs
 			Assert::AreEqual(
-				std::vector<std::string>({
-					"INFO: Create Directory: ./TestFiles/.soup/",
-				}),
+				std::vector<std::string>({}),
 				testListener->GetMessages(),
 				"Verify messages match expected.");
 

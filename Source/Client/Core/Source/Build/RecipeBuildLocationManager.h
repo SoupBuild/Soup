@@ -48,12 +48,12 @@ namespace Soup::Core
 			Path rootRecipeFile;
 			if (RootRecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
 			{
-				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
+				Log::Info("Found Root Recipe: '{}'", rootRecipeFile.ToString());
 				const RootRecipe* rootRecipe;
 				if (!recipeCache.TryGetRootRecipe(rootRecipeFile, rootRecipe))
 				{
 					// Nothing we can do, exit
-					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
+					Log::Error("Failed to load the root recipe file: {}", rootRecipeFile.ToString());
 					throw HandledException(222);
 				}
 
@@ -80,7 +80,8 @@ namespace Soup::Core
 					}
 
 					// Add the unique recipe name/version
-					rootOutput = rootOutput + Path(name.GetName() + "/") + Path(recipe.GetVersion().ToString() + "/");
+					rootOutput = rootOutput +
+						Path(std::format("{}/{}/", name.GetName(), recipe.GetVersion().ToString()));
 
 					// Ensure there is a root relative to the file itself
 					if (!rootOutput.HasRoot())
@@ -88,7 +89,7 @@ namespace Soup::Core
 						rootOutput = rootRecipeFile.GetParent() + rootOutput;
 					}
 
-					Log::Info("Override root output: " + rootOutput.ToString());
+					Log::Info("Override root output: {}", rootOutput.ToString());
 				}
 			}
 
@@ -108,7 +109,10 @@ namespace Soup::Core
 			// Get the active version
 			auto builtInLanguageResult = _knownLanguageLookup.find(language);
 			if (builtInLanguageResult == _knownLanguageLookup.end())
-				throw std::runtime_error("Unknown language: " + language);
+			{
+				throw std::runtime_error(
+					std::format("Unknown language: {}", language));
+			}
 
 			return builtInLanguageResult->second.LanguageSafeName;
 		}

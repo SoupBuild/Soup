@@ -52,7 +52,7 @@ namespace Soup::Core::Generate
 			std::vector<Path> declaredInput,
 			std::vector<Path> declaredOutput)
 		{
-			Log::Diag("Create Operation: " + title);
+			Log::Diag("Create Operation: {}", title);
 
 			if (!workingDirectory.HasRoot())
 				throw std::runtime_error("Working directory must be an absolute path.");
@@ -342,7 +342,7 @@ namespace Soup::Core::Generate
 				if (!accessDirectory.has_value())
 				{
 					// The file was not under any of the provided directories
-					Log::Error("File access denied: " + file.ToString());
+					Log::Error("File access denied: {}", file.ToString());
 					return false;
 				}
 				else
@@ -451,7 +451,10 @@ namespace Soup::Core::Generate
 			{
 				auto& filePath = _fileSystemState.GetFilePath(file);
 				auto& existingOperation = _graph.GetOperationInfo(findResult->second);
-				throw std::runtime_error("File \"" +  filePath.ToString() + "\" already written to by operation \"" + existingOperation.Title + "\"");
+				throw std::runtime_error(
+					std::format("File \"{}\" already written to by operation \"{}\"",
+					filePath.ToString(),
+					existingOperation.Title));
 			}
 			else
 			{
@@ -468,7 +471,11 @@ namespace Soup::Core::Generate
 			{
 				auto& filePath = _fileSystemState.GetFilePath(file);
 				auto& existingOperation = _graph.GetOperationInfo(findResult->second);
-				throw std::runtime_error("Directory \"" + filePath.ToString() + "\" already written to by operation \"" + existingOperation.Title + "\"");
+				throw std::runtime_error(
+					std::format(
+						"Directory \"{}\" already written to by operation \"{}\"",
+						filePath.ToString(),
+						existingOperation.Title));
 			}
 			else
 			{

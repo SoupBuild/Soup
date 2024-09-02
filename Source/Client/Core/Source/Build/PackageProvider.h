@@ -211,7 +211,8 @@ namespace Soup::Core
 			}
 			else
 			{
-				throw std::runtime_error("PackageGraphId [" + std::to_string(packageGraphId) + "] not found in lookup");
+				throw std::runtime_error(
+					std::format("PackageGraphId [{}] not found in lookup", packageGraphId));
 			}
 		}
 
@@ -225,7 +226,8 @@ namespace Soup::Core
 			}
 			else
 			{
-				throw std::runtime_error("packageId [" + std::to_string(packageId) + "] not found in lookup");
+				throw std::runtime_error(
+					std::format("packageId [{}] not found in lookup", packageId));
 			}
 		}
 

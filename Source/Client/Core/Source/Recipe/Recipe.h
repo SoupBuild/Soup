@@ -73,9 +73,14 @@ namespace Soup::Core
 			{
 				LanguageReference result;
 				if (LanguageReference::TryParse(languageValue.AsString(), result))
+				{
 					return result;
+				}
 				else
-					throw std::runtime_error("Invalid Language format in Recipe: " + languageValue.AsString());
+				{
+					throw std::runtime_error(
+						std::format("Invalid Language format in Recipe: {}", languageValue.AsString()));
+				}
 			}
 			else
 			{

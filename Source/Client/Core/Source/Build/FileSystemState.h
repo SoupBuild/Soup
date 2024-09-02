@@ -51,7 +51,7 @@ namespace Soup::Core
 		FileSystemState(
 			FileId maxFileId,
 			std::unordered_map<FileId, Path> files) :
-			FileSystemState(maxFileId, std::move(files), {})
+			FileSystemState(maxFileId, std::move(files), {}, {})
 		{
 		}
 
@@ -61,11 +61,12 @@ namespace Soup::Core
 		FileSystemState(
 			FileId maxFileId,
 			std::unordered_map<FileId, Path> files,
+			std::unordered_map<std::string, DirectoryState, string_hash, std::equal_to<>> directoryLookup,
 			std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>> writeCache) :
 			_maxFileId(maxFileId),
 			_files(std::move(files)),
 			_fileLookup(),
-			_directoryLookup(),
+			_directoryLookup(std::move(directoryLookup)),
 			_writeCache(std::move(writeCache))
 		{
 			// Build up the reverse lookup for new files
@@ -285,7 +286,7 @@ namespace Soup::Core
 			}
 			else
 			{
-				throw std::runtime_error("Missing directory state");
+				throw std::runtime_error(std::format("Missing directory state {}", name));
 			}
 		}
 

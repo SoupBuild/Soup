@@ -51,7 +51,7 @@ namespace Monitor::Windows
 						else
 						{
 							auto error = GetLastError();
-							DebugTrace("ConnectionManager::Connect SetNamedPipeHandleState failed" + std::to_string(error));
+							DebugTrace("ConnectionManager::Connect SetNamedPipeHandleState failed {}", error);
 							throw std::runtime_error("SetNamedPipeHandleState failed with unknown error.");
 						}
 					}
@@ -66,7 +66,7 @@ namespace Monitor::Windows
 							DebugTrace("ConnectionManager::Connect WaitNamedPipeA ERROR_SEM_TIMEOUT");
 							break;
 						default:
-							DebugTrace("ConnectionManager::Connect WaitNamedPipeA Unknown error " + std::to_string(error));
+							DebugTrace("ConnectionManager::Connect WaitNamedPipeA Unknown error {}", error);
 							throw std::runtime_error("WaitNamedPipeA failed with unknown error.");
 					}
 				}

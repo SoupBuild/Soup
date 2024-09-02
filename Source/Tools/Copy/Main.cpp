@@ -27,7 +27,8 @@ void CopyFile(std::string_view sourcePath, std::string_view destinationPath)
 		}
 		else
 		{
-			throw std::runtime_error("Copy failed: " + std::to_string(errorCode));
+			throw std::runtime_error(
+				std::format("Copy failed: {}", errorCode));
 		}
 	}
 }

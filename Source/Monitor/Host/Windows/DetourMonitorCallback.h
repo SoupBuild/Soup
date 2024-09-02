@@ -28,7 +28,7 @@ namespace Monitor::Windows
 
 		void OnError(std::string_view message) override final
 		{
-			Log::Error("DetourMonitorCallback::Error - " + std::string(message));
+			Log::Error("DetourMonitorCallback::Error - {}", message);
 		}
 
 		// FileApi
@@ -551,7 +551,7 @@ namespace Monitor::Windows
 
 		void OnExitProcess(uint32_t exitCode) override final
 		{
-			Log::Diag("DetourMonitorCallback::OnExitProcess - " + std::to_string(exitCode));
+			Log::Diag("DetourMonitorCallback::OnExitProcess - {}", exitCode);
 		}
 
 		// UndocumentedApi

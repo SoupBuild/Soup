@@ -36,7 +36,7 @@ namespace Soup::Core
 			{
 				// The input was missing
 				auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
-				Log::Info("Input Missing [" + targetFilePath.ToString() + "]");
+				Log::Info("Input Missing [{}]", targetFilePath.ToString());
 				return true;
 			}
 			else
@@ -44,7 +44,7 @@ namespace Soup::Core
 				if (lastWriteTime.value() > lastEvaluateTime)
 				{
 					auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
-					Log::Info("Input altered after last evaluate [" + targetFilePath.ToString() + "]");
+					Log::Info("Input altered after last evaluate [{}]", targetFilePath.ToString());
 					return true;
 				}
 				else
@@ -92,7 +92,7 @@ namespace Soup::Core
 			if (!targetFileLastWriteTime.has_value())
 			{
 				auto targetFilePath = _fileSystemState.GetFilePath(targetFile);
-				Log::Info("Output target does not exist: " + targetFilePath.ToString());
+				Log::Info("Output target does not exist: {}", targetFilePath.ToString());
 				return true;
 			}
 
@@ -122,7 +122,7 @@ namespace Soup::Core
 			{
 				// The input was missing
 				auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
-				Log::Info("Input Missing [" + targetFilePath.ToString() + "]");
+				Log::Info("Input Missing [{}]", targetFilePath.ToString());
 				return true;
 			}
 			else
@@ -131,7 +131,7 @@ namespace Soup::Core
 				{
 					auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
 					auto outputFilePath = _fileSystemState.GetFilePath(outputFile);
-					Log::Info("Input altered after target [" + targetFilePath.ToString() + "] -> [" + outputFilePath.ToString() + "]");
+					Log::Info("Input altered after target [{}] -> [{}]", targetFilePath.ToString(), outputFilePath.ToString());
 					return true;
 				}
 				else

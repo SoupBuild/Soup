@@ -37,7 +37,8 @@ namespace Soup::Core
 			}
 			catch(const std::exception& ex)
 			{
-				throw std::runtime_error(std::string("Parsing the Recipe SML failed: ") + ex.what() + " " + recipeFile.ToString());
+				throw std::runtime_error(
+					std::format("Parsing the Recipe SML failed: {} {}", ex.what(), recipeFile.ToString()));
 			}
 		}
 

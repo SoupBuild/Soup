@@ -78,7 +78,8 @@ namespace Soup::Core
 			}
 			else
 			{
-				throw std::runtime_error("Recipe [" + recipeFile.ToString() + "] not found in closure");
+				throw std::runtime_error(
+					std::format("Recipe [{}] not found in closure", recipeFile.ToString()));
 			}
 		}
 

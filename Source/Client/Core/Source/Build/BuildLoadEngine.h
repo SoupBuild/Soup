@@ -108,7 +108,7 @@ namespace Soup::Core
 			const Recipe* recipe;
 			if (!_recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
-				Log::Error("The target Recipe does not exist: " + recipePath.ToString());
+				Log::Error("The target Recipe does not exist: {}", recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
 
 				// Nothing we can do, exit
@@ -149,7 +149,7 @@ namespace Soup::Core
 				toolDependencyProjects);
 
 			for (auto& toolDependency : toolDependencyProjects)
-				Log::Warning("Top Level Tool Dependency discarded: " + toolDependency.OriginalReference.ToString());
+				Log::Warning("Top Level Tool Dependency discarded: {}", toolDependency.OriginalReference.ToString());
 
 			return PackageProvider(rootGraphId, std::move(_packageGraphLookup), std::move(_packageLookup));
 		}
@@ -163,7 +163,7 @@ namespace Soup::Core
 			auto findKnownPackageLock = _knownPackageLocks.find(packageLockPath.ToString());
 			if (findKnownPackageLock != _knownPackageLocks.end())
 			{
-				Log::Diag("Package Lock already loaded: " + packageLockPath.ToString());
+				Log::Diag("Package Lock already loaded: {}", packageLockPath.ToString());
 				return findKnownPackageLock->second;
 			}
 			else
@@ -220,22 +220,58 @@ namespace Soup::Core
 			// Find the required closure
 			auto findClosure = packageLockState.Closures.find(_rootClosureName);
 			if (findClosure == packageLockState.Closures.end())
-				throw std::runtime_error("Closure [" + _rootClosureName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Closure [{}] not found in lock [{}]",
+						_rootClosureName,
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			// Find the package version in the lock
 			auto findPackageLock = findClosure->second.find(packageIdentifier.GetLanguage());
 			if (findPackageLock == findClosure->second.end())
-				throw std::runtime_error("Language [" + _rootClosureName + "] [" + packageIdentifier.GetLanguage() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Language [{}] [{}] not found in lock [{}]",
+						_rootClosureName,
+						packageIdentifier.GetLanguage(),
+						packageLockState.RootDirectory.ToString()));
+			}
+
 			auto packageVersion = findPackageLock->second.find(packageIdentifier.GetPackageName());
 			if (packageVersion == findPackageLock->second.end())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageIdentifier.ToString() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Package [{}] [{}] not found in lock [{}]",
+						_rootClosureName,
+						packageIdentifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			auto& packageBuild = packageVersion->second.BuildValue;
 			auto& packageTool = packageVersion->second.ToolValue;
 			if (!packageBuild.has_value())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageIdentifier.ToString() + "] does not have build closure [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Package [{}] [{}] does not have build closure [{}]",
+						_rootClosureName,
+						packageIdentifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
+
 			if (!packageTool.has_value())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageIdentifier.ToString() + "] does not have tool closure [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Package [{}] [{}] does not have tool closure [{}]",
+						_rootClosureName,
+						packageIdentifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			return std::make_pair(packageBuild.value(), packageTool.value());
 		}
@@ -261,10 +297,13 @@ namespace Soup::Core
 				auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 				auto activeVersionString = activeReference.GetVersion().ToString();
 				packagePath = packageStore +
-					Path(languageSafeName) +
-					Path(activeReference.GetOwner()) +
-					Path(activeReference.GetName()) +
-					Path(activeVersionString + "/");
+					Path(
+						std::format(
+							"{}/{}/{}/{}/",
+							languageSafeName,
+							activeReference.GetOwner(),
+							activeReference.GetName(),
+							activeVersionString));
 			}
 
 			return packagePath;
@@ -303,10 +342,12 @@ namespace Soup::Core
 					auto packageStore = _userDataPath + Path("locks/");
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 					packagePath = packageStore +
-						Path(languageSafeName) +
-						Path(activeReference.GetOwner()) +
-						Path(activeReference.GetName()) +
-						Path(activeReference.GetVersion().ToString() + "/");
+						Path(std::format(
+							"{}/{}/{}/{}/",
+							languageSafeName,
+							activeReference.GetOwner(),
+							activeReference.GetName(),
+							activeReference.GetVersion().ToString()));
 				}
 			}
 
@@ -326,16 +367,36 @@ namespace Soup::Core
 			// Find the required closure
 			auto findClosure = packageLockState.Closures.find(closureName);
 			if (findClosure == packageLockState.Closures.end())
-				throw std::runtime_error("Closure [" + closureName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Closure [{}] not found in lock [{}]",
+						closureName,
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			// Find the package version in the lock
 			auto findPackageLock = findClosure->second.find(identifier.GetLanguage());
 			if (findPackageLock == findClosure->second.end())
-				throw std::runtime_error("Language [" + closureName + "] [" + identifier.ToString() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Language [{}] [{}] not found in lock [{}]",
+						closureName,
+						identifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			auto findPackageVersion = findPackageLock->second.find(identifier.GetPackageName());
 			if (findPackageVersion == findPackageLock->second.end())
-				throw std::runtime_error("Package [" + closureName + "] [" + identifier.ToString() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+			{
+				throw std::runtime_error(
+					std::format(
+						"Package [{}] [{}] not found in lock [{}]",
+						closureName,
+						identifier.ToString(),
+						packageLockState.RootDirectory.ToString()));
+			}
 
 			auto& lockReference = findPackageVersion->second.Reference;
 			if (lockReference.IsLocal())
@@ -512,7 +573,7 @@ namespace Soup::Core
 				auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
 				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 				{
-					Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+					Log::Error("The dependency Recipe does not exist: {}", packageRecipePath.ToString());
 					Log::HighPriority("Make sure the path is correct and try again");
 
 					// Nothing we can do, exit
@@ -557,7 +618,7 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Implicit owner not allowed on local packages: " + parentIdentifier.ToString());
+						Log::Error("Implicit owner not allowed on local packages: {}", parentIdentifier.ToString());
 
 						// Nothing we can do, exit
 						throw HandledException(9571836);
@@ -583,7 +644,7 @@ namespace Soup::Core
 				auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
 				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 				{
-					Log::Error("The dependency Recipe version has not been installed: " + activeReference.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+					Log::Error("The dependency Recipe version has not been installed: {} -> {} [{}]", activeReference.ToString(), dependencyProjectRoot.ToString(), projectRoot.ToString());
 					Log::HighPriority("Run `restore` and try again");
 
 					// Nothing we can do, exit
@@ -594,7 +655,7 @@ namespace Soup::Core
 			// Ensure we do not have any circular dependencies
 			if (activeParentSet.contains(dependencyIdentifier.GetPackageName()))
 			{
-				Log::Error("Found circular dependency: " + parentIdentifier.ToString() + " -> " + dependencyIdentifier.ToString());
+				Log::Error("Found circular dependency: {} -> {}", parentIdentifier.ToString(), dependencyIdentifier.ToString());
 				throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 			}
 
@@ -605,12 +666,12 @@ namespace Soup::Core
 				// Verify the project name is unique
 				if (findKnownPackage->second.second != dependencyProjectRoot)
 				{
-					Log::Error("Recipe with this name already exists: " + dependencyIdentifier.ToString() + " [" + projectRoot.ToString() + "] [" + findKnownPackage->second.second.ToString() + "]");
+					Log::Error("Recipe with this name already exists: {} [{}] [{}]", dependencyIdentifier.ToString(), projectRoot.ToString(), findKnownPackage->second.second.ToString());
 					throw std::runtime_error("Recipe name not unique");
 				}
 				else
 				{
-					Log::Diag("Recipe already loaded: " + dependencyIdentifier.ToString());
+					Log::Diag("Recipe already loaded: {}", dependencyIdentifier.ToString());
 					return PackageChildInfo(activeReference, false, findKnownPackage->second.first, -1);
 				}
 			}
@@ -633,7 +694,7 @@ namespace Soup::Core
 					toolDependencyProjects);
 
 				for (auto& toolDependency : toolDependencyProjects)
-					Log::Warning("Runtime Dependency Tool Dependency discarded: " + toolDependency.OriginalReference.ToString());
+					Log::Warning("Runtime Dependency Tool Dependency discarded: {}", toolDependency.OriginalReference.ToString());
 
 				// Update the child project id
 				return PackageChildInfo(activeReference, false, childPackageId, -1);
@@ -718,7 +779,7 @@ namespace Soup::Core
 				const Recipe* dependencyRecipe;
 				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 				{
-					Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+					Log::Error("The dependency Recipe does not exist: {}", packageRecipePath.ToString());
 					Log::HighPriority("Make sure the path is correct and try again");
 
 					// Nothing we can do, exit
@@ -764,7 +825,7 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Implicit owner not allowed on local packages: " + parentIdentifier.ToString());
+						Log::Error("Implicit owner not allowed on local packages: {}", parentIdentifier.ToString());
 
 						// Nothing we can do, exit
 						throw HandledException(9571836);
@@ -846,7 +907,7 @@ namespace Soup::Core
 				const Recipe* dependencyRecipe;
 				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 				{
-					Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+					Log::Error("The dependency Recipe does not exist: {}", packageRecipePath.ToString());
 					Log::HighPriority("Make sure the path is correct and try again");
 
 					// Nothing we can do, exit
@@ -874,7 +935,10 @@ namespace Soup::Core
 				{
 					// Tool dependencies do not inherit the parent language
 					// They must be explicitly defined
-					throw std::runtime_error("Tool dependency must have explicit language defined: " + originalReference.ToString());
+					throw std::runtime_error(
+						std::format(
+							"Tool dependency must have explicit language defined: {}",
+							originalReference.ToString()));
 				}
 
 				// Resolve the owner
@@ -892,7 +956,7 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Implicit owner not allowed on local packages: " + parentIdentifier.ToString());
+						Log::Error("Implicit owner not allowed on local packages: {}", parentIdentifier.ToString());
 
 						// Nothing we can do, exit
 						throw HandledException(9571836);
@@ -937,7 +1001,7 @@ namespace Soup::Core
 			}
 
 			for (auto& toolToolDependency : toolToolDependencies)
-				Log::Warning("Tool Tool Dependency discarded: " + toolToolDependency.OriginalReference.ToString());
+				Log::Warning("Tool Tool Dependency discarded: {}", toolToolDependency.OriginalReference.ToString());
 
 			return toolDependency;
 		}
@@ -973,7 +1037,7 @@ namespace Soup::Core
 			if (findKnownGraph != _knownSubGraphSet.end())
 			{
 				// Verify the project name is unique
-				Log::Diag("Graph already loaded: " + dependencyProjectRoot.ToString());
+				Log::Diag("Graph already loaded: {}", dependencyProjectRoot.ToString());
 				return std::make_pair(
 					PackageChildInfo(activeReference, true, -1, findKnownGraph->second.first),
 					findKnownGraph->second.second);
@@ -986,12 +1050,12 @@ namespace Soup::Core
 				{
 					if (activeReference.IsLocal())
 					{
-						Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+						Log::Error("The dependency Recipe does not exist: {}", packageRecipePath.ToString());
 						Log::HighPriority("Make sure the path is correct and try again");
 					}
 					else
 					{
-						Log::Error("The dependency Recipe version has not been installed: " + activeReference.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+						Log::Error("The dependency Recipe version has not been installed: {} -> {} [{}]", activeReference.ToString(), dependencyProjectRoot.ToString(), projectRoot.ToString());
 						Log::HighPriority("Run `restore` and try again");
 					}
 
@@ -1028,7 +1092,7 @@ namespace Soup::Core
 						}
 						else
 						{
-							Log::Error("Implicit owner not allowed on local packages: " + parentIdentifier.ToString());
+							Log::Error("Implicit owner not allowed on local packages: {}", parentIdentifier.ToString());
 
 							// Nothing we can do, exit
 							throw HandledException(9571836);
@@ -1090,7 +1154,11 @@ namespace Soup::Core
 			// Get the active version
 			auto knownLanguageResult = _knownLanguageLookup.find(language.GetName());
 			if (knownLanguageResult == _knownLanguageLookup.end())
-				throw std::runtime_error("Unknown language: " + language.GetName());
+			{
+				throw std::runtime_error(
+					std::format("Unknown language: {}", language.GetName()));
+			}
+
 			auto& knownLanguage = knownLanguageResult->second;
 
 			auto builtInExtensionReference = PackageReference(
@@ -1116,16 +1184,18 @@ namespace Soup::Core
 		{
 			// Use the prebuilt version in the install folder
 			auto packageRoot = _builtInPackageDirectory +
-				Path(activeReference.GetOwner()) +
-				Path(activeReference.GetName()) +
-				Path(activeReference.GetVersion().ToString() + "/");
+				Path(std::format(
+					"{}/{}/{}/",
+					activeReference.GetOwner(),
+					activeReference.GetName(),
+					activeReference.GetVersion().ToString()));
 
 			// Check if the package has already been processed from another graph
 			auto findKnownGraph = _knownSubGraphSet.find(packageRoot);
 			if (findKnownGraph != _knownSubGraphSet.end())
 			{
 				// Verify the project name is unique
-				Log::Diag("Graph already loaded: " + packageRoot.ToString());
+				Log::Diag("Graph already loaded: {}", packageRoot.ToString());
 				return std::make_pair(
 					PackageChildInfo(activeReference, true, -1, findKnownGraph->second.first),
 					findKnownGraph->second.second);
@@ -1136,7 +1206,7 @@ namespace Soup::Core
 				const Recipe* recipe;
 				if (!_recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 				{
-					Log::Error("The built in package Recipe does not exist: " + recipePath.ToString());
+					Log::Error("The built in package Recipe does not exist: {}", recipePath.ToString());
 					Log::HighPriority("The installation may be corrupted");
 
 					// Nothing we can do, exit
@@ -1202,7 +1272,10 @@ namespace Soup::Core
 			// Get the active version
 			auto knownLanguageResult = _knownLanguageLookup.find(language);
 			if (knownLanguageResult == _knownLanguageLookup.end())
-				throw std::runtime_error("Unknown language: " + language);
+			{
+				throw std::runtime_error(
+					std::format("Unknown language: {}", language));
+			}
 
 			return knownLanguageResult->second.LanguageSafeName;
 		}
