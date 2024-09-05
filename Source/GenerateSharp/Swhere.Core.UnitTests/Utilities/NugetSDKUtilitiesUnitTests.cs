@@ -115,13 +115,13 @@ public class NugetSDKUtilitiesUnitTests
 		mockFileSystem.RegisterChildren(
 			new Path("C:/Users/Me/.nuget/packages"),
 			[
-				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1"), IsDirectory = true, },
+				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/"), IsDirectory = true, },
 			]);
 
 		mockFileSystem.RegisterChildren(
-			new Path("C:/Users/Me/.nuget/packages/Package1"),
+			new Path("C:/Users/Me/.nuget/packages/Package1/"),
 			[
-				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3"), IsDirectory = true, },
+				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3/"), IsDirectory = true, },
 			]);
 
 		var nuspecContent =
@@ -139,7 +139,7 @@ public class NugetSDKUtilitiesUnitTests
     <projectUrl>https://github.com/Package1/README.md</projectUrl>
     <description>This is the implementation of the package</description>
     <releaseNotes>https://github.com/Package1/CHANGELOG.md</releaseNotes>
-    <copyright>©Test Corporation. All rights reserved.</copyright>
+    <copyright>ï¿½Test Corporation. All rights reserved.</copyright>
     <tags>Test Package</tags>
     <repository type=""git"" url=""https://github.com/Package1"" commit=""1234"" />
     <dependencies>

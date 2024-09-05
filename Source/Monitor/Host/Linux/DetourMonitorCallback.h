@@ -21,9 +21,11 @@ namespace Monitor::Linux
 			Log::Diag("DetourMonitorCallback::OnInitialize");
 		}
 
-		void OnShutdown() override final
+		void OnShutdown(bool hadError) override final
 		{
-			Log::Diag("DetourMonitorCallback::OnShutdown");
+			Log::Diag("DetourMonitorCallback::OnShutdown {}", hadError);
+
+			// TODO: Exit with failure
 		}
 
 		void OnError(std::string_view message) override final

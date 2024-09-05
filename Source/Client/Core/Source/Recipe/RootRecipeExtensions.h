@@ -61,7 +61,7 @@ namespace Soup::Core
 			auto done = false;
 			while (!done)
 			{
-				auto checkRootRecipeFile = parentDirectory + Path("RootRecipe.sml");
+				auto checkRootRecipeFile = parentDirectory + Path("./RootRecipe.sml");
 				if (System::IFileSystem::Current().Exists(checkRootRecipeFile))
 				{
 					// We found one!

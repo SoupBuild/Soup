@@ -106,7 +106,7 @@ public static class VSWhereUtilities
 	{
 		// Check the default tools version
 		var visualCompilerToolsDefaultVersionFile =
-			visualStudioInstallRoot + new Path("VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
+			visualStudioInstallRoot + new Path("./VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
 		if (!LifetimeManager.Get<IFileSystem>().Exists(visualCompilerToolsDefaultVersionFile))
 		{
 			Log.Error("VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());

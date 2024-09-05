@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto filePath = Path("TestFiles/NoFile/.soup/OperationGraph.bog");
+			auto filePath = Path("./TestFiles/NoFile/.soup/OperationGraph.bog");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
 			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -55,10 +55,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bog"),
+				Path("./TestFiles/GarbageOperationGraph/.soup/OperationGraph.bog"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto filePath = Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bog");
+			auto filePath = Path("./TestFiles/GarbageOperationGraph/.soup/OperationGraph.bog");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
 			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -119,10 +119,10 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bog"),
+				Path("./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bog"),
 				std::make_shared<MockFile>(std::stringstream(std::string((char*)binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto filePath = Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bog");
+			auto filePath = Path("./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bog");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
 			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -145,7 +145,7 @@ namespace Soup::Core::UnitTests
 							"TestOperation",
 							CommandInfo(
 								Path("C:/Root/"),
-								Path("DoStuff.exe"),
+								Path("./DoStuff.exe"),
 								{ "arg1", "arg2" }),
 							{ },
 							{ },
@@ -181,7 +181,7 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto fileSystemState = std::make_shared<FileSystemState>();
-			auto filePath = Path("TestFiles/.soup/OperationGraph.bog");
+			auto filePath = Path("./TestFiles/.soup/OperationGraph.bog");
 			auto operationGraph = OperationGraph(
 				std::vector<OperationId>({
 					5,
@@ -192,7 +192,7 @@ namespace Soup::Core::UnitTests
 						"TestOperation",
 						CommandInfo(
 							Path("C:/Root/"),
-							Path("DoStuff.exe"),
+							Path("./DoStuff.exe"),
 							{ "arg1", "arg2" }),
 						{ },
 						{ },

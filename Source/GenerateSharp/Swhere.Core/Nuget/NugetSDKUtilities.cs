@@ -16,9 +16,9 @@ public static class NugetSDKUtilities
 	{
 		var fileSystem = LifetimeManager.Get<IFileSystem>();
 		var nugetDirectory = fileSystem.GetUserProfileDirectory() +
-			new Path(".nuget");
+			new Path("./.nuget/");
 		var nugetPackagesDirectory = nugetDirectory +
-			new Path("packages");
+			new Path("./packages/");
 		if (fileSystem.Exists(nugetPackagesDirectory))
 		{
 			Log.Info($"Discover Nuget Packages: {nugetPackagesDirectory}");

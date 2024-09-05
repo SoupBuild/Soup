@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
 	try
 	{
-		auto directory = Opal::Path(argv[1]);
+		auto directory = Opal::Path::Parse(argv[1]);
 		auto fileSystem = Opal::System::STLFileSystem();
 
 		if (fileSystem.Exists(directory))

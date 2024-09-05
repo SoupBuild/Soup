@@ -242,7 +242,7 @@ namespace Soup::Core
 			{
 				// Check if the executable has changed since the last run
 				bool executableOutOfDate = false;
-				if (operationInfo.Command.Executable != Path("writefile.exe"))
+				if (operationInfo.Command.Executable != Path("./writefile.exe"))
 				{
 					// Only check for "real" executables
 					auto executableFileId = _fileSystemState.ToFileId(
@@ -295,7 +295,7 @@ namespace Soup::Core
 				auto operationResult = OperationResult();
 
 				// Check for special in-process write operations
-				if (operationInfo.Command.Executable == Path("writefile.exe"))
+				if (operationInfo.Command.Executable == Path("./writefile.exe"))
 				{
 					ExecuteWriteFileOperation(
 						operationInfo,

@@ -69,7 +69,7 @@ namespace Soup::Core
 				auto fileId = ReadUInt32(content);
 
 				auto fileString = ReadString(content);
-				auto file = Path::Load(std::move(fileString));
+				auto file = Path(std::move(fileString));
 
 				auto activeFileId = fileSystemState.ToFileId(file);
 				auto insertResult = activeFileIdMap.emplace(fileId, activeFileId);

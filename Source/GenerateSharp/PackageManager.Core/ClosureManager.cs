@@ -135,7 +135,7 @@ public class ClosureManager : IClosureManager
 							else
 							{
 								var languageSafeName = GetLanguageSafeName(languageName);
-								var userFolder = projectName.Owner is not null ? new Path(projectName.Owner) : new Path("Local");
+								var userFolder = projectName.Owner is not null ? new Path(projectName.Owner) : new Path("./Local/");
 								var packageLanguageNameVersionPath =
 									new Path(languageSafeName) +
 									userFolder +

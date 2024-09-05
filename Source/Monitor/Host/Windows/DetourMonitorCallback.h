@@ -21,9 +21,9 @@ namespace Monitor::Windows
 			Log::Diag("DetourMonitorCallback::OnInitialize");
 		}
 
-		void OnShutdown() override final
+		void OnShutdown(bool hadError) override final
 		{
-			Log::Diag("DetourMonitorCallback::OnShutdown");
+			Log::Diag("DetourMonitorCallback::OnShutdown {}", hadError);
 		}
 
 		void OnError(std::string_view message) override final
@@ -1187,7 +1187,7 @@ namespace Monitor::Windows
 			// Verify not a special file
 			if (!IsSpecialFile(fileName))
 			{
-				_callback->TouchFileRead(Path(fileName), exists, wasBlocked);
+				_callback->TouchFileRead(Path::Parse(fileName), exists, wasBlocked);
 			}
 		}
 
@@ -1202,7 +1202,7 @@ namespace Monitor::Windows
 			// Verify not a special file
 			if (!IsSpecialFile(fileName))
 			{
-				_callback->TouchFileWrite(Path(fileName), wasBlocked);
+				_callback->TouchFileWrite(Path::Parse(fileName), wasBlocked);
 			}
 		}
 
@@ -1214,7 +1214,7 @@ namespace Monitor::Windows
 
 		void TouchFileDelete(std::string_view fileName, bool wasBlocked)
 		{
-			_callback->TouchFileDelete(Path(fileName), wasBlocked);
+			_callback->TouchFileDelete(Path::Parse(fileName), wasBlocked);
 		}
 
 		void TouchFileDeleteOnClose(std::wstring_view fileName)
@@ -1225,7 +1225,7 @@ namespace Monitor::Windows
 
 		void TouchFileDeleteOnClose(std::string_view fileName)
 		{
-			_callback->TouchFileDeleteOnClose(Path(fileName));
+			_callback->TouchFileDeleteOnClose(Path::Parse(fileName));
 		}
 
 		bool IsSpecialFile(std::string_view fileName)

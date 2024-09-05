@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile/LocalUserConfig.sml");
+			auto directory = Path("./TestFiles/NoFile/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 
@@ -55,10 +55,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml"),
+				Path("./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml");
+			auto directory = Path("./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 
@@ -94,11 +94,11 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml"),
+				Path("./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					)")));
 
-			auto directory = Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml");
+			auto directory = Path("./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 

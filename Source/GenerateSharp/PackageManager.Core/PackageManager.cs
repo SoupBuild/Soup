@@ -41,8 +41,8 @@ public class PackageManager
 	public async Task RestorePackagesAsync(Path workingDirectory)
 	{
 		var userProfileDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory();
-		var packageStore = userProfileDirectory + new Path(".soup/packages/");
-		var lockStore = userProfileDirectory + new Path(".soup/locks/");
+		var packageStore = userProfileDirectory + new Path("./.soup/packages/");
+		var lockStore = userProfileDirectory + new Path("./.soup/locks/");
 
 		Log.Diag("Using Package Store: " + packageStore.ToString());
 		Log.Diag("Using Lock Store: " + lockStore.ToString());
@@ -85,8 +85,8 @@ public class PackageManager
 		}
 
 		var userProfileDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory();
-		var packageStore = userProfileDirectory + new Path(".soup/packages/");
-		var lockStore = userProfileDirectory + new Path(".soup/locks/");
+		var packageStore = userProfileDirectory + new Path("./.soup/packages/");
+		var lockStore = userProfileDirectory + new Path("./.soup/locks/");
 		Log.Diag("Using Package Store: " + packageStore.ToString());
 		Log.Diag("Using Lock Store: " + lockStore.ToString());
 
@@ -182,7 +182,7 @@ public class PackageManager
 		}
 
 		var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-			new Path(".soup/packages/");
+			new Path("./.soup/packages/");
 		Log.Info("Using Package Store: " + packageStore.ToString());
 
 		// Create the staging directory

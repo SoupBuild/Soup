@@ -42,7 +42,7 @@ namespace Soup::Core
 			RecipeCache& recipeCache)
 		{
 			// Set the default output directory to be relative to the package
-			auto rootOutput = packageRoot + Path("out/");
+			auto rootOutput = packageRoot + Path("./out/");
 
 			// Check for root recipe file with overrides
 			Path rootRecipeFile;
@@ -66,22 +66,22 @@ namespace Soup::Core
 					// Add the language sub folder
 					auto language = recipe.GetLanguage().GetName();
 					auto languageSafeName = GetLanguageSafeName(language);
-					rootOutput = rootOutput + Path(languageSafeName + "/");
+					rootOutput = rootOutput + Path(std::format("./{}/", languageSafeName));
 
 					if (name.HasOwner())
 					{
 						// Add the unique owner
-						rootOutput = rootOutput + Path(name.GetOwner() + "/");
+						rootOutput = rootOutput + Path(std::format("./{}/", name.GetOwner()));
 					}
 					else
 					{
 						// Label as local
-						rootOutput = rootOutput + Path("Local/");
+						rootOutput = rootOutput + Path("./Local/");
 					}
 
 					// Add the unique recipe name/version
 					rootOutput = rootOutput +
-						Path(std::format("{}/{}/", name.GetName(), recipe.GetVersion().ToString()));
+						Path(std::format("./{}/{}/", name.GetName(), recipe.GetVersion().ToString()));
 
 					// Ensure there is a root relative to the file itself
 					if (!rootOutput.HasRoot())
@@ -97,7 +97,7 @@ namespace Soup::Core
 			auto parametersStream = std::stringstream();
 			ValueTableWriter::Serialize(globalParameters, parametersStream);
 			auto hashParameters = CryptoPP::Sha1::HashBase64(parametersStream.str());
-			auto uniqueParametersFolder = Path(hashParameters + "/");
+			auto uniqueParametersFolder = Path(std::format("./{}/", hashParameters));
 			rootOutput = rootOutput + uniqueParametersFolder;
 
 			return rootOutput;

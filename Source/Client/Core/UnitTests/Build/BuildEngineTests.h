@@ -28,19 +28,19 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockDirectory(
 				Path("C:/WorkingDirectory/MyPackage/"),
 				std::make_shared<MockDirectory>(std::vector<Path>({
-					Path("Recipe.sml"),
+					Path("./Recipe.sml"),
 				})));
 
 			fileSystem->CreateMockDirectory(
 				Path("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/"),
 				std::make_shared<MockDirectory>(std::vector<Path>({
-					Path("Recipe.sml"),
+					Path("./Recipe.sml"),
 				})));
 
 			fileSystem->CreateMockDirectory(
 				Path("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/"),
 				std::make_shared<MockDirectory>(std::vector<Path>({
-					Path("Recipe.sml"),
+					Path("./Recipe.sml"),
 				})));
 
 			// Create the Recipe to build
@@ -648,7 +648,7 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockDirectory(
 				Path("C:/WorkingDirectory/MyPackage/"),
 				std::make_shared<MockDirectory>(std::vector<Path>({
-					Path("Recipe.sml"),
+					Path("./Recipe.sml"),
 				})));
 
 			fileSystem->CreateMockDirectory(
@@ -656,19 +656,35 @@ namespace Soup::Core::UnitTests
 				std::make_shared<MockDirectory>(std::vector<Path>({})));
 
 			fileSystem->CreateMockDirectory(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/"),
+				std::make_shared<MockDirectory>(std::vector<Path>({})));
+
+			fileSystem->CreateMockDirectory(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/"),
+				std::make_shared<MockDirectory>(std::vector<Path>({})));
+
+			fileSystem->CreateMockDirectory(
 				Path("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/"),
 				std::make_shared<MockDirectory>(std::vector<Path>({
-					Path("Recipe.sml"),
+					Path("./Recipe.sml"),
 				})));
 
 			fileSystem->CreateMockDirectory(
 				Path("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/"),
 				std::make_shared<MockDirectory>(std::vector<Path>({
-					Path("Recipe.sml"),
+					Path("./Recipe.sml"),
 				})));
 
 			fileSystem->CreateMockDirectory(
 				Path("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/"),
+				std::make_shared<MockDirectory>(std::vector<Path>({})));
+
+			fileSystem->CreateMockDirectory(
+				Path("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/"),
+				std::make_shared<MockDirectory>(std::vector<Path>({})));
+
+			fileSystem->CreateMockDirectory(
+				Path("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/temp/"),
 				std::make_shared<MockDirectory>(std::vector<Path>({})));
 
 			// Create the Recipe to build
@@ -1101,7 +1117,6 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Checking for existing Evaluate Operation Results",
 					"DIAG: 2>C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Evaluate.bor",
 					"INFO: 2>Previous results found",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/",
 					"INFO: 2>Check outdated generate input file: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/GenerateInput.bvt",
 					"INFO: 2>Checking for existing Generate Operation Results",
 					"DIAG: 2>C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Generate.bor",
@@ -1111,7 +1126,6 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Up to date",
 					"INFO: 2>Generate: [Wren]mwasplund|Soup.Cpp",
 					"DIAG: 2>Build evaluation end",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/temp/",
 					"DIAG: 2>Build evaluation start",
 					"DIAG: 2>Build evaluation end",
 					"INFO: 2>Done",
@@ -1123,7 +1137,6 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Checking for existing Evaluate Operation Results",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bor",
 					"INFO: 1>Previous results found",
-					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"INFO: 1>Check outdated generate input file: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateInput.bvt",
 					"INFO: 1>Checking for existing Generate Operation Results",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor",
@@ -1133,7 +1146,6 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Up to date",
 					"INFO: 1>Generate: [C++]MyPackage",
 					"DIAG: 1>Build evaluation end",
-					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/",
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Build evaluation end",
 					"INFO: 1>Done",
@@ -1171,23 +1183,19 @@ namespace Soup::Core::UnitTests
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Evaluate.bog",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Evaluate.bor",
 					"Exists: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/GenerateInput.bvt",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Generate.bor",
 					"TryGetLastWriteTime: C:/testlocation/Soup.Generate.exe",
 					"Exists: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/temp/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/temp/",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"TryGetDirectoryFilesLastWriteTime: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bor",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateInput.bvt",
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/",
-					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

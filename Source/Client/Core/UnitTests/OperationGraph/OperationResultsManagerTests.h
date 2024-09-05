@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto filePath = Path("TestFiles/NoFile/.soup/OperationResults.bor");
+			auto filePath = Path("./TestFiles/NoFile/.soup/OperationResults.bor");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationResults();
 			auto result = OperationResultsManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -55,10 +55,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageOperationResults/.soup/OperationResults.bor"),
+				Path("./TestFiles/GarbageOperationResults/.soup/OperationResults.bor"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto filePath = Path("TestFiles/GarbageOperationResults/.soup/OperationResults.bor");
+			auto filePath = Path("./TestFiles/GarbageOperationResults/.soup/OperationResults.bor");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationResults();
 			auto result = OperationResultsManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -105,10 +105,10 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleOperationResults/.soup/OperationResults.bor"),
+				Path("./TestFiles/SimpleOperationResults/.soup/OperationResults.bor"),
 				std::make_shared<MockFile>(std::stringstream(std::string((char*)binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto filePath = Path("TestFiles/SimpleOperationResults/.soup/OperationResults.bor");
+			auto filePath = Path("./TestFiles/SimpleOperationResults/.soup/OperationResults.bor");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationResults();
 			auto result = OperationResultsManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -154,7 +154,7 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto fileSystemState = std::make_shared<FileSystemState>();
-			auto filePath = Path("TestFiles/.soup/OperationResults.bor");
+			auto filePath = Path("./TestFiles/.soup/OperationResults.bor");
 			auto operationResults = OperationResults({
 				{
 					5,

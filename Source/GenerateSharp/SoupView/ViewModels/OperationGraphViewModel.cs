@@ -57,7 +57,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 				{
 					var targetPath = await GetTargetPathAsync(packageFolder);
 
-					var soupTargetDirectory = targetPath + new Path(".soup/");
+					var soupTargetDirectory = targetPath + new Path("./.soup/");
 
 					var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
 					if (!OperationGraphManager.TryLoadState(evaluateGraphFile, fileSystemState, out var evaluateGraph))

@@ -28,6 +28,19 @@ namespace Monitor::Windows
 			m_callback->OnError(message);
 		}
 
+		void SafeLogMessage(Message& message)
+		{
+			try
+			{
+				LogMessage(message);
+			}
+			catch (std::exception& ex)
+			{
+				Log::Error("Event Listener encountered invalid message: {}", ex.what());
+			}
+		}
+
+	private:
 		void LogMessage(Message& message)
 		{
 			uint32_t offset = 0;
@@ -41,7 +54,8 @@ namespace Monitor::Windows
 				}
 				case MessageType::Shutdown:
 				{
-					m_callback->OnShutdown();
+					auto hadError = ReadBoolValue(message, offset);
+					m_callback->OnShutdown(hadError);
 					break;
 				}
 				case MessageType::Error:
@@ -68,7 +82,6 @@ namespace Monitor::Windows
 			}
 		}
 
-	private:
 		void HandleDetourMessage(Message& message, uint32_t& offset)
 		{
 			auto eventType = static_cast<DetourEventType>(ReadUInt32Value(message, offset));
@@ -1504,6 +1517,8 @@ namespace Monitor::Windows
 
 		bool ReadBoolValue(Message& message, uint32_t& offset)
 		{
+			if (offset >= message.ContentSize)
+				throw std::runtime_error("ReadBoolValue missing required field");
 			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
 			offset += sizeof(uint32_t);
 			if (offset > message.ContentSize)
@@ -1513,6 +1528,8 @@ namespace Monitor::Windows
 
 		int32_t ReadInt32Value(Message& message, uint32_t& offset)
 		{
+			if (offset >= message.ContentSize)
+				throw std::runtime_error("ReadInt32Value missing required field");
 			auto result = *reinterpret_cast<int32_t*>(message.Content + offset);
 			offset += sizeof(int32_t);
 			if (offset > message.ContentSize)
@@ -1522,6 +1539,8 @@ namespace Monitor::Windows
 
 		uint32_t ReadUInt32Value(Message& message, uint32_t& offset)
 		{
+			if (offset >= message.ContentSize)
+				throw std::runtime_error("ReadUInt32Value missing required field");
 			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
 			offset += sizeof(uint32_t);
 			if (offset > message.ContentSize)
@@ -1531,6 +1550,8 @@ namespace Monitor::Windows
 
 		uint64_t ReadUInt64Value(Message& message, uint32_t& offset)
 		{
+			if (offset >= message.ContentSize)
+				throw std::runtime_error("ReadUInt64Value missing required field");
 			auto result = *reinterpret_cast<uint64_t*>(message.Content + offset);
 			offset += sizeof(uint64_t);
 			if (offset > message.ContentSize)
@@ -1540,6 +1561,8 @@ namespace Monitor::Windows
 
 		std::string_view ReadStringValue(Message& message, uint32_t& offset)
 		{
+			if (offset >= message.ContentSize)
+				throw std::runtime_error("ReadStringValue missing required field");
 			auto result = std::string_view(reinterpret_cast<char*>(message.Content + offset));
 			offset += static_cast<uint32_t>(result.size()) + 1;
 			if (offset > message.ContentSize)
@@ -1549,10 +1572,12 @@ namespace Monitor::Windows
 
 		std::wstring_view ReadWStringValue(Message& message, uint32_t& offset)
 		{
+			if (offset >= message.ContentSize)
+				throw std::runtime_error("ReadWStringValue missing required field");
 			auto result = std::wstring_view(reinterpret_cast<wchar_t*>(message.Content + offset));
 			offset += 2 * (static_cast<uint32_t>(result.size()) + 1);
 			if (offset > message.ContentSize)
-				throw std::runtime_error("ReadWStringValue past end of content");
+				throw std::runtime_error("ReadWStringValue read past end of content");
 			return result;
 		}
 

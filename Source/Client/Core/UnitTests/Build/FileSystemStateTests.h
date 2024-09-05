@@ -176,7 +176,7 @@ namespace Soup::Core::UnitTests
 						Path("C:/Root/DoStuff.exe"),
 					}}));
 
-			FileId fileId = uut.ToFileId(Path("DoStuff.exe"), Path("C:/Root/"));
+			FileId fileId = uut.ToFileId(Path("./DoStuff.exe"), Path("C:/Root/"));
 
 			Assert::AreEqual<FileId>(8, fileId, "Verify file id matches expected.");
 
@@ -202,7 +202,7 @@ namespace Soup::Core::UnitTests
 						Path("C:/Root/DoStuff.exe"),
 					}}));
 
-			FileId fileId = uut.ToFileId(Path("DoStuff2.exe"), Path("C:/Root/"));
+			FileId fileId = uut.ToFileId(Path("./DoStuff2.exe"), Path("C:/Root/"));
 
 			Assert::AreEqual<FileId>(11, fileId, "Verify file id matches expected.");
 

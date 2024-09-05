@@ -28,7 +28,7 @@ public static class DotNetSDKUtilities
 		}
 		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 		{
-			dotnetInstallPath = new Path("/usr/lib/dotnet");
+			dotnetInstallPath = new Path("./usr/lib/dotnet");
 		}
 		else
 		{

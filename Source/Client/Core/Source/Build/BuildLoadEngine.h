@@ -34,7 +34,7 @@ namespace Soup::Core
 	{
 	private:
 		const int _packageLockVersion = 5;
-		const Path _builtInPackageOutPath = Path("out/");
+		const Path _builtInPackageOutPath = Path("./out/");
 		const std::string _builtInWrenLanguage = "Wren";
 		const std::string _dependencyTypeBuild = "Build";
 		const std::string _dependencyTypeTool = "Tool";
@@ -293,13 +293,13 @@ namespace Soup::Core
 			else
 			{
 				// Build the global store location path
-				auto packageStore = _userDataPath + Path("packages/");
+				auto packageStore = _userDataPath + Path("./packages/");
 				auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 				auto activeVersionString = activeReference.GetVersion().ToString();
 				packagePath = packageStore +
 					Path(
 						std::format(
-							"{}/{}/{}/{}/",
+							"./{}/{}/{}/{}/",
 							languageSafeName,
 							activeReference.GetOwner(),
 							activeReference.GetName(),
@@ -339,11 +339,11 @@ namespace Soup::Core
 				else
 				{
 					// Build the global store location path
-					auto packageStore = _userDataPath + Path("locks/");
+					auto packageStore = _userDataPath + Path("./locks/");
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
 					packagePath = packageStore +
 						Path(std::format(
-							"{}/{}/{}/{}/",
+							"./{}/{}/{}/{}/",
 							languageSafeName,
 							activeReference.GetOwner(),
 							activeReference.GetName(),
@@ -1185,7 +1185,7 @@ namespace Soup::Core
 			// Use the prebuilt version in the install folder
 			auto packageRoot = _builtInPackageDirectory +
 				Path(std::format(
-					"{}/{}/{}/",
+					"./{}/{}/{}/",
 					activeReference.GetOwner(),
 					activeReference.GetName(),
 					activeReference.GetVersion().ToString()));

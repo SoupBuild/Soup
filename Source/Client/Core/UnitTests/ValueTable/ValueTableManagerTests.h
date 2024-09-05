@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile/.soup/ValueTable.bin");
+			auto directory = Path("./TestFiles/NoFile/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -54,10 +54,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageValueTable/.soup/ValueTable.bin"),
+				Path("./TestFiles/GarbageValueTable/.soup/ValueTable.bin"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageValueTable/.soup/ValueTable.bin");
+			auto directory = Path("./TestFiles/GarbageValueTable/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -99,10 +99,10 @@ namespace Soup::Core::UnitTests
 				0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleValueTable/.soup/ValueTable.bin"),
+				Path("./TestFiles/SimpleValueTable/.soup/ValueTable.bin"),
 				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto directory = Path("TestFiles/SimpleValueTable/.soup/ValueTable.bin");
+			auto directory = Path("./TestFiles/SimpleValueTable/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -143,7 +143,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto valueTableFile = Path("TestFiles/.soup/ValueTable.bin");
+			auto valueTableFile = Path("./TestFiles/.soup/ValueTable.bin");
 			auto valueTable = ValueTable(
 			{
 				{ "TestValue", Value(false) },

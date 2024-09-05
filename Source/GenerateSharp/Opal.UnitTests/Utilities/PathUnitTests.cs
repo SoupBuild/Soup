@@ -71,7 +71,7 @@ public class PathUnitTests
 	[Fact]
 	public void RelativePath_Complex()
 	{
-		var uut = new Path("myfolder/anotherFolder/file.txt");
+		var uut = new Path("./myfolder/anotherFolder/file.txt");
 		Assert.False(uut.HasRoot);
 		Assert.True(uut.HasFileName);
 		Assert.Equal("file.txt", uut.FileName);
@@ -175,7 +175,7 @@ public class PathUnitTests
 	public void Concatenate_Simple()
 	{
 		var path1 = new Path("C:/MyRootFolder");
-		var path2 = new Path("MyFolder/MyFile.txt");
+		var path2 = new Path("./MyFolder/MyFile.txt");
 		var uut = path1 + path2;
 
 		Assert.Equal("C:/MyRootFolder/MyFolder/MyFile.txt", uut.ToString());
@@ -196,7 +196,7 @@ public class PathUnitTests
 	public void Concatenate_RootFile()
 	{
 		var path1 = new Path("C:");
-		var path2 = new Path("MyFile.txt");
+		var path2 = new Path("./MyFile.txt");
 		var uut = path1 + path2;
 
 		Assert.Equal("C:/MyFile.txt", uut.ToString());
@@ -206,7 +206,7 @@ public class PathUnitTests
 	public void Concatenate_RootFolder()
 	{
 		var path1 = new Path("C:");
-		var path2 = new Path("MyFolder/");
+		var path2 = new Path("./MyFolder/");
 		var uut = path1 + path2;
 
 		Assert.Equal("C:/MyFolder/", uut.ToString());
@@ -273,8 +273,8 @@ public class PathUnitTests
 	[Fact]
 	public void GetRelativeTo_SingleRelative()
 	{
-		var uut = new Path("Folder/File.txt");
-		var basePath = new Path("Folder/");
+		var uut = new Path("./Folder/File.txt");
+		var basePath = new Path("./Folder/");
 
 		var result = uut.GetRelativeTo(basePath);
 
@@ -295,8 +295,8 @@ public class PathUnitTests
 	[Fact]
 	public void GetRelativeTo_MismatchRelative()
 	{
-		var uut = new Path("Folder1/File.txt");
-		var basePath = new Path("Folder2/");
+		var uut = new Path("./Folder1/File.txt");
+		var basePath = new Path("./Folder2/");
 
 		var result = uut.GetRelativeTo(basePath);
 

@@ -130,7 +130,7 @@ namespace Monitor
 		static std::string NormalizePath(const char* fileName)
 		{
 			// Normalize the path separators and get absolute path
-			auto path = Opal::Path(fileName);
+			auto path = Opal::Path::Parse(fileName);
 			if (!path.HasRoot())
 			{
 				path = m_workingDirectory + path;

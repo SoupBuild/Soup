@@ -2,7 +2,6 @@ Name: 'Soup.Core'
 Language: 'C++|0'
 Version: '0.1.1'
 Defines: [
-	# 'LOCAL_DEBUG'
 	# 'TRACE_SYSTEM_ACCESS'
 	# 'TRACE_FILE_SYSTEM_STATE'
 ]

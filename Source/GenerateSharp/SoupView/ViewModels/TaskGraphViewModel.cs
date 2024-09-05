@@ -66,7 +66,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 				{
 					var targetPath = await GetTargetPathAsync(packageFolder);
 
-					var soupTargetDirectory = targetPath + new Path(".soup/");
+					var soupTargetDirectory = targetPath + new Path("./.soup/");
 
 					var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateInfoFileName;
 					if (!ValueTableManager.TryLoadState(generateInfoStateFile, out var generateInfoTable))
