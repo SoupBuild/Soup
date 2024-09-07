@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "OperationGraph/OperationGraphWriter.h"
 
 namespace Soup::Core::UnitTests
 {

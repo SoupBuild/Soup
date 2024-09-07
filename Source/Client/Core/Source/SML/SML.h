@@ -80,6 +80,7 @@ namespace Soup::Core
 		/// Load from stream
 		/// </summary>
 		static SMLDocument Parse(std::istream& stream);
+		static SMLDocument Parse(const char* data, size_t size);
 
 	public:
 		SMLDocument(SMLTable root) :

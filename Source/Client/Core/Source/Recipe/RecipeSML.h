@@ -26,8 +26,16 @@ namespace Soup::Core
 		{
 			try
 			{
+				// Read the entire file for fastest read operation
+				stream.seekg(0, std::ios_base::end);
+				auto size = stream.tellg();
+				stream.seekg(0, std::ios_base::beg);
+
+				auto contentBuffer = std::vector<char>(size);
+				stream.read(contentBuffer.data(), size);
+			
 				// Read the contents of the recipe file
-				auto root = SMLDocument::Parse(stream);
+				auto root = SMLDocument::Parse(contentBuffer.data(), size);
 
 				// Load the entire root table
 				auto table = RecipeTable();
