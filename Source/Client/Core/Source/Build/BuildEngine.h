@@ -93,7 +93,7 @@ namespace Soup::Core
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			// Log::Info("LoadSystemState: {} seconds", duration.count());
 
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -113,7 +113,7 @@ namespace Soup::Core
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			std::cout << "BuildLoadEngine: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			// Log::Info("BuildLoadEngine: {} seconds", duration.count());
 
 			return packageProvider;
 		}
@@ -138,7 +138,7 @@ namespace Soup::Core
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			std::cout << "PreloadFileSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			// Log::Info("PreloadFileSystemState: {} seconds", duration.count());
 
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -184,7 +184,7 @@ namespace Soup::Core
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			std::cout << "BuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			// Log::Info("BuildRunner: {} seconds", duration.count());
 		}
 
 		static Path GetSoupUserDataPath()

@@ -440,7 +440,7 @@ namespace Soup::Core
 				auto input = std::vector<Path>();
 				for (auto& value : callback->GetInput())
 				{
-					auto path = Path(value);
+					auto path = Path::Parse(value);
 					// Log::Diag("ObservedInput: {}", path.ToString());
 					input.push_back(std::move(path));
 				}
@@ -448,7 +448,7 @@ namespace Soup::Core
 				auto output = std::vector<Path>();
 				for (auto& value : callback->GetOutput())
 				{
-					auto path = Path(value);
+					auto path = Path::Parse(value);
 					// Log::Diag("ObservedOutput: {}", path.ToString());
 					output.push_back(std::move(path));
 				}
