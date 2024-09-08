@@ -12,6 +12,22 @@ using namespace Soup::Core;
 int main()
 {
 	{
+		ankerl::nanobench::Bench().minEpochIterations(10000).run("PackageReference Parse Name Only", [&]
+		{
+			auto actual = PackageReference::Parse("Package1");
+			ankerl::nanobench::doNotOptimizeAway(actual);
+		});
+	}
+
+	{
+		ankerl::nanobench::Bench().minEpochIterations(10000).run("PackageReference Parse Language, User, Name and Version", [&]
+		{
+			auto actual = PackageReference::Parse("[C#]User1|Package1@1.2.3");
+			ankerl::nanobench::doNotOptimizeAway(actual);
+		});
+	}
+
+	{
 		auto binaryFileContent = std::vector<unsigned char>(
 		{
 			'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
