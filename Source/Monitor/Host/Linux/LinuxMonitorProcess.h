@@ -337,7 +337,7 @@ namespace Monitor::Linux
 		void LogMessage(Message& message)
 		{
 			DebugTrace("LogMessage");
-			m_eventListener.LogMessage(message);
+			m_eventListener.SafeLogMessage(message);
 		}
 
 		void DebugTrace(std::string_view message, uint32_t value)

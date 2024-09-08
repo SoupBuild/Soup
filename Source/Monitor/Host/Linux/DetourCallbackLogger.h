@@ -16,9 +16,9 @@ namespace Monitor::Linux
 			m_stream << "Initialize: " << std::endl;
 		}
 
-		virtual void OnShutdown() override final
+		virtual void OnShutdown(bool hadError) override final
 		{
-			m_stream << "Shutdown: " << std::endl;
+			m_stream << "Shutdown: " << hadError << std::endl;
 		}
 
 		virtual void OnError(std::string_view message) override final

@@ -18,6 +18,7 @@ TestState RunValueTableReaderTests()
 	state += Soup::Test::RunTest(className, "Deserialize_SingleInteger", [&testClass]() { testClass->Deserialize_SingleInteger(); });
 	state += Soup::Test::RunTest(className, "Deserialize_SingleFloat", [&testClass]() { testClass->Deserialize_SingleFloat(); });
 	state += Soup::Test::RunTest(className, "Deserialize_SingleBoolean", [&testClass]() { testClass->Deserialize_SingleBoolean(); });
+	state += Soup::Test::RunTest(className, "Deserialize_Complex", [&testClass]() { testClass->Deserialize_Complex(); });
 
 	return state;
 }

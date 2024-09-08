@@ -242,7 +242,7 @@ namespace Soup::Core
 			{
 				// Check if the executable has changed since the last run
 				bool executableOutOfDate = false;
-				if (operationInfo.Command.Executable != Path("writefile.exe"))
+				if (operationInfo.Command.Executable != Path("./writefile.exe"))
 				{
 					// Only check for "real" executables
 					auto executableFileId = _fileSystemState.ToFileId(
@@ -295,7 +295,7 @@ namespace Soup::Core
 				auto operationResult = OperationResult();
 
 				// Check for special in-process write operations
-				if (operationInfo.Command.Executable == Path("writefile.exe"))
+				if (operationInfo.Command.Executable == Path("./writefile.exe"))
 				{
 					ExecuteWriteFileOperation(
 						operationInfo,
@@ -440,7 +440,7 @@ namespace Soup::Core
 				auto input = std::vector<Path>();
 				for (auto& value : callback->GetInput())
 				{
-					auto path = Path(value);
+					auto path = Path::Parse(value);
 					// Log::Diag("ObservedInput: {}", path.ToString());
 					input.push_back(std::move(path));
 				}
@@ -448,7 +448,7 @@ namespace Soup::Core
 				auto output = std::vector<Path>();
 				for (auto& value : callback->GetOutput())
 				{
-					auto path = Path(value);
+					auto path = Path::Parse(value);
 					// Log::Diag("ObservedOutput: {}", path.ToString());
 					output.push_back(std::move(path));
 				}

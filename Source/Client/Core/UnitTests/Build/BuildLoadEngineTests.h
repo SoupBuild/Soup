@@ -277,7 +277,7 @@ namespace Soup::Core::UnitTests
 								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								Path(""),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1433,7 +1433,7 @@ namespace Soup::Core::UnitTests
 									PackageName("User1", "TestTool"),
 									false,
 									Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/"),
-									Path(""),
+									Path(),
 									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml")),
 									PackageChildrenMap({
 										{
@@ -2157,7 +2157,7 @@ namespace Soup::Core::UnitTests
 								PackageName("User1", "TestBuild2"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/"),
-								Path(""),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2504,7 +2504,7 @@ namespace Soup::Core::UnitTests
 								PackageName("User1", "TestBuild2"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/"),
-								Path(""),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2859,7 +2859,7 @@ namespace Soup::Core::UnitTests
 								PackageName("User1", "TestTool"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/"),
-								Path(""),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{

@@ -17,7 +17,7 @@ namespace Soup.Build.PackageManager;
 [SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification = "Primary class")]
 public class PackageManager
 {
-	private const string StagingFolderName = ".staging/";
+	private static readonly Path StagingFolder = new Path("./.staging/");
 
 	private readonly Uri _apiEndpoint;
 
@@ -41,8 +41,8 @@ public class PackageManager
 	public async Task RestorePackagesAsync(Path workingDirectory)
 	{
 		var userProfileDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory();
-		var packageStore = userProfileDirectory + new Path(".soup/packages/");
-		var lockStore = userProfileDirectory + new Path(".soup/locks/");
+		var packageStore = userProfileDirectory + new Path("./.soup/packages/");
+		var lockStore = userProfileDirectory + new Path("./.soup/locks/");
 
 		Log.Diag("Using Package Store: " + packageStore.ToString());
 		Log.Diag("Using Lock Store: " + lockStore.ToString());
@@ -85,8 +85,8 @@ public class PackageManager
 		}
 
 		var userProfileDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory();
-		var packageStore = userProfileDirectory + new Path(".soup/packages/");
-		var lockStore = userProfileDirectory + new Path(".soup/locks/");
+		var packageStore = userProfileDirectory + new Path("./.soup/packages/");
+		var lockStore = userProfileDirectory + new Path("./.soup/locks/");
 		Log.Diag("Using Package Store: " + packageStore.ToString());
 		Log.Diag("Using Lock Store: " + lockStore.ToString());
 
@@ -182,7 +182,7 @@ public class PackageManager
 		}
 
 		var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-			new Path(".soup/packages/");
+			new Path("./.soup/packages/");
 		Log.Info("Using Package Store: " + packageStore.ToString());
 
 		// Create the staging directory
@@ -190,7 +190,7 @@ public class PackageManager
 
 		try
 		{
-			var archivePath = stagingPath + new Path(recipe.Name + ".zip");
+			var archivePath = stagingPath + new Path($"./{recipe.Name}.zip");
 
 			// Create the archive of the package
 			using (var zipArchive = LifetimeManager.Get<IZipManager>().OpenCreate(archivePath))
@@ -366,7 +366,7 @@ public class PackageManager
 	/// </summary>
 	private static Path EnsureStagingDirectoryExists(Path packageStore)
 	{
-		var stagingDirectory = packageStore + new Path(StagingFolderName);
+		var stagingDirectory = packageStore + StagingFolder;
 		if (LifetimeManager.Get<IFileSystem>().Exists(stagingDirectory))
 		{
 			Log.Warning("The staging directory already exists from a previous failed run");

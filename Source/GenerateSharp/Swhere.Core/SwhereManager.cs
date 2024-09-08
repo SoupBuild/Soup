@@ -16,7 +16,7 @@ public static class SwhereManager
 	{
 		// Load up the Local User Config
 		var localUserConfigPath = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-			new Path(".soup/LocalUserConfig.sml");
+			new Path("./.soup/LocalUserConfig.sml");
 		var (loadConfigResult, userConfig) =
 			await LocalUserConfigExtensions.TryLoadLocalUserConfigFromFileAsync(localUserConfigPath);
 		if (!loadConfigResult)
@@ -121,10 +121,10 @@ public static class SwhereManager
 		if (hasNuget)
 		{
 			var nugetSDK = userConfig.EnsureSDK("Nuget");
-			nugetSDK.SourceDirectories.AddRange(
+			nugetSDK.SourceDirectories =
 				[
 					nugetPackagesPath,
-				]);
+				];
 
 			nugetSDK.SetProperties(
 				new Dictionary<string, string>()

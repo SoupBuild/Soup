@@ -122,7 +122,7 @@ namespace Soup::Core
 							packageInfo.Name.ToString(),
 							Path(std::format("/(TARGET_{})/", packageInfo.Name.ToString())),
 							packageInfo.TargetDirectory,
-							packageInfo.TargetDirectory + Path(".soup/"),
+							packageInfo.TargetDirectory + Path("./.soup/"),
 							{},
 							{}));
 				}
@@ -429,9 +429,9 @@ namespace Soup::Core
 			auto generateFolder = moduleName.GetParent();
 
 			#if defined(_WIN32)
-			auto generateExecutable = generateFolder + Path("Soup.Generate.exe");
+			auto generateExecutable = generateFolder + Path("./Soup.Generate.exe");
 			#elif defined(__linux__)
-			auto generateExecutable = generateFolder + Path("generate");
+			auto generateExecutable = generateFolder + Path("./generate");
 			#else
 			#error "Unknown platform"
 			#endif

@@ -37,7 +37,7 @@ namespace Soup::Core::UnitTests
 						"TestOperation",
 						CommandInfo(
 							Path("C:/Root/"),
-							Path("DoStuff.exe"),
+							Path("./DoStuff.exe"),
 							{ "arg1", "arg2" }),
 						{ 1, },
 						{ 2, },
@@ -62,7 +62,7 @@ namespace Soup::Core::UnitTests
 							"TestOperation",
 							CommandInfo(
 								Path("C:/Root/"),
-								Path("DoStuff.exe"),
+								Path("./DoStuff.exe"),
 								{ "arg1", "arg2" }),
 							{ 1, },
 							{ 2, },
@@ -87,7 +87,7 @@ namespace Soup::Core::UnitTests
 						"TestOperation",
 						CommandInfo(
 							Path("C:/Root/"),
-							Path("DoStuff.exe"),
+							Path("./DoStuff.exe"),
 							{ "arg1", "arg2" }),
 						{ 1, },
 						{ 2 },
@@ -142,7 +142,7 @@ namespace Soup::Core::UnitTests
 						"TestOperation",
 						CommandInfo(
 							Path("C:/Root/"),
-							Path("DoStuff.exe"),
+							Path("./DoStuff.exe"),
 							{ "arg1", "arg2" }),
 						{ 1, },
 						{ 2, },
@@ -160,7 +160,7 @@ namespace Soup::Core::UnitTests
 					"TestOperation",
 					CommandInfo(
 						Path("C:/Root/"),
-						Path("DoStuff.exe"),
+						Path("./DoStuff.exe"),
 						{ "arg1", "arg2" }),
 					{ 1, },
 					{ 2, },
@@ -185,7 +185,7 @@ namespace Soup::Core::UnitTests
 					"TestOperation",
 					CommandInfo(
 						Path("C:/Root/"),
-						Path("DoStuff.exe"),
+						Path("./DoStuff.exe"),
 						{ "arg1", "arg2" }),
 					{ 1, },
 					{ 2, },
@@ -203,7 +203,7 @@ namespace Soup::Core::UnitTests
 							"TestOperation",
 							CommandInfo(
 								Path("C:/Root/"),
-								Path("DoStuff.exe"),
+								Path("./DoStuff.exe"),
 								{ "arg1", "arg2" }),
 							{ 1, },
 							{ 2, },

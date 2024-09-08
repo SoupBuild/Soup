@@ -41,7 +41,8 @@ namespace Monitor::Linux
 				}
 				case MessageType::Shutdown:
 				{
-					m_callback->OnShutdown();
+					auto hadError = ReadBoolValue(message, offset);
+					m_callback->OnShutdown(hadError);
 					break;
 				}
 				case MessageType::Error:

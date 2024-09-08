@@ -28,7 +28,7 @@ public class NugetSDKUtilitiesUnitTests
 
 		Assert.False(result.HasNuget);
 		Assert.Equal(
-			new Path("C:/Users/Me/.nuget/packages"),
+			new Path("C:/Users/Me/.nuget/packages/"),
 			result.NugetPackagesPath);
 		Assert.Equal(
 			[],
@@ -45,7 +45,7 @@ public class NugetSDKUtilitiesUnitTests
 		Assert.Equal(
 			[
 				"GetUserProfileDirectory",
-				"Exists: C:/Users/Me/.nuget/packages",
+				"Exists: C:/Users/Me/.nuget/packages/",
 			],
 			mockFileSystem.Requests);
 	}
@@ -61,22 +61,22 @@ public class NugetSDKUtilitiesUnitTests
 		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
 		mockFileSystem.RegisterChildren(
-			new Path("C:/Users/Me/.nuget/packages"),
+			new Path("C:/Users/Me/.nuget/packages/"),
 			[
-				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1"), IsDirectory = true, },
+				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/"), IsDirectory = true, },
 			]);
 
 		mockFileSystem.RegisterChildren(
-			new Path("C:/Users/Me/.nuget/packages/Package1"),
+			new Path("C:/Users/Me/.nuget/packages/Package1/"),
 			[
-				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3"), IsDirectory = true, },
+				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3/"), IsDirectory = true, },
 			]);
 
 		var result = NugetSDKUtilities.FindNugetPackages();
 
 		Assert.True(result.HasNuget);
 		Assert.Equal(
-			new Path("C:/Users/Me/.nuget/packages"),
+			new Path("C:/Users/Me/.nuget/packages/"),
 			result.NugetPackagesPath);
 		Assert.Equal(
 			[],
@@ -85,7 +85,7 @@ public class NugetSDKUtilitiesUnitTests
 		// Verify expected logs
 		Assert.Equal(
 			[
-				"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages",
+				"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages/",
 				"WARN: Missing Nuspec file: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
 			],
 			testListener.Messages);
@@ -94,9 +94,9 @@ public class NugetSDKUtilitiesUnitTests
 		Assert.Equal(
 			[
 				"GetUserProfileDirectory",
-				"Exists: C:/Users/Me/.nuget/packages",
-				"GetChildDirectories: C:/Users/Me/.nuget/packages",
-				"GetChildDirectories: C:/Users/Me/.nuget/packages/Package1",
+				"Exists: C:/Users/Me/.nuget/packages/",
+				"GetChildDirectories: C:/Users/Me/.nuget/packages/",
+				"GetChildDirectories: C:/Users/Me/.nuget/packages/Package1/",
 				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
 			],
 			mockFileSystem.Requests);
@@ -113,15 +113,15 @@ public class NugetSDKUtilitiesUnitTests
 		using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
 		mockFileSystem.RegisterChildren(
-			new Path("C:/Users/Me/.nuget/packages"),
+			new Path("C:/Users/Me/.nuget/packages/"),
 			[
-				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1"), IsDirectory = true, },
+				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/"), IsDirectory = true, },
 			]);
 
 		mockFileSystem.RegisterChildren(
-			new Path("C:/Users/Me/.nuget/packages/Package1"),
+			new Path("C:/Users/Me/.nuget/packages/Package1/"),
 			[
-				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3"), IsDirectory = true, },
+				new DirectoryEntry() { Path = new Path("C:/Users/Me/.nuget/packages/Package1/1.2.3/"), IsDirectory = true, },
 			]);
 
 		var nuspecContent =
@@ -139,7 +139,7 @@ public class NugetSDKUtilitiesUnitTests
     <projectUrl>https://github.com/Package1/README.md</projectUrl>
     <description>This is the implementation of the package</description>
     <releaseNotes>https://github.com/Package1/CHANGELOG.md</releaseNotes>
-    <copyright>©Test Corporation. All rights reserved.</copyright>
+    <copyright>ï¿½Test Corporation. All rights reserved.</copyright>
     <tags>Test Package</tags>
     <repository type=""git"" url=""https://github.com/Package1"" commit=""1234"" />
     <dependencies>
@@ -165,7 +165,7 @@ public class NugetSDKUtilitiesUnitTests
 
 		Assert.True(result.HasNuget);
 		Assert.Equal(
-			new Path("C:/Users/Me/.nuget/packages"),
+			new Path("C:/Users/Me/.nuget/packages/"),
 			result.NugetPackagesPath);
 		var expectedPackages = new List<NugetPackage>()
 			{
@@ -220,7 +220,7 @@ public class NugetSDKUtilitiesUnitTests
 		// Verify expected logs
 		Assert.Equal(
 			[
-				"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages",
+				"INFO: Discover Nuget Packages: C:/Users/Me/.nuget/packages/",
 			],
 			testListener.Messages);
 
@@ -228,9 +228,9 @@ public class NugetSDKUtilitiesUnitTests
 		Assert.Equal(
 			[
 				"GetUserProfileDirectory",
-				"Exists: C:/Users/Me/.nuget/packages",
-				"GetChildDirectories: C:/Users/Me/.nuget/packages",
-				"GetChildDirectories: C:/Users/Me/.nuget/packages/Package1",
+				"Exists: C:/Users/Me/.nuget/packages/",
+				"GetChildDirectories: C:/Users/Me/.nuget/packages/",
+				"GetChildDirectories: C:/Users/Me/.nuget/packages/Package1/",
 				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
 				"OpenRead: C:/Users/Me/.nuget/packages/Package1/1.2.3/Package1.nuspec",
 				"Exists: C:/Users/Me/.nuget/packages/Package1/1.2.3/lib/net461/",

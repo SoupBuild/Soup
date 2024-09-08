@@ -9,7 +9,7 @@ namespace Soup::Core
 	/// <summary>
 	/// The operation graph state writer
 	/// </summary>
-	class OperationGraphWriter
+	export class OperationGraphWriter
 	{
 	private:
 		// Binary Operation graph file format

@@ -23,7 +23,7 @@ public static class WhereIsUtilities
 		}
 		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 		{
-			executablePath = new Path("/usr/bin/whereis");
+			executablePath = new Path("./usr/bin/whereis");
 			separator = " ";
 
 			// Whereis sets the name as the first entry
@@ -52,6 +52,6 @@ public static class WhereIsUtilities
 			throw new HandledException();
 		}
 
-		return new Path(values.First());
+		return Path.Parse(values.First());
 	}
 }

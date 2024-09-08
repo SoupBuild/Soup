@@ -38,7 +38,8 @@ namespace Soup::Client
 			}
 			else
 			{
-				workingDirectory = Path(std::format("{}/", _options.Path));
+				// Parse the path in any system valid format
+				workingDirectory = Path::Parse(std::format("{}/", _options.Path));
 
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())
@@ -77,7 +78,7 @@ namespace Soup::Client
 			// Find the built in folder root
 			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto processDirectory = processFilename.GetParent();
-			auto builtInPackageDirectory = processDirectory + Path("BuiltIn/");
+			auto builtInPackageDirectory = processDirectory + Path("./BuiltIn/");
 
 			// Load user config state
 			auto userDataPath = Core::BuildEngine::GetSoupUserDataPath();

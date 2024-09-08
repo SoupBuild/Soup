@@ -68,7 +68,7 @@ int main()
 	return 0;
 }";
 
-		var mainFilePath = workingDirectory + new Path("Main.cpp");
+		var mainFilePath = workingDirectory + new Path("./Main.cpp");
 		using var mainFile = LifetimeManager.Get<IFileSystem>().OpenWrite(mainFilePath, false);
 		using var mainFileWriter = new System.IO.StreamWriter(mainFile.GetOutStream(), null, -1, true);
 

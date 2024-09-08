@@ -181,7 +181,7 @@ namespace Monitor::Windows
 			// Build up the Monitor dlls absolute path
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
-			auto dllPath = moduleFolder + Path("Monitor.Client.64.dll");
+			auto dllPath = moduleFolder + Path("./Monitor.Client.64.dll");
 			auto dllPathString = dllPath.ToAlternateString();
 
 			// Build up the new environment
@@ -772,7 +772,7 @@ namespace Monitor::Windows
 		void LogMessage(Message& message)
 		{
 			DebugTrace("LogMessage");
-			m_eventListener.LogMessage(message);
+			m_eventListener.SafeLogMessage(message);
 		}
 
 		void CleanupConnections()

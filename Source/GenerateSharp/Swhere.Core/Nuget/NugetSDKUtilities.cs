@@ -16,16 +16,16 @@ public static class NugetSDKUtilities
 	{
 		var fileSystem = LifetimeManager.Get<IFileSystem>();
 		var nugetDirectory = fileSystem.GetUserProfileDirectory() +
-			new Path(".nuget");
+			new Path("./.nuget/");
 		var nugetPackagesDirectory = nugetDirectory +
-			new Path("packages");
+			new Path("./packages/");
 		if (fileSystem.Exists(nugetPackagesDirectory))
 		{
 			Log.Info($"Discover Nuget Packages: {nugetPackagesDirectory}");
 			var packages = new List<NugetPackage>();
 			foreach (var nugetPackageDirectory in fileSystem.GetChildDirectories(nugetPackagesDirectory))
 			{
-				var packageName = nugetPackageDirectory.Path.FileName;
+				var packageName = nugetPackageDirectory.Path.DecomposeDirectories().Last();
 				NugetPackage? package = null;
 				foreach (var nugetPackageVersionDirectory in fileSystem.GetChildDirectories(nugetPackageDirectory.Path))
 				{
@@ -63,7 +63,7 @@ public static class NugetSDKUtilities
 		var fileSystem = LifetimeManager.Get<IFileSystem>();
 
 		// Load the NuSpec XML file
-		var nuspecFile = directory + new Path($"{name}.nuspec");
+		var nuspecFile = directory + new Path($"./{name}.nuspec");
 		if (!fileSystem.Exists(nuspecFile))
 		{
 			Log.Warning($"Missing Nuspec file: {nuspecFile}");
@@ -171,7 +171,7 @@ public static class NugetSDKUtilities
 		var fileSystem = LifetimeManager.Get<IFileSystem>();
 
 		var libraries = new List<string>();
-		var targetLibrariesPath = directory + new Path($"lib/{targetFrameworkMoniker}/");
+		var targetLibrariesPath = directory + new Path($"./lib/{targetFrameworkMoniker}/");
 		if (fileSystem.Exists(targetLibrariesPath))
 		{
 			foreach (var file in fileSystem.GetChildFiles(targetLibrariesPath))

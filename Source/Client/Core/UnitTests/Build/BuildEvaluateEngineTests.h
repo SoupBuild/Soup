@@ -111,8 +111,8 @@ namespace Soup::Core::UnitTests
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.TouchFileRead(Path("InputFile2.in"), true, false);
-					callback.TouchFileWrite(Path("OutputFile2.out"), false);
+					callback.TouchFileRead(Path("./InputFile2.in"), true, false);
+					callback.TouchFileWrite(Path("./OutputFile2.out"), false);
 				});
 
 			// Setup the input build state
@@ -239,8 +239,8 @@ namespace Soup::Core::UnitTests
 				[](Monitor::IMonitorCallback& callback)
 				{
 					// Read and write the same file
-					callback.TouchFileRead(Path("File.txt"), true, false);
-					callback.TouchFileWrite(Path("File.txt"), false);
+					callback.TouchFileRead(Path("./File.txt"), true, false);
+					callback.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -372,8 +372,8 @@ namespace Soup::Core::UnitTests
 				[](Monitor::IMonitorCallback& callback)
 				{
 					// Read and write the same file
-					callback.TouchFileRead(Path("File.txt"), true, false);
-					callback.TouchFileWrite(Path("File.txt"), false);
+					callback.TouchFileRead(Path("./File.txt"), true, false);
+					callback.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -1196,7 +1196,7 @@ namespace Soup::Core::UnitTests
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.TouchFileWrite(Path("OutputFile.out"), false);
+					callback.TouchFileWrite(Path("./OutputFile.out"), false);
 				});
 
 			// Setup the input build state
@@ -1332,7 +1332,7 @@ namespace Soup::Core::UnitTests
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.TouchFileWrite(Path("File.txt"), false);
+					callback.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -1468,7 +1468,7 @@ namespace Soup::Core::UnitTests
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.TouchFileRead(Path("File.txt"), true, false);
+					callback.TouchFileRead(Path("./File.txt"), true, false);
 				});
 
 			// Setup the input build state

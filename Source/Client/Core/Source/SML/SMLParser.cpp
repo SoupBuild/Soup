@@ -749,7 +749,28 @@ private:
 
 /*static*/ SMLDocument SMLDocument::Parse(std::istream& stream)
 {
+    auto input = reflex::Input(stream);
     auto parser = SMLParser(stream);
+    if (parser.TryParse())
+    {
+        return parser.GetResult();
+    }
+    else
+    {
+        auto line = parser.lineno();
+        auto column = parser.columno();
+        auto text = parser.text();
+
+        std::stringstream message;
+        message << "Failed to parse at " << line << ":" << column << " " << text;
+        throw std::runtime_error(message.str());
+    }
+}
+
+/*static*/ SMLDocument SMLDocument::Parse(const char* data, size_t size)
+{
+    auto input = reflex::Input(data, size);
+    auto parser = SMLParser(input);
     if (parser.TryParse())
     {
         return parser.GetResult();
