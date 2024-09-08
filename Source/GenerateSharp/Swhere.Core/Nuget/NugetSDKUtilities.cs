@@ -25,7 +25,7 @@ public static class NugetSDKUtilities
 			var packages = new List<NugetPackage>();
 			foreach (var nugetPackageDirectory in fileSystem.GetChildDirectories(nugetPackagesDirectory))
 			{
-				var packageName = nugetPackageDirectory.Path.FileName;
+				var packageName = nugetPackageDirectory.Path.DecomposeDirectories().Last();
 				NugetPackage? package = null;
 				foreach (var nugetPackageVersionDirectory in fileSystem.GetChildDirectories(nugetPackageDirectory.Path))
 				{

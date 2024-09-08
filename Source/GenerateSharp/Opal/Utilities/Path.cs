@@ -81,6 +81,11 @@ public class Path : IEquatable<Path>
 		return string.Compare(this.value, other.value, StringComparison.Ordinal);
 	}
 
+	public IList<string> DecomposeDirectories()
+	{
+		return DecomposeDirectoriesString(GetDirectories());
+	}
+
 	/// <summary>
 	/// Concatenate paths.
 	/// </summary>
