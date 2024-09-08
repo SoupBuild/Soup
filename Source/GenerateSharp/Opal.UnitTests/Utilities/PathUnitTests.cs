@@ -9,67 +9,43 @@ namespace Opal.UnitTests;
 public class PathUnitTests
 {
 	[Fact]
-	public void DefaultInitializer()
+	public void Initialize_Default()
 	{
 		var uut = new Path();
 		Assert.False(uut.HasRoot);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("./", uut.ToString());
 		Assert.Equal(".\\", uut.ToAlternateString());
 	}
 
 	[Fact]
-	public void Empty()
-	{
-		var uut = new Path("");
-		Assert.False(uut.HasRoot);
-		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.FileName);
-		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.FileStem);
-		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.FileExtension);
-		Assert.Equal("./", uut.ToString());
-		Assert.Equal(".\\", uut.ToAlternateString());
-	}
-
-	[Fact]
-	public void RelativePath_Simple()
+	public void Initialize_RelativePath_Simple()
 	{
 		var uut = new Path("./");
 		Assert.False(uut.HasRoot);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("./", uut.ToString());
 		Assert.Equal(".\\", uut.ToAlternateString());
 	}
 
 	[Fact]
-	public void RelativePath_Parent()
+	public void Initialize_RelativePath_Parent()
 	{
 		var uut = new Path("../");
 		Assert.False(uut.HasRoot);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("../", uut.ToString());
 		Assert.Equal("..\\", uut.ToAlternateString());
 	}
 
 	[Fact]
-	public void RelativePath_Complex()
+	public void Initialize_RelativePath_Complex()
 	{
 		var uut = new Path("./myfolder/anotherFolder/file.txt");
 		Assert.False(uut.HasRoot);
@@ -84,23 +60,20 @@ public class PathUnitTests
 	}
 
 	[Fact]
-	public void LinuxRoot()
+	public void Initialize_LinuxRoot()
 	{
 		var uut = new Path("/");
 		Assert.True(uut.HasRoot);
 		Assert.Equal("", uut.Root);
 		Assert.False(uut.HasFileName);
-		Assert.Equal("", uut.FileName);
 		Assert.False(uut.HasFileStem);
-		Assert.Equal("", uut.FileStem);
 		Assert.False(uut.HasFileExtension);
-		Assert.Equal("", uut.FileExtension);
 		Assert.Equal("/", uut.ToString());
 		Assert.Equal("\\", uut.ToAlternateString());
 	}
 
 	[Fact]
-	public void SimpleAbsolutePath()
+	public void Initialize_SimpleAbsolutePath()
 	{
 		var uut = new Path("C:/myfolder/anotherFolder/file.txt");
 		Assert.True(uut.HasRoot, "Verify is root.");
@@ -115,9 +88,21 @@ public class PathUnitTests
 	}
 
 	[Fact]
-	public void AlternativeDirectoriesPath()
+	public void Parse_Empty()
 	{
-		var uut = new Path("C:\\myfolder/anotherFolder\\file.txt");
+		var uut = Path.Parse("");
+		Assert.False(uut.HasRoot);
+		Assert.False(uut.HasFileName);
+		Assert.False(uut.HasFileStem);
+		Assert.False(uut.HasFileExtension);
+		Assert.Equal("./", uut.ToString());
+		Assert.Equal(".\\", uut.ToAlternateString());
+	}
+
+	[Fact]
+	public void Parse_AlternativeDirectoriesPath()
+	{
+		var uut = Path.Parse("C:\\myfolder/anotherFolder\\file.txt");
 		Assert.True(uut.HasRoot, "Verify is root.");
 		Assert.Equal("C:", uut.Root);
 		Assert.True(uut.HasFileName);
@@ -130,51 +115,51 @@ public class PathUnitTests
 	}
 
 	[Fact]
-	public void RemoveEmptyDirectoryInside()
+	public void Parse_RemoveEmptyDirectoryInside()
 	{
-		var uut = new Path("C:/myfolder//file.txt");
+		var uut = Path.Parse("C:/myfolder//file.txt");
 		Assert.Equal("C:/myfolder/file.txt", uut.ToString());
 	}
 
 	[Fact]
-	public void RemoveParentDirectoryInside()
+	public void ParseRemoveParentDirectoryInside()
 	{
-		var uut = new Path("C:/myfolder/../file.txt");
+		var uut = Path.Parse("C:/myfolder/../file.txt");
 		Assert.Equal("C:/file.txt", uut.ToString());
 	}
 
 	[Fact]
-	public void RemoveTwoParentDirectoryInside()
+	public void Parse_RemoveTwoParentDirectoryInside()
 	{
-		var uut = new Path("C:/myfolder/myfolder2/../../file.txt");
+		var uut = Path.Parse("C:/myfolder/myfolder2/../../file.txt");
 		Assert.Equal("C:/file.txt", uut.ToString());
 	}
 
 	[Fact]
-	public void LeaveParentDirectoryAtStart()
+	public void Parse_LeaveParentDirectoryAtStart()
 	{
-		var uut = new Path("../file.txt");
+		var uut = Path.Parse("../file.txt");
 		Assert.Equal("../file.txt", uut.ToString());
 	}
 
 	[Fact]
-	public void CurrentDirectoryAtStart()
+	public void Parse_CurrentDirectoryAtStart()
 	{
-		var uut = new Path("./file.txt");
+		var uut = Path.Parse("./file.txt");
 		Assert.Equal("./file.txt", uut.ToString());
 	}
 
 	[Fact]
-	public void CurrentDirectoryAtStartAlternate()
+	public void Parse_CurrentDirectoryAtStartAlternate()
 	{
-		var uut = new Path(".\\../file.txt");
+		var uut = Path.Parse(".\\../file.txt");
 		Assert.Equal("../file.txt", uut.ToString());
 	}
 
 	[Fact]
 	public void Concatenate_Simple()
 	{
-		var path1 = new Path("C:/MyRootFolder");
+		var path1 = new Path("C:/MyRootFolder/");
 		var path2 = new Path("./MyFolder/MyFile.txt");
 		var uut = path1 + path2;
 
@@ -184,8 +169,8 @@ public class PathUnitTests
 	[Fact]
 	public void Concatenate_Empty()
 	{
-		var path1 = new Path("C:/MyRootFolder");
-		var path2 = new Path("");
+		var path1 = new Path("C:/MyRootFolder/");
+		var path2 = new Path();
 		var uut = path1 + path2;
 
 		// Changes the assumed file into a folder
@@ -195,7 +180,7 @@ public class PathUnitTests
 	[Fact]
 	public void Concatenate_RootFile()
 	{
-		var path1 = new Path("C:");
+		var path1 = new Path("C:/");
 		var path2 = new Path("./MyFile.txt");
 		var uut = path1 + path2;
 
@@ -205,7 +190,7 @@ public class PathUnitTests
 	[Fact]
 	public void Concatenate_RootFolder()
 	{
-		var path1 = new Path("C:");
+		var path1 = new Path("C:/");
 		var path2 = new Path("./MyFolder/");
 		var uut = path1 + path2;
 
@@ -215,7 +200,7 @@ public class PathUnitTests
 	[Fact]
 	public void Concatenate_UpDirectory()
 	{
-		var path1 = new Path("C:/MyRootFolder");
+		var path1 = new Path("C:/MyRootFolder/");
 		var path2 = new Path("../NewRoot/MyFile.txt");
 		var uut = path1 + path2;
 
@@ -225,7 +210,7 @@ public class PathUnitTests
 	[Fact]
 	public void Concatenate_UpDirectoryBeginning()
 	{
-		var path1 = new Path("../MyRootFolder");
+		var path1 = new Path("../MyRootFolder/");
 		var path2 = new Path("../NewRoot/MyFile.txt");
 		var uut = path1 + path2;
 
@@ -262,8 +247,8 @@ public class PathUnitTests
 	[Fact]
 	public void GetRelativeTo_Empty()
 	{
-		var uut = new Path("File.txt");
-		var basePath = new Path("");
+		var uut = new Path("./File.txt");
+		var basePath = new Path();
 
 		var result = uut.GetRelativeTo(basePath);
 
@@ -284,12 +269,12 @@ public class PathUnitTests
 	[Fact]
 	public void GetRelativeTo_UpParentRelative()
 	{
-		var uut = new Path("../Folder/Target");
-		var basePath = new Path("../Folder");
+		var uut = new Path("../Folder/Target/");
+		var basePath = new Path("../Folder/");
 
 		var result = uut.GetRelativeTo(basePath);
 
-		Assert.Equal("./Target", result.ToString());
+		Assert.Equal("./Target/", result.ToString());
 	}
 
 	[Fact]

@@ -98,7 +98,7 @@ public static class VSWhereUtilities
 			throw new HandledException();
 		}
 
-		return new Path(path);
+		return Path.Parse($"{path}\\");
 	}
 
 	private static async Task<string> FindDefaultVCToolsVersionAsync(

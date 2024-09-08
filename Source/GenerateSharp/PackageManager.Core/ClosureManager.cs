@@ -135,13 +135,11 @@ public class ClosureManager : IClosureManager
 							else
 							{
 								var languageSafeName = GetLanguageSafeName(languageName);
-								var userFolder = projectName.Owner is not null ? new Path(projectName.Owner) : new Path("./Local/");
+								var userFolder = projectName.Owner is not null ? new Path($"./{projectName.Owner}/") : new Path("./Local/");
 								var packageLanguageNameVersionPath =
-									new Path(languageSafeName) +
+									new Path($"./{languageSafeName}/") +
 									userFolder +
-									new Path(projectName.Name) +
-									new Path(version.ToString()) +
-									new Path();
+									new Path($"./{projectName.Name}/{version}/");
 								var packageContentDirectory = packageStoreDirectory + packageLanguageNameVersionPath;
 
 								// Place the lock in the lock store
@@ -785,9 +783,9 @@ public class ClosureManager : IClosureManager
 		Log.HighPriority($"Install Package: {languageName} {ownerName} {packageName}@{packageVersion}");
 
 		var languageSafeName = GetLanguageSafeName(languageName);
-		var languageRootFolder = packageStore + new Path(languageSafeName);
-		var packageRootFolder = languageRootFolder + new Path(ownerName) + new Path(packageName);
-		var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path();
+		var languageRootFolder = packageStore + new Path($"./{languageSafeName}/");
+		var packageRootFolder = languageRootFolder + new Path($"./{ownerName}/{packageName}/");
+		var packageVersionFolder = packageRootFolder + new Path($"./{packageVersion}/");
 
 		// Check if the package version already exists
 		if (!isRuntime &&
@@ -803,7 +801,7 @@ public class ClosureManager : IClosureManager
 		{
 			// Download the archive
 			Log.HighPriority("Downloading package");
-			var archivePath = stagingDirectory + new Path(packageName + ".zip");
+			var archivePath = stagingDirectory + new Path($"./{packageName}.zip");
 
 			var client = new Api.Client.PackageVersionsClient(_httpClient, null)
 			{
@@ -833,7 +831,7 @@ public class ClosureManager : IClosureManager
 			}
 
 			// Create the package folder to extract to
-			var stagingVersionFolder = stagingDirectory + new Path($"{languageName}_{packageName}_{packageVersion}/");
+			var stagingVersionFolder = stagingDirectory + new Path($"./{languageName}_{packageName}_{packageVersion}/");
 			LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
 
 			// Unpack the contents of the archive

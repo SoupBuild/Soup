@@ -63,7 +63,7 @@ public static class NugetSDKUtilities
 		var fileSystem = LifetimeManager.Get<IFileSystem>();
 
 		// Load the NuSpec XML file
-		var nuspecFile = directory + new Path($"{name}.nuspec");
+		var nuspecFile = directory + new Path($"./{name}.nuspec");
 		if (!fileSystem.Exists(nuspecFile))
 		{
 			Log.Warning($"Missing Nuspec file: {nuspecFile}");
@@ -171,7 +171,7 @@ public static class NugetSDKUtilities
 		var fileSystem = LifetimeManager.Get<IFileSystem>();
 
 		var libraries = new List<string>();
-		var targetLibrariesPath = directory + new Path($"lib/{targetFrameworkMoniker}/");
+		var targetLibrariesPath = directory + new Path($"./lib/{targetFrameworkMoniker}/");
 		if (fileSystem.Exists(targetLibrariesPath))
 		{
 			foreach (var file in fileSystem.GetChildFiles(targetLibrariesPath))

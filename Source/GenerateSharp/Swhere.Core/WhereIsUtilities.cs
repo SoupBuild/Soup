@@ -52,6 +52,6 @@ public static class WhereIsUtilities
 			throw new HandledException();
 		}
 
-		return new Path(values.First());
+		return Path.Parse(values.First());
 	}
 }

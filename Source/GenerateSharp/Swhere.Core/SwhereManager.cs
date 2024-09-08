@@ -121,10 +121,10 @@ public static class SwhereManager
 		if (hasNuget)
 		{
 			var nugetSDK = userConfig.EnsureSDK("Nuget");
-			nugetSDK.SourceDirectories.AddRange(
+			nugetSDK.SourceDirectories =
 				[
 					nugetPackagesPath,
-				]);
+				];
 
 			nugetSDK.SetProperties(
 				new Dictionary<string, string>()

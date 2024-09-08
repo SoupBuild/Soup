@@ -24,7 +24,7 @@ public class RuntimeFileSystem : IFileSystem
 			? Environment.GetEnvironmentVariable("USERPROFILE")
 			: Environment.GetEnvironmentVariable("HOME")) ??
 			throw new InvalidOperationException("Unable to retrieve user profile");
-		return new Path(userProfileFolder);
+		return Path.Parse($"{userProfileFolder}\\");
 	}
 
 	public Path GetCurrentDirectory()
@@ -109,7 +109,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path(directory),
+				Path = new Path($"{directory}/"),
 				IsDirectory = true,
 			});
 		}

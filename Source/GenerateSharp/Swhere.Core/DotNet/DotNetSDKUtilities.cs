@@ -24,11 +24,11 @@ public static class DotNetSDKUtilities
 		Path dotnetInstallPath;
 		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 		{
-			dotnetInstallPath = new Path("C:/Program Files/dotnet");
+			dotnetInstallPath = new Path("C:/Program Files/dotnet/");
 		}
 		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 		{
-			dotnetInstallPath = new Path("./usr/lib/dotnet");
+			dotnetInstallPath = new Path("./usr/lib/dotnet/");
 		}
 		else
 		{
@@ -37,9 +37,9 @@ public static class DotNetSDKUtilities
 
 		// Grant access to the install folder
 		var sourceDirectories = new List<Path>()
-			{
-				dotnetInstallPath,
-			};
+		{
+			dotnetInstallPath,
+		};
 
 		var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath);
 		var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath);
@@ -68,7 +68,7 @@ public static class DotNetSDKUtilities
 
 			var version = sdkValue[..splitIndex];
 			var installationValue = sdkValue.Substring(splitIndex + 2, sdkValue.Length - splitIndex - 3);
-			var installationPath = new Path(installationValue);
+			var installationPath = Path.Parse($"{installationValue}\\");
 
 			Log.Info($"Found SDK: {version} {installationPath}");
 			sdks.Add((version, installationPath));
@@ -99,7 +99,7 @@ public static class DotNetSDKUtilities
 			var name = runtimeValue[..split1Index];
 			var version = runtimeValue.Substring(split1Index + 1, split2Index - split1Index - 1);
 			var installationValue = runtimeValue.Substring(split2Index + 2, runtimeValue.Length - split2Index - 3);
-			var installationPath = new Path(installationValue);
+			var installationPath = Path.Parse($"{installationValue}\\");
 
 			Log.Info($"Found Runtime: {name} {version} {installationPath}");
 
@@ -120,9 +120,9 @@ public static class DotNetSDKUtilities
 		Path dotnetInstallPath)
 	{
 		var knownPacks = new List<string>()
-			{
-				"Microsoft.NETCore.App.Ref",
-			};
+		{
+			"Microsoft.NETCore.App.Ref",
+		};
 
 		var result = new Dictionary<string, IList<(string Version, Path InstallDirectory)>>();
 		foreach (var packageName in knownPacks)
@@ -138,7 +138,7 @@ public static class DotNetSDKUtilities
 		Path dotnetInstallPath,
 		string packageName)
 	{
-		var dotnetPacksPath = dotnetInstallPath + new Path($"./packs/{packageName}");
+		var dotnetPacksPath = dotnetInstallPath + new Path($"./packs/{packageName}/");
 
 		// Check the default tools version
 		Log.HighPriority("FindDotNetPackVersions: " + dotnetPacksPath.ToString());
@@ -147,7 +147,7 @@ public static class DotNetSDKUtilities
 		{
 			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetPacksPath))
 			{
-				var folderName = child.Path.FileName;
+				var folderName = child.Path.DecomposeDirectories().Last();
 				versions.Add((folderName, dotnetPacksPath));
 			}
 		}

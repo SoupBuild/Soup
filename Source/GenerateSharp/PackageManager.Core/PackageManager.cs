@@ -17,7 +17,7 @@ namespace Soup.Build.PackageManager;
 [SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification = "Primary class")]
 public class PackageManager
 {
-	private const string StagingFolderName = ".staging/";
+	private static readonly Path StagingFolder = new Path("./.staging/");
 
 	private readonly Uri _apiEndpoint;
 
@@ -190,7 +190,7 @@ public class PackageManager
 
 		try
 		{
-			var archivePath = stagingPath + new Path(recipe.Name + ".zip");
+			var archivePath = stagingPath + new Path($"./{recipe.Name}.zip");
 
 			// Create the archive of the package
 			using (var zipArchive = LifetimeManager.Get<IZipManager>().OpenCreate(archivePath))
@@ -366,7 +366,7 @@ public class PackageManager
 	/// </summary>
 	private static Path EnsureStagingDirectoryExists(Path packageStore)
 	{
-		var stagingDirectory = packageStore + new Path(StagingFolderName);
+		var stagingDirectory = packageStore + StagingFolder;
 		if (LifetimeManager.Get<IFileSystem>().Exists(stagingDirectory))
 		{
 			Log.Warning("The staging directory already exists from a previous failed run");
