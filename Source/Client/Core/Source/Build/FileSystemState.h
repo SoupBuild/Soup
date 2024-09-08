@@ -256,9 +256,12 @@ namespace Soup::Core
 				// Load the write times for all files in the directory
 				// This optimization assumes that most files in a directory are relevant to the build
 				// and on windows it is a lot faster to iterate over the files instead of making individual calls
-				System::IFileSystem::Current().GetDirectoryFilesLastWriteTime(
+				if (!System::IFileSystem::Current().TryGetDirectoryFilesLastWriteTime(
 					directory,
-					callback);
+					callback))
+				{
+					Log::Info("Preload Directory Missing: {}", directory.ToString());
+				}
 			}
 		}
 

@@ -24,16 +24,14 @@ namespace Soup::Core
 			const Path& localUserConfigFile,
 			LocalUserConfig& result)
 		{
-			// Verify the requested file exists
+			// Open the file to read from
 			Log::Diag("Load Local User Config: {}", localUserConfigFile.ToString());
-			if (!System::IFileSystem::Current().Exists(localUserConfigFile))
+			std::shared_ptr<System::IInputFile> file;
+			if (!System::IFileSystem::Current().TryOpenRead(localUserConfigFile, true, file))
 			{
 				Log::Warning("Local User Config file does not exist");
 				return false;
 			}
-
-			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(localUserConfigFile, true);
 
 			// Read the contents of the local user config file
 			try

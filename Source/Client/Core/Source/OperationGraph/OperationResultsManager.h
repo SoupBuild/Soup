@@ -25,15 +25,13 @@ namespace Soup::Core
 			OperationResults& result,
 			FileSystemState& fileSystemState)
 		{
-			// Verify the requested file exists
-			if (!System::IFileSystem::Current().Exists(operationResultsFile))
+			// Open the file to read from
+			std::shared_ptr<System::IInputFile> file;
+			if (!System::IFileSystem::Current().TryOpenRead(operationResultsFile, true, file))
 			{
 				Log::Info("Operation results file does not exist");
 				return false;
 			}
-
-			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(operationResultsFile, true);
 
 			// Read the contents of the build state file
 			try

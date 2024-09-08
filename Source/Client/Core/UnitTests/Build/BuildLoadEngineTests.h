@@ -86,7 +86,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -229,14 +229,10 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/TestTool/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/TestTool/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/TestTool/4.4.4/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -437,12 +433,9 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -693,22 +686,14 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/4.5.6/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/4.5.6/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/4.5.6/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1008,18 +993,12 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1330,22 +1309,14 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1653,18 +1624,12 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/WorkingDirectory/TestBuild/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/TestBuild/Recipe.sml",
-					"Exists: C:/WorkingDirectory/TestBuild/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/TestBuild/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/TestBuild/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/TestBuild/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1906,10 +1871,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -2084,20 +2047,13 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -2429,22 +2385,14 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild2/4.4.4/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild2/4.4.4/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild2/4.4.4/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -2787,22 +2735,14 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -3169,24 +3109,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.4/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.4/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.4/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/Soup.Wren/2.2.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Wren/2.2.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/Soup.Wren/2.2.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Wren/2.2.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/1.1.2/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/1.1.2/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/1.1.2/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/1.1.2/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.4/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.4/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Wren/2.2.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Wren/2.2.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/1.1.2/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/1.1.2/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -3510,18 +3441,12 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/WorkingDirectory/Package1/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/Package1/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/Soup.CSharp/2.2.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.CSharp/2.2.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/Soup.CSharp/2.2.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.CSharp/2.2.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/Package1/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.CSharp/2.2.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.CSharp/2.2.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -3778,16 +3703,11 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -4056,16 +3976,11 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
