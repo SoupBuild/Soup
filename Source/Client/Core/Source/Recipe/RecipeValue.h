@@ -21,6 +21,7 @@ namespace Soup::Core
 		Integer,
 		Float,
 		Boolean,
+		Version,
 	};
 
 	class RecipeValue
@@ -57,6 +58,11 @@ namespace Soup::Core
 		}
 
 		RecipeValue(bool value) :
+			_value(value)
+		{
+		}
+
+		RecipeValue(SemanticVersion value) :
 			_value(value)
 		{
 		}
@@ -175,6 +181,19 @@ namespace Soup::Core
 			}
 		}
 
+		SemanticVersion AsVersion() const
+		{
+			if (GetType() == RecipeValueType::Version)
+			{
+				return std::get<SemanticVersion>(_value);
+			}
+			else
+			{
+				// Wrong type
+				throw std::runtime_error("Attempt to access value as version with incorrect type.");
+			}
+		}
+
 		RecipeValueType GetType() const
 		{
 			switch (_value.index())
@@ -191,6 +210,8 @@ namespace Soup::Core
 					return RecipeValueType::Float;
 				case 5:
 					return RecipeValueType::Boolean;
+				case 6:
+					return RecipeValueType::Version;
 				default:
 					throw std::runtime_error("Unknown recipe value type.");
 			}
@@ -217,6 +238,8 @@ namespace Soup::Core
 						return std::get<double>(_value) == std::get<double>(rhs._value);
 					case RecipeValueType::Boolean:
 						return std::get<bool>(_value) == std::get<bool>(rhs._value);
+					case RecipeValueType::Version:
+						return std::get<SemanticVersion>(_value) == std::get<SemanticVersion>(rhs._value);
 					default:
 						throw std::runtime_error("Unkown Recipe ValueType for comparison.");
 				}
@@ -242,6 +265,7 @@ namespace Soup::Core
 			std::string,
 			int64_t,
 			double,
-			bool> _value;
+			bool,
+			SemanticVersion> _value;
 	};
 }

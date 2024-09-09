@@ -124,6 +124,9 @@ public static class SMLManager
 			case SMLValueType.Array:
 				await SerializeAsync(value.AsArray(), writer);
 				break;
+			case SMLValueType.Version:
+				await SerializeAsync(value.AsVersion(), writer);
+				break;
 			default:
 				throw new InvalidOperationException("Unknown SMLValueType");
 		}
@@ -155,6 +158,11 @@ public static class SMLManager
 	{
 		foreach (var token in tokens)
 			await SerializeAsync(token, writer);
+	}
+
+	private static async Task SerializeAsync(SMLVersionValue value, System.IO.StreamWriter writer)
+	{
+		await SerializeAsync(value.Content, writer);
 	}
 
 	private static async Task SerializeAsync(SMLToken token, System.IO.StreamWriter writer)

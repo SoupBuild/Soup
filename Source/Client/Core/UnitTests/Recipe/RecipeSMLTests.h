@@ -68,7 +68,11 @@ namespace Soup::Core::UnitTests
 				R"(
 					Name: 'MyPackage'
 					Language: 'C++|1'
-					Version: '1.2.3'
+					Version: v1.2.3
+					IntegerValue: 55
+					FloatValue: 1.2
+					TrueValue: true
+					FalseValue: false
 					Dependencies: {
 						Runtime: []
 						Build: []
@@ -81,7 +85,11 @@ namespace Soup::Core::UnitTests
 			{
 				{ "Name", "MyPackage" },
 				{ "Language", "C++|1" },
-				{ "Version", "1.2.3" },
+				{ "Version", SemanticVersion(1, 2, 3) },
+				{ "IntegerValue", (int64_t)55 },
+				{ "FloatValue", 1.2 },
+				{ "TrueValue", true },
+				{ "FalseValue", false },
 				{
 					"Dependencies",
 					RecipeTable(
@@ -125,7 +133,11 @@ Language: 'C++|1'
 			{
 				{ "Name", "MyPackage" },
 				{ "Language", "C++|1" },
-				{ "Version", "1.2.3" },
+				{ "Version", SemanticVersion(1, 2, 3) },
+				{ "IntegerValue", (int64_t)55 },
+				{ "FloatValue", 1.2 },
+				{ "TrueValue", true },
+				{ "FalseValue", false },
 				{
 					"Dependencies",
 					RecipeTable(
@@ -143,7 +155,11 @@ Language: 'C++|1'
 			auto expected = 
 R"(Name: 'MyPackage'
 Language: 'C++|1'
-Version: '1.2.3'
+Version: v1.2.3
+IntegerValue: 55
+FloatValue: 1.2
+TrueValue: true
+FalseValue: false
 Dependencies: {Build: []
 Runtime: []
 Test: []

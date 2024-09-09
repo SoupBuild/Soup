@@ -4,6 +4,7 @@
 
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using Opal;
 using System.Globalization;
 
 namespace Soup.Build.Utilities;
@@ -20,8 +21,8 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	public SMLValueTableVisitor(CommonTokenStream tokens)
 	{
-		this._tokens = tokens;
-		this._lastToken = null;
+		_tokens = tokens;
+		_lastToken = null;
 	}
 
 	public virtual object VisitDocument(SMLParser.DocumentContext context)
@@ -31,10 +32,10 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
 
 		// Attack any trailing content ot the last token
-		if (this._lastToken != null)
+		if (_lastToken != null)
 		{
 			var endTrailingContent = GetLeadingTrivia(context.Eof());
-			this._lastToken.TrailingTrivia.AddRange(endTrailingContent);
+			_lastToken.TrailingTrivia.AddRange(endTrailingContent);
 		}
 
 		return new SMLDocument(
@@ -52,7 +53,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var closeBraceToken = BuildToken(context.CLOSE_BRACE());
 
 		// Cache the last seen token
-		this._lastToken = closeBraceToken;
+		_lastToken = closeBraceToken;
 
 		return new SMLTable(
 			openBraceToken,
@@ -120,7 +121,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var closeBracketToken = BuildToken(context.CLOSE_BRACKET());
 
 		// Cache the last seen token
-		this._lastToken = closeBracketToken;
+		_lastToken = closeBracketToken;
 
 		return new SMLArray(
 			openBracketToken,
@@ -153,6 +154,21 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		return arrayContent;
 	}
 
+	public virtual object VisitValueFloat(SMLParser.ValueFloatContext context)
+	{
+		var floatNode = context.FLOAT();
+		var value = double.Parse(floatNode.Symbol.Text, CultureInfo.InvariantCulture);
+		var floatToken = BuildToken(floatNode);
+
+		// Cache the last seen token
+		_lastToken = floatToken;
+
+		return new SMLValue(
+			new SMLFloatValue(
+				value,
+				floatToken));
+	}
+
 	public virtual object VisitValueInteger(SMLParser.ValueIntegerContext context)
 	{
 		var integerNode = context.INTEGER();
@@ -160,7 +176,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var integerToken = BuildToken(integerNode);
 
 		// Cache the last seen token
-		this._lastToken = integerToken;
+		_lastToken = integerToken;
 
 		return new SMLValue(
 			new SMLIntegerValue(
@@ -181,7 +197,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var closeQuoteToken = new SMLToken("'");
 
 		// Cache the last seen token
-		this._lastToken = closeQuoteToken;
+		_lastToken = closeQuoteToken;
 
 		return new SMLValue(new SMLStringValue(
 			content,
@@ -195,7 +211,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var booleanToken = BuildToken(context.TRUE());
 
 		// Cache the last seen token
-		this._lastToken = booleanToken;
+		_lastToken = booleanToken;
 
 		return new SMLValue(new SMLBooleanValue(
 			true,
@@ -207,7 +223,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var booleanToken = BuildToken(context.FALSE());
 
 		// Cache the last seen token
-		this._lastToken = booleanToken;
+		_lastToken = booleanToken;
 
 		return new SMLValue(
 			new SMLBooleanValue(false,
@@ -224,6 +240,22 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 	{
 		var array = (SMLArray)context.array().Accept(this);
 		return new SMLValue(array);
+	}
+
+	public virtual object VisitValueVersion(SMLParser.ValueVersionContext context)
+	{
+		var versionToken = BuildToken(context.VERSION());
+
+		var literal = context.VERSION().Symbol.Text;
+		var content = literal[1..];
+
+		// Cache the last seen token
+		_lastToken = versionToken;
+
+		var version = new SMLVersionValue(
+			SemanticVersion.Parse(content),
+			versionToken);
+		return new SMLValue(version);
 	}
 
 	public virtual object VisitNewlineDelimiter(SMLParser.NewlineDelimiterContext context)
@@ -261,7 +293,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	private List<string> GetLeadingTrivia(ITerminalNode node)
 	{
-		var left = this._tokens.GetHiddenTokensToLeft(node.Symbol.TokenIndex);
+		var left = _tokens.GetHiddenTokensToLeft(node.Symbol.TokenIndex);
 		var leadingTrivia = left != null ? left.Select(value => value.Text).ToList() : [];
 		return leadingTrivia;
 	}

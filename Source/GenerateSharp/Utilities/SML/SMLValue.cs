@@ -16,6 +16,7 @@ public enum SMLValueType
 	String,
 	Table,
 	Array,
+	Version,
 }
 
 public class SMLValue : IEquatable<SMLValue>
@@ -63,6 +64,12 @@ public class SMLValue : IEquatable<SMLValue>
 	public SMLValue(SMLTable value)
 	{
 		Type = SMLValueType.Table;
+		RawValue = value;
+	}
+
+	public SMLValue(SMLVersionValue value)
+	{
+		Type = SMLValueType.Version;
 		RawValue = value;
 	}
 
@@ -126,9 +133,19 @@ public class SMLValue : IEquatable<SMLValue>
 			throw new InvalidOperationException("Underlying type was incorrect: Float");
 	}
 
+	public SMLVersionValue AsVersion()
+	{
+		if (Type != SMLValueType.Version)
+			throw new InvalidCastException("Incorrect access type: Value is not Version");
+		else if (RawValue is SMLVersionValue value)
+			return value;
+		else
+			throw new InvalidOperationException("Underlying type was incorrect: Version");
+	}
+
 	public override bool Equals(object? obj)
 	{
-		return this.Equals(obj as SMLValue);
+		return Equals(obj as SMLValue);
 	}
 
 	public bool Equals(SMLValue? other)
@@ -137,22 +154,23 @@ public class SMLValue : IEquatable<SMLValue>
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, other))
+		if (ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		if (this.Type != other.Type)
+		if (Type != other.Type)
 			return false;
 
-		return this.Type switch
+		return Type switch
 		{
 			SMLValueType.Empty => true,
-			SMLValueType.Boolean => this.AsBoolean() == other.AsBoolean(),
-			SMLValueType.Integer => this.AsInteger() == other.AsInteger(),
-			SMLValueType.Float => this.AsFloat() == other.AsFloat(),
-			SMLValueType.String => this.AsString() == other.AsString(),
-			SMLValueType.Table => this.AsTable() == other.AsTable(),
-			SMLValueType.Array => this.AsArray() == other.AsArray(),
+			SMLValueType.Boolean => AsBoolean() == other.AsBoolean(),
+			SMLValueType.Integer => AsInteger() == other.AsInteger(),
+			SMLValueType.Float => AsFloat() == other.AsFloat(),
+			SMLValueType.String => AsString() == other.AsString(),
+			SMLValueType.Table => AsTable() == other.AsTable(),
+			SMLValueType.Array => AsArray() == other.AsArray(),
+			SMLValueType.Version => AsVersion() == other.AsVersion(),
 			_ => false,
 		};
 	}

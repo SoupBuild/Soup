@@ -36,6 +36,7 @@ enum class SMLToken : int
     EndOfFile = 0,
     Newline,
     KeyLiteral,
+    Version,
     Integer,
     Decimal,
     Colon,
@@ -97,14 +98,16 @@ whitespace      [ \t]+
 newline         \r?\n
 comment         "#".*?\r?\n
 key             [\p{L}\p{N}]+
+version         "v"\d+\.\d+\.\d+
 integer         \d+
-decimal         \.\d+
+decimal         \d+\.\d+
 basic_string    {basic_char}+
 
 %%
 {whitespace}    { /* ignore whitespace */ }
 {comment}       { /* ignore comments */ }
 {newline}       return (int)SMLToken::Newline;
+{version}       return (int)SMLToken::Version;
 {integer}       return (int)SMLToken::Integer;
 "true"          return (int)SMLToken::True;
 "false"         return (int)SMLToken::False;
@@ -382,6 +385,20 @@ private:
             {
                 auto string = GetString();
                 value = SMLValue(std::move(string));
+                return true;
+            }
+            case SMLToken::Version:
+            {
+                auto rawText = std::string_view(text());
+                auto versionText = rawText.substr(1);
+                auto version = SemanticVersion::Parse(versionText);
+                value = SMLValue(std::move(version));
+                return true;
+            }
+            case SMLToken::Decimal:
+            {
+                double doubleValue = std::stod(text());
+                value = SMLValue(doubleValue);
                 return true;
             }
             case SMLToken::Integer:

@@ -12,7 +12,9 @@ key                 : KEY_LITERAL # keyLiteral
                     ;
 array               : OPEN_BRACKET leadingNewlines arrayContent trailingNewlines CLOSE_BRACKET ;
 arrayContent        : (value (delimiter value)*)? ;
-value               : INTEGER # valueInteger
+value               : FLOAT # valueFloat
+                    | INTEGER # valueInteger
+                    | VERSION # valueVersion
                     | STRING_LITERAL # valueString
                     | TRUE # valueTrue
                     | FALSE # valueFalse
@@ -43,8 +45,10 @@ TRUE                : 'true' ;
 FALSE               : 'false' ;
 NEWLINE             : '\r'?'\n' ;
 COMMENT             : '#'.*?'\r'?'\n' -> channel(HIDDEN) ;
+FLOAT               : DIGIT+ '.' DIGIT+ ;
 INTEGER             : DIGIT+ ;
 KEY_LITERAL         : [\p{L}\p{N}]+ ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
+VERSION             : 'v' INTEGER '.' INTEGER '.' INTEGER ;
 STRING_LITERAL      : '\'' BASIC_CHAR*? '\'' ;
 WHITESPACE          : (' '|'\t')+ -> channel(HIDDEN) ;

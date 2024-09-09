@@ -23,7 +23,7 @@ public class SMLManagerUnitTests
 	{
 		var recipe =
 			@"Name: 'MyPackage'
-				Language: 'C++|1'";
+			Language: 'C++|1'";
 		var actual = SMLManager.Deserialize(recipe);
 
 		var expected = new SMLDocument(
@@ -110,18 +110,20 @@ public class SMLManagerUnitTests
 		var recipe =
 			@"Name: 'MyPackage'
 
-				# A Comment in the file
-				Language: 'C++|1'
-				Version: '1.2.3'
-				EnableErrorsAsWarnings: false
-				EnableCoolFeature: true
-				Dependencies: {
-					Runtime:[], Build:[]
+			# A Comment in the file
+			Language: 'C++|1'
+			Version: v1.2.3
+			EnableErrorsAsWarnings: false
+			EnableCoolFeature: true
+			IntegerValue: 55
+			FloatValue: 1.2
+			Dependencies: {
+				Runtime:[], Build:[]
 
-					Test :[
-						123
-						false, 'string' ]
-				}";
+				Test :[
+					123
+					false, 'string' ]
+			}";
 		var actual = SMLManager.Deserialize(recipe);
 
 		var expected = new SMLDocument(
@@ -149,7 +151,8 @@ public class SMLManagerUnitTests
 							new SMLToken("Version"),
 							"Version",
 							new SMLToken(":"),
-							new SMLValue(new SMLStringValue("1.2.3")))
+							new SMLValue(new SMLVersionValue(
+								new Opal.SemanticVersion(1, 2, 3))))
 					},
 					{
 						"EnableErrorsAsWarnings",
@@ -166,6 +169,22 @@ public class SMLManagerUnitTests
 							"EnableCoolFeature",
 							new SMLToken(":"),
 							new SMLValue(new SMLBooleanValue(true)))
+					},
+					{
+						"IntegerValue",
+						new SMLTableValue(
+							new SMLToken("IntegerValue"),
+							"IntegerValue",
+							new SMLToken(":"),
+							new SMLValue(new SMLIntegerValue(55)))
+					},
+					{
+						"FloatValue",
+						new SMLTableValue(
+							new SMLToken("FloatValue"),
+							"FloatValue",
+							new SMLToken(":"),
+							new SMLValue(new SMLFloatValue(1.2)))
 					},
 					{
 						"Dependencies",
@@ -217,19 +236,21 @@ public class SMLManagerUnitTests
 		var expected =
 			@"Name: 'MyPackage'
 
-				# A Comment in the file
-				Language: 'C++|1'
-				Version: '1.2.3'
-				EnableErrorsAsWarnings: false
-				EnableCoolFeature: true
-				'Z@#1%': 'Complex'
-				Dependencies: {
-					Runtime:[], Build:[]
+			# A Comment in the file
+			Language: 'C++|1'
+			Version: v1.2.3
+			EnableErrorsAsWarnings: false
+			EnableCoolFeature: true
+			IntegerValue: 55
+			FloatValue: 1.2
+			'Z@#1%': 'Complex'
+			Dependencies: {
+				Runtime:[], Build:[]
 
-					Test :[
-						123
-						false, 'string' ]
-				}";
+				Test :[
+					123
+					false, 'string' ]
+			}";
 		var document = SMLManager.Deserialize(expected);
 
 		var actual = await SerializeAsync(document);
