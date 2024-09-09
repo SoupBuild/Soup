@@ -112,7 +112,7 @@ public class SMLManagerUnitTests
 
 			# A Comment in the file
 			Language: 'C++|1'
-			Version: v1.2.3
+			Version: 1.2.3
 			EnableErrorsAsWarnings: false
 			EnableCoolFeature: true
 			IntegerValue: 55
@@ -238,7 +238,7 @@ public class SMLManagerUnitTests
 
 			# A Comment in the file
 			Language: 'C++|1'
-			Version: v1.2.3
+			Version: 1.2.3
 			EnableErrorsAsWarnings: false
 			EnableCoolFeature: true
 			IntegerValue: 55

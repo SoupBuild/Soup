@@ -68,7 +68,7 @@ namespace Soup::Core::UnitTests
 				R"(
 					Name: 'MyPackage'
 					Language: 'C++|1'
-					Version: v1.2.3
+					Version: 1.2.3
 					IntegerValue: 55
 					FloatValue: 1.2
 					TrueValue: true
@@ -155,7 +155,7 @@ Language: 'C++|1'
 			auto expected = 
 R"(Name: 'MyPackage'
 Language: 'C++|1'
-Version: v1.2.3
+Version: 1.2.3
 IntegerValue: 55
 FloatValue: 1.2
 TrueValue: true

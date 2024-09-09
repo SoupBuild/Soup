@@ -247,13 +247,13 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var versionToken = BuildToken(context.VERSION());
 
 		var literal = context.VERSION().Symbol.Text;
-		var content = literal[1..];
+		var value = SemanticVersion.Parse(literal);
 
 		// Cache the last seen token
 		_lastToken = versionToken;
 
 		var version = new SMLVersionValue(
-			SemanticVersion.Parse(content),
+			value,
 			versionToken);
 		return new SMLValue(version);
 	}

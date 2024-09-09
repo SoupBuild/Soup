@@ -37,8 +37,8 @@ public partial class SMLParser : Parser {
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
 		COLON=1, OPEN_BRACKET=2, CLOSE_BRACKET=3, OPEN_BRACE=4, CLOSE_BRACE=5, 
-		COMMA=6, TRUE=7, FALSE=8, NEWLINE=9, COMMENT=10, FLOAT=11, INTEGER=12, 
-		KEY_LITERAL=13, WORD=14, VERSION=15, STRING_LITERAL=16, WHITESPACE=17;
+		COMMA=6, TRUE=7, FALSE=8, NEWLINE=9, COMMENT=10, VERSION=11, FLOAT=12, 
+		INTEGER=13, KEY_LITERAL=14, WORD=15, STRING_LITERAL=16, WHITESPACE=17;
 	public const int
 		RULE_document = 0, RULE_table = 1, RULE_tableContent = 2, RULE_tableValue = 3, 
 		RULE_key = 4, RULE_array = 5, RULE_arrayContent = 6, RULE_value = 7, RULE_delimiter = 8, 
@@ -53,8 +53,8 @@ public partial class SMLParser : Parser {
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "COLON", "OPEN_BRACKET", "CLOSE_BRACKET", "OPEN_BRACE", "CLOSE_BRACE", 
-		"COMMA", "TRUE", "FALSE", "NEWLINE", "COMMENT", "FLOAT", "INTEGER", "KEY_LITERAL", 
-		"WORD", "VERSION", "STRING_LITERAL", "WHITESPACE"
+		"COMMA", "TRUE", "FALSE", "NEWLINE", "COMMENT", "VERSION", "FLOAT", "INTEGER", 
+		"KEY_LITERAL", "WORD", "STRING_LITERAL", "WHITESPACE"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -483,7 +483,7 @@ public partial class SMLParser : Parser {
 			State = 67;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 104852L) != 0) {
+			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 80276L) != 0) {
 				{
 				State = 58;
 				value();
@@ -917,12 +917,12 @@ public partial class SMLParser : Parser {
 		8,0,35,36,3,6,3,0,36,38,1,0,0,0,37,34,1,0,0,0,38,41,1,0,0,0,39,37,1,0,
 		0,0,39,40,1,0,0,0,40,43,1,0,0,0,41,39,1,0,0,0,42,33,1,0,0,0,42,43,1,0,
 		0,0,43,5,1,0,0,0,44,45,3,8,4,0,45,46,5,1,0,0,46,47,3,14,7,0,47,7,1,0,0,
-		0,48,51,5,13,0,0,49,51,5,16,0,0,50,48,1,0,0,0,50,49,1,0,0,0,51,9,1,0,0,
+		0,48,51,5,14,0,0,49,51,5,16,0,0,50,48,1,0,0,0,50,49,1,0,0,0,51,9,1,0,0,
 		0,52,53,5,2,0,0,53,54,3,18,9,0,54,55,3,12,6,0,55,56,3,20,10,0,56,57,5,
 		3,0,0,57,11,1,0,0,0,58,64,3,14,7,0,59,60,3,16,8,0,60,61,3,14,7,0,61,63,
 		1,0,0,0,62,59,1,0,0,0,63,66,1,0,0,0,64,62,1,0,0,0,64,65,1,0,0,0,65,68,
 		1,0,0,0,66,64,1,0,0,0,67,58,1,0,0,0,67,68,1,0,0,0,68,13,1,0,0,0,69,78,
-		5,11,0,0,70,78,5,12,0,0,71,78,5,15,0,0,72,78,5,16,0,0,73,78,5,7,0,0,74,
+		5,12,0,0,70,78,5,13,0,0,71,78,5,11,0,0,72,78,5,16,0,0,73,78,5,7,0,0,74,
 		78,5,8,0,0,75,78,3,2,1,0,76,78,3,10,5,0,77,69,1,0,0,0,77,70,1,0,0,0,77,
 		71,1,0,0,0,77,72,1,0,0,0,77,73,1,0,0,0,77,74,1,0,0,0,77,75,1,0,0,0,77,
 		76,1,0,0,0,78,15,1,0,0,0,79,81,5,9,0,0,80,79,1,0,0,0,81,82,1,0,0,0,82,

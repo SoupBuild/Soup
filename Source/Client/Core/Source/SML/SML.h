@@ -318,7 +318,7 @@ namespace Soup::Core
 				stream <<  value.AsTable();
 				break;
 			case SMLValueType::Version:
-				stream << "v" << value.AsVersion().ToString();
+				stream << value.AsVersion().ToString();
 				break;
 			default:
 				throw std::runtime_error("Unknown SML type.");

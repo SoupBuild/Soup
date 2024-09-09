@@ -98,7 +98,7 @@ whitespace      [ \t]+
 newline         \r?\n
 comment         "#".*?\r?\n
 key             [\p{L}\p{N}]+
-version         "v"\d+\.\d+\.\d+
+version         \d+\.\d+\.\d+
 integer         \d+
 decimal         \d+\.\d+
 basic_string    {basic_char}+
@@ -389,8 +389,7 @@ private:
             }
             case SMLToken::Version:
             {
-                auto rawText = std::string_view(text());
-                auto versionText = rawText.substr(1);
+                auto versionText = std::string_view(text());
                 auto version = SemanticVersion::Parse(versionText);
                 value = SMLValue(std::move(version));
                 return true;
