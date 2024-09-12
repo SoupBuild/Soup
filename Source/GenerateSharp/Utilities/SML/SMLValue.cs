@@ -17,6 +17,7 @@ public enum SMLValueType
 	Table,
 	Array,
 	Version,
+	PackageReference,
 }
 
 public class SMLValue : IEquatable<SMLValue>
@@ -70,6 +71,12 @@ public class SMLValue : IEquatable<SMLValue>
 	public SMLValue(SMLVersionValue value)
 	{
 		Type = SMLValueType.Version;
+		RawValue = value;
+	}
+
+	public SMLValue(SMLPackageReferenceValue value)
+	{
+		Type = SMLValueType.PackageReference;
 		RawValue = value;
 	}
 
@@ -143,6 +150,16 @@ public class SMLValue : IEquatable<SMLValue>
 			throw new InvalidOperationException("Underlying type was incorrect: Version");
 	}
 
+	public SMLPackageReferenceValue AsPackageReference()
+	{
+		if (Type != SMLValueType.PackageReference)
+			throw new InvalidCastException("Incorrect access type: Value is not PackageReference");
+		else if (RawValue is SMLPackageReferenceValue value)
+			return value;
+		else
+			throw new InvalidOperationException("Underlying type was incorrect: PackageReference");
+	}
+
 	public override bool Equals(object? obj)
 	{
 		return Equals(obj as SMLValue);
@@ -171,6 +188,7 @@ public class SMLValue : IEquatable<SMLValue>
 			SMLValueType.Table => AsTable() == other.AsTable(),
 			SMLValueType.Array => AsArray() == other.AsArray(),
 			SMLValueType.Version => AsVersion() == other.AsVersion(),
+			SMLValueType.PackageReference => AsPackageReference() == other.AsPackageReference(),
 			_ => false,
 		};
 	}

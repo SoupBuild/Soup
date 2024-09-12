@@ -36,11 +36,16 @@ enum class SMLToken : int
     EndOfFile = 0,
     Newline,
     KeyLiteral,
+    ExtendedKeyLiteral,
     Version,
     Integer,
     Decimal,
+    AtSign,
+    Pipe,
     Colon,
     Comma,
+    LessThan,
+    GreaterThan,
     OpenBracket,
     CloseBracket,
     OpenBrace,
@@ -93,47 +98,56 @@ private:
 // TODO: Remove extra symbols
 
 %x QUOTE
-basic_char      [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}['\\]
-whitespace      [ \t]+
-newline         \r?\n
-comment         "#".*?\r?\n
-key             [\p{L}\p{N}]+
-version         \d+\.\d+\.\d+
-integer         \d+
-decimal         \d+\.\d+
-basic_string    {basic_char}+
+basic_char         [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}['\\]
+whitespace         [ \t]+
+newline            \r?\n
+comment            "#".*?\r?\n
+alpha              [A-Za-z]
+alphanumeric       [A-Za-z0-9]
+alphanumeric_ext   [A-Za-z0-9+#]
+key                {alpha}{alphanumeric}*
+key_ext            {alpha}{alphanumeric_ext}*
+integer            \d+
+decimal            \d+\.\d+
+version            \d+\.\d+\.\d+
+basic_string       {basic_char}+
 
 %%
-{whitespace}    { /* ignore whitespace */ }
-{comment}       { /* ignore comments */ }
-{newline}       return (int)SMLToken::Newline;
-{version}       return (int)SMLToken::Version;
-{integer}       return (int)SMLToken::Integer;
-"true"          return (int)SMLToken::True;
-"false"         return (int)SMLToken::False;
-{key}           return (int)SMLToken::KeyLiteral;
-{decimal}       return (int)SMLToken::Decimal;
-":"             return (int)SMLToken::Colon;
-"["             return (int)SMLToken::OpenBracket;
-"]"             return (int)SMLToken::CloseBracket;
-"{"             return (int)SMLToken::OpenBrace;
-"}"             return (int)SMLToken::CloseBrace;
-","             return (int)SMLToken::Comma;
-"'"             { ClearString(); start(QUOTE); }
-.               return (int)SMLToken::Error;
+{whitespace}       { /* ignore whitespace */ }
+{comment}          { /* ignore comments */ }
+{newline}          return (int)SMLToken::Newline;
+{version}          return (int)SMLToken::Version;
+{decimal}          return (int)SMLToken::Decimal;
+{integer}          return (int)SMLToken::Integer;
+"true"             return (int)SMLToken::True;
+"false"            return (int)SMLToken::False;
+{key}              return (int)SMLToken::KeyLiteral;
+{key_ext}          return (int)SMLToken::ExtendedKeyLiteral;
+"@"                return (int)SMLToken::AtSign;
+"|"                return (int)SMLToken::Pipe;
+":"                return (int)SMLToken::Colon;
+"<"                return (int)SMLToken::LessThan;
+">"                return (int)SMLToken::GreaterThan;
+"["                return (int)SMLToken::OpenBracket;
+"]"                return (int)SMLToken::CloseBracket;
+"{"                return (int)SMLToken::OpenBrace;
+"}"                return (int)SMLToken::CloseBrace;
+","                return (int)SMLToken::Comma;
+"'"                { ClearString(); start(QUOTE); }
+.                  return (int)SMLToken::Error;
 
 <QUOTE>{
-'               { start(INITIAL); return (int)SMLToken::StringLiteral; }
-\\0             { AddCharacter('\0'); }
-\\t             { AddCharacter('\t'); } // tab              (U+0009)
-\\n             { AddCharacter('\n'); } // linefeed         (U+000A)
-\\f             { AddCharacter('\f'); } // form feed        (U+000C)
-\\r             { AddCharacter('\r'); } // carriage return  (U+000D)
-\\e             { AddCharacter('\r'); } // escape           (U+001B)
-\\'             { AddCharacter('\''); } // quote            (U+001B)
-\\\\            { AddCharacter('\\'); } // backslash        (U+005C)
-{basic_string}  { AddString(text(), size()); }
-.               { AddString(text(), size()); }
+'                  { start(INITIAL); return (int)SMLToken::StringLiteral; }
+\\0                { AddCharacter('\0'); }
+\\t                { AddCharacter('\t'); } // tab              (U+0009)
+\\n                { AddCharacter('\n'); } // linefeed         (U+000A)
+\\f                { AddCharacter('\f'); } // form feed        (U+000C)
+\\r                { AddCharacter('\r'); } // carriage return  (U+000D)
+\\e                { AddCharacter('\r'); } // escape           (U+001B)
+\\'                { AddCharacter('\''); } // quote            (U+001B)
+\\\\               { AddCharacter('\\'); } // backslash        (U+005C)
+{basic_string}     { AddString(text(), size()); }
+.                  { AddString(text(), size()); }
 }
 %%
 
@@ -177,6 +191,14 @@ public:
     }
 
 private:
+    bool TryParsePackageReference(SMLPackageReference& packageReference)
+    {
+        // Verify match assign
+        MoveNext();
+        if (_currentToken != SMLToken::Colon)
+            return false;
+    }
+
     bool TryParseTable(SMLTable& table)
     {
         std::unordered_map<std::string, SMLValue> tableValues;
@@ -414,6 +436,15 @@ private:
             case SMLToken::False:
             {
                 value = SMLValue(false);
+                return true;
+            }
+            case SMLToken::LessThan:
+            {
+                SMLPackageReference packageReference;
+                if (!TryParsePackageReference(packageReference))
+                    return false;
+
+                value = SMLValue(std::move(packageReference));
                 return true;
             }
             case SMLToken::OpenBrace:

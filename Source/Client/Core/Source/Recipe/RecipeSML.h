@@ -99,6 +99,10 @@ namespace Soup::Core
 				{
 					return RecipeValue(source.AsVersion());
 				}
+				case SMLValueType::PackageReference:
+				{
+					return RecipeValue(source.AsPackageReference());
+				}
 				default:
 				{
 					throw std::runtime_error("Unknown SML type.");

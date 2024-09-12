@@ -16,7 +16,7 @@ public class SMLVersionValue : IEquatable<SMLVersionValue>
 		SemanticVersion value)
 	{
 		Value = value;
-		Content = new SMLToken($"v{value}");
+		Content = new SMLToken($"{value}");
 	}
 
 	public SMLVersionValue(

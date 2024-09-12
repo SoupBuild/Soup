@@ -258,6 +258,46 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		return new SMLValue(version);
 	}
 
+	public object VisitPackageReference(SMLParser.PackageReferenceContext context)
+	{
+		var lessThanToken = BuildToken(context.LESS_THAN());
+		var (userNameToken, pipeToken) = ((SMLToken?, SMLToken?))context.userName().Accept(this);
+		var packageNameToken = BuildToken(context.PACKAGE_NAME());
+		var atSignToken = BuildToken(context.AT_SIGN());
+		SMLToken versionReferenceToken;
+		if (context.INTEGER() is not null)
+			versionReferenceToken = BuildToken(context.INTEGER());
+		else
+			versionReferenceToken = BuildToken(context.FLOAT());
+
+		var greaterThanToken = BuildToken(context.GREATER_THAN());
+
+		// Cache the last seen token
+		_lastToken = greaterThanToken;
+
+		var value = new PackageReference(
+			null,
+			userNameToken?.Text,
+			packageNameToken.Text,
+			SemanticVersion.Parse(versionReferenceToken.Text));
+
+		return new SMLPackageReferenceValue(
+			lessThanToken,
+			userNameToken,
+			pipeToken,
+			packageNameToken,
+			atSignToken,
+			versionReferenceToken,
+			greaterThanToken,
+			value);
+	}
+
+	public object VisitValuePackageReference(SMLParser.ValuePackageReferenceContext context)
+	{
+		var packageReference = (SMLPackageReferenceValue)context.packageReference().Accept(this);
+		return new SMLValue(packageReference);
+	}
+
 	public virtual object VisitNewlineDelimiter(SMLParser.NewlineDelimiterContext context)
 	{
 		return context.NEWLINE().Select(BuildToken).ToList();
@@ -296,5 +336,15 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var left = _tokens.GetHiddenTokensToLeft(node.Symbol.TokenIndex);
 		var leadingTrivia = left != null ? left.Select(value => value.Text).ToList() : [];
 		return leadingTrivia;
+	}
+
+	public object VisitUserName(SMLParser.UserNameContext context)
+	{
+		if (context.USER_NAME() is null)
+			return ((SMLToken?)null, (SMLToken?)null);
+
+		var userNameToken = BuildToken(context.USER_NAME());
+		var pipeToken = BuildToken(context.PIPE());
+		return (userNameToken, pipeToken);
 	}
 }

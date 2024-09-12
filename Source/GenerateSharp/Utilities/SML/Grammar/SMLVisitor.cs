@@ -82,6 +82,18 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitArrayContent([NotNull] SMLParser.ArrayContentContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.userName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitUserName([NotNull] SMLParser.UserNameContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.packageReference"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPackageReference([NotNull] SMLParser.PackageReferenceContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>valueFloat</c>
 	/// labeled alternative in <see cref="SMLParser.value"/>.
 	/// </summary>
@@ -95,6 +107,13 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitValueInteger([NotNull] SMLParser.ValueIntegerContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valuePackageReference</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValuePackageReference([NotNull] SMLParser.ValuePackageReferenceContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>valueVersion</c>
 	/// labeled alternative in <see cref="SMLParser.value"/>.

@@ -127,6 +127,9 @@ public static class SMLManager
 			case SMLValueType.Version:
 				await SerializeAsync(value.AsVersion(), writer);
 				break;
+			case SMLValueType.PackageReference:
+				await SerializeAsync(value.AsPackageReference(), writer);
+				break;
 			default:
 				throw new InvalidOperationException("Unknown SMLValueType");
 		}
@@ -163,6 +166,19 @@ public static class SMLManager
 	private static async Task SerializeAsync(SMLVersionValue value, System.IO.StreamWriter writer)
 	{
 		await SerializeAsync(value.Content, writer);
+	}
+
+	private static async Task SerializeAsync(SMLPackageReferenceValue value, System.IO.StreamWriter writer)
+	{
+		await SerializeAsync(value.LessThan, writer);
+		if (value.UserName is not null)
+			await SerializeAsync(value.UserName, writer);
+		if (value.Pipe is not null)
+			await SerializeAsync(value.Pipe, writer);
+		await SerializeAsync(value.PackageName, writer);
+		await SerializeAsync(value.AtSign, writer);
+		await SerializeAsync(value.VersionReference, writer);
+		await SerializeAsync(value.GreaterThan, writer);
 	}
 
 	private static async Task SerializeAsync(SMLToken token, System.IO.StreamWriter writer)

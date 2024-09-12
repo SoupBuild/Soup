@@ -111,7 +111,7 @@ public class SMLManagerUnitTests
 			@"Name: 'MyPackage'
 
 			# A Comment in the file
-			Language: 'C++|1'
+			Language: <C++@1>
 			Version: 1.2.3
 			EnableErrorsAsWarnings: false
 			EnableCoolFeature: true
@@ -143,7 +143,15 @@ public class SMLManagerUnitTests
 							new SMLToken("Language"),
 							"Language",
 							new SMLToken(":"),
-							new SMLValue(new SMLStringValue("C++|1")))
+							new SMLValue(new SMLPackageReferenceValue(
+								new SMLToken("<"),
+								null,
+								null,
+								new SMLToken("C++"),
+								new SMLToken("@"),
+								new SMLToken("1"),
+								new SMLToken(">"),
+								new PackageReference(null, null, "C++", new Opal.SemanticVersion(1)))))
 					},
 					{
 						"Version",

@@ -67,7 +67,7 @@ namespace Soup::Core::UnitTests
 			auto recipe = std::stringstream(
 				R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: <C++@1>
 					Version: 1.2.3
 					IntegerValue: 55
 					FloatValue: 1.2
@@ -84,7 +84,7 @@ namespace Soup::Core::UnitTests
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", PackageReference(std::nullopt, std::nullopt, "C++", SemanticVersion(1)) },
 				{ "Version", SemanticVersion(1, 2, 3) },
 				{ "IntegerValue", (int64_t)55 },
 				{ "FloatValue", 1.2 },
