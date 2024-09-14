@@ -104,7 +104,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	public virtual object VisitKeyLiteral(SMLParser.KeyLiteralContext context)
 	{
-		return BuildToken(context.KEY_LITERAL());
+		return BuildToken(context.ALPHA_LITERAL());
 	}
 
 	public virtual object VisitKeyString(SMLParser.KeyStringContext context)
@@ -261,8 +261,13 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 	public object VisitPackageReference(SMLParser.PackageReferenceContext context)
 	{
 		var lessThanToken = BuildToken(context.LESS_THAN());
-		var (userNameToken, pipeToken) = ((SMLToken?, SMLToken?))context.userName().Accept(this);
-		var packageNameToken = BuildToken(context.PACKAGE_NAME());
+
+		var languageName = (SMLLanguageName?)context.language()?.Accept(this);
+
+		var userNameToken = (SMLToken)context.userName().Accept(this); ;
+		var userPipeToken = BuildToken(context.PIPE());
+
+		var packageNameToken = (SMLToken)context.packageName().Accept(this);
 		var atSignToken = BuildToken(context.AT_SIGN());
 		SMLToken versionReferenceToken;
 		if (context.INTEGER() is not null)
@@ -276,15 +281,16 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		_lastToken = greaterThanToken;
 
 		var value = new PackageReference(
-			null,
-			userNameToken?.Text,
+			languageName?.Value,
+			userNameToken.Text,
 			packageNameToken.Text,
 			SemanticVersion.Parse(versionReferenceToken.Text));
 
 		return new SMLPackageReferenceValue(
 			lessThanToken,
+			languageName,
 			userNameToken,
-			pipeToken,
+			userPipeToken,
 			packageNameToken,
 			atSignToken,
 			versionReferenceToken,
@@ -296,6 +302,41 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 	{
 		var packageReference = (SMLPackageReferenceValue)context.packageReference().Accept(this);
 		return new SMLValue(packageReference);
+	}
+
+	public object VisitLanguageReference(SMLParser.LanguageReferenceContext context)
+	{
+		var openParenthesisToken = BuildToken(context.OPEN_PARENTHESIS());
+		var languageNameToken = (SMLToken)context.languageName().Accept(this);
+		var atSignToken = BuildToken(context.AT_SIGN());
+		SMLToken versionReferenceToken;
+		if (context.INTEGER() is not null)
+			versionReferenceToken = BuildToken(context.INTEGER());
+		else
+			versionReferenceToken = BuildToken(context.FLOAT());
+
+		var closeParenthesisToken = BuildToken(context.CLOSE_PARENTHESIS());
+
+		// Cache the last seen token
+		_lastToken = closeParenthesisToken;
+
+		var value = new LanguageReference(
+			languageNameToken.Text,
+			SemanticVersion.Parse(versionReferenceToken.Text));
+
+		return new SMLLanguageReferenceValue(
+			openParenthesisToken,
+			languageNameToken,
+			atSignToken,
+			versionReferenceToken,
+			closeParenthesisToken,
+			value);
+	}
+
+	public object VisitValueLanguageReference(SMLParser.ValueLanguageReferenceContext context)
+	{
+		var languageReference = (SMLLanguageReferenceValue)context.languageReference().Accept(this);
+		return new SMLValue(languageReference);
 	}
 
 	public virtual object VisitNewlineDelimiter(SMLParser.NewlineDelimiterContext context)
@@ -338,13 +379,46 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		return leadingTrivia;
 	}
 
+	public object VisitLanguageName(SMLParser.LanguageNameContext context)
+	{
+		if (context.ALPHA_LITERAL() is not null)
+			return BuildToken(context.ALPHA_LITERAL());
+		else if (context.ALPHA_EXT3_LITERAL() is not null)
+			return BuildToken(context.ALPHA_EXT3_LITERAL());
+		else
+			throw new InvalidOperationException("Invalid LanguageName");
+	}
+
 	public object VisitUserName(SMLParser.UserNameContext context)
 	{
-		if (context.USER_NAME() is null)
-			return ((SMLToken?)null, (SMLToken?)null);
+		if (context.ALPHA_LITERAL() is not null)
+			return BuildToken(context.ALPHA_LITERAL());
+		else if (context.ALPHA_EXT1_LITERAL() is not null)
+			return BuildToken(context.ALPHA_EXT1_LITERAL());
+		else
+			throw new InvalidOperationException("Invalid UserName");
+	}
 
-		var userNameToken = BuildToken(context.USER_NAME());
-		var pipeToken = BuildToken(context.PIPE());
-		return (userNameToken, pipeToken);
+	public object VisitPackageName(SMLParser.PackageNameContext context)
+	{
+		if (context.ALPHA_LITERAL() is not null)
+			return BuildToken(context.ALPHA_LITERAL());
+		else if (context.ALPHA_EXT2_LITERAL() is not null)
+			return BuildToken(context.ALPHA_EXT2_LITERAL());
+		else
+			throw new InvalidOperationException("Invalid PackageName");
+	}
+
+	public object VisitLanguage(SMLParser.LanguageContext context)
+	{
+		var openParenthesisToken = BuildToken(context.OPEN_PARENTHESIS());
+		var languageNameToken = (SMLToken)context.languageName().Accept(this);
+		var closeParenthesisToken = BuildToken(context.CLOSE_PARENTHESIS());
+
+		return new SMLLanguageName(
+			openParenthesisToken,
+			languageNameToken,
+			closeParenthesisToken,
+			languageNameToken.Text);
 	}
 }

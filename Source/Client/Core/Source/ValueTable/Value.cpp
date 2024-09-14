@@ -54,6 +54,21 @@ Value::Value(bool value) :
 {
 }
 
+Value::Value(SemanticVersion value) :
+	_value(value)
+{
+}
+
+Value::Value(LanguageReference value) :
+	_value(std::move(value))
+{
+}
+
+Value::Value(PackageReference value) :
+	_value(std::move(value))
+{
+}
+
 ValueType Value::GetType() const
 {
 	switch (_value.index())
@@ -70,6 +85,12 @@ ValueType Value::GetType() const
 			return ValueType::Float;
 		case 5:
 			return ValueType::Boolean;
+		case 6:
+			return ValueType::Version;
+		case 7:
+			return ValueType::PackageReference;
+		case 8:
+			return ValueType::LanguageReference;
 		default:
 			throw std::runtime_error("Unknown value type.");
 	}
@@ -206,6 +227,45 @@ bool Value::AsBoolean() const
 	{
 		// Wrong type
 		throw std::runtime_error("Attempt to access value as Boolean with incorrect type.");
+	}
+}
+
+SemanticVersion Value::AsVersion() const
+{
+	if (GetType() == ValueType::Version)
+	{
+		return std::get<SemanticVersion>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as Version with incorrect type.");
+	}
+}
+
+PackageReference Value::AsPackageReference() const
+{
+	if (GetType() == ValueType::PackageReference)
+	{
+		return std::get<PackageReference>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as PackageReference with incorrect type.");
+	}
+}
+
+LanguageReference Value::AsLanguageReference() const
+{
+	if (GetType() == ValueType::LanguageReference)
+	{
+		return std::get<LanguageReference>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as LanguageReference with incorrect type.");
 	}
 }
 

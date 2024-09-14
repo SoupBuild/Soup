@@ -111,12 +111,14 @@ public class SMLManagerUnitTests
 			@"Name: 'MyPackage'
 
 			# A Comment in the file
-			Language: <C++@1>
+			Language: (C++@1)
 			Version: 1.2.3
 			EnableErrorsAsWarnings: false
 			EnableCoolFeature: true
 			IntegerValue: 55
 			FloatValue: 1.2
+			PackageFullValue: <(C++)User1|Package1@1.2>
+			PackageUserValue: <User1|Package1@1.2>
 			Dependencies: {
 				Runtime:[], Build:[]
 
@@ -143,15 +145,13 @@ public class SMLManagerUnitTests
 							new SMLToken("Language"),
 							"Language",
 							new SMLToken(":"),
-							new SMLValue(new SMLPackageReferenceValue(
-								new SMLToken("<"),
-								null,
-								null,
+							new SMLValue(new SMLLanguageReferenceValue(
+								new SMLToken("("),
 								new SMLToken("C++"),
 								new SMLToken("@"),
 								new SMLToken("1"),
-								new SMLToken(">"),
-								new PackageReference(null, null, "C++", new Opal.SemanticVersion(1)))))
+								new SMLToken(")"),
+								new LanguageReference("C++", new Opal.SemanticVersion(1)))))
 					},
 					{
 						"Version",
@@ -193,6 +193,44 @@ public class SMLManagerUnitTests
 							"FloatValue",
 							new SMLToken(":"),
 							new SMLValue(new SMLFloatValue(1.2)))
+					},
+					{
+						"PackageFullValue",
+						new SMLTableValue(
+							new SMLToken("PackageFullValue"),
+							"PackageFullValue",
+							new SMLToken(":"),
+							new SMLValue(new SMLPackageReferenceValue(
+								new SMLToken("<"),
+								new SMLLanguageName(
+									new SMLToken("("),
+									new SMLToken("C++"),
+									new SMLToken(")"),
+									"C++"),
+								new SMLToken("User1"),
+								new SMLToken("|"),
+								new SMLToken("Package1"),
+								new SMLToken("@"),
+								new SMLToken("1.2"),
+								new SMLToken(">"),
+								new PackageReference("C++", "User1", "Package1", new Opal.SemanticVersion(1, 2, null)))))
+					},
+					{
+						"PackageUserValue",
+						new SMLTableValue(
+							new SMLToken("PackageUserValue"),
+							"PackageUserValue",
+							new SMLToken(":"),
+							new SMLValue(new SMLPackageReferenceValue(
+								new SMLToken("<"),
+								null,
+								new SMLToken("User1"),
+								new SMLToken("|"),
+								new SMLToken("Package1"),
+								new SMLToken("@"),
+								new SMLToken("1.2"),
+								new SMLToken(">"),
+								new PackageReference(null, "User1", "Package1", new Opal.SemanticVersion(1, 2, null)))))
 					},
 					{
 						"Dependencies",
@@ -245,12 +283,14 @@ public class SMLManagerUnitTests
 			@"Name: 'MyPackage'
 
 			# A Comment in the file
-			Language: 'C++|1'
+			Language: (C++@1)
 			Version: 1.2.3
 			EnableErrorsAsWarnings: false
 			EnableCoolFeature: true
 			IntegerValue: 55
 			FloatValue: 1.2
+			PackageValue: <(C++)User1|Package1@1.2>
+			PackageUserValue: <User1|Package1@1.2>
 			'Z@#1%': 'Complex'
 			Dependencies: {
 				Runtime:[], Build:[]

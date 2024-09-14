@@ -82,9 +82,13 @@ namespace Soup::Core
 						std::format("Invalid Language format in Recipe: {}", languageValue.AsString()));
 				}
 			}
+			else if (languageValue.IsLanguageReference())
+			{
+				return languageValue.AsLanguageReference();
+			}
 			else
 			{
-				throw std::runtime_error("The Recipe language must be of type String");
+				throw std::runtime_error("The Recipe language must be of type String or LanguageReference");
 			}
 		}
 
@@ -104,8 +108,10 @@ namespace Soup::Core
 			auto& versionValue = GetValue(_table, Property_Version);
 			if (versionValue.IsString())
 				return SemanticVersion::Parse(versionValue.AsString());
+			else if (versionValue.IsVersion())
+				return versionValue.AsVersion();
 			else
-				throw std::runtime_error("The Recipe version must be of type String");
+				throw std::runtime_error("The Recipe version must be of type String or Version");
 		}
 
 		/// <summary>

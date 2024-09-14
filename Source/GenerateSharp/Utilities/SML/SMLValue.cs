@@ -18,6 +18,7 @@ public enum SMLValueType
 	Array,
 	Version,
 	PackageReference,
+	LanguageReference,
 }
 
 public class SMLValue : IEquatable<SMLValue>
@@ -77,6 +78,12 @@ public class SMLValue : IEquatable<SMLValue>
 	public SMLValue(SMLPackageReferenceValue value)
 	{
 		Type = SMLValueType.PackageReference;
+		RawValue = value;
+	}
+
+	public SMLValue(SMLLanguageReferenceValue value)
+	{
+		Type = SMLValueType.LanguageReference;
 		RawValue = value;
 	}
 
@@ -160,6 +167,16 @@ public class SMLValue : IEquatable<SMLValue>
 			throw new InvalidOperationException("Underlying type was incorrect: PackageReference");
 	}
 
+	public SMLLanguageReferenceValue AsLanguageReference()
+	{
+		if (Type != SMLValueType.LanguageReference)
+			throw new InvalidCastException("Incorrect access type: Value is not LanguageReference");
+		else if (RawValue is SMLLanguageReferenceValue value)
+			return value;
+		else
+			throw new InvalidOperationException("Underlying type was incorrect: LanguageReference");
+	}
+
 	public override bool Equals(object? obj)
 	{
 		return Equals(obj as SMLValue);
@@ -189,6 +206,7 @@ public class SMLValue : IEquatable<SMLValue>
 			SMLValueType.Array => AsArray() == other.AsArray(),
 			SMLValueType.Version => AsVersion() == other.AsVersion(),
 			SMLValueType.PackageReference => AsPackageReference() == other.AsPackageReference(),
+			SMLValueType.LanguageReference => AsLanguageReference() == other.AsLanguageReference(),
 			_ => false,
 		};
 	}

@@ -42,15 +42,15 @@ public static class SMLManager
 	/// <summary>
 	/// Save the document syntax to the root file
 	/// </summary>
-	public static async Task SerializeAsync(SMLDocument document, System.IO.Stream stream)
+	public static async Task SerializeAsync(SMLDocument document, Stream stream)
 	{
 		// Write out the entire root table
-		using var writer = new System.IO.StreamWriter(stream, null, -1, true);
+		using var writer = new StreamWriter(stream, null, -1, true);
 
 		await SerializeAsync(document, writer);
 	}
 
-	private static async Task SerializeAsync(SMLDocument document, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLDocument document, StreamWriter writer)
 	{
 		await SerializeAsync(document.LeadingNewlines, writer);
 
@@ -66,7 +66,7 @@ public static class SMLManager
 		await SerializeAsync(document.TrailingNewlines, writer);
 	}
 
-	private static async Task SerializeAsync(SMLTable table, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLTable table, StreamWriter writer)
 	{
 		await SerializeAsync(table.OpenBrace, writer);
 		await SerializeAsync(table.LeadingNewlines, writer);
@@ -84,7 +84,7 @@ public static class SMLManager
 		await SerializeAsync(table.CloseBrace, writer);
 	}
 
-	private static async Task SerializeAsync(SMLArray array, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLArray array, StreamWriter writer)
 	{
 		await SerializeAsync(array.OpenBracket, writer);
 		await SerializeAsync(array.LeadingNewlines, writer);
@@ -100,7 +100,7 @@ public static class SMLManager
 		await SerializeAsync(array.CloseBracket, writer);
 	}
 
-	private static async Task SerializeAsync(SMLValue value, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLValue value, StreamWriter writer)
 	{
 		switch (value.Type)
 		{
@@ -130,58 +130,80 @@ public static class SMLManager
 			case SMLValueType.PackageReference:
 				await SerializeAsync(value.AsPackageReference(), writer);
 				break;
+			case SMLValueType.LanguageReference:
+				await SerializeAsync(value.AsLanguageReference(), writer);
+				break;
 			default:
 				throw new InvalidOperationException("Unknown SMLValueType");
 		}
 	}
 
-	private static async Task SerializeAsync(SMLStringValue value, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLStringValue value, StreamWriter writer)
 	{
 		await SerializeAsync(value.OpenQuote, writer);
 		await SerializeAsync(value.Content, writer);
 		await SerializeAsync(value.CloseQuote, writer);
 	}
 
-	private static async Task SerializeAsync(SMLIntegerValue value, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLIntegerValue value, StreamWriter writer)
 	{
 		await SerializeAsync(value.Content, writer);
 	}
 
-	private static async Task SerializeAsync(SMLFloatValue value, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLFloatValue value, StreamWriter writer)
 	{
 		await SerializeAsync(value.Content, writer);
 	}
 
-	private static async Task SerializeAsync(SMLBooleanValue value, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLBooleanValue value, StreamWriter writer)
 	{
 		await SerializeAsync(value.Content, writer);
 	}
 
-	private static async Task SerializeAsync(IEnumerable<SMLToken> tokens, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(IEnumerable<SMLToken> tokens, StreamWriter writer)
 	{
 		foreach (var token in tokens)
 			await SerializeAsync(token, writer);
 	}
 
-	private static async Task SerializeAsync(SMLVersionValue value, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLVersionValue value, StreamWriter writer)
 	{
 		await SerializeAsync(value.Content, writer);
 	}
 
-	private static async Task SerializeAsync(SMLPackageReferenceValue value, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLPackageReferenceValue value, StreamWriter writer)
 	{
 		await SerializeAsync(value.LessThan, writer);
-		if (value.UserName is not null)
-			await SerializeAsync(value.UserName, writer);
-		if (value.Pipe is not null)
-			await SerializeAsync(value.Pipe, writer);
+		if (value.LanguageName is not null)
+		{
+			await SerializeAsync(value.LanguageName, writer);
+		}
+
+		await SerializeAsync(value.UserName, writer);
+		await SerializeAsync(value.UserPipe, writer);
 		await SerializeAsync(value.PackageName, writer);
 		await SerializeAsync(value.AtSign, writer);
 		await SerializeAsync(value.VersionReference, writer);
 		await SerializeAsync(value.GreaterThan, writer);
 	}
 
-	private static async Task SerializeAsync(SMLToken token, System.IO.StreamWriter writer)
+	private static async Task SerializeAsync(SMLLanguageName value, StreamWriter writer)
+	{
+		await SerializeAsync(value.OpenParenthesis, writer);
+		await SerializeAsync(value.LanguageName, writer);
+		await SerializeAsync(value.CloseParenthesis, writer);
+	}
+
+	private static async Task SerializeAsync(SMLLanguageReferenceValue value, StreamWriter writer)
+	{
+		await SerializeAsync(value.OpenParenthesis, writer);
+		await SerializeAsync(value.LanguageName, writer);
+		await SerializeAsync(value.AtSign, writer);
+		await SerializeAsync(value.VersionReference, writer);
+		await SerializeAsync(value.CloseParenthesis, writer);
+	}
+
+	private static async Task SerializeAsync(SMLToken token, StreamWriter writer)
 	{
 		foreach (var value in token.LeadingTrivia)
 		{

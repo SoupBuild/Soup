@@ -23,6 +23,7 @@ namespace Soup::Core
 		Boolean,
 		Version,
 		PackageReference,
+		LanguageReference,
 	};
 
 	class RecipeValue
@@ -69,6 +70,11 @@ namespace Soup::Core
 		}
 
 		RecipeValue(PackageReference value) :
+			_value(std::move(value))
+		{
+		}
+
+		RecipeValue(LanguageReference value) :
 			_value(std::move(value))
 		{
 		}
@@ -187,6 +193,11 @@ namespace Soup::Core
 			}
 		}
 
+		bool IsVersion() const
+		{
+			return GetType() == RecipeValueType::Version;
+		}
+
 		SemanticVersion AsVersion() const
 		{
 			if (GetType() == RecipeValueType::Version)
@@ -209,7 +220,25 @@ namespace Soup::Core
 			else
 			{
 				// Wrong type
-				throw std::runtime_error("Attempt to access value as package version with incorrect type.");
+				throw std::runtime_error("Attempt to access value as package reference with incorrect type.");
+			}
+		}
+
+		bool IsLanguageReference() const
+		{
+			return GetType() == RecipeValueType::LanguageReference;
+		}
+
+		LanguageReference AsLanguageReference() const
+		{
+			if (GetType() == RecipeValueType::LanguageReference)
+			{
+				return std::get<LanguageReference>(_value);
+			}
+			else
+			{
+				// Wrong type
+				throw std::runtime_error("Attempt to access value as language reference with incorrect type.");
 			}
 		}
 
@@ -233,6 +262,8 @@ namespace Soup::Core
 					return RecipeValueType::Version;
 				case 7:
 					return RecipeValueType::PackageReference;
+				case 8:
+					return RecipeValueType::LanguageReference;
 				default:
 					throw std::runtime_error("Unknown recipe value type.");
 			}
@@ -263,6 +294,8 @@ namespace Soup::Core
 						return std::get<SemanticVersion>(_value) == std::get<SemanticVersion>(rhs._value);
 					case RecipeValueType::PackageReference:
 						return std::get<PackageReference>(_value) == std::get<PackageReference>(rhs._value);
+					case RecipeValueType::LanguageReference:
+						return std::get<LanguageReference>(_value) == std::get<LanguageReference>(rhs._value);
 					default:
 						throw std::runtime_error("Unkown Recipe ValueType for comparison.");
 				}
@@ -290,6 +323,7 @@ namespace Soup::Core
 			double,
 			bool,
 			SemanticVersion,
-			PackageReference> _value;
+			PackageReference,
+			LanguageReference> _value;
 	};
 }

@@ -58,8 +58,17 @@ namespace Soup::Core
 				case ValueType::Boolean:
 					WriteValue(stream, value.AsBoolean());
 					break;
+				case ValueType::Version:
+					WriteValue(stream, std::string_view(value.AsVersion().ToString()));
+					break;
+				case ValueType::PackageReference:
+					WriteValue(stream, std::string_view(value.AsPackageReference().ToString()));
+					break;
+				case ValueType::LanguageReference:
+					WriteValue(stream, std::string_view(value.AsLanguageReference().ToString()));
+					break;
 				default:
-					throw std::runtime_error("Unknown ValueType");
+					throw std::runtime_error("Write Unknown ValueType");
 			}
 		}
 

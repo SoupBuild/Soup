@@ -7,8 +7,9 @@ namespace Soup.Build.Utilities;
 public class SMLPackageReferenceValue : IEquatable<SMLPackageReferenceValue>
 {
 	public SMLToken LessThan { get; set; }
-	public SMLToken? UserName { get; set; }
-	public SMLToken? Pipe { get; set; }
+	public SMLLanguageName? LanguageName { get; set; }
+	public SMLToken UserName { get; set; }
+	public SMLToken UserPipe { get; set; }
 	public SMLToken PackageName { get; set; }
 	public SMLToken AtSign { get; set; }
 	public SMLToken VersionReference { get; set; }
@@ -20,8 +21,9 @@ public class SMLPackageReferenceValue : IEquatable<SMLPackageReferenceValue>
 		PackageReference value)
 	{
 		LessThan = SMLToken.Empty;
-		UserName = null;
-		Pipe = null;
+		LanguageName = null;
+		UserName = SMLToken.Empty;
+		UserPipe = SMLToken.Empty;
 		PackageName = SMLToken.Empty;
 		AtSign = SMLToken.Empty;
 		VersionReference = SMLToken.Empty;
@@ -32,8 +34,9 @@ public class SMLPackageReferenceValue : IEquatable<SMLPackageReferenceValue>
 
 	public SMLPackageReferenceValue(
 		SMLToken lessThan,
-		SMLToken? userName,
-		SMLToken? pipe,
+		SMLLanguageName? languageName,
+		SMLToken userName,
+		SMLToken userPipe,
 		SMLToken packageName,
 		SMLToken atSign,
 		SMLToken versionReference,
@@ -41,8 +44,9 @@ public class SMLPackageReferenceValue : IEquatable<SMLPackageReferenceValue>
 		PackageReference value)
 	{
 		LessThan = lessThan;
+		LanguageName = languageName;
 		UserName = userName;
-		Pipe = pipe;
+		UserPipe = userPipe;
 		PackageName = packageName;
 		AtSign = atSign;
 		VersionReference = versionReference;

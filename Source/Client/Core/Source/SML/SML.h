@@ -21,6 +21,7 @@ namespace Soup::Core
 		Boolean,
 		Version,
 		PackageReference,
+		LanguageReference,
 	};
 
 	class SMLTable
@@ -142,6 +143,11 @@ namespace Soup::Core
 		{
 		}
 
+		SMLValue(LanguageReference value) :
+			_value(value)
+		{
+		}
+
 		SMLValueType GetType() const
 		{
 			switch (_value.index())
@@ -162,6 +168,8 @@ namespace Soup::Core
 					return SMLValueType::Version;
 				case 7:
 					return SMLValueType::PackageReference;
+				case 8:
+					return SMLValueType::LanguageReference;
 				default:
 					throw std::runtime_error("Unknown SML value type.");
 			}
@@ -231,6 +239,14 @@ namespace Soup::Core
 				return std::get<PackageReference>(_value);
 		}
 
+		LanguageReference AsLanguageReference() const
+		{
+			if (GetType() != SMLValueType::LanguageReference)
+				throw std::runtime_error("Incorrect access type: Value is not LanguageReference");
+			else
+				return std::get<LanguageReference>(_value);
+		}
+
 	private:
 		std::variant<
 			SMLTable,
@@ -240,7 +256,8 @@ namespace Soup::Core
 			double,
 			bool,
 			SemanticVersion,
-			PackageReference> _value;
+			PackageReference,
+			LanguageReference> _value;
 	};
 
 	std::ostream& operator<<(std::ostream& stream, const SMLValue& value);
@@ -339,6 +356,9 @@ namespace Soup::Core
 				break;
 			case SMLValueType::PackageReference:
 				stream << value.AsPackageReference().ToString();
+				break;
+			case SMLValueType::LanguageReference:
+				stream << value.AsLanguageReference().ToString();
 				break;
 			default:
 				throw std::runtime_error("Unknown SML type.");
