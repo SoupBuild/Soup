@@ -7,8 +7,8 @@ This is a console application that has a single static library dependency.
 The Recipe file that defines the static library "Samples.C.StaticLibrary.Library".
 ```sml
 Name: 'Samples.C.StaticLibrary.Library'
-Language: 'C|0'
-Version: '1.0.0'
+Language: (C@0)
+Version: 1.0.0
 Type: 'StaticLibrary'
 Source: [
   'Library.c'
@@ -39,9 +39,9 @@ const char* GetName()
 The Recipe file that defines the executable "Samples.C.StaticLibrary.Application".
 ```sml
 Name: 'Samples.C.StaticLibrary.Application'
-Language: 'C|0'
+Language: (C@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
   'Main.c'
 ]

@@ -66,6 +66,12 @@ namespace Soup::Core
 					return Value(value.AsFloat());
 				case RecipeValueType::Boolean:
 					return Value(value.AsBoolean());
+				case RecipeValueType::Version:
+					return Value(value.AsVersion());
+				case RecipeValueType::PackageReference:
+					return Value(value.AsPackageReference());
+				case RecipeValueType::LanguageReference:
+					return Value(value.AsLanguageReference());
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}

@@ -67,8 +67,14 @@ namespace Soup::Core::UnitTests
 			auto recipe = std::stringstream(
 				R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
-					Version: '1.2.3'
+					Language: (C++@1)
+					Version: 1.2.3
+					IntegerValue: 55
+					FloatValue: 1.2
+					TrueValue: true
+					FalseValue: false
+					PackageLanguageRef: <(C++)User1|Package1@1.2>
+					PackageRef: <User1|Package1@1>
 					Dependencies: {
 						Runtime: []
 						Build: []
@@ -80,8 +86,14 @@ namespace Soup::Core::UnitTests
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
-				{ "Version", "1.2.3" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
+				{ "Version", SemanticVersion(1, 2, 3) },
+				{ "IntegerValue", (int64_t)55 },
+				{ "FloatValue", 1.2 },
+				{ "TrueValue", true },
+				{ "FalseValue", false },
+				{ "PackageLanguageRef", PackageReference("C++", "User1", "Package1", SemanticVersion(1, 2)) },
+				{ "PackageRef", PackageReference(std::nullopt, "User1", "Package1", SemanticVersion(1)) },
 				{
 					"Dependencies",
 					RecipeTable(
@@ -125,7 +137,11 @@ Language: 'C++|1'
 			{
 				{ "Name", "MyPackage" },
 				{ "Language", "C++|1" },
-				{ "Version", "1.2.3" },
+				{ "Version", SemanticVersion(1, 2, 3) },
+				{ "IntegerValue", (int64_t)55 },
+				{ "FloatValue", 1.2 },
+				{ "TrueValue", true },
+				{ "FalseValue", false },
 				{
 					"Dependencies",
 					RecipeTable(
@@ -143,7 +159,11 @@ Language: 'C++|1'
 			auto expected = 
 R"(Name: 'MyPackage'
 Language: 'C++|1'
-Version: '1.2.3'
+Version: 1.2.3
+IntegerValue: 55
+FloatValue: 1.2
+TrueValue: true
+FalseValue: false
 Dependencies: {Build: []
 Runtime: []
 Test: []

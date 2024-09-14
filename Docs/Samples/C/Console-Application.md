@@ -7,9 +7,9 @@ This is the smallest amount of code to get a console application building using 
 The Recipe file that sets the name, type, version and the single source file.
 ```sml
 Name: 'Samples.C.ConsoleApplication'
-Language: 'C|0'
+Language: (C@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
   'Main.c'
 ]

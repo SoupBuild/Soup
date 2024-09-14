@@ -35,11 +35,21 @@ enum class SMLToken : int
 {
     EndOfFile = 0,
     Newline,
-    KeyLiteral,
+    AlphaLiteral,
+    AlphaExt1Literal,
+    AlphaExt2Literal,
+    AlphaExt3Literal,
+    Version,
     Integer,
     Decimal,
+    AtSign,
+    Pipe,
     Colon,
     Comma,
+    OpenParenthesis,
+    CloseParenthesis,
+    LessThan,
+    GreaterThan,
     OpenBracket,
     CloseBracket,
     OpenBrace,
@@ -92,45 +102,60 @@ private:
 // TODO: Remove extra symbols
 
 %x QUOTE
-basic_char      [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}['\\]
-whitespace      [ \t]+
-newline         \r?\n
-comment         "#".*?\r?\n
-key             [\p{L}\p{N}]+
-integer         \d+
-decimal         \.\d+
-basic_string    {basic_char}+
+basic_char           [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}['\\]
+whitespace           [ \t]+
+newline              \r?\n
+comment              "#".*?\r?\n
+alpha                [A-Za-z]
+alpha_literal        {alpha}[A-Za-z0-9]*
+alpha_ext1_literal   {alpha}[A-Za-z0-9-]*
+alpha_ext2_literal   {alpha}[A-Za-z0-9.]*
+alpha_ext3_literal   {alpha}[A-Za-z0-9+#]*
+integer              \d+
+decimal              \d+\.\d+
+version              \d+\.\d+\.\d+
+basic_string         {basic_char}+
 
 %%
-{whitespace}    { /* ignore whitespace */ }
-{comment}       { /* ignore comments */ }
-{newline}       return (int)SMLToken::Newline;
-{integer}       return (int)SMLToken::Integer;
-"true"          return (int)SMLToken::True;
-"false"         return (int)SMLToken::False;
-{key}           return (int)SMLToken::KeyLiteral;
-{decimal}       return (int)SMLToken::Decimal;
-":"             return (int)SMLToken::Colon;
-"["             return (int)SMLToken::OpenBracket;
-"]"             return (int)SMLToken::CloseBracket;
-"{"             return (int)SMLToken::OpenBrace;
-"}"             return (int)SMLToken::CloseBrace;
-","             return (int)SMLToken::Comma;
-"'"             { ClearString(); start(QUOTE); }
-.               return (int)SMLToken::Error;
+{whitespace}         { /* ignore whitespace */ }
+{comment}            { /* ignore comments */ }
+{newline}            return (int)SMLToken::Newline;
+{version}            return (int)SMLToken::Version;
+{decimal}            return (int)SMLToken::Decimal;
+{integer}            return (int)SMLToken::Integer;
+"true"               return (int)SMLToken::True;
+"false"              return (int)SMLToken::False;
+{alpha_literal}      return (int)SMLToken::AlphaLiteral;
+{alpha_ext1_literal} return (int)SMLToken::AlphaExt1Literal;
+{alpha_ext2_literal} return (int)SMLToken::AlphaExt2Literal;
+{alpha_ext3_literal} return (int)SMLToken::AlphaExt3Literal;
+"@"                  return (int)SMLToken::AtSign;
+"|"                  return (int)SMLToken::Pipe;
+":"                  return (int)SMLToken::Colon;
+"("                  return (int)SMLToken::OpenParenthesis;
+")"                  return (int)SMLToken::CloseParenthesis;
+"<"                  return (int)SMLToken::LessThan;
+">"                  return (int)SMLToken::GreaterThan;
+"["                  return (int)SMLToken::OpenBracket;
+"]"                  return (int)SMLToken::CloseBracket;
+"{"                  return (int)SMLToken::OpenBrace;
+"}"                  return (int)SMLToken::CloseBrace;
+","                  return (int)SMLToken::Comma;
+"'"                  { ClearString(); start(QUOTE); }
+.                    return (int)SMLToken::Error;
 
 <QUOTE>{
-'               { start(INITIAL); return (int)SMLToken::StringLiteral; }
-\\0             { AddCharacter('\0'); }
-\\t             { AddCharacter('\t'); } // tab              (U+0009)
-\\n             { AddCharacter('\n'); } // linefeed         (U+000A)
-\\f             { AddCharacter('\f'); } // form feed        (U+000C)
-\\r             { AddCharacter('\r'); } // carriage return  (U+000D)
-\\e             { AddCharacter('\r'); } // escape           (U+001B)
-\\'             { AddCharacter('\''); } // quote            (U+001B)
-\\\\            { AddCharacter('\\'); } // backslash        (U+005C)
-{basic_string}  { AddString(text(), size()); }
-.               { AddString(text(), size()); }
+'                    { start(INITIAL); return (int)SMLToken::StringLiteral; }
+\\0                  { AddCharacter('\0'); }
+\\t                  { AddCharacter('\t'); } // tab              (U+0009)
+\\n                  { AddCharacter('\n'); } // linefeed         (U+000A)
+\\f                  { AddCharacter('\f'); } // form feed        (U+000C)
+\\r                  { AddCharacter('\r'); } // carriage return  (U+000D)
+\\e                  { AddCharacter('\r'); } // escape           (U+001B)
+\\'                  { AddCharacter('\''); } // quote            (U+001B)
+\\\\                 { AddCharacter('\\'); } // backslash        (U+005C)
+{basic_string}       { AddString(text(), size()); }
+.                    { AddString(text(), size()); }
 }
 %%
 
@@ -174,6 +199,143 @@ public:
     }
 
 private:
+    bool TryParseLanguageReference(LanguageReference& languageReference)
+    {
+        // Verify match language name
+        MoveNext();
+        if (_currentToken != SMLToken::AlphaLiteral &&
+            _currentToken != SMLToken::AlphaExt3Literal)
+            return false;
+
+        // Key token already matched
+        auto languageName = str();
+
+        // Verify the separator
+        MoveNext();
+        if (_currentToken != SMLToken::AtSign)
+            return false;
+
+        // Check version type
+        SemanticVersion version;
+        MoveNext();
+        switch (_currentToken)
+        {
+            case SMLToken::Integer:
+            {
+                int64_t majorVersion = std::stoll(text());
+                version = SemanticVersion(majorVersion);
+                break;
+            }
+            case SMLToken::Decimal:
+            {
+                auto versionText = std::string_view(text());
+                version = SemanticVersion::Parse(versionText);
+                break;
+            }
+            default:
+            {
+                return false;
+            }
+        }
+
+        // Verify we are at the end of the content
+        MoveNext();
+        if (_currentToken != SMLToken::CloseParenthesis)
+            return false;
+
+        languageReference = LanguageReference(
+            std::move(languageName),
+            version);
+
+        return true;
+    }
+
+    bool TryParsePackageReference(PackageReference& packageReference)
+    {
+        // Verify match assign
+        MoveNext();
+        if (_currentToken != SMLToken::ExtendedKeyLiteral &&
+            _currentToken != SMLToken::KeyLiteral)
+            return false;
+
+        // Key token already matched
+        auto key1 = str();
+
+        std::optional<std::string> userName;
+        std::string packageName;
+
+        // Check separator for user or package name
+        MoveNext();
+        switch (_currentToken)
+        {
+            case SMLToken::Pipe:
+            {
+                // Saw user name
+                userName = std::move(key1);
+
+                // Get the package name
+                MoveNext();
+                if (_currentToken != SMLToken::KeyLiteral)
+                    return false;
+
+                packageName = str();
+
+                // Verify the at sign
+                MoveNext();
+                if (_currentToken != SMLToken::AtSign)
+                    return false;
+
+                break;
+            }
+            case SMLToken::AtSign:
+            {
+                // Saw package name
+                packageName = std::move(key1);
+                break;
+            }
+            default:
+            {
+                return false;
+            }
+        }
+
+        // Check version type
+        SemanticVersion version;
+        MoveNext();
+        switch (_currentToken)
+        {
+            case SMLToken::Integer:
+            {
+                int64_t majorVersion = std::stoll(text());
+                version = SemanticVersion(majorVersion);
+                break;
+            }
+            case SMLToken::Decimal:
+            {
+                auto versionText = std::string_view(text());
+                version = SemanticVersion::Parse(versionText);
+                break;
+            }
+            default:
+            {
+                return false;
+            }
+        }
+
+        // Verify we are at the end of the content
+        MoveNext();
+        if (_currentToken != SMLToken::GreaterThan)
+            return false;
+
+        packageReference = PackageReference(
+            std::nullopt,
+            std::move(userName),
+            std::move(packageName),
+            version);
+
+        return true;
+    }
+
     bool TryParseTable(SMLTable& table)
     {
         std::unordered_map<std::string, SMLValue> tableValues;
@@ -384,6 +546,19 @@ private:
                 value = SMLValue(std::move(string));
                 return true;
             }
+            case SMLToken::Version:
+            {
+                auto versionText = std::string_view(text());
+                auto version = SemanticVersion::Parse(versionText);
+                value = SMLValue(std::move(version));
+                return true;
+            }
+            case SMLToken::Decimal:
+            {
+                double doubleValue = std::stod(text());
+                value = SMLValue(doubleValue);
+                return true;
+            }
             case SMLToken::Integer:
             {
                 int64_t integer = std::stoll(text());
@@ -398,6 +573,24 @@ private:
             case SMLToken::False:
             {
                 value = SMLValue(false);
+                return true;
+            }
+            case SMLToken::LessThan:
+            {
+                SMLPackageReference packageReference;
+                if (!TryParsePackageReference(packageReference))
+                    return false;
+
+                value = SMLValue(std::move(packageReference));
+                return true;
+            }
+            case SMLToken::OpenParenthesis:
+            {
+                LanguageReference languageReference;
+                if (!TryParseLanguageReference(languageReference))
+                    return false;
+
+                value = SMLValue(std::move(languageReference));
                 return true;
             }
             case SMLToken::OpenBrace:

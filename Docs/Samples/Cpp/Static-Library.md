@@ -7,8 +7,8 @@ This is a console application that has a single static library dependency.
 The Recipe file that defines the static library "Samples.Cpp.StaticLibrary.Library".
 ```sml
 Name: 'Samples.Cpp.StaticLibrary.Library'
-Language: 'C++|0'
-Version: '1.0.0'
+Language: (C++@0)
+Version: 1.0.0
 Interface: 'Module.cpp'
 Type: 'StaticLibrary'
 ```
@@ -41,9 +41,9 @@ export namespace Samples::Cpp::StaticLibrary::Library
 The Recipe file that defines the executable "Samples.Cpp.StaticLibrary.Application".
 ```sml
 Name: 'Samples.Cpp.StaticLibrary.Application'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
 	'Main.cpp'
 ]

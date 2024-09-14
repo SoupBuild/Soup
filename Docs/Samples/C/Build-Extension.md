@@ -7,8 +7,8 @@ This is a console application that has a custom build extension that alters the 
 The Recipe file that defines the build extension dynamic library "Samples.C.BuildExtension.Extension" that will register new build tasks.
 ```sml
 Name: 'Samples.C.BuildExtension.Extension'
-Language: 'Wren|0'
-Version: '1.0.0'
+Language: (Wren@0)
+Version: 1.0.0
 Source: [
   'CustomBuildTask.wren'
 ]
@@ -95,9 +95,9 @@ class CustomBuildTask is SoupTask {
 The Recipe file that defines the executable "Samples.C.BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```sml
 Name: 'Samples.C.SimpleBuildExtension.Executable'
-Language: 'C|0'
+Language: (C@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
   'Main.c'
 ]

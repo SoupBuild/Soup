@@ -74,7 +74,7 @@ namespace Soup::Core::UnitTests
 				auto actual = ValueTableReader::Deserialize(content);
 			});
 
-			Assert::AreEqual("Unknown ValueType", exception.what(), "Verify Exception message");
+			Assert::AreEqual("Read Unknown ValueType", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]

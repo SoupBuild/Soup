@@ -7,8 +7,8 @@ This is a console application that has a single dynamic library dependency.
 The Recipe file that defines the static library "Samples.Cpp.DynamicLibrary.Library".
 ```sml
 Name: 'Samples.Cpp.DynamicLibrary.Library'
-Language: 'C++|0'
-Version: '1.0.0'
+Language: (C++@0)
+Version: 1.0.0
 Type: 'DynamicLibrary'
 Defines: [
   'EXPORT_LIBRARY'
@@ -70,9 +70,9 @@ namespace Samples::Cpp::DynamicLibrary::Library
 The Recipe file that defines the executable "Samples.Cpp.DynamicLibrary.Application".
 ```sml
 Name: 'Samples.Cpp.DynamicLibrary.Application'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
   'Main.cpp'
 ]

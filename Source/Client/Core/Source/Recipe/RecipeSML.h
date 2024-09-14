@@ -95,6 +95,18 @@ namespace Soup::Core
 					Parse(valueTable, source.AsTable());
 					return RecipeValue(std::move(valueTable));
 				}
+				case SMLValueType::Version:
+				{
+					return RecipeValue(source.AsVersion());
+				}
+				case SMLValueType::PackageReference:
+				{
+					return RecipeValue(source.AsPackageReference());
+				}
+				case SMLValueType::LanguageReference:
+				{
+					return RecipeValue(source.AsLanguageReference());
+				}
 				default:
 				{
 					throw std::runtime_error("Unknown SML type.");
@@ -137,6 +149,8 @@ namespace Soup::Core
 					return SMLValue(value.AsFloat());
 				case RecipeValueType::Boolean:
 					return SMLValue(value.AsBoolean());
+				case RecipeValueType::Version:
+					return SMLValue(value.AsVersion());
 				default:
 					throw std::runtime_error("Unknown Recipe value type.");
 			}

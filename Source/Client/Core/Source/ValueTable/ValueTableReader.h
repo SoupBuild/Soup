@@ -97,8 +97,14 @@ namespace Soup::Core
 					return Value(ReadDouble(data, size, offset));
 				case ValueType::Boolean:
 					return Value(ReadBoolean(data, size, offset));
+				case ValueType::Version:
+					return Value(SemanticVersion::Parse(ReadString(data, size, offset)));
+				case ValueType::PackageReference:
+					return Value(PackageReference::Parse(ReadString(data, size, offset)));
+				case ValueType::LanguageReference:
+					return Value(LanguageReference::Parse(ReadString(data, size, offset)));
 				default:
-					throw std::runtime_error("Unknown ValueType");
+					throw std::runtime_error("Read Unknown ValueType");
 			}
 		}
 
