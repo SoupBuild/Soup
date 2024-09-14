@@ -150,6 +150,10 @@ namespace Soup::Core
 				{
 					result.push_back(PackageReference::Parse(value.AsString()));
 				}
+				else if (value.IsPackageReference())
+				{
+					result.push_back(value.AsPackageReference());
+				}
 				else if (value.IsTable())
 				{
 					auto& valueTable = value.AsTable();
@@ -159,6 +163,10 @@ namespace Soup::Core
 					if (referenceValue.IsString())
 					{
 						result.push_back(PackageReference::Parse(referenceValue.AsString()));
+					}
+					else if (referenceValue.IsPackageReference())
+					{
+						result.push_back(referenceValue.AsPackageReference());
 					}
 					else
 					{

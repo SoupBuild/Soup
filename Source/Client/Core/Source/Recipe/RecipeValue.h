@@ -211,6 +211,11 @@ namespace Soup::Core
 			}
 		}
 
+		bool IsPackageReference() const
+		{
+			return GetType() == RecipeValueType::PackageReference;
+		}
+
 		PackageReference AsPackageReference() const
 		{
 			if (GetType() == RecipeValueType::PackageReference)
