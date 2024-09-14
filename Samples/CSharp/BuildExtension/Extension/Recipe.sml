@@ -1,6 +1,6 @@
 Name: 'Samples.CSharp.BuildExtension.Extension'
-Language: 'Wren|0'
-Version: '1.0.0'
+Language: (Wren@0)
+Version: 1.0.0
 Source: [
 	'CustomBuildTask.wren'
 ]

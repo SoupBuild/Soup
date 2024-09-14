@@ -7,9 +7,9 @@ This is a windows application that demonstrates creating a GUI windows applicati
 The Recipe file that defines the sample application.
 ```
 Name: 'Samples.Cpp.WindowsApplication'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Windows'
-Version: '1.0.0'
+Version: 1.0.0
 Resources: 'WindowsProject.rc'
 Source: [
 	'WindowsProject.cpp'
