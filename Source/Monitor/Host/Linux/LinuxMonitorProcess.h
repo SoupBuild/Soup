@@ -133,6 +133,7 @@ namespace Monitor::Linux
 
 				environment.push_back("HOME=/");
 				environment.push_back("USER=USERNAME");
+				environment.push_back("PAHT=/usr/bin");
 
 				// Preload the monitor client first
 				environment.push_back("LD_PRELOAD=/home/mwasplund/dev/repos/Soup/out/run/Monitor.Client.64.so");

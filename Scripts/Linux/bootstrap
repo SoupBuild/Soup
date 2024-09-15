@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "Linux Build Bootstrap!"
+
+# Stop on first error
+set -e
+
+SCRIPTS_DIR=$(dirname "$0")
+SOURCE_DIR=$SCRIPTS_DIR/../../Source
+
+eval dotnet run --project $SOURCE_DIR/GenerateSharp/BootstrapBuild/ ~/dev/repos/SoupCpp/out/Wren/mwasplund/Soup.Cpp.Compiler.Clang/0.3.2/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+eval dotnet run --project $SOURCE_DIR/GenerateSharp/BootstrapBuild/ ~/dev/repos/SoupCpp/out/Wren/mwasplund/Soup.Cpp/0.12.0/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+eval soupd build $SOURCE_DIR/Client/CLI/ -force -skipEvaluate
+eval dotnet run --project $SOURCE_DIR/GenerateSharp/BootstrapBuild/ ~/dev/repos/Opal/Source/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/
