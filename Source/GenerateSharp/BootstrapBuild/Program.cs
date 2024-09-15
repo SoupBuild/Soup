@@ -163,7 +163,7 @@ public static class Program
 		var content = command.Arguments[1];
 
 		// Open the file to write to
-		var file = LifetimeManager.Get<IFileSystem>().OpenWrite(filePath, false);
+		var file = LifetimeManager.Get<IFileSystem>().OpenWrite(filePath, true);
 		using var writer = new StreamWriter(file.GetOutStream());
 
 		await writer.WriteAsync(content);
