@@ -48,12 +48,11 @@ public static class Program
 				throw new HandledException();
 			}
 
-			foreach (var operation in evaluateGraph.Operations)
-			{
-				Log.Info(operation.Value.Title);
-
-				await ExecuteCommandAsync(operation.Value.Command);
-			}
+			var remainingDependencyCounts = new Dictionary<OperationId, int>();
+			await ExecuteOperationsAsync(
+				evaluateGraph,
+				evaluateGraph.RootOperationIds,
+				remainingDependencyCounts);
 
 			return 0;
 		}
@@ -61,6 +60,53 @@ public static class Program
 		{
 			Log.Error("Error");
 			return -1;
+		}
+	}
+
+	private static async Task ExecuteOperationsAsync(
+		OperationGraph evaluateGraph,
+		IList<OperationId> operations,
+		Dictionary<OperationId, int> remainingDependencyCounts)
+	{
+		foreach (var operationId in operations)
+		{
+			// Check if the operation was already a child from a different path
+			// Only run the operation when all of its dependencies have completed
+			var operationInfo = evaluateGraph.GetOperationInfo(operationId);
+			var remainingCount = -1;
+			if (remainingDependencyCounts.TryGetValue(operationId, out var currentRemainingCount))
+			{
+				remainingCount = --currentRemainingCount;
+				remainingDependencyCounts[operationId] = remainingCount;
+			}
+			else
+			{
+				// Get the cached total count and store the active count in the lookup
+				remainingCount = (int)operationInfo.DependencyCount - 1;
+				remainingDependencyCounts.Add(operationId, remainingCount);
+			}
+
+			if (remainingCount == 0)
+			{
+				// Run the single operation
+				Log.Info(operationInfo.Title);
+				await ExecuteCommandAsync(
+					operationInfo.Command);
+
+				// Recursively build all of the operation children
+				await ExecuteOperationsAsync(
+					evaluateGraph,
+					operationInfo.Children,
+					remainingDependencyCounts);
+			}
+			else if (remainingCount < 0)
+			{
+				throw new InvalidOperationException("Remaining dependency count less than zero");
+			}
+			else
+			{
+				// This operation will be executed from a different path
+			}
 		}
 	}
 
