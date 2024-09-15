@@ -30,9 +30,9 @@ public class OperationGraphViewModel : ContentPaneViewModel
 		get => selectedNode;
 		set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref selectedNode, value))
 			{
-				SelectedOperation = selectedNode is not null ? this.operationDetailsLookup[selectedNode.Id] : null;
+				SelectedOperation = selectedNode is not null ? operationDetailsLookup[selectedNode.Id] : null;
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 		OperationGraph evaluateGraph,
 		OperationResults? operationResults)
 	{
-		this.operationDetailsLookup.Clear();
+		operationDetailsLookup.Clear();
 
 		var graph = evaluateGraph.Operations
 			.Select(value => (value.Value, value.Value.Children.Select(value => evaluateGraph.Operations[value])));
@@ -137,7 +137,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 				}
 			}
 
-			this.operationDetailsLookup.Add(
+			operationDetailsLookup.Add(
 				operation.Id.Value,
 				new OperationDetailsViewModel(fileSystemState, operation, operationResult));
 		}
