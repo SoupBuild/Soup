@@ -41,6 +41,11 @@ namespace Soup::Core
 		bool SkipEvaluate;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to disable monitoring
+		/// </summary>
+		bool DisableMonitor;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to force a rebuild
 		/// </summary>
 		bool ForceRebuild;

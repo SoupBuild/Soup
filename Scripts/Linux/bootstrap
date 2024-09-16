@@ -5,9 +5,45 @@ echo "Linux Build Bootstrap!"
 set -e
 
 SCRIPTS_DIR=$(dirname "$0")
-SOURCE_DIR=$SCRIPTS_DIR/../../Source
+REPO_DIR=$SCRIPTS_DIR/../..
+SOURCE_DIR=$REPO_DIR/Source
 
-eval dotnet run --project $SOURCE_DIR/GenerateSharp/BootstrapBuild/ ~/dev/repos/SoupCpp/out/Wren/mwasplund/Soup.Cpp.Compiler.Clang/0.3.2/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
-eval dotnet run --project $SOURCE_DIR/GenerateSharp/BootstrapBuild/ ~/dev/repos/SoupCpp/out/Wren/mwasplund/Soup.Cpp/0.12.0/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
-eval soupd build $SOURCE_DIR/Client/CLI/ -force -skipEvaluate
-eval dotnet run --project $SOURCE_DIR/GenerateSharp/BootstrapBuild/ ~/dev/repos/Opal/Source/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/
+SOUP_DIR=$REPO_DIR/out/run/
+SOUP=$SOUP_DIR/soup
+GENERATE=$SOUP_DIR/generate
+
+SOUP_PACKAGES_DIR=/home/mwasplund/.soup/packages
+
+BOOTSTRAP='dotnet run --project $SOURCE_DIR/GenerateSharp/BootstrapBuild/'
+
+# sudo apt install build-essentials
+# sudo apt install clang
+# sudo apt install dotnet-sdk-8.0
+
+eval $SOUP restore $SOURCE_DIR/Client/CLI/
+
+eval $GENERATE $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Build.Utils/0.7.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+eval $BOOTSTRAP $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Build.Utils/0.7.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+
+eval $GENERATE $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp.Compiler/0.11.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+eval $BOOTSTRAP $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp.Compiler/0.11.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+
+eval $GENERATE $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp.Compiler.Clang/0.3.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+eval $BOOTSTRAP $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp.Compiler.Clang/0.3.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+
+eval $GENERATE $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp.Compiler.GCC/0.4.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+eval $BOOTSTRAP $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp.Compiler.GCC/0.4.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+
+eval $GENERATE $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp.Compiler.MSVC/0.10.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+eval $BOOTSTRAP $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp.Compiler.MSVC/0.10.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+
+eval $GENERATE $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp/0.12.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+eval $BOOTSTRAP $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp/0.12.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
+
+eval $SOUP build $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Cpp/0.12.0/ -force -flavor Release
+
+eval $SOUP build $SOUP_PACKAGES_DIR/Cpp/mwasplund/Opal/0.11.0/ -skipEvaluate -v:d
+eval $GENERATE $SOUP_PACKAGES_DIR/Cpp/mwasplund/Opal/0.11.0/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/
+eval $BOOTSTRAP $SOUP_PACKAGES_DIR/Cpp/mwasplund/Opal/0.11.0/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/
+
+echo "Finished"

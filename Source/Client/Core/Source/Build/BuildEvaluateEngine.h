@@ -398,15 +398,26 @@ namespace Soup::Core
 				Log::Diag(file.ToString());
 
 			bool enableAccessChecks = true;
-			auto process = Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
-				operationInfo.Command.Executable,
-				operationInfo.Command.Arguments,
-				operationInfo.Command.WorkingDirectory,
-				environment,
-				callback,
-				enableAccessChecks,
-				allowedReadAccess,
-				allowedWriteAccess);
+			std::shared_ptr<System::IProcess> process = nullptr;
+			if (disableMonitor)
+			{
+				process = System::IProcessManager::Current().CreateProcess(
+					operationInfo.Command.Executable,
+					operationInfo.Command.Arguments,
+					operationInfo.Command.WorkingDirectory);
+			}
+			else
+			{
+				Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
+					operationInfo.Command.Executable,
+					operationInfo.Command.Arguments,
+					operationInfo.Command.WorkingDirectory,
+					environment,
+					callback,
+					enableAccessChecks,
+					allowedReadAccess,
+					allowedWriteAccess);
+			}
 
 			process->Start();
 			process->WaitForExit();

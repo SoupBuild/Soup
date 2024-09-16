@@ -61,30 +61,32 @@ namespace Monitor
 			}
 		}
 
+	#ifdef TRACE_DETOUR_CLIENT
 		void DebugError(std::string_view message, uint32_t value)
 		{
-			#ifdef TRACE_DETOUR_CLIENT
 			printf("DETOUR-CLIENT-ERROR: %s %u\n", message.data(), value);
-			#else
-			(message);
-			(value);
-			#endif
 		}
 
 		void DebugError(std::string_view message)
 		{
-			#ifdef TRACE_DETOUR_CLIENT
 			printf("DETOUR-CLIENT-ERROR: %s\n", message.data());
-			#else
-			(message);
-			#endif
 		}
+	#else
+		void DebugError(std::string_view /*message*/, uint32_t /*value*/)
+		{
+		}
+		
+		void DebugError(std::string_view /*message*/)
+		{
+		}
+	#endif
+
 
 	#ifdef TRACE_DETOUR_CLIENT
 		template<typename... Args>
 		static void DebugTrace(std::string_view message, Args&&... args)
 		{
-			auto result = std::vformat(message, std::make_format_args(args...))
+			auto result = std::vformat(message, std::make_format_args(args...));
 			printf("DETOUR-CLIENT: %s\n", result.c_str());
 		}
 	#else

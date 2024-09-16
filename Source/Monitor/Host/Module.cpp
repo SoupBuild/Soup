@@ -37,6 +37,7 @@ extern char **environ;
 #include <array>
 #include <codecvt>
 #include <filesystem>
+#include <format>
 #include <functional>
 #include <iostream>
 #include <locale>

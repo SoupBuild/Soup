@@ -56,6 +56,7 @@ namespace Soup::Client
 
 				options->SkipGenerate = IsFlagSet("skipGenerate", unusedArgs);
 				options->SkipEvaluate = IsFlagSet("skipEvaluate", unusedArgs);
+				options->DisableMonitor = IsFlagSet("disableMonitor", unusedArgs);
 				options->Force = IsFlagSet("force", unusedArgs);
 
 				auto flavorValue = std::string();

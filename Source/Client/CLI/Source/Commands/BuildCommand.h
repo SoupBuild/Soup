@@ -54,6 +54,7 @@ namespace Soup::Client
 			arguments.ForceRebuild = _options.Force;
 			arguments.SkipGenerate = _options.SkipGenerate;
 			arguments.SkipEvaluate = _options.SkipEvaluate;
+			arguments.DisableMonitor = _options.DisableMonitor;
 
 			// Platform specific defaults
 			#if defined(_WIN32)

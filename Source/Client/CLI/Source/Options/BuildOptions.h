@@ -33,6 +33,12 @@ namespace Soup::Client
 		bool SkipEvaluate;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to disable monitoring
+		/// </summary>
+		// [[Args::Option("disableMonitor", Default = false, HelpText = "Do not monitor usage for incremental builds.")]]
+		bool DisableMonitor;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to force a build
 		/// </summary>
 		// [[Args::Option("force", Default = false, HelpText = "Force a rebuild.")]]

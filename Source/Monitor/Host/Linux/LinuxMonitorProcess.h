@@ -78,12 +78,6 @@ namespace Monitor::Linux
 		/// </summary>
 		void Start() override final
 		{
-			std::vector<const char*> arguments;
-			arguments.push_back(m_executable.ToString().c_str());
-			for (auto& argument : m_arguments)
-				arguments.push_back(argument.c_str());
-			arguments.push_back(nullptr);
-
 			// Set current working directory that will be inherited by the child process
 			auto currentWorkingDirectory = std::filesystem::current_path();
 			if (chdir(m_workingDirectory.ToString().c_str()) == -1)
@@ -110,71 +104,33 @@ namespace Monitor::Linux
 			pid_t processId = fork();
 			if (processId == 0)
 			{
-				// We are the child process
-				DebugTrace("Child");
+				SetupChildProcess(stdOutPipe, stdErrPipe);
+			}
+			else
+			{
+				// Parent process still
+				DebugTrace("Parent");
 
-				// Close the read pipe
-				close(stdOutPipe[0]);
-				close(stdErrPipe[0]);
+				// Reset working directory
+				if (chdir(currentWorkingDirectory.string().c_str()) == -1)
+					throw std::runtime_error("Failed to reset working directory");
 
-				// Redirect stdout to the pipe write
-				if (dup2(stdOutPipe[1], STDOUT_FILENO) != STDOUT_FILENO)
-					throw std::runtime_error("dup2 error to stdout");
-
-				// Redirect stderr to the pipe write
-				if (dup2(stdErrPipe[1], STDERR_FILENO) != STDERR_FILENO)
-					throw std::runtime_error("dup2 error to stderr");
+				m_processId = processId;
 
 				// Close our handle on the write end
 				close(stdOutPipe[1]);
 				close(stdErrPipe[1]);
+				m_stdOutReadHandle = stdOutPipe[0];
+				m_stdErrReadHandle = stdErrPipe[0];
 
-				auto environment = std::vector<std::string>();
-
-				environment.push_back("HOME=/");
-				environment.push_back("USER=USERNAME");
-				environment.push_back("PAHT=/usr/bin");
-
-				// Preload the monitor client first
-				environment.push_back("LD_PRELOAD=/home/mwasplund/dev/repos/Soup/out/run/Monitor.Client.64.so");
-
-				auto environmentArray = std::vector<const char*>();
-				for (auto& value : environment)
-					environmentArray.push_back(value.c_str());
-				environmentArray.push_back(nullptr);
-
-				// Replace runtime with child program
-				DebugTrace("child exec");
-				execve(
-					m_executable.ToString().c_str(),
-					const_cast<char**>(arguments.data()),
-					const_cast<char**>(environmentArray.data()));
-
-				// Running in other program now
+				// Create the worker thread that will act as the pipe server
+				m_processRunning = true;
+				m_workerFailed = false;
+				DebugTrace("Thread");
+				m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this));
+				
+				DebugTrace("Parent done");
 			}
-
-			// Parent process still
-			DebugTrace("Parent");
-
-			// Reset working directory
-			if (chdir(currentWorkingDirectory.string().c_str()) == -1)
-				throw std::runtime_error("Failed to reset working directory");
-
-			m_processId = processId;
-
-			// Close our handle on the write end
-			close(stdOutPipe[1]);
-			close(stdErrPipe[1]);
-			m_stdOutReadHandle = stdOutPipe[0];
-			m_stdErrReadHandle = stdErrPipe[0];
-
-			// Create the worker thread that will act as the pipe server
-			m_processRunning = true;
-			m_workerFailed = false;
-			DebugTrace("Thread");
-			m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this));
-			
-			DebugTrace("Parent done");
 		}
 
 		/// <summary>
@@ -267,6 +223,64 @@ namespace Monitor::Linux
 		}
 
 	private:
+		void SetupChildProcess(int stdOutPipe[2], int stdErrPipe[2])
+		{
+			try
+			{
+				// We are the child process
+				DebugTrace("Child");
+
+				// Close the read pipe
+				close(stdOutPipe[0]);
+				close(stdErrPipe[0]);
+
+				// Redirect stdout to the pipe write
+				if (dup2(stdOutPipe[1], STDOUT_FILENO) != STDOUT_FILENO)
+					throw std::runtime_error("dup2 error to stdout");
+
+				// Redirect stderr to the pipe write
+				if (dup2(stdErrPipe[1], STDERR_FILENO) != STDERR_FILENO)
+					throw std::runtime_error("dup2 error to stderr");
+
+				// Close our handle on the write end
+				close(stdOutPipe[1]);
+				close(stdErrPipe[1]);
+
+				auto environment = std::vector<std::string>();
+
+				environment.push_back("HOME=/");
+				environment.push_back("USER=USERNAME");
+				environment.push_back("PAHT=/usr/bin");
+
+				// Preload the monitor client first
+				environment.push_back("LD_PRELOAD=/home/mwasplund/dev/repos/Soup/out/run/Monitor.Client.64.so");
+
+				std::vector<const char*> arguments;
+				arguments.push_back(m_executable.ToString().c_str());
+				for (auto& argument : m_arguments)
+					arguments.push_back(argument.c_str());
+				arguments.push_back(nullptr);
+
+				auto environmentArray = std::vector<const char*>();
+				for (auto& value : environment)
+					environmentArray.push_back(value.c_str());
+				environmentArray.push_back(nullptr);
+
+				// Replace runtime with child program
+				DebugTrace("child exec");
+				execve(
+					m_executable.ToString().c_str(),
+					const_cast<char**>(arguments.data()),
+					const_cast<char**>(environmentArray.data()));
+			}
+			catch(const std::exception& e)
+			{
+				std::cerr << e.what() << '\n';
+			}
+
+			// Running in other program now
+		}
+
 		/// <summary>
 		/// The main entry point for the worker thread that will monitor incoming messages from all
 		/// client connections.
