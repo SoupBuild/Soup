@@ -28,6 +28,19 @@ namespace Monitor::Linux
 			m_callback->OnError(message);
 		}
 
+		void SafeLogMessage(Message& message)
+		{
+			try
+			{
+				LogMessage(message);
+			}
+			catch (std::exception& ex)
+			{
+				Log::Error("Event Listener encountered invalid message: {}", ex.what());
+			}
+		}
+
+	private:
 		void LogMessage(Message& message)
 		{
 			uint32_t offset = 0;
@@ -69,7 +82,6 @@ namespace Monitor::Linux
 			}
 		}
 
-	private:
 		void HandleDetourMessage(Message& message, uint32_t& offset)
 		{
 			auto eventType = static_cast<DetourEventType>(ReadUInt32Value(message, offset));

@@ -18,6 +18,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystemState = FileSystemState();
 			auto uut = BuildEvaluateEngine(
 				false,
+				false,
 				fileSystemState);
 		}
 
@@ -39,6 +40,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -117,6 +119,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -245,6 +248,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -379,6 +383,7 @@ namespace Soup::Core::UnitTests
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
 				false,
+				false,
 				fileSystemState);
 
 			// Evaluate the build
@@ -511,6 +516,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -658,6 +664,7 @@ namespace Soup::Core::UnitTests
 			// Create the build state
 			auto uut = BuildEvaluateEngine(
 				false,
+				false,
 				fileSystemState);
 
 			// Evaluate the build
@@ -802,6 +809,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -948,6 +956,7 @@ namespace Soup::Core::UnitTests
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
 				false,
+				false,
 				fileSystemState);
 
 			// Evaluate the build
@@ -1090,6 +1099,7 @@ namespace Soup::Core::UnitTests
 			// Create the initial build state
 			auto uut = BuildEvaluateEngine(
 				false,
+				false,
 				fileSystemState);
 
 			// Evaluate the build
@@ -1201,6 +1211,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -1338,6 +1349,7 @@ namespace Soup::Core::UnitTests
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
 				false,
+				false,
 				fileSystemState);
 
 			// Evaluate the build
@@ -1473,6 +1485,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 

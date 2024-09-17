@@ -125,6 +125,7 @@ namespace Soup::Core
 	{
 	private:
 		bool _forceRebuild;
+		bool _disableMonitor;
 
 		// Shared Runtime State
 		FileSystemState& _fileSystemState;
@@ -136,8 +137,10 @@ namespace Soup::Core
 		/// </summary>
 		BuildEvaluateEngine(
 			bool forceRebuild,
+			bool disableMonitor,
 			FileSystemState& fileSystemState) :
 			_forceRebuild(forceRebuild),
+			_disableMonitor(disableMonitor),
 			_fileSystemState(fileSystemState),
 			_stateChecker(fileSystemState)
 		{
@@ -398,15 +401,27 @@ namespace Soup::Core
 				Log::Diag(file.ToString());
 
 			bool enableAccessChecks = true;
-			auto process = Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
-				operationInfo.Command.Executable,
-				operationInfo.Command.Arguments,
-				operationInfo.Command.WorkingDirectory,
-				environment,
-				callback,
-				enableAccessChecks,
-				allowedReadAccess,
-				allowedWriteAccess);
+			std::shared_ptr<System::IProcess> process = nullptr;
+			if (_disableMonitor)
+			{
+				process = System::IProcessManager::Current().CreateProcess(
+					operationInfo.Command.Executable,
+					operationInfo.Command.Arguments,
+					operationInfo.Command.WorkingDirectory,
+					true);
+			}
+			else
+			{
+				process = Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
+					operationInfo.Command.Executable,
+					operationInfo.Command.Arguments,
+					operationInfo.Command.WorkingDirectory,
+					environment,
+					callback,
+					enableAccessChecks,
+					allowedReadAccess,
+					allowedWriteAccess);
+			}
 
 			process->Start();
 			process->WaitForExit();
