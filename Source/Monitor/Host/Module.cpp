@@ -21,6 +21,7 @@ module;
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <poll.h>
 #include <fcntl.h>
 
 // The existing environment for this process

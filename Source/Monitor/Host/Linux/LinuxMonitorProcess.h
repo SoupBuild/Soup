@@ -276,6 +276,7 @@ namespace Monitor::Linux
 			catch(const std::exception& e)
 			{
 				std::cerr << e.what() << '\n';
+				exit(1234);
 			}
 
 			// Running in other program now
@@ -291,62 +292,110 @@ namespace Monitor::Linux
 
 			try
 			{
-				DebugTrace("WorkerThread Start");
-				
-				DebugTrace("Open read pipe");
-				m_pipeHandle = open(pipeName.c_str(), O_RDONLY);
+				Log::Diag("WorkerThread Start");
+
+				Log::Diag("Open read pipe");
+				m_pipeHandle = open(pipeName.c_str(), O_RDONLY | O_NONBLOCK);
+				if (m_pipeHandle < 0)
+				{
+					Log::Error("Open read pipe failed");
+					throw std::runtime_error("Open read pipe failed");
+				}
+
+				Log::Diag("Waiting on first message");
 
 				// Read until we get a client and then all clients disconnect
-				while (m_processRunning)
+				struct pollfd waiter = {.fd = m_pipeHandle, .events = POLLIN};
+				bool writerClosed = false;
+				while (m_processRunning && !writerClosed)
 				{
-					Message message;
-					int expectedHeaderSize = sizeof(Message::Type) + sizeof(Message::ContentSize);
-					int bytesRead = read(m_pipeHandle, &message, expectedHeaderSize);
-					if (bytesRead > 0)
+					// 10 seconds
+					auto waitStatus = poll(&waiter, 1, 10 * 1000);
+					switch (waitStatus)
 					{
-						// Handle the event
-						DebugTrace("Handle Event");
-						if (bytesRead != expectedHeaderSize)
-						{
-							throw std::runtime_error(
-								std::format("HandlePipeEvent - Header size wrong: {} {}",
-									bytesRead,
-									expectedHeaderSize));
-						}
-
-						// Read the raw content
-						auto expectedSize = message.ContentSize +
-							sizeof(Message::Type) +
-							sizeof(Message::ContentSize);
-						bytesRead = read(m_pipeHandle, &(message.Content), message.ContentSize);
-						if (bytesRead != message.ContentSize)
-						{
-							throw std::runtime_error(
-								std::format(
-									"HandlePipeEvent - Size Mismatched: {} {}",
-									bytesRead,
-									message.ContentSize));
-						}
-
-						LogMessage(message);
+						case 0:
+							Log::Error("Read pipe timeout");
+							writerClosed = true;
+						case 1:
+							if (waiter.revents & POLLIN)
+							{
+								ReadMessage();
+							}
+							else if (waiter.revents & POLLERR)
+							{
+								Log::Error("POLLERR");
+								throw std::runtime_error("POLLERR");
+							}
+							else if (waiter.revents & POLLHUP)
+							{
+								Log::Diag("Writer closed");
+								writerClosed = true;
+							}
+							break;
+						default:
+							Log::Error("Unknown poll status");
+							throw std::runtime_error("Unknown poll status");
 					}
 				}
 			}
 			catch (...)
 			{
-				DebugTrace("WorkerThread Failed");
+				Log::Error("WorkerThread Failed");
 				m_workerException = std::current_exception();
 				m_workerFailed = true;
 			}
 
 			// Cleanup
-			DebugTrace("close pipe");
+			Log::Diag("close pipe");
 			if (close(m_pipeHandle) != 0)
-				DebugTrace("Close pipe failed");
+			{
+				Log::Error("Close pipe failed");
+				throw std::runtime_error("Close pipe failed");
+			}
 
-			DebugTrace("delete pipe");
+			Log::Diag("delete pipe");
 			if (unlink(pipeName.c_str()) != 0)
-				DebugTrace("unlink pipe failed");
+			{
+				Log::Error("unlink pipe failed");
+				throw std::runtime_error("unlink pipe failed");
+			}
+		}
+
+		void ReadMessage()
+		{
+			DebugTrace("Read message");
+
+			Message message;
+			int expectedHeaderSize = sizeof(Message::Type) + sizeof(Message::ContentSize);
+			int bytesRead = read(m_pipeHandle, &message, expectedHeaderSize);
+			if (bytesRead > 0)
+			{
+				// Handle the event
+				DebugTrace("Handle Event");
+				if (bytesRead != expectedHeaderSize)
+				{
+					throw std::runtime_error(
+						std::format("HandlePipeEvent - Header size wrong: {} {}",
+							bytesRead,
+							expectedHeaderSize));
+				}
+
+				// Read the raw content
+				auto expectedSize = message.ContentSize +
+					sizeof(Message::Type) +
+					sizeof(Message::ContentSize);
+				bytesRead = read(m_pipeHandle, &(message.Content), message.ContentSize);
+				if (bytesRead != message.ContentSize)
+				{
+					throw std::runtime_error(
+						std::format(
+							"HandlePipeEvent - Size Mismatched: {} {}",
+							bytesRead,
+							message.ContentSize));
+				}
+
+				LogMessage(message);
+			}
 		}
 
 		void LogMessage(Message& message)
