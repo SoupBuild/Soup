@@ -7,6 +7,6 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		'mwasplund|Soup.Build.Utils@0'
+		<mwasplund|Soup.Build.Utils@0>
 	]
 }

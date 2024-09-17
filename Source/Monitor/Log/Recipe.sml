@@ -1,7 +1,7 @@
 # A sample Monitor that logs all access to disk
 Name: 'LogMonitor'
-Language: 'C++|0'
-Version: '1.0.0'
+Language: (C++@0)
+Version: 1.0.0
 Type: 'Executable'
 Source: [
 	'Main.cpp'
