@@ -85,7 +85,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path(directory),
+				Path = Path.Parse(directory),
 				IsDirectory = true,
 			});
 		}
@@ -94,7 +94,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path(file),
+				Path = Path.Parse(file),
 				IsDirectory = false,
 			});
 		}
@@ -109,7 +109,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path($"{directory}/"),
+				Path = Path.Parse($"{directory}/"),
 				IsDirectory = true,
 			});
 		}
@@ -124,7 +124,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path(directory),
+				Path = Path.Parse(directory),
 				IsDirectory = true,
 			});
 		}
