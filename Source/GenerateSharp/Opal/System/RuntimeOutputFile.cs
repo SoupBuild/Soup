@@ -48,9 +48,4 @@ internal sealed class RuntimeOutputFile : IOutputFile
 			_isDisposed = true;
 		}
 	}
-
-	Stream IOutputFile.GetOutStream()
-	{
-		throw new NotImplementedException();
-	}
 }

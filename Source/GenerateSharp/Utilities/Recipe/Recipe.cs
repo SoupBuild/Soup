@@ -5,6 +5,7 @@
 using Opal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Soup.Build.Utilities;
 
@@ -75,9 +76,15 @@ public class Recipe
 	/// </summary>
 	public SMLValue LanguageValue => GetValue(Document, Property_Language);
 
+	[SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Only check few types")]
 	public LanguageReference Language
 	{
-		get => LanguageReference.Parse(LanguageValue.AsString().Value);
+		get => LanguageValue.Type switch
+		{
+			SMLValueType.String => LanguageReference.Parse(LanguageValue.AsString().Value),
+			SMLValueType.LanguageReference => LanguageValue.AsLanguageReference().Value,
+			_ => throw new InvalidOperationException("Language must be string or LanguageReference"),
+		};
 		set => EnsureHasValue(Document, Property_Language, value.ToString());
 	}
 

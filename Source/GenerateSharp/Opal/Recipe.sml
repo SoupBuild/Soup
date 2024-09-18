@@ -1,10 +1,10 @@
 Name: 'Opal'
-Language: (C#@0)
-Version: 1.5.0
+Language: 'C#|0'
+Version: '1.4.0'
 Source: [
-	'IO/IConsoleInputStream.cs'
+	'IO/IConsoleInput.cs'
 	'IO/IConsoleManager.cs'
-	'IO/MockConsoleInputStream.cs'
+	'IO/MockConsoleInput.cs'
 	'IO/MockConsoleManager.cs'
 	# 'IO/SystemConsoleInputStream.cs'
 	# 'IO/SystemConsoleManager.cs'
