@@ -77,7 +77,7 @@ public class ClosureClient
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
-			var objectResponse = await ReadObjectResponseAsync<GenerateClosureResultModel>(
+			var objectResponse = await ReadObjectResponseAsync(
 				response,
 				SourceGenerationContext.Default.GenerateClosureResultModel,
 				cancellationToken).ConfigureAwait(false);
@@ -97,7 +97,7 @@ public class ClosureClient
 		try
 		{
 			using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-			var typedBody = await JsonSerializer.DeserializeAsync<T>(
+			var typedBody = await JsonSerializer.DeserializeAsync(
 				responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
 			if (typedBody is null)
 			{

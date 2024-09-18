@@ -7,12 +7,13 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Soup.Build.Utilities;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 
 namespace Soup.View.ViewModels;
 
 public class OperationDetailsViewModel : ViewModelBase
 {
-	private readonly ObservableCollection<PropertyValueViewModel> properties = [];
+	private readonly ObservableCollection<PropertyValueViewModel> _properties = [];
 
 	public OperationDetailsViewModel(
 		FileSystemState fileSystemState,

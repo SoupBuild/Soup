@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Soup.Build.Utilities;
 
 public class SMLArray : IEquatable<SMLArray>

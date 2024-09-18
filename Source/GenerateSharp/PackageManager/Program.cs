@@ -4,6 +4,9 @@
 
 using Opal;
 using Opal.System;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager;

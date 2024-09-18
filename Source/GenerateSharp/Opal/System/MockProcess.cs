@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace Opal.System;
 
 /// <summary>
@@ -34,12 +38,12 @@ public class MockProcess : IProcess
 		string stdOut,
 		string stdErr)
 	{
-		this.id = id;
-		this.requests = requests;
-		isFinished = false;
-		this.stdOut = stdOut;
-		this.stdErr = stdErr;
-		this.exitCode = exitCode;
+		_id = id;
+		_requests = requests;
+		_isFinished = false;
+		_stdOut = stdOut;
+		_stdErr = stdErr;
+		_exitCode = exitCode;
 	}
 
 	/// <summary>
@@ -47,7 +51,7 @@ public class MockProcess : IProcess
 	/// </summary>
 	public void Start()
 	{
-		requests.Add($"ProcessStart: {id}");
+		_requests.Add($"ProcessStart: {_id}");
 	}
 
 	/// <summary>
@@ -55,9 +59,9 @@ public class MockProcess : IProcess
 	/// </summary>
 	public Task WaitForExitAsync()
 	{
-		requests.Add($"WaitForExit: {id}");
+		_requests.Add($"WaitForExit: {_id}");
 
-		isFinished = true;
+		_isFinished = true;
 		return Task.CompletedTask;
 	}
 
@@ -66,11 +70,11 @@ public class MockProcess : IProcess
 	/// </summary>
 	public int GetExitCode()
 	{
-		requests.Add($"GetExitCode: {id}");
+		_requests.Add($"GetExitCode: {_id}");
 
-		if (!isFinished)
+		if (!_isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return exitCode;
+		return _exitCode;
 	}
 
 	/// <summary>
@@ -78,11 +82,11 @@ public class MockProcess : IProcess
 	/// </summary>
 	public string GetStandardOutput()
 	{
-		requests.Add($"GetStandardOutput: {id}");
+		_requests.Add($"GetStandardOutput: {_id}");
 
-		if (!isFinished)
+		if (!_isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return stdOut;
+		return _stdOut;
 	}
 
 	/// <summary>
@@ -90,10 +94,10 @@ public class MockProcess : IProcess
 	/// </summary>
 	public string GetStandardError()
 	{
-		requests.Add($"GetStandardError: {id}");
+		_requests.Add($"GetStandardError: {_id}");
 
-		if (!isFinished)
+		if (!_isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return stdErr;
+		return _stdErr;
 	}
 }

@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Opal.System;
 
 /// <summary>
@@ -20,10 +22,10 @@ public class MockProcessManager : IProcessManager
 	/// </summary>
 	public MockProcessManager()
 	{
-		uniqueId = 1;
-		requests = [];
-		processFileName = new Path("C:/testlocation/SoupCMDTest.exe");
-		executeResults = [];
+		_uniqueId = 1;
+		_requests = [];
+		_processFileName = new Path("C:/testlocation/SoupCMDTest.exe");
+		_executeResults = [];
 	}
 
 	/// <summary>
@@ -32,10 +34,10 @@ public class MockProcessManager : IProcessManager
 	/// <param name="processFileName">The process file name.</param>
 	public MockProcessManager(Path processFileName)
 	{
-		uniqueId = 1;
-		requests = [];
-		this.processFileName = processFileName;
-		executeResults = [];
+		_uniqueId = 1;
+		_requests = [];
+		_processFileName = processFileName;
+		_executeResults = [];
 	}
 
 	/// <summary>
@@ -45,21 +47,21 @@ public class MockProcessManager : IProcessManager
 	/// <param name="output">The output.</param>
 	public void RegisterExecuteResult(string command, string output)
 	{
-		executeResults.Add(command, output);
+		_executeResults.Add(command, output);
 	}
 
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> Requests => requests;
+	public IReadOnlyList<string> Requests => _requests;
 
 	/// <summary>
 	/// Gets the process file name.
 	/// </summary>
 	public Path GetCurrentProcessFileName()
 	{
-		requests.Add("GetCurrentProcessFileName");
-		return processFileName;
+		_requests.Add("GetCurrentProcessFileName");
+		return _processFileName;
 	}
 
 	/// <summary>
@@ -73,16 +75,16 @@ public class MockProcessManager : IProcessManager
 		string arguments,
 		Path workingDirectory)
 	{
-		var id = uniqueId++;
+		var id = _uniqueId++;
 		var message = $"CreateProcess: {id} [{workingDirectory}] {executable} {arguments}";
-		requests.Add(message);
+		_requests.Add(message);
 
 		// Check if there is a registered output
-		if (executeResults.TryGetValue(message, out var output))
+		if (_executeResults.TryGetValue(message, out var output))
 		{
 			return new MockProcess(
 				id,
-				requests,
+				_requests,
 				0,
 				output,
 				string.Empty);
@@ -91,7 +93,7 @@ public class MockProcessManager : IProcessManager
 		{
 			return new MockProcess(
 				id,
-				requests,
+				_requests,
 				0,
 				string.Empty,
 				string.Empty);

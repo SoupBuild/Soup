@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.IO;
+
 namespace Opal.System;
 
 /// <summary>

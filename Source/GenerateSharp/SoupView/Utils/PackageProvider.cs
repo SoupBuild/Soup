@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
 using PackageChildrenMap = System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<Soup.View.PackageChildInfo>>;
 using PackageGraphId = System.Int32;
 using PackageGraphLookupMap = System.Collections.Generic.IDictionary<int, Soup.View.PackageGraph>;

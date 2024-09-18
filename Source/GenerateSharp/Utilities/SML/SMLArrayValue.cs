@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+
 namespace Soup.Build.Utilities;
 
 public class SMLArrayValue : IEquatable<SMLArrayValue>
@@ -25,7 +28,7 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 
 	public override bool Equals(object? obj)
 	{
-		return this.Equals(obj as SMLArrayValue);
+		return Equals(obj as SMLArrayValue);
 	}
 
 	public bool Equals(SMLArrayValue? other)
@@ -34,11 +37,11 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, other))
+		if (ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return this.Value == other.Value;
+		return Value == other.Value;
 	}
 
 	public override int GetHashCode()

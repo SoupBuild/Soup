@@ -2,13 +2,16 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Soup.Build.Discover.UnitTests;
 
 public class DictionaryOfListsComparer<T> : IEqualityComparer<IDictionary<string, IList<T>>>
 {
-	private readonly IEqualityComparer<T> valueComparer;
+	private readonly IEqualityComparer<T> _valueComparer;
 
 	public DictionaryOfListsComparer(IEqualityComparer<T>? valueComparer = null)
 	{
@@ -31,7 +34,7 @@ public class DictionaryOfListsComparer<T> : IEqualityComparer<IDictionary<string
 			var xValue = pair.Value;
 			var yValue = y[pair.Key];
 
-			if (!xValue.SequenceEqual(yValue, this.valueComparer))
+			if (!xValue.SequenceEqual(yValue, valueComparer))
 				return false;
 		}
 

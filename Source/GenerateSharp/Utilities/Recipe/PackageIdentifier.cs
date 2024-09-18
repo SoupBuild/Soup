@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
@@ -59,7 +60,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	public PackageIdentifier()
 	{
 		Language = null;
-		this._name = new PackageName(null, string.Empty);
+		_name = new PackageName(null, string.Empty);
 	}
 
 	/// <summary>
@@ -68,7 +69,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	public PackageIdentifier(string? language, string? owner, string name)
 	{
 		Language = language;
-		this._name = new PackageName(owner, name);
+		_name = new PackageName(owner, name);
 	}
 
 	/// <summary>
@@ -84,17 +85,17 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	/// <summary>
 	/// Gets a value indicating whether the identifier has an owner
 	/// </summary>
-	public bool HasOwner => this._name.HasOwner;
+	public bool HasOwner => _name.HasOwner;
 
 	/// <summary>
 	/// Gets or sets the Owner.
 	/// </summary>
-	public string? Owner => this._name.Owner;
+	public string? Owner => _name.Owner;
 
 	/// <summary>
 	/// Gets or sets the Name.
 	/// </summary>
-	public string Name => this._name.Name;
+	public string Name => _name.Name;
 
 	/// <summary>
 	/// Equality operator
@@ -104,7 +105,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 		if (other is null)
 			return false;
 		return Language == other.Language &&
-			this._name == other._name;
+			_name == other._name;
 	}
 
 	public override bool Equals(object? obj)
@@ -115,7 +116,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	public override int GetHashCode()
 	{
 		var languageHash = Language is null ? 0 : Language.GetHashCode(StringComparison.Ordinal) * 0x1000;
-		var nameHash = this._name.GetHashCode();
+		var nameHash = _name.GetHashCode();
 		return languageHash + nameHash;
 	}
 
@@ -137,11 +138,11 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 		// Build up the language/owner/name reference
 		if (Language is not null)
 		{
-			return $"[{Language}]{this._name}";
+			return $"[{Language}]{_name}";
 		}
 		else
 		{
-			return this._name.ToString();
+			return _name.ToString();
 		}
 	}
 

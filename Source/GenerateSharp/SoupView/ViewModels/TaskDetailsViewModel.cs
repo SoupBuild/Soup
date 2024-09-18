@@ -5,6 +5,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Soup.Build.Utilities;
+using System;
 using System.Collections.ObjectModel;
 using ValueType = Soup.Build.Utilities.ValueType;
 
@@ -12,7 +13,7 @@ namespace Soup.View.ViewModels;
 
 public class TaskDetailsViewModel : ViewModelBase
 {
-	private readonly ObservableCollection<ValueTableItemViewModel> properties = [];
+	private readonly ObservableCollection<ValueTableItemViewModel> _properties = [];
 
 	public TaskDetailsViewModel(ValueTable taskInfo)
 	{

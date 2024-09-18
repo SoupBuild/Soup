@@ -6,7 +6,11 @@ using GraphShape;
 using ReactiveUI;
 using Soup.Build.Utilities;
 using Soup.View.Views;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 using ValueType = Soup.Build.Utilities.ValueType;
 
@@ -22,11 +26,11 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		public required List<TaskDetails> Children { get; init; }
 	}
 
-	private GraphNodeViewModel? selectedNode;
-	private TaskDetailsViewModel? selectedTask;
-	private uint uniqueId;
-	private IList<GraphNodeViewModel>? graph;
-	private readonly Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = [];
+	private GraphNodeViewModel? _selectedNode;
+	private TaskDetailsViewModel? _selectedTask;
+	private uint _uniqueId;
+	private IList<GraphNodeViewModel>? _graph;
+	private readonly Dictionary<uint, TaskDetailsViewModel> _taskDetailsLookup = [];
 
 	public IList<GraphNodeViewModel>? Graph
 	{
@@ -39,9 +43,9 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		get => selectedNode;
 		set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref selectedNode, value))
 			{
-				SelectedTask = selectedNode is not null ? this.taskDetailsLookup[selectedNode.Id] : null;
+				SelectedTask = selectedNode is not null ? taskDetailsLookup[selectedNode.Id] : null;
 			}
 		}
 	}
@@ -91,8 +95,8 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 	private List<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)
 	{
-		this.taskDetailsLookup.Clear();
-		this.uniqueId = 1;
+		taskDetailsLookup.Clear();
+		uniqueId = 1;
 
 		if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != ValueType.List)
 		{
@@ -141,7 +145,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 				{
 					Name = taskName,
 					TaskInfo = taskInfo,
-					Id = this.uniqueId++,
+					Id = uniqueId++,
 					Children = [],
 				});
 		}
@@ -193,7 +197,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 			result.Add(node);
 
-			this.taskDetailsLookup.Add(
+			taskDetailsLookup.Add(
 				task.Id,
 				new TaskDetailsViewModel(task.TaskInfo));
 		}

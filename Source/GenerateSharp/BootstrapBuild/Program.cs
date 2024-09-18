@@ -5,7 +5,11 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 using ConsoleTraceListener = Opal.ConsoleTraceListener;
 using EventTypeFilter = Opal.EventTypeFilter;
 using Path = Opal.Path;

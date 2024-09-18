@@ -4,6 +4,8 @@
 
 using Opal;
 using Opal.System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using Path = Opal.Path;
 

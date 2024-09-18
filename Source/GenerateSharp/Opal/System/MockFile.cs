@@ -39,13 +39,13 @@ public class MockFile
 
 public class MockOutputFile : IOutputFile
 {
-	private readonly MockFile file;
-	private bool isDisposed;
+	private readonly MockFile _file;
+	private bool _isDisposed;
 
 	public MockOutputFile(MockFile file)
 	{
-		isDisposed = false;
-		this.file = file;
+		_isDisposed = false;
+		_file = file;
 	}
 
 	/// <summary>
@@ -53,7 +53,7 @@ public class MockOutputFile : IOutputFile
 	/// </summary>
 	public Stream GetOutStream()
 	{
-		return file.Content;
+		return _file.Content;
 	}
 
 	public void Dispose()
@@ -65,26 +65,21 @@ public class MockOutputFile : IOutputFile
 
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!isDisposed)
+		if (!_isDisposed)
 		{
-			isDisposed = true;
+			_isDisposed = true;
 		}
-	}
-
-	Stream IOutputFile.GetOutStream()
-	{
-		throw new global::System.NotImplementedException();
 	}
 }
 
 public class MockInputFile : IInputFile
 {
 	private readonly MockFile _file;
-	private bool isDisposed;
+	private bool _isDisposed;
 
 	public MockInputFile(MockFile file)
 	{
-		isDisposed = false;
+		_isDisposed = false;
 		_file = file;
 	}
 
@@ -106,20 +101,10 @@ public class MockInputFile : IInputFile
 
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!isDisposed)
+		if (!_isDisposed)
 		{
-			isDisposed = true;
+			_isDisposed = true;
 		}
-	}
-
-	Stream IInputFile.GetInStream()
-	{
-		throw new global::System.NotImplementedException();
-	}
-
-	Stream IInputFile.GetInStream()
-	{
-		throw new global::System.NotImplementedException();
 	}
 
 	Stream IInputFile.GetInStream()

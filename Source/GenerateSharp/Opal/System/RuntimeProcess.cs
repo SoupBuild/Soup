@@ -2,7 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Opal.System;
 
@@ -30,9 +32,9 @@ public class RuntimeProcess : IProcess
 		string arguments,
 		Path workingDirectory)
 	{
-		this.executable = executable;
-		this.arguments = arguments;
-		this.workingDirectory = workingDirectory;
+		_executable = executable;
+		_arguments = arguments;
+		_workingDirectory = workingDirectory;
 	}
 
 	/// <summary>
@@ -42,15 +44,15 @@ public class RuntimeProcess : IProcess
 	{
 		var processInfo = new ProcessStartInfo()
 		{
-			FileName = executable.ToString(),
-			Arguments = arguments,
-			WorkingDirectory = workingDirectory.ToString(),
+			FileName = _executable.ToString(),
+			Arguments = _arguments,
+			WorkingDirectory = _workingDirectory.ToString(),
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
 		};
 
-		process = Process.Start(processInfo);
-		if (process is null)
+		_process = Process.Start(processInfo);
+		if (_process is null)
 			throw new InvalidOperationException("Failed to start process");
 	}
 
@@ -59,9 +61,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public Task WaitForExitAsync()
 	{
-		if (process is null)
+		if (_process is null)
 			throw new InvalidOperationException("Cannot wait on process that is not running");
-		return process.WaitForExitAsync();
+		return _process.WaitForExitAsync();
 	}
 
 	/// <summary>
@@ -69,9 +71,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public int GetExitCode()
 	{
-		if (process is null)
+		if (_process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return process.ExitCode;
+		return _process.ExitCode;
 	}
 
 	/// <summary>
@@ -79,9 +81,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public string GetStandardOutput()
 	{
-		if (process is null)
+		if (_process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return process.StandardOutput.ReadToEnd();
+		return _process.StandardOutput.ReadToEnd();
 	}
 
 	/// <summary>
@@ -89,8 +91,8 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public string GetStandardError()
 	{
-		if (process is null)
+		if (_process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return process.StandardError.ReadToEnd();
+		return _process.StandardError.ReadToEnd();
 	}
 }

@@ -5,9 +5,12 @@
 using Moq;
 using Opal;
 using Opal.System;
+using System;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Xunit;
 using Path = Opal.Path;
 

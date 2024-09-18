@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.IO;
 
 namespace Opal.System;
@@ -16,8 +17,8 @@ internal sealed class RuntimeOutputFile : IOutputFile
 
 	public RuntimeOutputFile(FileStream stream)
 	{
-		isDisposed = false;
-		this.stream = stream;
+		_isDisposed = false;
+		_stream = stream;
 	}
 
 	/// <summary>
@@ -25,7 +26,7 @@ internal sealed class RuntimeOutputFile : IOutputFile
 	/// </summary>
 	public Stream GetOutStream()
 	{
-		return stream;
+		return _stream;
 	}
 
 	public void Dispose()
@@ -37,19 +38,19 @@ internal sealed class RuntimeOutputFile : IOutputFile
 
 	private void Dispose(bool disposing)
 	{
-		if (!isDisposed)
+		if (!_isDisposed)
 		{
 			if (disposing)
 			{
-				stream.Dispose();
+				_stream.Dispose();
 			}
 
-			isDisposed = true;
+			_isDisposed = true;
 		}
 	}
 
 	Stream IOutputFile.GetOutStream()
 	{
-		throw new global::System.NotImplementedException();
+		throw new NotImplementedException();
 	}
 }

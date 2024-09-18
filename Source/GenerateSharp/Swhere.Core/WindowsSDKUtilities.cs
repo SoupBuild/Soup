@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using System.Linq;
 using Path = Opal.Path;
 
 namespace Soup.Build.Discover;

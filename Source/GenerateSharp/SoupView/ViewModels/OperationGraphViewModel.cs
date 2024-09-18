@@ -6,18 +6,22 @@ using GraphShape;
 using ReactiveUI;
 using Soup.Build.Utilities;
 using Soup.View.Views;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.View.ViewModels;
 
 public class OperationGraphViewModel : ContentPaneViewModel
 {
-	private readonly FileSystemState fileSystemState = new FileSystemState();
-	private GraphNodeViewModel? selectedNode;
-	private OperationDetailsViewModel? selectedOperation;
-	private IList<GraphNodeViewModel>? graph;
-	private readonly Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = [];
+	private readonly FileSystemState _fileSystemState = new FileSystemState();
+	private GraphNodeViewModel? _selectedNode;
+	private OperationDetailsViewModel? _selectedOperation;
+	private IList<GraphNodeViewModel>? _graph;
+	private readonly Dictionary<uint, OperationDetailsViewModel> _operationDetailsLookup = [];
 
 	public IList<GraphNodeViewModel>? Graph
 	{

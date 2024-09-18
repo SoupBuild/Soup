@@ -34,7 +34,7 @@ public abstract class TraceListener
 		bool showEventType,
 		bool showEventId)
 	{
-		this.filter = filter;
+		_filter = filter;
 		ShowEventType = showEventType;
 		ShowEventId = showEventId;
 	}
@@ -44,7 +44,7 @@ public abstract class TraceListener
 	/// </summary>
 	public bool HasFilter()
 	{
-		return filter != null;
+		return _filter != null;
 	}
 
 	/// <summary>
@@ -68,7 +68,7 @@ public abstract class TraceListener
 		int id,
 		string message)
 	{
-		if (filter != null && !filter.ShouldTrace(eventType))
+		if (_filter != null && !_filter.ShouldTrace(eventType))
 		{
 			return;
 		}

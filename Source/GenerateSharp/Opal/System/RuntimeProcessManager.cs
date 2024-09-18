@@ -2,10 +2,12 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+
 namespace Opal.System;
 
 /// <summary>
-/// A windows splatform specific process executable using system
+/// A windows platform specific process executable using system
 /// </summary>
 public class RuntimeProcessManager : IProcessManager
 {

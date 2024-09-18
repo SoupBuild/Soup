@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Opal.System;

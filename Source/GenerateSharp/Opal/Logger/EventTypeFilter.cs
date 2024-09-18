@@ -10,27 +10,27 @@ public class EventTypeFilter : IEventFilter
 
 	public EventTypeFilter(TraceEvents eventTypes)
 	{
-		types = eventTypes;
+		_types = eventTypes;
 	}
 
 	public void Set(TraceEvents eventType)
 	{
-		types = eventType;
+		_types = eventType;
 	}
 
 	public void Disable(TraceEvents eventType)
 	{
-		types &= ~eventType;
+		_types &= ~eventType;
 	}
 
 	public void Enable(TraceEvents eventType)
 	{
-		types |= eventType;
+		_types |= eventType;
 	}
 
 	public bool IsEnabled(TraceEvents eventType)
 	{
-		return (types & eventType) == eventType;
+		return (_types & eventType) == eventType;
 	}
 
 	public virtual bool ShouldTrace(TraceEvents eventType)

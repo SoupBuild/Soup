@@ -5,8 +5,12 @@
 using Moq;
 using Opal;
 using Opal.System;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Xunit;
 using Path = Opal.Path;
 
@@ -84,7 +88,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
@@ -240,7 +245,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Runtime":[1,2]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"id":2,"language":"Wren","owner":"User1","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Runtime":[1,2]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"id":2,"language":"Wren","owner":"User1","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
@@ -465,7 +471,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Runtime":[1,2]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"id":2,"language":"Wren","owner":"User1","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Runtime":[1,2]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"id":2,"language":"Wren","owner":"User1","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
@@ -814,7 +821,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":2,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{"Build":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":2,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{"Build":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -824,7 +832,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
@@ -1409,7 +1418,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":2,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{"Build":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":2,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{"Build":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -1419,7 +1429,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
@@ -1429,7 +1440,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":6}},"dependencies":{"Tool":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"C\u002B\u002B","owner":"User1","name":"Package2","version":{"major":2,"minor":3,"patch":4}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":6}},"dependencies":{"Tool":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"C\u002B\u002B","owner":"User1","name":"Package2","version":{"major":2,"minor":3,"patch":4}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult3)),
@@ -1439,7 +1451,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult4)),
@@ -2069,7 +2082,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Build":[1]}},"localPackages":[{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Build":[1]}},"localPackages":[{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -2084,7 +2098,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
@@ -2470,7 +2485,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Build":[2]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}},{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{"Tool":[1]}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Build":[2]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}},{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{"Tool":[1]}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -2480,7 +2496,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{"Tool":[1]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{"Tool":[1]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
@@ -2490,7 +2507,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult3)),
@@ -2949,7 +2967,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":1,"minor":2,"patch":3}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+									 /*lang=json,strict*/
+									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":1,"minor":2,"patch":3}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),

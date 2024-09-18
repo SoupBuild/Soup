@@ -8,6 +8,8 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Soup.View.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
 using Path = Avalonia.Controls.Shapes.Path;
 
 namespace Soup.View.Views;
@@ -21,9 +23,9 @@ public sealed class GraphViewer : TemplatedControl
 
 	private static int InternalPadding => 20;
 
-	private ScrollViewer? scroller;
-	private Canvas? root;
-	private readonly Dictionary<uint, GraphViewerItem> itemLookup = [];
+	private ScrollViewer? _scroller;
+	private Canvas? _root;
+	private readonly Dictionary<uint, GraphViewerItem> _itemLookup = [];
 
 	/// <summary>
 	/// Identifies the <see cref="Graph"/> property.
@@ -40,8 +42,8 @@ public sealed class GraphViewer : TemplatedControl
 
 	public GraphViewer()
 	{
-		this.PropertyChanged += GraphViewer_PropertyChanged;
-		this.SizeChanged += GraphViewer_SizeChanged;
+		PropertyChanged += GraphViewer_PropertyChanged;
+		SizeChanged += GraphViewer_SizeChanged;
 	}
 
 	/// <summary>
@@ -92,12 +94,12 @@ public sealed class GraphViewer : TemplatedControl
 
 	private void GraphViewer_SizeChanged(object? sender, SizeChangedEventArgs e)
 	{
-		this.LayoutGraph();
+		LayoutGraph();
 	}
 
 	protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
 	{
-		this.LayoutGraph();
+		LayoutGraph();
 
 		scroller = e.NameScope.Find<ScrollViewer>("Scroller");
 		root = e.NameScope.Find<Canvas>("RootCanvas");
@@ -112,16 +114,16 @@ public sealed class GraphViewer : TemplatedControl
 
 		root.Children.Clear();
 
-		if (this.Graph is null)
+		if (Graph is null)
 			return;
 
 		var minPosition = new GraphShape.Point(
-			this.Graph.Min(node => node.Position.X),
-			this.Graph.Min(node => node.Position.Y));
+			Graph.Min(node => node.Position.X),
+			Graph.Min(node => node.Position.Y));
 
 		var maxPosition = new GraphShape.Point(
-			this.Graph.Max(node => node.Position.X),
-			this.Graph.Max(node => node.Position.Y));
+			Graph.Max(node => node.Position.X),
+			Graph.Max(node => node.Position.Y));
 
 		var size = new GraphShape.Size(
 			maxPosition.X - minPosition.X + NodeWidth + InternalPadding + InternalPadding,
@@ -130,7 +132,7 @@ public sealed class GraphViewer : TemplatedControl
 		var nodeState = new Dictionary<uint, (GraphViewerItem Item, Point InConnect, Point OutConnect)>();
 		itemLookup.Clear();
 
-		foreach (var node in this.Graph)
+		foreach (var node in Graph)
 		{
 			var nodeItem = new GraphViewerItem()
 			{
@@ -194,7 +196,7 @@ public sealed class GraphViewer : TemplatedControl
 		if (sender is not null)
 		{
 			var node = (GraphViewerItem)sender;
-			this.SelectedNode = (GraphNodeViewModel?)node.DataContext;
+			SelectedNode = (GraphNodeViewModel?)node.DataContext;
 		}
 	}
 

@@ -2,6 +2,8 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
+using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Path = Opal.Path;
 
@@ -9,10 +11,10 @@ namespace Soup.View.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-	private Path? recipeFile;
-	private readonly DependencyGraphViewModel dependencyGraph;
-	private readonly TaskGraphViewModel taskGraph;
-	private readonly OperationGraphViewModel operationGraph;
+	private Path? _recipeFile;
+	private readonly DependencyGraphViewModel _dependencyGraph;
+	private readonly TaskGraphViewModel _taskGraph;
+	private readonly OperationGraphViewModel _operationGraph;
 
 	public IStorageProvider? StorageProvider { get; set; }
 
@@ -33,7 +35,7 @@ public class MainWindowViewModel : ViewModelBase
 		get => recipeFile;
 		private set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref recipeFile, value))
+			if (CheckRaiseAndSetIfChanged(ref recipeFile, value))
 			{
 				if (recipeFile is not null)
 				{
@@ -48,7 +50,7 @@ public class MainWindowViewModel : ViewModelBase
 		get => content;
 		private set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref content, value))
+			if (CheckRaiseAndSetIfChanged(ref content, value))
 			{
 				this.RaisePropertyChanged(nameof(IsRootSelected));
 				this.RaisePropertyChanged(nameof(IsTasksSelected));
@@ -91,7 +93,7 @@ public class MainWindowViewModel : ViewModelBase
 		}
 	}
 
-	public string SelectedPackageName => this.dependencyGraph.SelectedProject?.Name ?? "[Package]";
+	public string SelectedPackageName => dependencyGraph.SelectedProject?.Name ?? "[Package]";
 
 	public bool IsRootSelected => ReferenceEquals(content, dependencyGraph);
 
@@ -101,10 +103,10 @@ public class MainWindowViewModel : ViewModelBase
 
 	private async Task OnOpenAsync()
 	{
-		if (this.StorageProvider is null)
+		if (StorageProvider is null)
 			throw new InvalidOperationException("Missing storage provider");
 
-		var filePickerResult = await this.StorageProvider.OpenFilePickerAsync(
+		var filePickerResult = await StorageProvider.OpenFilePickerAsync(
 			new FilePickerOpenOptions()
 			{
 				AllowMultiple = false,
