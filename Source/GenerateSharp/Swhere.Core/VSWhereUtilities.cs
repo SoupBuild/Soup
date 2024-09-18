@@ -4,7 +4,9 @@
 
 using Opal;
 using Opal.System;
+using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.Build.Discover;

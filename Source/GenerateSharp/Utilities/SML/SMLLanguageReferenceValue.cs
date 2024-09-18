@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+
 namespace Soup.Build.Utilities;
 
 public class SMLLanguageReferenceValue : IEquatable<SMLLanguageReferenceValue>

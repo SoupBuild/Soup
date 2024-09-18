@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Opal;
@@ -36,9 +38,9 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 	/// <param name="patch">The patch version.</param>
 	public SemanticVersion(int major, int? minor, int? patch)
 	{
-		this.Major = major;
-		this.Minor = minor;
-		this.Patch = patch;
+		Major = major;
+		Minor = minor;
+		Patch = patch;
 	}
 
 	/// <summary>

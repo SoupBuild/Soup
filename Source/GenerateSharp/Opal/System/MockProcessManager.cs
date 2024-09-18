@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Opal.System;
 
 /// <summary>
@@ -10,20 +12,20 @@ namespace Opal.System;
 /// </summary>
 public class MockProcessManager : IProcessManager
 {
-	private int uniqueId;
-	private readonly List<string> requests;
-	private readonly Path processFileName;
-	private readonly Dictionary<string, string> executeResults;
+	private int _uniqueId;
+	private readonly List<string> _requests;
+	private readonly Path _processFileName;
+	private readonly Dictionary<string, string> _executeResults;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockProcessManager'/> class.
 	/// </summary>
 	public MockProcessManager()
 	{
-		this.uniqueId = 1;
-		this.requests = [];
-		this.processFileName = new Path("C:/testlocation/SoupCMDTest.exe");
-		this.executeResults = [];
+		_uniqueId = 1;
+		_requests = [];
+		_processFileName = new Path("C:/testlocation/SoupCMDTest.exe");
+		_executeResults = [];
 	}
 
 	/// <summary>
@@ -32,10 +34,10 @@ public class MockProcessManager : IProcessManager
 	/// <param name="processFileName">The process file name.</param>
 	public MockProcessManager(Path processFileName)
 	{
-		this.uniqueId = 1;
-		this.requests = [];
-		this.processFileName = processFileName;
-		this.executeResults = [];
+		_uniqueId = 1;
+		_requests = [];
+		_processFileName = processFileName;
+		_executeResults = [];
 	}
 
 	/// <summary>
@@ -45,21 +47,21 @@ public class MockProcessManager : IProcessManager
 	/// <param name="output">The output.</param>
 	public void RegisterExecuteResult(string command, string output)
 	{
-		this.executeResults.Add(command, output);
+		_executeResults.Add(command, output);
 	}
 
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> Requests => this.requests;
+	public IReadOnlyList<string> Requests => _requests;
 
 	/// <summary>
 	/// Gets the process file name.
 	/// </summary>
 	public Path GetCurrentProcessFileName()
 	{
-		this.requests.Add("GetCurrentProcessFileName");
-		return this.processFileName;
+		_requests.Add("GetCurrentProcessFileName");
+		return _processFileName;
 	}
 
 	/// <summary>
@@ -73,16 +75,16 @@ public class MockProcessManager : IProcessManager
 		string arguments,
 		Path workingDirectory)
 	{
-		var id = this.uniqueId++;
+		var id = _uniqueId++;
 		var message = $"CreateProcess: {id} [{workingDirectory}] {executable} {arguments}";
-		this.requests.Add(message);
+		_requests.Add(message);
 
 		// Check if there is a registered output
-		if (this.executeResults.TryGetValue(message, out var output))
+		if (_executeResults.TryGetValue(message, out var output))
 		{
 			return new MockProcess(
 				id,
-				this.requests,
+				_requests,
 				0,
 				output,
 				string.Empty);
@@ -91,7 +93,7 @@ public class MockProcessManager : IProcessManager
 		{
 			return new MockProcess(
 				id,
-				this.requests,
+				_requests,
 				0,
 				string.Empty,
 				string.Empty);

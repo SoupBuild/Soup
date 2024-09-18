@@ -5,7 +5,10 @@
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Opal;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Soup.Build.Utilities;
 

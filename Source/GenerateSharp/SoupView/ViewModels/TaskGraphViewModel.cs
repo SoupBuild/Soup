@@ -6,7 +6,11 @@ using GraphShape;
 using ReactiveUI;
 using Soup.Build.Utilities;
 using Soup.View.Views;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 using ValueType = Soup.Build.Utilities.ValueType;
 
@@ -22,34 +26,34 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		public required List<TaskDetails> Children { get; init; }
 	}
 
-	private GraphNodeViewModel? selectedNode;
-	private TaskDetailsViewModel? selectedTask;
-	private uint uniqueId;
-	private IList<GraphNodeViewModel>? graph;
-	private readonly Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = [];
+	private GraphNodeViewModel? _selectedNode;
+	private TaskDetailsViewModel? _selectedTask;
+	private uint _uniqueId;
+	private IList<GraphNodeViewModel>? _graph;
+	private readonly Dictionary<uint, TaskDetailsViewModel> _taskDetailsLookup = [];
 
 	public IList<GraphNodeViewModel>? Graph
 	{
-		get => graph;
-		private set => this.RaiseAndSetIfChanged(ref graph, value);
+		get => _graph;
+		private set => this.RaiseAndSetIfChanged(ref _graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
 	{
-		get => selectedNode;
+		get => _selectedNode;
 		set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref _selectedNode, value))
 			{
-				SelectedTask = selectedNode is not null ? this.taskDetailsLookup[selectedNode.Id] : null;
+				SelectedTask = _selectedNode is not null ? _taskDetailsLookup[_selectedNode.Id] : null;
 			}
 		}
 	}
 
 	public TaskDetailsViewModel? SelectedTask
 	{
-		get => selectedTask;
-		set => this.RaiseAndSetIfChanged(ref selectedTask, value);
+		get => _selectedTask;
+		set => this.RaiseAndSetIfChanged(ref _selectedTask, value);
 	}
 
 	public async Task LoadProjectAsync(Path? packageFolder)
@@ -91,8 +95,8 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 	private List<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)
 	{
-		this.taskDetailsLookup.Clear();
-		this.uniqueId = 1;
+		_taskDetailsLookup.Clear();
+		_uniqueId = 1;
 
 		if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != ValueType.List)
 		{
@@ -141,7 +145,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 				{
 					Name = taskName,
 					TaskInfo = taskInfo,
-					Id = this.uniqueId++,
+					Id = _uniqueId++,
 					Children = [],
 				});
 		}
@@ -193,7 +197,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 			result.Add(node);
 
-			this.taskDetailsLookup.Add(
+			_taskDetailsLookup.Add(
 				task.Id,
 				new TaskDetailsViewModel(task.TaskInfo));
 		}

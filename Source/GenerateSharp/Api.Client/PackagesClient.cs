@@ -2,11 +2,16 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Globalization;
+using System.IO;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Api.Client;
 
@@ -15,13 +20,13 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class PackagesClient
 {
-	private readonly HttpClient httpClient;
-	private readonly string? bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string? _bearerToken;
 
 	public PackagesClient(HttpClient httpClient, string? bearerToken)
 	{
-		this.httpClient = httpClient;
-		this.bearerToken = bearerToken;
+		_httpClient = httpClient;
+		_bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -59,7 +64,7 @@ public class PackagesClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}");
 
-		var client = this.httpClient;
+		var client = _httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -128,7 +133,7 @@ public class PackagesClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}");
 
-		var client = this.httpClient;
+		var client = _httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		using var jsonContent = new MemoryStream();
@@ -197,9 +202,9 @@ public class PackagesClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(this.bearerToken))
+		if (!string.IsNullOrEmpty(_bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
 		}
 
 		return Task.FromResult(request);

@@ -5,6 +5,7 @@
 using Opal;
 using Opal.System;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Path = Opal.Path;
 

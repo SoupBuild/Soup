@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Path = Opal.Path;
 
@@ -21,7 +22,7 @@ public class OperationResults
 	public OperationResults()
 	{
 		ReferencedFiles = [];
-		this._results = [];
+		_results = [];
 	}
 
 	/// <summary>
@@ -32,7 +33,7 @@ public class OperationResults
 		Dictionary<OperationId, OperationResult> results)
 	{
 		ReferencedFiles = referencedFiles;
-		this._results = results;
+		_results = results;
 	}
 
 	/// <summary>
@@ -43,7 +44,7 @@ public class OperationResults
 	/// <summary>
 	/// Get Results
 	/// </summary>
-	public IDictionary<OperationId, OperationResult> Results => this._results;
+	public IDictionary<OperationId, OperationResult> Results => _results;
 
 	/// <summary>
 	/// Find an operation result
@@ -52,7 +53,7 @@ public class OperationResults
 		OperationId operationId,
 		[MaybeNullWhen(false)] out OperationResult result)
 	{
-		if (this._results.TryGetValue(operationId, out var operationResult))
+		if (_results.TryGetValue(operationId, out var operationResult))
 		{
 			result = operationResult;
 			return true;

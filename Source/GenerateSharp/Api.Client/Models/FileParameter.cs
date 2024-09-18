@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.IO;
+
 namespace Soup.Build.Api.Client;
 
 public class FileParameter

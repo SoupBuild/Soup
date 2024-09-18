@@ -16,7 +16,7 @@ public sealed partial class OperationGraphView : UserControl
 {
 	public OperationGraphView()
 	{
-		this.InitializeComponent();
+		InitializeComponent();
 	}
 
 	protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

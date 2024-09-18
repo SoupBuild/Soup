@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Globalization;
 
 namespace Soup.Build.Utilities;
@@ -147,12 +148,12 @@ public class Value
 	{
 		return Type switch
 		{
-			ValueType.Table => this.AsTable().ToString() ?? string.Empty,
-			ValueType.List => this.AsList().ToString() ?? string.Empty,
-			ValueType.String => $"\"{this.AsString()}\"",
-			ValueType.Integer => this.AsInteger().ToString(CultureInfo.InvariantCulture),
-			ValueType.Float => this.AsFloat().ToString(CultureInfo.InvariantCulture),
-			ValueType.Boolean => this.AsBoolean().ToString(),
+			ValueType.Table => AsTable().ToString() ?? string.Empty,
+			ValueType.List => AsList().ToString() ?? string.Empty,
+			ValueType.String => $"\"{AsString()}\"",
+			ValueType.Integer => AsInteger().ToString(CultureInfo.InvariantCulture),
+			ValueType.Float => AsFloat().ToString(CultureInfo.InvariantCulture),
+			ValueType.Boolean => AsBoolean().ToString(),
 			ValueType.Empty => string.Empty,
 			_ => "UNKNOWN",
 		};

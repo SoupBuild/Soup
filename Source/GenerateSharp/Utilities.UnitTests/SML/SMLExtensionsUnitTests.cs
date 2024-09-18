@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Soup.Build.Utilities.UnitTests;

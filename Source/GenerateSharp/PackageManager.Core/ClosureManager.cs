@@ -5,8 +5,13 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager;
@@ -557,7 +562,7 @@ public class ClosureManager : IClosureManager
 	/// <summary>
 	/// Recursively discover all dependencies
 	/// </summary>
-	private async Task<int> EnsureDiscoverDependenciesAsync(
+	private static async Task<int> EnsureDiscoverDependenciesAsync(
 		Path recipeDirectory,
 		string? owner,
 		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
@@ -611,7 +616,7 @@ public class ClosureManager : IClosureManager
 	/// <summary>
 	/// Recursively discover all local dependencies, assume that the closure has been updated correctly for current recipe
 	/// </summary>
-	private async Task<IDictionary<string, ICollection<int>>> DiscoverDependenciesAsync(
+	private static async Task<IDictionary<string, ICollection<int>>> DiscoverDependenciesAsync(
 		Path recipeDirectory,
 		Recipe recipe,
 		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
@@ -655,7 +660,7 @@ public class ClosureManager : IClosureManager
 	/// <summary>
 	/// Recursively restore all dependencies
 	/// </summary>
-	private async Task<IList<int>> DiscoverTypeDependenciesAsync(
+	private static async Task<IList<int>> DiscoverTypeDependenciesAsync(
 		Path recipeDirectory,
 		Recipe recipe,
 		string dependencyType,

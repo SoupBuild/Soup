@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.IO;
+
 namespace Opal.System;
 
 /// <summary>
@@ -9,13 +12,13 @@ namespace Opal.System;
 /// </summary>
 internal sealed class RuntimeOutputFile : IOutputFile
 {
-	private readonly FileStream stream;
-	private bool isDisposed;
+	private readonly FileStream _stream;
+	private bool _isDisposed;
 
 	public RuntimeOutputFile(FileStream stream)
 	{
-		this.isDisposed = false;
-		this.stream = stream;
+		_isDisposed = false;
+		_stream = stream;
 	}
 
 	/// <summary>
@@ -23,26 +26,26 @@ internal sealed class RuntimeOutputFile : IOutputFile
 	/// </summary>
 	public Stream GetOutStream()
 	{
-		return this.stream;
+		return _stream;
 	}
 
 	public void Dispose()
 	{
 		// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-		this.Dispose(disposing: true);
+		Dispose(disposing: true);
 		GC.SuppressFinalize(this);
 	}
 
 	private void Dispose(bool disposing)
 	{
-		if (!this.isDisposed)
+		if (!_isDisposed)
 		{
 			if (disposing)
 			{
-				this.stream.Dispose();
+				_stream.Dispose();
 			}
 
-			this.isDisposed = true;
+			_isDisposed = true;
 		}
 	}
 }

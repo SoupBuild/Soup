@@ -8,6 +8,8 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Soup.View.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
 using Path = Avalonia.Controls.Shapes.Path;
 
 namespace Soup.View.Views;
@@ -21,9 +23,9 @@ public sealed class GraphViewer : TemplatedControl
 
 	private static int InternalPadding => 20;
 
-	private ScrollViewer? scroller;
-	private Canvas? root;
-	private readonly Dictionary<uint, GraphViewerItem> itemLookup = [];
+	private ScrollViewer? _scroller;
+	private Canvas? _root;
+	private readonly Dictionary<uint, GraphViewerItem> _itemLookup = [];
 
 	/// <summary>
 	/// Identifies the <see cref="Graph"/> property.
@@ -40,8 +42,8 @@ public sealed class GraphViewer : TemplatedControl
 
 	public GraphViewer()
 	{
-		this.PropertyChanged += GraphViewer_PropertyChanged;
-		this.SizeChanged += GraphViewer_SizeChanged;
+		PropertyChanged += GraphViewer_PropertyChanged;
+		SizeChanged += GraphViewer_SizeChanged;
 	}
 
 	/// <summary>
@@ -72,14 +74,14 @@ public sealed class GraphViewer : TemplatedControl
 			case nameof(SelectedNode):
 				// Deselect the previous item
 				if (e.OldValue is GraphNodeViewModel oldNode &&
-					itemLookup.TryGetValue(oldNode.Id, out var oldItem))
+					_itemLookup.TryGetValue(oldNode.Id, out var oldItem))
 				{
 					oldItem.IsSelected = false;
 				}
 
 				// Select the new one
 				if (e.NewValue is GraphNodeViewModel newNode &&
-					itemLookup.TryGetValue(newNode.Id, out var newItem))
+					_itemLookup.TryGetValue(newNode.Id, out var newItem))
 				{
 					newItem.IsSelected = true;
 				}
@@ -92,45 +94,45 @@ public sealed class GraphViewer : TemplatedControl
 
 	private void GraphViewer_SizeChanged(object? sender, SizeChangedEventArgs e)
 	{
-		this.LayoutGraph();
+		LayoutGraph();
 	}
 
 	protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
 	{
-		this.LayoutGraph();
+		LayoutGraph();
 
-		scroller = e.NameScope.Find<ScrollViewer>("Scroller");
-		root = e.NameScope.Find<Canvas>("RootCanvas");
+		_scroller = e.NameScope.Find<ScrollViewer>("Scroller");
+		_root = e.NameScope.Find<Canvas>("RootCanvas");
 
 		base.OnApplyTemplate(e);
 	}
 
 	private void LayoutGraph()
 	{
-		if (root is null)
+		if (_root is null)
 			return;
 
-		root.Children.Clear();
+		_root.Children.Clear();
 
-		if (this.Graph is null)
+		if (Graph is null)
 			return;
 
 		var minPosition = new GraphShape.Point(
-			this.Graph.Min(node => node.Position.X),
-			this.Graph.Min(node => node.Position.Y));
+			Graph.Min(node => node.Position.X),
+			Graph.Min(node => node.Position.Y));
 
 		var maxPosition = new GraphShape.Point(
-			this.Graph.Max(node => node.Position.X),
-			this.Graph.Max(node => node.Position.Y));
+			Graph.Max(node => node.Position.X),
+			Graph.Max(node => node.Position.Y));
 
 		var size = new GraphShape.Size(
 			maxPosition.X - minPosition.X + NodeWidth + InternalPadding + InternalPadding,
 			maxPosition.Y - minPosition.Y + NodeHeight + InternalPadding + InternalPadding);
 
 		var nodeState = new Dictionary<uint, (GraphViewerItem Item, Point InConnect, Point OutConnect)>();
-		itemLookup.Clear();
+		_itemLookup.Clear();
 
-		foreach (var node in this.Graph)
+		foreach (var node in Graph)
 		{
 			var nodeItem = new GraphViewerItem()
 			{
@@ -149,14 +151,14 @@ public sealed class GraphViewer : TemplatedControl
 			Canvas.SetLeft(nodeItem, normalizedPosition.X);
 			Canvas.SetTop(nodeItem, normalizedPosition.Y);
 
-			root.Children.Add(nodeItem);
+			_root.Children.Add(nodeItem);
 
 			// Save the node state
 			var inConnect = new Point(normalizedPosition.X + (NodeWidth / 2), normalizedPosition.Y);
 			var outConnect = new Point(normalizedPosition.X + +(NodeWidth / 2), normalizedPosition.Y + NodeHeight);
 			nodeState.Add(node.Id, (nodeItem, inConnect, outConnect));
 
-			itemLookup.Add(node.Id, nodeItem);
+			_itemLookup.Add(node.Id, nodeItem);
 		}
 
 		// Connect all the known nodes
@@ -167,22 +169,22 @@ public sealed class GraphViewer : TemplatedControl
 			{
 				var (item, inConnect, outConnect) = nodeState[child];
 				var path = ConnectNodes(startNode.OutConnect, inConnect);
-				root.Children.Add(path);
+				_root.Children.Add(path);
 			}
 		}
 
 		// Add the final internal padding to get the total size
-		root.Width = size.Width;
-		root.Height = size.Height;
+		_root.Width = size.Width;
+		_root.Height = size.Height;
 
 		// Ensure the current selected item is notified
-		if (SelectedNode is not null && itemLookup.TryGetValue(SelectedNode.Id, out var selectedItem))
+		if (SelectedNode is not null && _itemLookup.TryGetValue(SelectedNode.Id, out var selectedItem))
 		{
 			selectedItem.IsSelected = true;
 		}
 
 		// Center the view
-		if (scroller is not null)
+		if (_scroller is not null)
 		{
 			// TODO: Pick a better X offset
 			// scroller.Offset = new Vector(size.Width / 3, scroller.Offset.Y);
@@ -194,7 +196,7 @@ public sealed class GraphViewer : TemplatedControl
 		if (sender is not null)
 		{
 			var node = (GraphViewerItem)sender;
-			this.SelectedNode = (GraphNodeViewModel?)node.DataContext;
+			SelectedNode = (GraphNodeViewModel?)node.DataContext;
 		}
 	}
 

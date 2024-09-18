@@ -3,7 +3,11 @@
 // </copyright>
 
 using Opal;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.Build.Discover;

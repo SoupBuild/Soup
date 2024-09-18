@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Discover;
 

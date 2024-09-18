@@ -7,25 +7,26 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Soup.Build.Utilities;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 
 namespace Soup.View.ViewModels;
 
 public class OperationDetailsViewModel : ViewModelBase
 {
-	private readonly ObservableCollection<PropertyValueViewModel> properties = [];
+	private readonly ObservableCollection<PropertyValueViewModel> _properties = [];
 
 	public OperationDetailsViewModel(
 		FileSystemState fileSystemState,
 		OperationInfo operation,
 		OperationResult? operationResult)
 	{
-		properties.Clear();
-		properties.Add(new PropertyValueViewModel("Title", operation.Title));
-		properties.Add(new PropertyValueViewModel("Id", operation.Id.ToString()));
-		properties.Add(new PropertyValueViewModel("DependencyCount", operation.DependencyCount.ToString(CultureInfo.InvariantCulture)));
-		properties.Add(new PropertyValueViewModel("Executable", operation.Command.Executable.ToString()));
-		properties.Add(new PropertyValueViewModel("WorkingDirectory", operation.Command.WorkingDirectory.ToString()));
-		properties.Add(new PropertyValueViewModel("Arguments", null)
+		_properties.Clear();
+		_properties.Add(new PropertyValueViewModel("Title", operation.Title));
+		_properties.Add(new PropertyValueViewModel("Id", operation.Id.ToString()));
+		_properties.Add(new PropertyValueViewModel("DependencyCount", operation.DependencyCount.ToString(CultureInfo.InvariantCulture)));
+		_properties.Add(new PropertyValueViewModel("Executable", operation.Command.Executable.ToString()));
+		_properties.Add(new PropertyValueViewModel("WorkingDirectory", operation.Command.WorkingDirectory.ToString()));
+		_properties.Add(new PropertyValueViewModel("Arguments", null)
 		{
 			Children = new ObservableCollection<PropertyValueViewModel>(
 				operation.Command.Arguments.Select(value => new PropertyValueViewModel(string.Empty, value))),
@@ -36,22 +37,22 @@ public class OperationDetailsViewModel : ViewModelBase
 		var readAccessFiles = fileSystemState.GetFilePaths(operation.ReadAccess);
 		var writeAccessFiles = fileSystemState.GetFilePaths(operation.WriteAccess);
 
-		properties.Add(new PropertyValueViewModel("DeclaredInput", null)
+		_properties.Add(new PropertyValueViewModel("DeclaredInput", null)
 		{
 			Children = new ObservableCollection<PropertyValueViewModel>(
 				declaredInputFiles.Select(value => new PropertyValueViewModel(string.Empty, value.ToString()))),
 		});
-		properties.Add(new PropertyValueViewModel("DeclaredOutput", null)
+		_properties.Add(new PropertyValueViewModel("DeclaredOutput", null)
 		{
 			Children = new ObservableCollection<PropertyValueViewModel>(
 				declaredOutputFiles.Select(value => new PropertyValueViewModel(string.Empty, value.ToString()))),
 		});
-		properties.Add(new PropertyValueViewModel("ReadAccess", null)
+		_properties.Add(new PropertyValueViewModel("ReadAccess", null)
 		{
 			Children = new ObservableCollection<PropertyValueViewModel>(
 				readAccessFiles.Select(value => new PropertyValueViewModel(string.Empty, value.ToString()))),
 		});
-		properties.Add(new PropertyValueViewModel("WriteAccess", null)
+		_properties.Add(new PropertyValueViewModel("WriteAccess", null)
 		{
 			Children = new ObservableCollection<PropertyValueViewModel>(
 				writeAccessFiles.Select(value => new PropertyValueViewModel(string.Empty, value.ToString()))),
@@ -59,23 +60,23 @@ public class OperationDetailsViewModel : ViewModelBase
 
 		if (operationResult != null)
 		{
-			properties.Add(new PropertyValueViewModel("WasSuccessfulRun", operationResult.WasSuccessfulRun.ToString()));
-			properties.Add(new PropertyValueViewModel("EvaluateTime", operationResult.EvaluateTime.ToString(CultureInfo.InvariantCulture)));
+			_properties.Add(new PropertyValueViewModel("WasSuccessfulRun", operationResult.WasSuccessfulRun.ToString()));
+			_properties.Add(new PropertyValueViewModel("EvaluateTime", operationResult.EvaluateTime.ToString(CultureInfo.InvariantCulture)));
 			var observedInputFiles = fileSystemState.GetFilePaths(operationResult.ObservedInput);
 			var observedOutputFiles = fileSystemState.GetFilePaths(operationResult.ObservedOutput);
-			properties.Add(new PropertyValueViewModel("ObservedInput", null)
+			_properties.Add(new PropertyValueViewModel("ObservedInput", null)
 			{
 				Children = new ObservableCollection<PropertyValueViewModel>(
 				observedInputFiles.Select(value => new PropertyValueViewModel(string.Empty, value.ToString()))),
 			});
-			properties.Add(new PropertyValueViewModel("ObservedOutput", null)
+			_properties.Add(new PropertyValueViewModel("ObservedOutput", null)
 			{
 				Children = new ObservableCollection<PropertyValueViewModel>(
 				observedOutputFiles.Select(value => new PropertyValueViewModel(string.Empty, value.ToString()))),
 			});
 		}
 
-		Properties = new HierarchicalTreeDataGridSource<PropertyValueViewModel>(properties)
+		Properties = new HierarchicalTreeDataGridSource<PropertyValueViewModel>(_properties)
 		{
 			Columns =
 			{
