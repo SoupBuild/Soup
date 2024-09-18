@@ -75,9 +75,9 @@ namespace Monitor
 				return true;
 
 			auto normalizedFileName = NormalizePath(fileName);
-			for (const auto& allowedDiractory : m_allowedReadDirectories)
+			for (const auto& allowedDirectory : m_allowedReadDirectories)
 			{
-				if (IsUnderDirectory(normalizedFileName, allowedDiractory))
+				if (IsUnderDirectory(normalizedFileName, allowedDirectory))
 					return true;
 			}
 

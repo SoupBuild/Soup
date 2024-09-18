@@ -78,8 +78,8 @@ namespace Monitor::Windows
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IMonitorCallback> callback,
 			bool enableAccessChecks,
-			const std::vector<Path>& allowedReadAccess,
-			const std::vector<Path>& allowedWriteAccess) :
+			std::vector<Path> allowedReadAccess,
+			std::vector<Path> allowedWriteAccess) :
 			m_executable(executable),
 			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
