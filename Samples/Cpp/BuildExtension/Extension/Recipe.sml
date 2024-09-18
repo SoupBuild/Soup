@@ -1,4 +1,4 @@
-Name: 'Samples-Cpp-BuildExtension-Extension'
+Name: 'Samples.Cpp.BuildExtension.Extension'
 Language: (Wren@0)
 Version: 1.0.0
 Source: [
@@ -7,6 +7,6 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		<mwasplund|soup.build.utils@0>
+		<mwasplund|Soup.Build.Utils@0>
 	]
 }

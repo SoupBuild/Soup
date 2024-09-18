@@ -1,6 +1,6 @@
 Name: 'Soup.Core'
-Language: 'C++|0'
-Version: '0.1.1'
+Language: (C++@0)
+Version: 0.1.1
 Defines: [
 	# 'TRACE_SYSTEM_ACCESS'
 	# 'TRACE_FILE_SYSTEM_STATE'
@@ -17,7 +17,7 @@ Source: [
 
 Dependencies: {
 	Build: [
-		# 'mwasplund|Soup.Test.Cpp@0'
+		'mwasplund|Soup.Test.Cpp@0'
 	]
 	Runtime: [
 		'mwasplund|Opal@0'
