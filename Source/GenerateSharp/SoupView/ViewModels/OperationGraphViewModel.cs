@@ -25,26 +25,26 @@ public class OperationGraphViewModel : ContentPaneViewModel
 
 	public IList<GraphNodeViewModel>? Graph
 	{
-		get => graph;
-		private set => this.RaiseAndSetIfChanged(ref graph, value);
+		get => _graph;
+		private set => this.RaiseAndSetIfChanged(ref _graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
 	{
-		get => selectedNode;
+		get => _selectedNode;
 		set
 		{
-			if (CheckRaiseAndSetIfChanged(ref selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref _selectedNode, value))
 			{
-				SelectedOperation = selectedNode is not null ? operationDetailsLookup[selectedNode.Id] : null;
+				SelectedOperation = _selectedNode is not null ? _operationDetailsLookup[_selectedNode.Id] : null;
 			}
 		}
 	}
 
 	public OperationDetailsViewModel? SelectedOperation
 	{
-		get => selectedOperation;
-		set => this.RaiseAndSetIfChanged(ref selectedOperation, value);
+		get => _selectedOperation;
+		set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
 	}
 
 	public async Task LoadProjectAsync(Path? packageFolder)
@@ -64,7 +64,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 					var soupTargetDirectory = targetPath + new Path("./.soup/");
 
 					var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
-					if (!OperationGraphManager.TryLoadState(evaluateGraphFile, fileSystemState, out var evaluateGraph))
+					if (!OperationGraphManager.TryLoadState(evaluateGraphFile, _fileSystemState, out var evaluateGraph))
 					{
 						NotifyError($"Failed to load Operation Graph: {evaluateGraphFile}");
 						return null;
@@ -73,7 +73,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 					// Check for the optional results
 					var evaluateResultsFile = soupTargetDirectory + BuildConstants.EvaluateResultsFileName;
 					OperationResults? operationResults = null;
-					if (OperationResultsManager.TryLoadState(evaluateResultsFile, fileSystemState, out var loadOperationResults))
+					if (OperationResultsManager.TryLoadState(evaluateResultsFile, _fileSystemState, out var loadOperationResults))
 					{
 						operationResults = loadOperationResults;
 					}
@@ -97,7 +97,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 		OperationGraph evaluateGraph,
 		OperationResults? operationResults)
 	{
-		operationDetailsLookup.Clear();
+		_operationDetailsLookup.Clear();
 
 		var graph = evaluateGraph.Operations
 			.Select(value => (value.Value, value.Value.Children.Select(value => evaluateGraph.Operations[value])));
@@ -141,9 +141,9 @@ public class OperationGraphViewModel : ContentPaneViewModel
 				}
 			}
 
-			operationDetailsLookup.Add(
+			_operationDetailsLookup.Add(
 				operation.Id.Value,
-				new OperationDetailsViewModel(fileSystemState, operation, operationResult));
+				new OperationDetailsViewModel(_fileSystemState, operation, operationResult));
 		}
 
 		return result;

@@ -32,14 +32,14 @@ public class MainWindowViewModel : ViewModelBase
 
 	public Path? RecipeFile
 	{
-		get => recipeFile;
+		get => _recipeFile;
 		private set
 		{
-			if (CheckRaiseAndSetIfChanged(ref recipeFile, value))
+			if (CheckRaiseAndSetIfChanged(ref _recipeFile, value))
 			{
-				if (recipeFile is not null)
+				if (_recipeFile is not null)
 				{
-					_ = dependencyGraph.LoadProjectAsync(recipeFile);
+					_ = _dependencyGraph.LoadProjectAsync(_recipeFile);
 				}
 			}
 		}
@@ -68,13 +68,13 @@ public class MainWindowViewModel : ViewModelBase
 		SelectTasksCommand = ReactiveCommand.Create(OnSelectTasks);
 		SelectOperationsCommand = ReactiveCommand.Create(OnSelectOperations);
 
-		dependencyGraph = new DependencyGraphViewModel();
-		taskGraph = new TaskGraphViewModel();
-		operationGraph = new OperationGraphViewModel();
+		_dependencyGraph = new DependencyGraphViewModel();
+		_taskGraph = new TaskGraphViewModel();
+		_operationGraph = new OperationGraphViewModel();
 
-		dependencyGraph.PropertyChanged += DependencyGraph_PropertyChanged;
+		_dependencyGraph.PropertyChanged += DependencyGraph_PropertyChanged;
 
-		content = dependencyGraph;
+		content = _dependencyGraph;
 
 		if (packagePath is not null)
 		{
@@ -84,22 +84,22 @@ public class MainWindowViewModel : ViewModelBase
 
 	private void DependencyGraph_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(dependencyGraph.SelectedProject))
+		if (e.PropertyName == nameof(_dependencyGraph.SelectedProject))
 		{
-			_ = taskGraph.LoadProjectAsync(dependencyGraph.SelectedProject?.Path);
-			_ = operationGraph.LoadProjectAsync(dependencyGraph.SelectedProject?.Path);
+			_ = _taskGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path);
+			_ = _operationGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path);
 
 			this.RaisePropertyChanged(nameof(SelectedPackageName));
 		}
 	}
 
-	public string SelectedPackageName => dependencyGraph.SelectedProject?.Name ?? "[Package]";
+	public string SelectedPackageName => _dependencyGraph.SelectedProject?.Name ?? "[Package]";
 
-	public bool IsRootSelected => ReferenceEquals(content, dependencyGraph);
+	public bool IsRootSelected => ReferenceEquals(content, _dependencyGraph);
 
-	public bool IsTasksSelected => ReferenceEquals(content, taskGraph);
+	public bool IsTasksSelected => ReferenceEquals(content, _taskGraph);
 
-	public bool IsOperationsSelected => ReferenceEquals(content, operationGraph);
+	public bool IsOperationsSelected => ReferenceEquals(content, _operationGraph);
 
 	private async Task OnOpenAsync()
 	{
@@ -138,16 +138,16 @@ public class MainWindowViewModel : ViewModelBase
 
 	private void OnSelectRoot()
 	{
-		Content = dependencyGraph;
+		Content = _dependencyGraph;
 	}
 
 	private void OnSelectTasks()
 	{
-		Content = taskGraph;
+		Content = _taskGraph;
 	}
 
 	private void OnSelectOperations()
 	{
-		Content = operationGraph;
+		Content = _operationGraph;
 	}
 }

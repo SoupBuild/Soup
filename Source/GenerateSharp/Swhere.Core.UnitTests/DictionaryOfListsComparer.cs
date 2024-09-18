@@ -15,7 +15,7 @@ public class DictionaryOfListsComparer<T> : IEqualityComparer<IDictionary<string
 
 	public DictionaryOfListsComparer(IEqualityComparer<T>? valueComparer = null)
 	{
-		this.valueComparer = valueComparer ?? EqualityComparer<T>.Default;
+		_valueComparer = valueComparer ?? EqualityComparer<T>.Default;
 	}
 
 	public bool Equals(IDictionary<string, IList<T>>? x, IDictionary<string, IList<T>>? y)
@@ -34,7 +34,7 @@ public class DictionaryOfListsComparer<T> : IEqualityComparer<IDictionary<string
 			var xValue = pair.Value;
 			var yValue = y[pair.Key];
 
-			if (!xValue.SequenceEqual(yValue, valueComparer))
+			if (!xValue.SequenceEqual(yValue, _valueComparer))
 				return false;
 		}
 

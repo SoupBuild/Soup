@@ -23,8 +23,8 @@ public class SearchClient
 
 	public SearchClient(HttpClient httpClient, string bearerToken)
 	{
-		this.httpClient = httpClient;
-		this.bearerToken = bearerToken;
+		_httpClient = httpClient;
+		_bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -84,7 +84,7 @@ public class SearchClient
 
 		urlBuilder.Length--;
 
-		var client = httpClient;
+		var client = _httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -145,9 +145,9 @@ public class SearchClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(bearerToken))
+		if (!string.IsNullOrEmpty(_bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
 		}
 
 		return Task.FromResult(request);

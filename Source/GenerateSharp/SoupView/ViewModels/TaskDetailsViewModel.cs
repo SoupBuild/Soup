@@ -17,10 +17,10 @@ public class TaskDetailsViewModel : ViewModelBase
 
 	public TaskDetailsViewModel(ValueTable taskInfo)
 	{
-		properties.Clear();
-		BuildValueTable(taskInfo, properties);
+		_properties.Clear();
+		BuildValueTable(taskInfo, _properties);
 
-		Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(properties)
+		Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(_properties)
 		{
 			Columns =
 				{

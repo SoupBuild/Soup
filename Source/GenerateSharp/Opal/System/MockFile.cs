@@ -106,9 +106,4 @@ public class MockInputFile : IInputFile
 			_isDisposed = true;
 		}
 	}
-
-	Stream IInputFile.GetInStream()
-	{
-		throw new global::System.NotImplementedException();
-	}
 }

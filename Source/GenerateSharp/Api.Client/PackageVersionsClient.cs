@@ -27,8 +27,8 @@ public class PackageVersionsClient
 
 	public PackageVersionsClient(HttpClient httpClient, string? bearerToken)
 	{
-		this.httpClient = httpClient;
-		this.bearerToken = bearerToken;
+		_httpClient = httpClient;
+		_bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -73,7 +73,7 @@ public class PackageVersionsClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
-		var client = httpClient;
+		var client = _httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -154,7 +154,7 @@ public class PackageVersionsClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
-		var client = httpClient;
+		var client = _httpClient;
 
 		using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		using var content = new StreamContent(file.Data);
@@ -219,7 +219,7 @@ public class PackageVersionsClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}/download");
 
-		var client = httpClient;
+		var client = _httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -289,9 +289,9 @@ public class PackageVersionsClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(bearerToken))
+		if (!string.IsNullOrEmpty(_bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
 		}
 
 		return Task.FromResult(request);

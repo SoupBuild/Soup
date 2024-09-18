@@ -3,6 +3,7 @@
 // </copyright>
 
 using Opal;
+using System;
 
 namespace Soup.Build.Utilities;
 
@@ -38,7 +39,7 @@ public class SMLVersionValue : IEquatable<SMLVersionValue>
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, other))
+		if (ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
