@@ -2,11 +2,15 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Globalization;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Api.Client;
 
@@ -15,8 +19,8 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class LanguagesClient
 {
-	private readonly HttpClient httpClient;
-	private readonly string bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string _bearerToken;
 
 	public LanguagesClient(HttpClient httpClient, string bearerToken)
 	{

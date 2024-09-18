@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Opal.IO;
 
 /// <summary>
@@ -17,14 +19,14 @@ public class MockConsoleManager : IConsoleManager
 	/// </summary>
 	public MockConsoleManager()
 	{
-		this._requests = [];
-		this.MockInputStream = new MockConsoleInput(this._requests);
+		_requests = [];
+		MockInputStream = new MockConsoleInput(_requests);
 	}
 
 	/// <summary>
 	/// Get the requests.
 	/// </summary>
-	public IReadOnlyList<string> Requests => this._requests;
+	public IReadOnlyList<string> Requests => _requests;
 
 	/// <summary>
 	/// Get the mock input stream.
@@ -36,8 +38,8 @@ public class MockConsoleManager : IConsoleManager
 	/// </summary>
 	public IConsoleInput GetStandardInput()
 	{
-		this._requests.Add("GetStandardInput");
+		_requests.Add("GetStandardInput");
 
-		return this.MockInputStream;
+		return MockInputStream;
 	}
 }

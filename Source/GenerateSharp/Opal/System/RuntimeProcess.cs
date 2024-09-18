@@ -12,12 +12,12 @@ namespace Opal.System;
 public class RuntimeProcess : IProcess
 {
 	// Input
-	private readonly Path executable;
-	private readonly string arguments;
-	private readonly Path workingDirectory;
+	private readonly Path _executable;
+	private readonly string _arguments;
+	private readonly Path _workingDirectory;
 
 	// Runtime
-	private Process? process;
+	private Process? _process;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='RuntimeProcess'/> class.
@@ -42,15 +42,15 @@ public class RuntimeProcess : IProcess
 	{
 		var processInfo = new ProcessStartInfo()
 		{
-			FileName = this.executable.ToString(),
-			Arguments = this.arguments,
-			WorkingDirectory = this.workingDirectory.ToString(),
+			FileName = executable.ToString(),
+			Arguments = arguments,
+			WorkingDirectory = workingDirectory.ToString(),
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
 		};
 
-		this.process = Process.Start(processInfo);
-		if (this.process is null)
+		process = Process.Start(processInfo);
+		if (process is null)
 			throw new InvalidOperationException("Failed to start process");
 	}
 
@@ -59,9 +59,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public Task WaitForExitAsync()
 	{
-		if (this.process is null)
+		if (process is null)
 			throw new InvalidOperationException("Cannot wait on process that is not running");
-		return this.process.WaitForExitAsync();
+		return process.WaitForExitAsync();
 	}
 
 	/// <summary>
@@ -69,9 +69,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public int GetExitCode()
 	{
-		if (this.process is null)
+		if (process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return this.process.ExitCode;
+		return process.ExitCode;
 	}
 
 	/// <summary>
@@ -79,9 +79,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public string GetStandardOutput()
 	{
-		if (this.process is null)
+		if (process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return this.process.StandardOutput.ReadToEnd();
+		return process.StandardOutput.ReadToEnd();
 	}
 
 	/// <summary>
@@ -89,8 +89,8 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public string GetStandardError()
 	{
-		if (this.process is null)
+		if (process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return this.process.StandardError.ReadToEnd();
+		return process.StandardError.ReadToEnd();
 	}
 }

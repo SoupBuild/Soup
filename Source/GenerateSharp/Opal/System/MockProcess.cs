@@ -10,14 +10,14 @@ namespace Opal.System;
 public class MockProcess : IProcess
 {
 	// Input
-	private readonly int id;
-	private readonly IList<string> requests;
+	private readonly int _id;
+	private readonly IList<string> _requests;
 
 	// Result
-	private bool isFinished;
-	private readonly string stdOut;
-	private readonly string stdErr;
-	private readonly int exitCode;
+	private bool _isFinished;
+	private readonly string _stdOut;
+	private readonly string _stdErr;
+	private readonly int _exitCode;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockProcess'/> class.
@@ -36,7 +36,7 @@ public class MockProcess : IProcess
 	{
 		this.id = id;
 		this.requests = requests;
-		this.isFinished = false;
+		isFinished = false;
 		this.stdOut = stdOut;
 		this.stdErr = stdErr;
 		this.exitCode = exitCode;
@@ -47,7 +47,7 @@ public class MockProcess : IProcess
 	/// </summary>
 	public void Start()
 	{
-		this.requests.Add($"ProcessStart: {this.id}");
+		requests.Add($"ProcessStart: {id}");
 	}
 
 	/// <summary>
@@ -55,9 +55,9 @@ public class MockProcess : IProcess
 	/// </summary>
 	public Task WaitForExitAsync()
 	{
-		this.requests.Add($"WaitForExit: {this.id}");
+		requests.Add($"WaitForExit: {id}");
 
-		this.isFinished = true;
+		isFinished = true;
 		return Task.CompletedTask;
 	}
 
@@ -66,11 +66,11 @@ public class MockProcess : IProcess
 	/// </summary>
 	public int GetExitCode()
 	{
-		this.requests.Add($"GetExitCode: {this.id}");
+		requests.Add($"GetExitCode: {id}");
 
-		if (!this.isFinished)
+		if (!isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return this.exitCode;
+		return exitCode;
 	}
 
 	/// <summary>
@@ -78,11 +78,11 @@ public class MockProcess : IProcess
 	/// </summary>
 	public string GetStandardOutput()
 	{
-		this.requests.Add($"GetStandardOutput: {this.id}");
+		requests.Add($"GetStandardOutput: {id}");
 
-		if (!this.isFinished)
+		if (!isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return this.stdOut;
+		return stdOut;
 	}
 
 	/// <summary>
@@ -90,10 +90,10 @@ public class MockProcess : IProcess
 	/// </summary>
 	public string GetStandardError()
 	{
-		this.requests.Add($"GetStandardError: {this.id}");
+		requests.Add($"GetStandardError: {id}");
 
-		if (!this.isFinished)
+		if (!isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return this.stdErr;
+		return stdErr;
 	}
 }

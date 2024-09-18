@@ -12,7 +12,7 @@ namespace Opal;
 /// </summary>
 public abstract class TraceListener
 {
-	private readonly IEventFilter? filter;
+	private readonly IEventFilter? _filter;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='TraceListener'/> class.
@@ -35,8 +35,8 @@ public abstract class TraceListener
 		bool showEventId)
 	{
 		this.filter = filter;
-		this.ShowEventType = showEventType;
-		this.ShowEventId = showEventId;
+		ShowEventType = showEventType;
+		ShowEventId = showEventId;
 	}
 
 	/// <summary>
@@ -44,7 +44,7 @@ public abstract class TraceListener
 	/// </summary>
 	public bool HasFilter()
 	{
-		return this.filter != null;
+		return filter != null;
 	}
 
 	/// <summary>
@@ -68,21 +68,21 @@ public abstract class TraceListener
 		int id,
 		string message)
 	{
-		if (this.filter != null && !this.filter.ShouldTrace(eventType))
+		if (filter != null && !filter.ShouldTrace(eventType))
 		{
 			return;
 		}
 
 		// Build up the resulting message with required header/footer
 		var builder = new StringBuilder();
-		this.WriteHeader(builder, eventType, id);
+		WriteHeader(builder, eventType, id);
 		_ = builder.Append(message);
 
 		bool isEmpty = builder.Length == 0;
 		if (isEmpty)
-			this.WriteLine(string.Empty);
+			WriteLine(string.Empty);
 		else
-			this.WriteLine(builder.ToString());
+			WriteLine(builder.ToString());
 	}
 
 	/// <summary>
@@ -125,7 +125,7 @@ public abstract class TraceListener
 		TraceEvents eventType,
 		int id)
 	{
-		if (this.ShowEventType)
+		if (ShowEventType)
 		{
 			switch (eventType)
 			{
@@ -157,7 +157,7 @@ public abstract class TraceListener
 			_ = builder.Append(": ");
 		}
 
-		if (this.ShowEventId)
+		if (ShowEventId)
 		{
 			_ = builder.Append(CultureInfo.InvariantCulture, $"{id}>");
 		}
