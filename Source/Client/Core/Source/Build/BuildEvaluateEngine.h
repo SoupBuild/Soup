@@ -386,8 +386,14 @@ namespace Soup::Core
 			environment.emplace("TMP", temporaryDirectory.ToString());
 
 			// Allow access to the declared inputs/outputs
-			auto allowedReadAccess = _fileSystemState.GetFilePaths(operationInfo.ReadAccess);
-			auto allowedWriteAccess = _fileSystemState.GetFilePaths(operationInfo.WriteAccess);
+			bool enableAccessChecks = true;
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+			if (enableAccessChecks)
+			{
+				allowedReadAccess = _fileSystemState.GetFilePaths(operationInfo.ReadAccess);
+				allowedWriteAccess = _fileSystemState.GetFilePaths(operationInfo.WriteAccess);
+			}
 
 			// Allow access to the global overrides
 			std::copy(globalAllowedReadAccess.begin(), globalAllowedReadAccess.end(), std::back_inserter(allowedReadAccess));
@@ -400,7 +406,6 @@ namespace Soup::Core
 			for (auto& file : allowedWriteAccess)
 				Log::Diag(file.ToString());
 
-			bool enableAccessChecks = true;
 			std::shared_ptr<System::IProcess> process = nullptr;
 			if (_disableMonitor)
 			{
@@ -419,8 +424,8 @@ namespace Soup::Core
 					environment,
 					callback,
 					enableAccessChecks,
-					allowedReadAccess,
-					allowedWriteAccess);
+					std::move(allowedReadAccess),
+					std::move(allowedWriteAccess));
 			}
 
 			process->Start();
