@@ -5,9 +5,6 @@ Type: 'DynamicLibrary'
 Defines: [
 	'EXPORT_LIBRARY'
 ]
-Source: [
-	'Library.cpp'
-]
 IncludePaths: [
 	'public/'
 ]

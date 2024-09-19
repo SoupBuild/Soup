@@ -13,7 +13,7 @@ public class ProjectDetailsViewModel : ViewModelBase
 {
 	private readonly ObservableCollection<PropertyValueViewModel> properties = [];
 
-	public ProjectDetailsViewModel(string name, Path path)
+	public ProjectDetailsViewModel(string name, Path path, string? owner)
 	{
 		Name = name;
 
@@ -21,8 +21,10 @@ public class ProjectDetailsViewModel : ViewModelBase
 
 		properties.Add(new PropertyValueViewModel("Name", name));
 		properties.Add(new PropertyValueViewModel("Path", path.ToString()));
+		properties.Add(new PropertyValueViewModel("Owner", owner?.ToString()));
 
 		Path = path;
+		Owner = owner;
 
 		Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(properties)
 		{
@@ -43,4 +45,6 @@ public class ProjectDetailsViewModel : ViewModelBase
 	public string? Name { get; private set; }
 
 	public Path Path { get; private set; }
+
+	public string? Owner { get; private set; }
 }

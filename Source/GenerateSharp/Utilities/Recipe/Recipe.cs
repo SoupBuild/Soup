@@ -76,7 +76,7 @@ public class Recipe
 	/// </summary>
 	public SMLValue LanguageValue => GetValue(Document, Property_Language);
 
-	[SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Only check few types")]
+	[SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Check specific types")]
 	public LanguageReference Language
 	{
 		get => LanguageValue.Type switch
@@ -92,17 +92,17 @@ public class Recipe
 	/// Gets or sets the package version
 	/// </summary>
 	public bool HasVersion => HasValue(Document, Property_Version);
+	public SMLValue VersionValue => GetValue(Document, Property_Version);
 
+	[SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Check specific types")]
 	public SemanticVersion Version
 	{
-		get
+		get => VersionValue.Type switch
 		{
-			if (!HasVersion)
-				throw new InvalidOperationException("No version.");
-
-			return SemanticVersion.Parse(
-				GetValue(Document, Property_Version).AsString().Value);
-		}
+			SMLValueType.String => SemanticVersion.Parse(VersionValue.AsString().Value),
+			SMLValueType.Version => VersionValue.AsVersion().Value,
+			_ => throw new InvalidOperationException("Version must be string or Version"),
+		};
 		set => EnsureHasValue(Document, Property_Version, value.ToString());
 	}
 

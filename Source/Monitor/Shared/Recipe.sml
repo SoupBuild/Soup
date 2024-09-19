@@ -3,3 +3,4 @@ Description: 'The shared resources that are used from both the detoured process 
 Language: (C++@0)
 Version: 1.0.0
 Interface: 'Module.cpp'
+Source: []
