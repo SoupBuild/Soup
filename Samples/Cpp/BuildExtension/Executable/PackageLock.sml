@@ -8,7 +8,7 @@ Closures: {
 	Build0: {
 		Wren: {
 			'Samples.Cpp.BuildExtension.Extension': { Version: '../Extension/' }
-			'mwasplund|Soup.Cpp': { Version: '0.13.0' }
+			'mwasplund|Soup.Cpp': { Version: '0.13.1' }
 		}
 	}
 	Tool0: {

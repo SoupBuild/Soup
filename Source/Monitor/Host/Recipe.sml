@@ -6,7 +6,7 @@ Defines: [
 	# 'TRACE_MONITOR_HOST'
 ]
 Interface: 'Module.cpp'
-
+Source: []
 Dependencies: {
 	Runtime: [
 		'mwasplund|Detours@4'
