@@ -71,8 +71,18 @@ public class TaskDetailsViewModel : ViewModelBase
 					type = ValueTableItemType.Table;
 					BuildValueTable(value.Value.AsTable(), children);
 					break;
-				case ValueType.Empty:
-					throw new NotImplementedException();
+				case ValueType.Version:
+					title = $"{value.Key}: {value.Value}";
+					type = ValueTableItemType.Value;
+					break;
+				case ValueType.PackageReference:
+					title = $"{value.Key}: {value.Value}";
+					type = ValueTableItemType.Value;
+					break;
+				case ValueType.LanguageReference:
+					title = $"{value.Key}: {value.Value}";
+					type = ValueTableItemType.Value;
+					break;
 				default:
 					throw new InvalidOperationException("Unknown Value type");
 			}
@@ -125,8 +135,18 @@ public class TaskDetailsViewModel : ViewModelBase
 					type = ValueTableItemType.Table;
 					BuildValueTable(value.AsTable(), children);
 					break;
-				case ValueType.Empty:
-					throw new NotImplementedException();
+				case ValueType.Version:
+					title = $"{value}";
+					type = ValueTableItemType.Value;
+					break;
+				case ValueType.PackageReference:
+					title = $"{value}";
+					type = ValueTableItemType.Value;
+					break;
+				case ValueType.LanguageReference:
+					title = $"{value}";
+					type = ValueTableItemType.Value;
+					break;
 				default:
 					throw new InvalidOperationException("Unknown Value type");
 			}

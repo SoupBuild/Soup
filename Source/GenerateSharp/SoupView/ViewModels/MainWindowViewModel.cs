@@ -78,7 +78,7 @@ public class MainWindowViewModel : ViewModelBase
 
 		if (packagePath is not null)
 		{
-			RecipeFile = new Path(packagePath);
+			RecipeFile = Path.Parse(packagePath);
 		}
 	}
 
