@@ -56,7 +56,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		set => this.RaiseAndSetIfChanged(ref _selectedTask, value);
 	}
 
-	public async Task LoadProjectAsync(Path? packageFolder)
+	public async Task LoadProjectAsync(Path? packageFolder, string? owner)
 	{
 		Graph = null;
 
@@ -68,7 +68,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 				var (isSuccess, result) = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
 				if (isSuccess)
 				{
-					var targetPath = await GetTargetPathAsync(packageFolder);
+					var targetPath = await GetTargetPathAsync(packageFolder, owner);
 
 					var soupTargetDirectory = targetPath + new Path("./.soup/");
 
@@ -205,9 +205,10 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		return result;
 	}
 
-	private async Task<Path> GetTargetPathAsync(Path packageDirectory)
+	private async Task<Path> GetTargetPathAsync(Path packageDirectory, string? owner)
 	{
-		var processInfo = new ProcessStartInfo("C:\\Program Files\\SoupBuild\\Soup\\Soup\\Soup.exe", $"target {packageDirectory}")
+		var optionalOwnerFlag = owner is null ? string.Empty : $" -owner {owner}";
+		var processInfo = new ProcessStartInfo("C:\\Program Files\\SoupBuild\\Soup\\Soup\\Soup.exe", $"target {packageDirectory}{optionalOwnerFlag}")
 		{
 			RedirectStandardOutput = true,
 			CreateNoWindow = true,

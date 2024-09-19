@@ -24,6 +24,7 @@ public class PackageInfo
 {
 	public PackageId Id { get; set; }
 	public string Name { get; set; } = string.Empty;
+	public string Owner { get; set; } = string.Empty;
 	public bool IsPrebuilt { get; set; }
 	public string PackageRoot { get; set; } = string.Empty;
 	public string TargetDirectory { get; set; } = string.Empty;

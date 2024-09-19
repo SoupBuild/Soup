@@ -63,7 +63,7 @@ namespace Soup::Client
 			}
 
 			// Build up the unique name
-			auto packageName = Core::PackageName(std::nullopt, recipe->GetName());
+			auto packageName = Core::PackageName(_options.Owner, recipe->GetName());
 
 			// Setup the build parameters
 			auto globalParameters = Core::ValueTable();

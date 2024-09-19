@@ -86,7 +86,7 @@ public class MainWindowViewModel : ViewModelBase
 	{
 		if (e.PropertyName == nameof(_dependencyGraph.SelectedProject))
 		{
-			_ = _taskGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path);
+			_ = _taskGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path, _dependencyGraph.SelectedProject?.Owner);
 			_ = _operationGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path);
 
 			this.RaisePropertyChanged(nameof(SelectedPackageName));

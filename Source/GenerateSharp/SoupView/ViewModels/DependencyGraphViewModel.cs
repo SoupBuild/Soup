@@ -137,7 +137,8 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 				(uint)package.Id,
 				new ProjectDetailsViewModel(
 					package.Name,
-					packageFolder));
+					packageFolder,
+					package.Owner));
 		}
 
 		return result;
