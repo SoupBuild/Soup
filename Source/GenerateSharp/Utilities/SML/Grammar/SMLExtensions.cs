@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -269,6 +270,16 @@ public static partial class SMLExtensions
 		table.Values.Add(key, CreateTableValue(keyToken, newValue));
 	}
 
+	public static void AddInlineItemWithSyntax(this SMLTable table, string key, SemanticVersion value)
+	{
+		// Create a new item and matching syntax
+		var newValue = new SMLValue(new SMLVersionValue(
+			value,
+			new SMLToken(value.ToString())));
+
+		table.AddInlineItemWithSyntax(key, newValue);
+	}
+
 	public static void AddInlineItemWithSyntax(this SMLTable table, string key, string value)
 	{
 		// Create a new item and matching syntax
@@ -278,6 +289,11 @@ public static partial class SMLExtensions
 			new SMLToken(value),
 			new SMLToken("'")));
 
+		table.AddInlineItemWithSyntax(key, newValue);
+	}
+
+	public static void AddInlineItemWithSyntax(this SMLTable table, string key, SMLValue value)
+	{
 		// Tables items should be on newline
 		var keyToken = new SMLToken(EnsureSafeKey(key))
 		{
@@ -295,7 +311,7 @@ public static partial class SMLExtensions
 		}
 
 		// Add the model to the parent table model
-		table.Values.Add(key, CreateInlineTableValue(keyToken, newValue));
+		table.Values.Add(key, CreateInlineTableValue(keyToken, value));
 	}
 
 	private static SMLTableValue CreateTableValue(string key, SMLValue value)

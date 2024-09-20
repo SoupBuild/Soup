@@ -88,7 +88,7 @@ public class PackageVersionsClient
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
-			var objectResponse = await ReadObjectResponseAsync<PackageVersionModel>(
+			var objectResponse = await ReadObjectResponseAsync(
 				response,
 				SourceGenerationContext.Default.PackageVersionModel,
 				cancellationToken).ConfigureAwait(false);
@@ -266,7 +266,7 @@ public class PackageVersionsClient
 		try
 		{
 			using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-			var typedBody = await JsonSerializer.DeserializeAsync<T>(
+			var typedBody = await JsonSerializer.DeserializeAsync(
 				responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
 			if (typedBody is null)
 			{

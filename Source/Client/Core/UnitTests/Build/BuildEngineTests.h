@@ -47,7 +47,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|0.8.2'
+					Language: (C++@0.8)
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -77,7 +77,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'mwasplund|Soup.Cpp': { Version: '0.8.2' }
+								'mwasplund|Soup.Cpp': { Version: 0.8.2 }
 							}
 						}
 						Tool0: {}
@@ -96,7 +96,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'mwasplund|Soup.Wren': { Version: '0.4.1' }
+								'mwasplund|Soup.Wren': { Version: 0.4.1 }
 							}
 						}
 						Tool0: {}
@@ -691,7 +691,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|0.8.2'
+					Language: (C++@0.8)
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -721,7 +721,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'mwasplund|Soup.Cpp': { Version: '0.8.2' }
+								'mwasplund|Soup.Cpp': { Version: 0.8.2 }
 							}
 						}
 						Tool0: {}
@@ -740,7 +740,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'mwasplund|Soup.Wren': { Version: '0.4.1' }
+								'mwasplund|Soup.Wren': { Version: 0.4.1 }
 							}
 						}
 						Tool0: {}

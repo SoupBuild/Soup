@@ -35,8 +35,8 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'MyPackage'
-				Language: 'Wren|3.2.1'
-				Version: '1.0.0'
+				Language: (Wren@3.2)
+				Version: 1.0.0
 				"""))));
 
 		// Mock out the http
@@ -88,8 +88,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
@@ -115,8 +115,8 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren MyPackage -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"DIAG: Root:Wren MyPackage -> C:/Root/MyPackage/",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: MyPackage -> ./",
@@ -148,7 +148,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, }
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, }
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
@@ -192,7 +192,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -220,8 +220,8 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'MyPackage'
-				Language: 'Wren|3.2.1'
-				Version: '1.0.0'
+				Language: (Wren@3.2)
+				Version: 1.0.0
 				Dependencies: {
 					Runtime: [
 						{ Reference: 'User1|Package1@1.2.3' }
@@ -245,8 +245,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Runtime":[1,2]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"id":2,"language":"Wren","owner":"User1","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{"Runtime":[1,2]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"id":2,"language":"Wren","owner":"User1","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
@@ -311,7 +311,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, }
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, }
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
@@ -384,8 +384,8 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'MyPackage'
-				Language: 'Wren|3.2.1'
-				Version: '1.0.0'
+				Language: (Wren@3.2)
+				Version: 1.0.0
 				Dependencies: {
 					Runtime: [
 						{ Reference: 'User1|Package1@1.2.3' }
@@ -471,8 +471,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Runtime":[1,2]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"id":2,"language":"Wren","owner":"User1","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{"Runtime":[1,2]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"id":2,"language":"Wren","owner":"User1","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
@@ -512,10 +512,10 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren MyPackage -> ./",
-				"DIAG: Root:Wren User1|Package1 -> 1.2.3",
-				"DIAG: Root:Wren User1|Package2 -> 3.2.1",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"DIAG: Root:Wren MyPackage -> C:/Root/MyPackage/",
+				"DIAG: Root:Wren User1|Package1 -> [User1]Wren|Package1@1.2.3",
+				"DIAG: Root:Wren User1|Package2 -> [User1]Wren|Package2@3.2.1",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: MyPackage -> ./",
@@ -576,7 +576,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
 				{
@@ -658,13 +658,13 @@ public class ClosureManagerUnitTests
 				Root: {
 					Wren: {
 						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
-						'User1|Package1': { Version: '1.2.3', Build: 'Build0', Tool: 'Tool0' }
-						'User1|Package2': { Version: '3.2.1', Build: 'Build0', Tool: 'Tool0' }
+						'User1|Package1': { Version: 1.2.3, Build: 'Build0', Tool: 'Tool0' }
+						'User1|Package2': { Version: 3.2.1, Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -693,7 +693,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'MyPackage'
 				Language: 'C++|5'
-				Version: '1.0.0'
+				Version: 1.0.0
 				Dependencies: {
 					Build: [
 						{ Reference: 'User1|Package1@1.2.3' }
@@ -707,7 +707,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Package1'
 				Language: 'Wren|4'
-				Version: '1.2.3'
+				Version: 1.2.3
 				"""))));
 
 		mockFileSystem.CreateMockFile(
@@ -716,7 +716,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Soup.Cpp'
 				Language: 'Wren|4'
-				Version: '5.0.0'
+				Version: 5.0.0
 				"""))));
 
 		// Setup the mock zip manager
@@ -884,9 +884,9 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:C++ MyPackage -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 5.0.0",
-				"DIAG: Build0:Wren User1|Package1 -> 1.2.3",
+				"DIAG: Root:C++ MyPackage -> C:/Root/MyPackage/",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> [Wren]mwasplund|Soup.Cpp@5.0.0",
+				"DIAG: Build0:Wren User1|Package1 -> [Wren]User1|Package1@1.2.3",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
 				"INFO: Skip Package: MyPackage -> ./",
@@ -904,8 +904,8 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren mwasplund|Soup.Cpp -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"DIAG: Root:Wren mwasplund|Soup.Cpp -> C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: mwasplund|Soup.Cpp -> ./",
@@ -922,8 +922,8 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren User1|Package1 -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"DIAG: Root:Wren User1|Package1 -> C:/PackageStore/Wren/User1/Package1/1.2.3/",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: User1|Package1 -> ./",
@@ -932,7 +932,7 @@ public class ClosureManagerUnitTests
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
 				"HIGH: Skip built in language version in build closure",
 				"INFO: Restore Packages for Closure Tool0",
-				"HIGH: Skip built in language version in build closure"
+				"HIGH: Skip built in language version in build closure",
 			],
 			testListener.Messages);
 
@@ -1104,8 +1104,8 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Cpp': { Version: '5.0.0' }
-						'User1|Package1': { Version: '1.2.3' }
+						'mwasplund|Soup.Cpp': { Version: 5.0.0 }
+						'User1|Package1': { Version: 1.2.3 }
 					}
 				}
 				Tool0: {
@@ -1131,7 +1131,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -1157,7 +1157,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -1186,7 +1186,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'MyPackage'
 				Language: 'C++|5'
-				Version: '1.0.0'
+				Version: 1.0.0
 				Dependencies: {
 					Build: [
 						{ Reference: 'User1|Package1@1.2.3' }
@@ -1200,7 +1200,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Package1'
 				Language: 'Wren|6'
-				Version: '1.2.3'
+				Version: 1.2.3
 				Dependencies: {
 					Tool: [
 						{ Reference: '[C++]User1|Package2@2.3.4' }
@@ -1214,7 +1214,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Package2'
 				Language: 'C++|5'
-				Version: '2.3.4'
+				Version: 2.3.4
 				"""))));
 
 		mockFileSystem.CreateMockFile(
@@ -1223,7 +1223,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Soup.Cpp'
 				Language: 'Wren|4.5.6'
-				Version: '5.0.0'
+				Version: 5.0.0
 				"""))));
 
 		// Setup the mock zip manager
@@ -1506,9 +1506,9 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:C++ MyPackage -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 5.0.0",
-				"DIAG: Build0:Wren User1|Package1 -> 1.2.3",
+				"DIAG: Root:C++ MyPackage -> C:/Root/MyPackage/",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> [Wren]mwasplund|Soup.Cpp@5.0.0",
+				"DIAG: Build0:Wren User1|Package1 -> [Wren]User1|Package1@1.2.3",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
 				"INFO: Skip Package: MyPackage -> ./",
@@ -1526,8 +1526,8 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren mwasplund|Soup.Cpp -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"DIAG: Root:Wren mwasplund|Soup.Cpp -> C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: mwasplund|Soup.Cpp -> ./",
@@ -1544,9 +1544,9 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren User1|Package1 -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
-				"DIAG: Tool0:C++ User1|Package2 -> 2.3.4",
+				"DIAG: Root:Wren User1|Package1 -> C:/PackageStore/Wren/User1/Package1/1.2.3/",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Tool0:C++ User1|Package2 -> [C++]User1|Package2@2.3.4",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: User1|Package1 -> ./",
@@ -1566,8 +1566,8 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:C++ User1|Package2 -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> 5.0.0",
+				"DIAG: Root:C++ User1|Package2 -> C:/PackageStore/Cpp/User1/Package2/2.3.4/",
+				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> [Wren]mwasplund|Soup.Cpp@5.0.0",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
 				"INFO: Skip Package: User1|Package2 -> ./",
@@ -1863,8 +1863,8 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Cpp': { Version: '5.0.0' }
-						'User1|Package1': { Version: '1.2.3' }
+						'mwasplund|Soup.Cpp': { Version: 5.0.0 }
+						'User1|Package1': { Version: 1.2.3 }
 					}
 				}
 				Tool0: {
@@ -1890,12 +1890,12 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
 					'C++': {
-						'User1|Package2': { Version: '2.3.4' }
+						'User1|Package2': { Version: 2.3.4 }
 					}
 				}
 			}
@@ -1918,7 +1918,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Cpp': { Version: '5.0.0' }
+						'mwasplund|Soup.Cpp': { Version: 5.0.0 }
 					}
 				}
 				Tool0: {
@@ -1944,7 +1944,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -1972,8 +1972,8 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'MyPackage'
-				Language: 'Wren|3.2.1'
-				Version: '1.0.0'
+				Language: (Wren@3.2)
+				Version: 1.0.0
 				Dependencies: {
 					Build: [
 						{ Reference: '../Package1/' }
@@ -1987,7 +1987,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Package1'
 				Language: 'Wren|4.5.6'
-				Version: '1.2.3'
+				Version: 1.2.3
 				"""))));
 
 		// Mock out the http
@@ -2082,8 +2082,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Build":[1]}},"localPackages":[{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{"Build":[1]}},"localPackages":[{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -2126,9 +2126,9 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren MyPackage -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
-				"DIAG: Build0:Wren Package1 -> ../Package1/",
+				"DIAG: Root:Wren MyPackage -> C:/Root/MyPackage/",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Build0:Wren Package1 -> C:/Root/Package1/",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: MyPackage -> ./",
@@ -2145,8 +2145,8 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren Package1 -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"DIAG: Root:Wren Package1 -> C:/Root/Package1/",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: Package1 -> ./",
@@ -2184,7 +2184,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
 					{
@@ -2283,7 +2283,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 						Package1: { Version: '../Package1/' }
 					}
 				}
@@ -2310,7 +2310,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -2338,8 +2338,8 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'MyPackage'
-				Language: 'Wren|3.2.1'
-				Version: '1.0.0'
+				Language: (Wren@3.2)
+				Version: 1.0.0
 				Dependencies: {
 					Build: [
 						{ Reference: '../Package1/' }
@@ -2353,7 +2353,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Package1'
 				Language: 'Wren|4.5.6'
-				Version: '1.2.3'
+				Version: 1.2.3
 				Dependencies: {
 					Tool: [
 						{ Reference: '../Package2/' }
@@ -2367,7 +2367,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Package2'
 				Language: 'C++|5.0.0'
-				Version: '2.3.4'
+				Version: 2.3.4
 				"""))));
 
 		mockFileSystem.CreateMockFile(
@@ -2376,7 +2376,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Soup.Cpp'
 				Language: 'Wren|4'
-				Version: '5.0.0'
+				Version: 5.0.0
 				"""))));
 
 		// Mock out the http
@@ -2485,8 +2485,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2,"patch":1}},"dependencies":{"Build":[2]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}},{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{"Tool":[1]}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{"Build":[2]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}},{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{"Tool":[1]}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -2536,9 +2536,9 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 				"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren MyPackage -> ./",
-				"DIAG: Build0:Wren Package1 -> ../Package1/",
-				"DIAG: Tool0:C++ Package2 -> ../Package2/",
+				"DIAG: Root:Wren MyPackage -> C:/Root/MyPackage/",
+				"DIAG: Build0:Wren Package1 -> C:/Root/Package1/",
+				"DIAG: Tool0:C++ Package2 -> C:/Root/Package2/",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: MyPackage -> ./",
@@ -2555,7 +2555,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 				"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren Package1 -> ./",
+				"DIAG: Root:Wren Package1 -> C:/Root/Package1/",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: Package1 -> ./",
@@ -2567,7 +2567,7 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/Root/Package2/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:C++ Package2 -> ./",
+				"DIAG: Root:C++ Package2 -> C:/Root/Package2/",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
 				"INFO: Skip Package: Package2 -> ./",
@@ -2609,7 +2609,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+					Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
 				{
@@ -2863,13 +2863,13 @@ public class ClosureManagerUnitTests
 				Root: {
 					Wren: {
 						MyPackage: { Version: './', Build: 'Build0', Tool: 'Tool0' }
-						'User1|Package1': { Version: '1.2.4', Build: 'Build0', Tool: 'Tool0' }
-						'User1|Package2': { Version: '3.2.1', Build: 'Build0', Tool: 'Tool0' }
+						'User1|Package1': { Version: 1.2.4, Build: 'Build0', Tool: 'Tool0' }
+						'User1|Package2': { Version: 3.2.1, Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.5' }
+						'mwasplund|Soup.Wren': { Version: 4.5.5 }
 					}
 				}
 				Tool0: {
@@ -2889,7 +2889,7 @@ public class ClosureManagerUnitTests
 				"""
 				Name: 'Soup.Wren'
 				Language: 'Wren|1.2.3'
-				Version: '4.5.5'
+				Version: 4.5.5
 				"""))));
 
 		// Setup the mock zip manager
@@ -3010,8 +3010,8 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Wren/4.5.5/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren mwasplund|Soup.Wren -> ./",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> 4.5.6",
+				"DIAG: Root:Wren mwasplund|Soup.Wren -> C:/PackageStore/Wren/mwasplund/Soup.Wren/4.5.5/",
+				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: mwasplund|Soup.Wren -> ./",
@@ -3159,13 +3159,13 @@ public class ClosureManagerUnitTests
 				Root: {
 					Wren: {
 						MyPackage: { Version: './', Build: 'BuildSet0' }
-						'User1|Package1': { Version: '1.2.4', Build: 'BuildSet0' }
-						'User1|Package2': { Version: '3.2.1', Build: 'BuildSet0' }
+						'User1|Package1': { Version: 1.2.4, Build: 'BuildSet0' }
+						'User1|Package2': { Version: 3.2.1, Build: 'BuildSet0' }
 					}
 				}
 				BuildSet0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: '4.5.6' }
+						'mwasplund|Soup.Wren': { Version: 4.5.6 }
 					}
 				}
 			}
@@ -3211,6 +3211,7 @@ public class ClosureManagerUnitTests
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
 				"HIGH: Skip built in language version in build closure",
 				"HIGH: Skip built in language version in build closure",
+
 			],
 			testListener.Messages);
 

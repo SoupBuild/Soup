@@ -47,7 +47,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
@@ -109,7 +109,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -128,7 +128,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/BuiltIn/Packages/User1/TestTool/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			// Create the package lock
@@ -144,12 +144,12 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {
 							'C++': {
-								'User1|TestTool': { Version: '4.4.4' }
+								'User1|TestTool': { Version: 4.4.4 }
 							}
 						}
 					}
@@ -338,7 +338,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -361,7 +361,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -536,7 +536,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -566,12 +566,12 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '4.5.6' }
+								'User1|Soup.Cpp': { Version: 4.5.6 }
 							}
 						}
 						Tool0: {
 							'C++': {
-								'User1|TestTool': { Version: '3.3.3' }
+								'User1|TestTool': { Version: 3.3.3 }
 							}
 						}
 					}
@@ -589,7 +589,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -608,7 +608,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -897,8 +897,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3 }
 							}
 						}
 						Tool0: {
@@ -918,7 +918,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -1157,7 +1157,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -1187,13 +1187,13 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3', Tool: 'Tool0' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3, Tool: 'Tool0' }
 							}
 						}
 						Tool0: {
 							'C++': {
-								'User1|TestTool': { Version: '3.3.3' }
+								'User1|TestTool': { Version: 3.3.3 }
 							}
 						}
 					}
@@ -1211,7 +1211,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -1230,7 +1230,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -1488,7 +1488,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 					Dependencies: {
 						Build: [
 							'../TestBuild/'
@@ -1530,7 +1530,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -1549,7 +1549,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -1800,8 +1800,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3 }
 							}
 						}
 						Tool0: {
@@ -1949,8 +1949,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3', Tool: 'Tool0' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3, Tool: 'Tool0' }
 							}
 						}
 						Tool0: {}
@@ -1965,12 +1965,12 @@ namespace Soup::Core::UnitTests
 						Root: {
 							Wren: {
 								'User1|TestBuild': { Version: '../TestBuild/', Build: 'Build0', Tool: 'Tool0' }
-								'User1|TestBuild2': { Version: '3.3.3', Build: 'Build0', Tool: 'Tool0' }
+								'User1|TestBuild2': { Version: 3.3.3, Build: 'Build0', Tool: 'Tool0' }
 							}
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -2266,8 +2266,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3', Tool: 'Tool0' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3, Tool: 'Tool0' }
 							}
 						}
 						Tool0: {}
@@ -2286,8 +2286,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
-								'User1|TestBuild2': { Version: '4.4.4' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
+								'User1|TestBuild2': { Version: 4.4.4 }
 							}
 						}
 						Tool0: {}
@@ -2306,7 +2306,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -2583,7 +2583,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -2613,13 +2613,13 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3', Tool: 'Tool0' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3, Tool: 'Tool0' }
 							}
 						}
 						Tool0: {
 							'C++': {
-								'User1|TestTool': { Version: '3.3.3' }
+								'User1|TestTool': { Version: 3.3.3 }
 							}
 						}
 					}
@@ -2637,7 +2637,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -2656,7 +2656,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -2963,8 +2963,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.2' }
-								'User1|TestBuild': { Version: '3.3.4' }
+								'User1|Soup.Cpp': { Version: 1.1.2 }
+								'User1|TestBuild': { Version: 3.3.4 }
 							}
 						}
 						Tool0: {
@@ -2983,7 +2983,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.3' }
+								'User1|Soup.Wren': { Version: 2.2.3 }
 							}
 						}
 						Tool0: {
@@ -3003,7 +3003,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -3022,7 +3022,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -3339,7 +3339,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.CSharp': { Version: '2.2.3' }
+								'User1|Soup.CSharp': { Version: 2.2.3 }
 							}
 						}
 						Tool0: {
@@ -3359,7 +3359,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -3580,7 +3580,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 					Dependencies: {
 						Runtime: [
 							'User1|PackageA@3.3.3'
@@ -3592,7 +3592,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'PackageA'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 					Dependencies: {
 						Runtime: [
 							'User1|PackageB@4.4.4'
@@ -3603,7 +3603,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'PackageB'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
@@ -3621,13 +3621,13 @@ namespace Soup::Core::UnitTests
 						Root: {
 							'C++': {
 								MyPackage: { Version: '../MyPackage/', Build: 'Build0', Tool: 'Tool0' }
-								'User1|PackageA': { Version: '3.3.3', Build: 'Build0', Tool: 'Tool0' }
-								'User1|PackageB': { Version: '4.4.4', Build: 'Build0', Tool: 'Tool0' }
+								'User1|PackageA': { Version: 3.3.3, Build: 'Build0', Tool: 'Tool0' }
+								'User1|PackageB': { Version: 4.4.4, Build: 'Build0', Tool: 'Tool0' }
 							}
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -3878,17 +3878,17 @@ namespace Soup::Core::UnitTests
 								MyPackage: { Version: '../MyPackage/', Build: 'Build0', Tool: 'Tool0' }
 							}
 							'C#': {
-								'User1|Package1': { Version: '4.4.4', Build: 'Build1', Tool: 'Tool0' }
+								'User1|Package1': { Version: 4.4.4, Build: 'Build1', Tool: 'Tool0' }
 							}
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Build1: {
 							Wren: {
-								'User1|Soup.CSharp': { Version: '3.3.3' }
+								'User1|Soup.CSharp': { Version: 3.3.3 }
 							}
 						}
 						Tool1: {

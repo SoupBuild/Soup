@@ -101,7 +101,7 @@ public class PackageManagerUnitTests
 			"""
 			Name: 'MyPackage'
 			Language: 'C++|3.2.1'
-			Version: '1.0.0'
+			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
@@ -114,7 +114,7 @@ public class PackageManagerUnitTests
 				"""
 				Name: 'Package1'
 				Language: 'C++|3.2.1'
-				Version: '1.2.3'
+				Version: 1.2.3
 				"""))));
 
 		// Mock out the http
@@ -186,7 +186,7 @@ public class PackageManagerUnitTests
 			"""
 			Name: 'MyPackage'
 			Language: 'C++|3.2.1'
-			Version: '1.0.0'
+			Version: 1.0.0
 			Dependencies: {
 				Runtime: [
 					'User1|OtherPackage@1.2.3'
@@ -213,7 +213,7 @@ public class PackageManagerUnitTests
 			"""
 			Name: 'MyPackage'
 			Language: 'C++|3.2.1'
-			Version: '1.0.0'
+			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
@@ -226,7 +226,7 @@ public class PackageManagerUnitTests
 				"""
 				Name: 'Package1'
 				Language: 'C++|3.2.1'
-				Version: '1.2.3'
+				Version: 1.2.3
 				"""))));
 
 		// Mock out the http
@@ -328,7 +328,7 @@ public class PackageManagerUnitTests
 			"""
 			Name: 'MyPackage'
 			Language: 'C++|3.2.1'
-			Version: '1.0.0'
+			Version: 1.0.0
 			Dependencies: {
 				Runtime: [
 					'User1|OtherPackage@1.2.3'
@@ -355,7 +355,7 @@ public class PackageManagerUnitTests
 			"""
 			Name: 'MyPackage'
 			Language: 'C++|0.1'
-			Version: '1.0.0'
+			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
