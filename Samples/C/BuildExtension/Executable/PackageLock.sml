@@ -8,13 +8,13 @@ Closures: {
 	Build0: {
 		Wren: {
 			'Samples.C.BuildExtension.Extension': { Version: '../Extension/' }
-			'mwasplund|Soup.C': { Version: '0.3.0' }
+			'mwasplund|Soup.C': { Version: 0.3.0 }
 		}
 	}
 	Tool0: {
 		'C++': {
-			'mwasplund|copy': { Version: '1.1.0' }
-			'mwasplund|mkdir': { Version: '1.1.0' }
+			'mwasplund|copy': { Version: 1.1.0 }
+			'mwasplund|mkdir': { Version: 1.1.0 }
 		}
 	}
 }
