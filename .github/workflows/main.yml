@@ -29,31 +29,31 @@ jobs:
     - name: Soup Where
       run: swhere
     - name: Soup Restore Client
-      run: soup restore ./Soup/Source/Client/CLI/ -v:d
+      run: soup restore ./Soup/Source/Client/CLI/
     - name: Soup Build Client
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
+      run: soup build ./Soup/Source/Client/CLI/ -flavor ${{matrix.config}}
     - name: Soup Run Version
       if: matrix.os != 'ubuntu-22.04'
-      run: soup run ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}} -args version
+      run: soup run ./Soup/Source/Client/CLI/ -flavor ${{matrix.config}} -args version
     - name: Soup Restore GenerateTest
       run: soup restore ./Soup/Source/GenerateTest/
     - name: Soup Build GenerateTest
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Source/GenerateTest/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Source/GenerateTest/ -flavor ${{matrix.config}}
     # - name: Soup Restore SWhere
     #   run: soup restore ./Soup/Source/GenerateSharp/Swhere/
     # - name: Soup Build SWhere
-    #   run: soup build ./Soup/Source/GenerateSharp/Swhere/ -flavor ${{matrix.config}} -v:d
+    #   run: soup build ./Soup/Source/GenerateSharp/Swhere/ -flavor ${{matrix.config}}
     # - name: Soup Restore PackageManager
     #   run: soup restore ./Soup/Source/GenerateSharp/PackageManager/
     # - name: Soup Build PackageManager
-    #   run: soup build ./Soup/Source/GenerateSharp/PackageManager/ -flavor ${{matrix.config}} -v:d
+    #   run: soup build ./Soup/Source/GenerateSharp/PackageManager/ -flavor ${{matrix.config}}
     - name: Soup Restore Tools
-      run: soup restore ./Soup/Source/Client/Tools/ -v:d
+      run: soup restore ./Soup/Source/Client/Tools/
     - name: Soup Build Tools
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Source/Client/Tools/ -v:d -flavor ${{matrix.config}}
+      run: soup build ./Soup/Source/Client/Tools/ -flavor ${{matrix.config}}
 
     # Build DotNet
     - name: DotNet Restore
@@ -71,67 +71,67 @@ jobs:
       run: soup restore ./Soup/Source/Tools/PrintGraph/
     - name: Soup Build PrintGraph
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Source/Tools/PrintGraph/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Source/Tools/PrintGraph/ -flavor ${{matrix.config}}
     - name: Soup Restore PrintResults
       run: soup restore ./Soup/Source/Tools/PrintResults/
     - name: Soup Build PrintResults
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Source/Tools/PrintResults/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Source/Tools/PrintResults/ -flavor ${{matrix.config}}
     - name: Soup Restore PrintValueTable
       run: soup restore ./Soup/Source/Tools/PrintValueTable/
     - name: Soup Build PrintValueTable
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Source/Tools/PrintValueTable/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Source/Tools/PrintValueTable/ -flavor ${{matrix.config}}
 
     # Build Samples
     - name: Soup Restore C BuildExtension
       run: soup restore ./Soup/Samples/C/BuildExtension/Executable/
     - name: Soup Build C BuildExtension
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/C/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/C/BuildExtension/Executable/ -flavor ${{matrix.config}}
     - name: Soup Build C ConsoleApplication
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/C/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/C/ConsoleApplication/ -flavor ${{matrix.config}}
     - name: Soup Build C DynamicLibrary
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/C/DynamicLibrary/Application/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/C/DynamicLibrary/Application/ -flavor ${{matrix.config}}
     - name: Soup Build C StaticLibrary
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/C/StaticLibrary/Application/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/C/StaticLibrary/Application/ -flavor ${{matrix.config}}
     - name: Soup Build C WindowsApplication
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/C/WindowsApplication/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/C/WindowsApplication/ -flavor ${{matrix.config}}
 
     - name: Soup Restore Cpp BuildExtension
       run: soup restore ./Soup/Samples/Cpp/BuildExtension/Executable/
     - name: Soup Build Cpp BuildExtension
-      run: soup build ./Soup/Samples/Cpp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/Cpp/BuildExtension/Executable/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp ConsoleApplication
-      run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DirectX
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/Cpp/DirectX/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/Cpp/DirectX/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DynamicLibrary
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/Cpp/DynamicLibrary/Application/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/Cpp/DynamicLibrary/Application/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp ModuleInterface
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/Cpp/ModuleInterface/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/Cpp/ModuleInterface/ -flavor ${{matrix.config}}
     - name: Soup Restore Cpp ParseJsonFile
       run: soup restore ./Soup/Samples/Cpp/ParseJsonFile/
     - name: Soup Build Cpp ParseJsonFile
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/Cpp/ParseJsonFile/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/Cpp/ParseJsonFile/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp StaticLibrary
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/Cpp/StaticLibrary/Application/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/Cpp/StaticLibrary/Application/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp WindowsApplication
       if: matrix.os != 'ubuntu-22.04'
-      run: soup build ./Soup/Samples/Cpp/WindowsApplication/ -flavor ${{matrix.config}} -v:d
+      run: soup build ./Soup/Samples/Cpp/WindowsApplication/ -flavor ${{matrix.config}}
 
     # - name: Soup Restore CSharp BuildExtension
     #   run: soup restore ./Soup/Samples/CSharp/BuildExtension/Executable/
     # - name: Soup Build CSharp BuildExtension
-    #   run: soup build ./Soup/Samples/CSharp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
+    #   run: soup build ./Soup/Samples/CSharp/BuildExtension/Executable/ -flavor ${{matrix.config}}
     # - name: Soup Build CSharp ConsoleApplication
-    #   run: soup build ./Soup/Samples/CSharp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
+    #   run: soup build ./Soup/Samples/CSharp/ConsoleApplication/ -flavor ${{matrix.config}}
