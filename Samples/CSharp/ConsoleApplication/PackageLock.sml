@@ -7,7 +7,7 @@ Closures: {
 	}
 	Build0: {
 		Wren: {
-			'mwasplund|Soup.CSharp': { Version: 0.13.0 }
+			'mwasplund|Soup.CSharp': { Version: 0.14.0 }
 		}
 	}
 	Tool0: {
