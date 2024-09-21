@@ -119,7 +119,7 @@ namespace Soup::Core
 			for (const auto& [key, value] : source.GetValue())
 			{
 				auto recipeValue = Parse(value);
-				target.emplace(key, std::move(recipeValue));
+				target.Insert(key, std::move(recipeValue));
 			}
 		}
 
@@ -162,11 +162,11 @@ namespace Soup::Core
 
 		static SMLTable Build(const RecipeTable& table)
 		{
-			auto result = std::unordered_map<std::string, SMLValue>();
+			auto result = SequenceMap<std::string, SMLValue>();
 
 			for (const auto& [key, value] : table)
 			{
-				result.emplace(key, Build(value));
+				result.Insert(key, Build(value));
 			}
 
 			return SMLTable(std::move(result));

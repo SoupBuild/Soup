@@ -26,34 +26,34 @@ namespace Soup::Core
 
 	class SMLTable
 	{
+	private:
+		SequenceMap<std::string, SMLValue> _value;
+
 	public:
 		SMLTable() :
 			_value()
 		{
 		}
 
-		SMLTable(std::unordered_map<std::string, SMLValue> value) :
+		SMLTable(SequenceMap<std::string, SMLValue> value) :
 			_value(std::move(value))
 		{
 		}
 
 		bool Contains(const std::string& key) const
 		{
-			return _value.contains(key);
+			return _value.Contains(key);
 		}
 
 		const SMLValue& operator[](const std::string& key) const
 		{
-			return _value.at(key);
+			return _value[key];
 		}
 
-		const std::unordered_map<std::string, SMLValue>& GetValue() const
+		const SequenceMap<std::string, SMLValue>& GetValue() const
 		{
 			return _value;
 		}
-
-	private:
-		std::unordered_map<std::string, SMLValue> _value;
 	};
 
 	class SMLArray

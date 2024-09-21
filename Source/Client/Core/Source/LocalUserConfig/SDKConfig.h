@@ -119,28 +119,15 @@ namespace Soup::Core
 	private:
 		bool HasValue(std::string_view key) const
 		{
-			return _table.contains(key.data());
+			return _table.Contains(key.data());
 		}
 
 		const RecipeValue& GetValue(std::string_view key) const
 		{
-			auto findItr = _table.find(key.data());
-			if (findItr != _table.end())
+			const RecipeValue* value;
+			if ( _table.TryGet(key.data(), value))
 			{
-				return findItr->second;
-			}
-			else
-			{
-				throw std::runtime_error("Requested recipe value does not exist in the root table.");
-			}
-		}
-
-		RecipeValue& GetValue(std::string_view key)
-		{
-			auto findItr = _table.find(key.data());
-			if (findItr != _table.end())
-			{
-				return findItr->second;
+				return *value;
 			}
 			else
 			{
