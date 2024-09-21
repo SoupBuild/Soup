@@ -29,7 +29,7 @@ Closures: {
 	Build1: {
 		Wren: {
 			'mwasplund|Soup.Cpp': { Version: 0.13.1 }
-			'mwasplund|Soup.Test.Cpp': { Version: 0.11.0 }
+			'mwasplund|Soup.Test.Cpp': { Version: 0.12.0 }
 		}
 	}
 	Build2: {
