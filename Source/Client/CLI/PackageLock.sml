@@ -6,7 +6,7 @@ Closures: {
 			mkdir: { Version: '../../Tools/Mkdir/', Build: 'Build0', Tool: 'Tool0' }
 			'Monitor.Host': { Version: '../../Monitor/Host/', Build: 'Build0', Tool: 'Tool0' }
 			'Monitor.Shared': { Version: '../../Monitor/Shared/', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|CryptoPP': { Version: 1.2.2, Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|CryptoPP': { Version: 1.2.4, Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Detours': { Version: 4.0.12, Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Opal': { Version: 0.11.3, Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|reflex': { Version: 1.0.4, Build: 'Build0', Tool: 'Tool0' }
@@ -23,12 +23,12 @@ Closures: {
 	}
 	Build0: {
 		Wren: {
-			'mwasplund|Soup.Cpp': { Version: 0.13.1 }
+			'mwasplund|Soup.Cpp': { Version: 0.13.2 }
 		}
 	}
 	Build1: {
 		Wren: {
-			'mwasplund|Soup.Cpp': { Version: 0.13.1 }
+			'mwasplund|Soup.Cpp': { Version: 0.13.2 }
 			'mwasplund|Soup.Test.Cpp': { Version: 0.12.0 }
 		}
 	}
