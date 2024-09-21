@@ -14,10 +14,9 @@ Source: [
 	'Source/SML/SMLParser.cpp'
 	'Source/ValueTable/Value.cpp'
 ]
-
 Dependencies: {
 	Build: [
-		'mwasplund|Soup.Test.Cpp@0'
+		# 'mwasplund|Soup.Test.Cpp@0'
 	]
 	Runtime: [
 		'mwasplund|Opal@0'
@@ -30,7 +29,6 @@ Dependencies: {
 		'mwasplund|Soup.Test.Assert@0'
 	]
 }
-
 Tests: {
 	Source: [
 		'UnitTests/gen/Main.cpp'
