@@ -246,6 +246,11 @@ namespace Monitor::Linux
 				close(stdOutPipe[1]);
 				close(stdErrPipe[1]);
 
+				// Build up the Monitor dlls absolute path
+				auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto moduleFolder = moduleName.GetParent();
+				auto dllPath = moduleFolder + Path("./Monitor.Client.64.so");
+
 				auto environment = std::vector<std::string>();
 
 				environment.push_back("HOME=/");
@@ -253,7 +258,7 @@ namespace Monitor::Linux
 				environment.push_back("PAHT=/usr/bin");
 
 				// Preload the monitor client first
-				environment.push_back("LD_PRELOAD=/home/mwasplund/dev/repos/Soup/out/run/Monitor.Client.64.so");
+				environment.push_back("LD_PRELOAD=" + dllPath.ToString());
 
 				std::vector<const char*> arguments;
 				arguments.push_back(m_executable.ToString().c_str());
