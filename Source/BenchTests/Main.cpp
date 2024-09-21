@@ -133,7 +133,7 @@ int main()
 		auto recipe = std::stringstream(
 			R"(
 				Name: 'MyPackage'
-				Language: 'C++|1'
+				Language: (C++@1)
 			)");
 		ankerl::nanobench::Bench().minEpochIterations(10000).run("RecipeSML Deserialize Simple", [&]
 		{
@@ -147,8 +147,8 @@ int main()
 		auto recipe = std::stringstream(
 			R"(
 				Name: 'MyPackage'
-				Language: 'C++|1'
-				Version: '1.2.3'
+				Language: (C++@1)
+				Version: 1.2.3
 				Source: [
 					'File1.cpp'
 					'File2.cpp'
@@ -163,7 +163,7 @@ int main()
 				]
 				Dependencies: {
 					Runtime: [
-						'Package1'
+						'./Package1/'
 					]
 					Build: []
 					Test: []
@@ -240,21 +240,21 @@ int main()
 			Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 			std::make_shared<MockFile>(std::stringstream(R"(
 				Name: 'MyPackage'
-				Language: 'C++|0.8.2'
+				Language: (C++@0.8)
 			)")));
 
 		fileSystem->CreateMockFile(
 			Path("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/Recipe.sml"),
 			std::make_shared<MockFile>(std::stringstream(R"(
 				Name: 'Soup.Cpp'
-				Language: 'Wren|1'
+				Language: (Wren@1)
 			)")));
 
 		fileSystem->CreateMockFile(
 			Path("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/Recipe.sml"),
 			std::make_shared<MockFile>(std::stringstream(R"(
 				Name: 'Soup.Wren'
-				Language: 'Wren|1'
+				Language: (Wren@1)
 			)")));
 
 		// Create the package lock
@@ -270,7 +270,7 @@ int main()
 					}
 					Build0: {
 						Wren: {
-							'mwasplund|Soup.Cpp': { Version: '0.8.2' }
+							'mwasplund|Soup.Cpp': { Version: 0.8.2 }
 						}
 					}
 					Tool0: {}
@@ -289,7 +289,7 @@ int main()
 					}
 					Build0: {
 						Wren: {
-							'mwasplund|Soup.Wren': { Version: '0.4.1' }
+							'mwasplund|Soup.Wren': { Version: 0.4.1 }
 						}
 					}
 					Tool0: {}

@@ -151,6 +151,10 @@ namespace Soup::Core
 					return SMLValue(value.AsBoolean());
 				case RecipeValueType::Version:
 					return SMLValue(value.AsVersion());
+				case RecipeValueType::LanguageReference:
+					return SMLValue(value.AsLanguageReference());
+				case RecipeValueType::PackageReference:
+					return SMLValue(value.AsPackageReference());
 				default:
 					throw std::runtime_error("Unknown Recipe value type.");
 			}

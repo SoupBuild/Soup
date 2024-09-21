@@ -309,8 +309,8 @@ namespace Monitor::Linux
 				bool writerClosed = false;
 				while (m_processRunning && !writerClosed)
 				{
-					// 10 seconds
-					auto waitStatus = poll(&waiter, 1, 10 * 1000);
+					// 100 seconds
+					auto waitStatus = poll(&waiter, 1, 100 * 1000);
 					switch (waitStatus)
 					{
 						case 0:

@@ -97,7 +97,7 @@ namespace Soup::Core::UnitTests
 				Path("./TestFiles/SimpleRecipe/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 				)")));
 
 			auto directory = Path("./TestFiles/SimpleRecipe/Recipe.sml");
@@ -109,7 +109,7 @@ namespace Soup::Core::UnitTests
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -146,7 +146,7 @@ namespace Soup::Core::UnitTests
 			auto recipe = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 			RecipeExtensions::SaveToFile(directory, recipe);
 
@@ -168,7 +168,7 @@ namespace Soup::Core::UnitTests
 			// Verify the contents of the build file
 			std::string expectedBuildFile = 
 R"(Name: 'MyPackage'
-Language: 'C++|1'
+Language: (C++@1)
 )";
 			auto mockBuildFile = fileSystem->GetMockFile(Path("./TestFiles/SimpleRecipe/Recipe.sml"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
