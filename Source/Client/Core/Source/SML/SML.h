@@ -355,10 +355,22 @@ namespace Soup::Core
 				stream << value.AsVersion().ToString();
 				break;
 			case SMLValueType::PackageReference:
-				stream << value.AsPackageReference().ToString();
+				{
+					const auto& packageReference = value.AsPackageReference();
+					stream << "<";
+					if (packageReference.HasLanguage())
+					{
+						stream << "(" << packageReference.GetLanguage() << ")";
+					}
+
+					stream << packageReference.GetOwner() << "|" << packageReference.GetName() << "@" << packageReference.GetVersion().ToString() << ">";
+				}
 				break;
 			case SMLValueType::LanguageReference:
-				stream << value.AsLanguageReference().ToString();
+				{
+					const auto& languageReference = value.AsLanguageReference();
+					stream << "(" << languageReference.GetName() << "@" << languageReference.GetVersion().ToString() << ")";
+				}
 				break;
 			default:
 				throw std::runtime_error("Unknown SML type.");

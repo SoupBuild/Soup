@@ -133,7 +133,7 @@ int main()
 		auto recipe = std::stringstream(
 			R"(
 				Name: 'MyPackage'
-				Language: 'C++|1'
+				Language: (C++@1)
 			)");
 		ankerl::nanobench::Bench().minEpochIterations(10000).run("RecipeSML Deserialize Simple", [&]
 		{
@@ -254,7 +254,7 @@ int main()
 			Path("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/Recipe.sml"),
 			std::make_shared<MockFile>(std::stringstream(R"(
 				Name: 'Soup.Wren'
-				Language: 'Wren|1'
+				Language: (Wren@1)
 			)")));
 
 		// Create the package lock

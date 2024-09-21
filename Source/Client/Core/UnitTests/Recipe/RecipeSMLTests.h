@@ -26,14 +26,14 @@ namespace Soup::Core::UnitTests
 			auto recipe = std::stringstream(
 				R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 				)");
 			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -47,14 +47,14 @@ namespace Soup::Core::UnitTests
 				R"(
 					# This is an awesome project
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 				)");
 			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -115,7 +115,7 @@ namespace Soup::Core::UnitTests
 			auto recipe = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 
 			std::stringstream actual;
@@ -123,7 +123,7 @@ namespace Soup::Core::UnitTests
 
 			auto expected = 
 R"(Name: 'MyPackage'
-Language: 'C++|1'
+Language: (C++@1)
 )";
 
 			Assert::AreEqual(expected, actual.str(), "Verify matches expected.");
@@ -136,7 +136,7 @@ Language: 'C++|1'
 			auto recipe = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 				{ "Version", SemanticVersion(1, 2, 3) },
 				{ "IntegerValue", (int64_t)55 },
 				{ "FloatValue", 1.2 },
@@ -158,7 +158,7 @@ Language: 'C++|1'
 
 			auto expected = 
 R"(Name: 'MyPackage'
-Language: 'C++|1'
+Language: (C++@1)
 Version: 1.2.3
 IntegerValue: 55
 FloatValue: 1.2

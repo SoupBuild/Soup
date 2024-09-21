@@ -100,7 +100,7 @@ public class PackageManagerUnitTests
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|3.2.1'
+			Language: (C++@3.2)
 			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
@@ -113,7 +113,7 @@ public class PackageManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
-				Language: 'C++|3.2.1'
+				Language: (C++@3.2)
 				Version: 1.2.3
 				"""))));
 
@@ -185,7 +185,7 @@ public class PackageManagerUnitTests
 		var expectedRecipe =
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|3.2.1'
+			Language: (C++@3.2)
 			Version: 1.0.0
 			Dependencies: {
 				Runtime: [
@@ -212,7 +212,7 @@ public class PackageManagerUnitTests
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|3.2.1'
+			Language: (C++@3.2)
 			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
@@ -225,7 +225,7 @@ public class PackageManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
-				Language: 'C++|3.2.1'
+				Language: (C++@3.2)
 				Version: 1.2.3
 				"""))));
 
@@ -327,7 +327,7 @@ public class PackageManagerUnitTests
 		var expectedRecipe =
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|3.2.1'
+			Language: (C++@3.2)
 			Version: 1.0.0
 			Dependencies: {
 				Runtime: [
@@ -354,7 +354,7 @@ public class PackageManagerUnitTests
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|0.1'
+			Language: (C++@0.1)
 			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);

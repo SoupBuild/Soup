@@ -54,14 +54,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -698,14 +698,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock

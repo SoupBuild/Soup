@@ -692,7 +692,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'MyPackage'
-				Language: 'C++|5'
+				Language: (C++@5)
 				Version: 1.0.0
 				Dependencies: {
 					Build: [
@@ -706,7 +706,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
-				Language: 'Wren|4'
+				Language: (Wren@4)
 				Version: 1.2.3
 				"""))));
 
@@ -715,7 +715,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Soup.Cpp'
-				Language: 'Wren|4'
+				Language: (Wren@4)
 				Version: 5.0.0
 				"""))));
 
@@ -1185,7 +1185,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'MyPackage'
-				Language: 'C++|5'
+				Language: (C++@5)
 				Version: 1.0.0
 				Dependencies: {
 					Build: [
@@ -1199,7 +1199,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
-				Language: 'Wren|6'
+				Language: (Wren@6)
 				Version: 1.2.3
 				Dependencies: {
 					Tool: [
@@ -1213,7 +1213,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package2'
-				Language: 'C++|5'
+				Language: (C++@5)
 				Version: 2.3.4
 				"""))));
 
@@ -1222,7 +1222,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Soup.Cpp'
-				Language: 'Wren|4.5.6'
+				Language: (Wren@4.5)
 				Version: 5.0.0
 				"""))));
 
@@ -1418,8 +1418,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":2,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{"Build":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":2,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{"Build":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"Wren","owner":"User1","name":"Package1","version":{"major":1,"minor":2,"patch":3}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -1429,8 +1429,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
@@ -1440,8 +1440,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":6}},"dependencies":{"Tool":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"C\u002B\u002B","owner":"User1","name":"Package2","version":{"major":2,"minor":3,"patch":4}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":6}},"dependencies":{"Tool":[1]}},"localPackages":[],"publicPackages":[{"id":1,"language":"C\u002B\u002B","owner":"User1","name":"Package2","version":{"major":2,"minor":3,"patch":4}}],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult3)),
@@ -1451,8 +1451,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult4)),
@@ -1710,7 +1710,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
+					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
@@ -1986,7 +1986,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
-				Language: 'Wren|4.5.6'
+				Language: (Wren@4.5)
 				Version: 1.2.3
 				"""))));
 
@@ -2083,7 +2083,7 @@ public class ClosureManagerUnitTests
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
 				/*lang=json,strict*/
-				"""{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{"Build":[1]}},"localPackages":[{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				"""{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{"Build":[1]}},"localPackages":[{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -2098,8 +2098,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":4,"minor":5}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
@@ -2205,7 +2205,7 @@ public class ClosureManagerUnitTests
 					Language = new Api.Client.LanguageReferenceModel()
 					{
 						Name = "Wren",
-						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
+						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, },
 					},
 					Dependencies = new Dictionary<string, ICollection<int>>(),
 				},
@@ -2239,7 +2239,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
+					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
@@ -2352,7 +2352,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
-				Language: 'Wren|4.5.6'
+				Language: (Wren@4.5)
 				Version: 1.2.3
 				Dependencies: {
 					Tool: [
@@ -2366,7 +2366,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package2'
-				Language: 'C++|5.0.0'
+				Language: (C++@5.0)
 				Version: 2.3.4
 				"""))));
 
@@ -2375,7 +2375,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Soup.Cpp'
-				Language: 'Wren|4'
+				Language: (Wren@4)
 				Version: 5.0.0
 				"""))));
 
@@ -2486,7 +2486,7 @@ public class ClosureManagerUnitTests
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
 				/*lang=json,strict*/
-				"""{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{"Build":[2]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}},{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{"Tool":[1]}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				"""{"rootPackage":{"id":3,"language":{"name":"Wren","version":{"major":3,"minor":2}},"dependencies":{"Build":[2]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0}},"dependencies":{}},{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5}},"dependencies":{"Tool":[1]}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult1)),
@@ -2496,8 +2496,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5,"patch":6}},"dependencies":{"Tool":[1]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":2,"language":{"name":"Wren","version":{"major":4,"minor":5}},"dependencies":{"Tool":[1]}},"localPackages":[{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0}},"dependencies":{}}],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult2)),
@@ -2507,8 +2507,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0,"patch":0}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":1,"language":{"name":"C\u002B\u002B","version":{"major":5,"minor":0}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult3)),
@@ -2630,7 +2630,7 @@ public class ClosureManagerUnitTests
 					Language = new Api.Client.LanguageReferenceModel()
 					{
 						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, Patch = 0, },
+						Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, },
 					},
 					Dependencies = new Dictionary<string, ICollection<int>>(),
 				},
@@ -2640,7 +2640,7 @@ public class ClosureManagerUnitTests
 					Language = new Api.Client.LanguageReferenceModel()
 					{
 						Name = "Wren",
-						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
+						Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, },
 					},
 					Dependencies = new Dictionary<string, ICollection<int>>()
 					{
@@ -2683,7 +2683,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
+					Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>()
 				{
@@ -2704,7 +2704,7 @@ public class ClosureManagerUnitTests
 					Language = new Api.Client.LanguageReferenceModel()
 					{
 						Name = "C++",
-						Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, Patch = 0, },
+						Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, },
 					},
 					Dependencies = new Dictionary<string, ICollection<int>>(),
 				},
@@ -2738,7 +2738,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "C++",
-					Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, Patch = 0, },
+					Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
@@ -2888,7 +2888,7 @@ public class ClosureManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Soup.Wren'
-				Language: 'Wren|1.2.3'
+				Language: (Wren@1.2)
 				Version: 4.5.5
 				"""))));
 
@@ -2967,8 +2967,8 @@ public class ClosureManagerUnitTests
 				HttpMethod.Get,
 				new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 				It.IsAny<string>(),
-									 /*lang=json,strict*/
-									 """{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":1,"minor":2,"patch":3}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
+				/*lang=json,strict*/
+				"""{"rootPackage":{"id":1,"language":{"name":"Wren","version":{"major":1,"minor":2}},"dependencies":{}},"localPackages":[],"publicPackages":[],"preferredVersions":[{"language":"Wren","owner":"mwasplund","name":"Soup.Wren","version":{"major":4,"minor":5,"patch":6}}]}"""))
 			.Returns(() => new HttpResponseMessage()
 			{
 				Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
@@ -3082,7 +3082,7 @@ public class ClosureManagerUnitTests
 				Language = new Api.Client.LanguageReferenceModel()
 				{
 					Name = "Wren",
-					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+					Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, },
 				},
 				Dependencies = new Dictionary<string, ICollection<int>>(),
 			},
