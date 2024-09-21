@@ -164,8 +164,8 @@ IntegerValue: 55
 FloatValue: 1.2
 TrueValue: true
 FalseValue: false
-Dependencies: {Build: []
-Runtime: []
+Dependencies: {Runtime: []
+Build: []
 Test: []
 }
 )";

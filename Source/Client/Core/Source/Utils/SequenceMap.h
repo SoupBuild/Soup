@@ -55,9 +55,9 @@ namespace Soup::Core
 			return false;
 		}
 
-		void Insert(TKey key, TValue value)
+		void Insert(const TKey& key, TValue value)
 		{
-			auto [wasInserted, valueReference] = TryInsert(std::move(key), std::move(value));
+			auto [wasInserted, valueReference] = TryInsert(key, std::move(value));
 			if (!wasInserted)
 			{
 				throw std::runtime_error("Key already exists");
@@ -73,8 +73,8 @@ namespace Soup::Core
 			else
 			{
 				_data.push_back(std::make_pair<TKey, TValue>(std::move(key), std::move(value)));
-				auto& valueRefence = _data[_data.size() - 1];
-				return std::make_pair<bool, TValue*>(false, &valueRefence.second);;
+				auto& valueReference = _data[_data.size() - 1];
+				return std::make_pair<bool, TValue*>(true, &valueReference.second);;
 			}
 		}
 
