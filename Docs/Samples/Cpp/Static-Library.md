@@ -26,14 +26,14 @@ export module Samples.Cpp.StaticLibrary.Library;
 // Note: The namespace does not have to match the module name
 export namespace Samples::Cpp::StaticLibrary::Library
 {
-	class Helper
-	{
-	public:
-		static std::string GetName()
-		{
-			return "Soup";
-		}
-	};
+    class Helper
+    {
+    public:
+        static std::string GetName()
+        {
+            return "Soup";
+        }
+    };
 }
 ```
 
@@ -44,14 +44,8 @@ Name: 'Samples.Cpp.StaticLibrary.Application'
 Language: (C++@0)
 Type: 'Executable'
 Version: 1.0.0
-Source: [
-	'Main.cpp'
-]
-
 Dependencies: {
-	Runtime: [
-		'../Library/'
-	]
+    Runtime: [ '../Library/' ]
 }
 ```
 
@@ -60,23 +54,23 @@ The package lock that was generated to capture the unique dependencies required 
 ```sml
 Version: 5
 Closures: {
-	Root: {
-		'C++': {
-			'Samples.Cpp.StaticLibrary.Application': { Version: '../Application', Build: 'Build0', Tool: 'Tool0' }
-			'Samples.Cpp.StaticLibrary.Library': { Version: '../Library/', Build: 'Build0', Tool: 'Tool0' }
-		}
-	}
-	Build0: {
-		Wren: {
-			'mwasplund|Soup.Cpp': { Version: 0.13.1 }
-		}
-	}
-	Tool0: {
-		'C++': {
-			'mwasplund|copy': { Version: 1.1.0 }
-			'mwasplund|mkdir': { Version: 1.1.0 }
-		}
-	}
+    Root: {
+        'C++': {
+            'Samples.Cpp.StaticLibrary.Application': { Version: '../Application', Build: 'Build0', Tool: 'Tool0' }
+            'Samples.Cpp.StaticLibrary.Library': { Version: '../Library/', Build: 'Build0', Tool: 'Tool0' }
+        }
+    }
+    Build0: {
+        Wren: {
+            'mwasplund|Soup.Cpp': { Version: 0.13.1 }
+        }
+    }
+    Tool0: {
+        'C++': {
+            'mwasplund|copy': { Version: 1.1.0 }
+            'mwasplund|mkdir': { Version: 1.1.0 }
+        }
+    }
 }
 ```
 
