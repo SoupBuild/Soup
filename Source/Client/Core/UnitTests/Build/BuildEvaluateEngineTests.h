@@ -1259,7 +1259,7 @@ namespace Soup::Core::UnitTests
 					temporaryDirectory,
 					globalAllowedReadAccess,
 					globalAllowedWriteAccess);
-				(ranOperations);
+				(void)ranOperations;
 			});
 
 			Assert::AreEqual<std::string_view>(
@@ -1396,7 +1396,7 @@ namespace Soup::Core::UnitTests
 					temporaryDirectory,
 					globalAllowedReadAccess,
 					globalAllowedWriteAccess);
-				(ranOperations);
+				(void)ranOperations;
 			});
 
 			Assert::AreEqual<std::string_view>(
@@ -1533,7 +1533,7 @@ namespace Soup::Core::UnitTests
 					temporaryDirectory,
 					globalAllowedReadAccess,
 					globalAllowedWriteAccess);
-				(ranOperations);
+				(void)ranOperations;
 			});
 
 			Assert::AreEqual<std::string_view>(

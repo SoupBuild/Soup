@@ -38,13 +38,9 @@ namespace Soup::Core
 			const OperationGraph& operationGraph,
 			OperationResults& operationResults,
 			const Path& temporaryDirectory,
-			const std::vector<Path>& globalAllowedReadAccess,
-			const std::vector<Path>& globalAllowedWriteAccess)
+			const std::vector<Path>& /*globalAllowedReadAccess*/,
+			const std::vector<Path>& /*globalAllowedWriteAccess*/)
 		{
-			(operationGraph);
-			(globalAllowedReadAccess);
-			(globalAllowedWriteAccess);
-
 			std::stringstream message;
 			message << "Evaluate: " << temporaryDirectory.ToString();
 

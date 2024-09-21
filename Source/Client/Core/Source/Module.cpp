@@ -103,6 +103,7 @@ using namespace Opal;
 
 #define CLIENT_CORE_IMPLEMENTATION
 
+#include "Utils/SequenceMap.h"
 #include "Build/RecipeBuildLocationManager.h"
 #include "Build/BuildEngine.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"

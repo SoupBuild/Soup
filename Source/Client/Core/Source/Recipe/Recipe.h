@@ -232,15 +232,15 @@ namespace Soup::Core
 
 		bool HasValue(const RecipeTable& table, std::string_view key) const
 		{
-			return table.contains(key.data());
+			return table.Contains(key.data());
 		}
 
 		const RecipeValue& GetValue(const RecipeTable& table, std::string_view key) const
 		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
+			const RecipeValue* value;
+			if (table.TryGet(key.data(), value))
 			{
-				return findItr->second;
+				return *value;
 			}
 			else
 			{
@@ -250,10 +250,10 @@ namespace Soup::Core
 
 		RecipeValue& GetValue(RecipeTable& table, std::string_view key)
 		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
+			RecipeValue* value;
+			if (table.TryGet(key.data(), value))
 			{
-				return findItr->second;
+				return *value;
 			}
 			else
 			{
@@ -263,10 +263,10 @@ namespace Soup::Core
 
 		RecipeValue& SetValue(RecipeTable& table, std::string_view key, RecipeValue&& value)
 		{
-			auto [insertIterator, wasInserted] = table.insert_or_assign(key.data(), std::move(value));
+			auto [wasInserted, valueReference] = table.TryInsert(key.data(), std::move(value));
 			if (wasInserted)
 			{
-				return insertIterator->second;
+				return *valueReference;
 			}
 			else
 			{
@@ -276,22 +276,22 @@ namespace Soup::Core
 
 		RecipeValue& EnsureTableValue(RecipeTable& table, std::string_view key)
 		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
+			RecipeValue* value;
+			if (table.TryGet(key.data(), value))
 			{
-				if (findItr->second.GetType() != RecipeValueType::Table)
+				if (value->GetType() != RecipeValueType::Table)
 				{
 					throw std::runtime_error("The recipe already has a non-table dependencies property");
 				}
 
-				return findItr->second;
+				return *value;
 			}
 			else
 			{
-				auto [insertIterator, wasInserted] = table.emplace(key.data(), RecipeValue(RecipeTable()));
+				auto [wasInserted, valueReference] = table.TryInsert(key.data(), RecipeValue(RecipeTable()));
 				if (wasInserted)
 				{
-					return insertIterator->second;
+					return *valueReference;
 				}
 				else
 				{

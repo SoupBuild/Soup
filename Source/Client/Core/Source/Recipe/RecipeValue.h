@@ -11,7 +11,7 @@ namespace Soup::Core
 {
 	class RecipeValue;
 	using RecipeList = std::vector<RecipeValue>;
-	using RecipeTable = std::unordered_map<std::string, RecipeValue>;
+	using RecipeTable = SequenceMap<std::string, RecipeValue>;
 
 	enum class RecipeValueType
 	{

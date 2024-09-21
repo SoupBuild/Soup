@@ -47,7 +47,6 @@ module;
 # include <chrono>
 #ifndef _WIN32 // TODO: MSVC BUG
 # include <optional>
-# include <unordered_map>
 # include <vector>
 #endif
 
@@ -413,7 +412,7 @@ public:
 
     bool TryParse()
     {
-        std::unordered_map<std::string, SMLValue> table;
+        SequenceMap<std::string, SMLValue> table;
         if (TryParseTableContents(table))
         {
             // Verify we are at the end of the content
@@ -577,7 +576,7 @@ private:
 
     bool TryParseTable(SMLTable& table)
     {
-        std::unordered_map<std::string, SMLValue> tableValues;
+        SequenceMap<std::string, SMLValue> tableValues;
         if (TryParseTableContents(tableValues))
         {
             // Verify we are at the end of the content
@@ -593,7 +592,7 @@ private:
         }
     }
 
-    bool TryParseTableContents(std::unordered_map<std::string, SMLValue>& tableValues)
+    bool TryParseTableContents(SequenceMap<std::string, SMLValue>& tableValues)
     {
         // Odd move next to allow for optional extra delimiter checks at end
         MoveNext();
@@ -614,7 +613,7 @@ private:
         if (!tableValue.has_value())
             return true;
 
-        tableValues.emplace(std::move(key), std::move(tableValue.value()));
+        tableValues.Insert(std::move(key), std::move(tableValue.value()));
 
         // Check for zero or more optional values
         while (true)
@@ -640,7 +639,7 @@ private:
                     return true;
             }
 
-            tableValues.emplace(std::move(key), std::move(tableValue.value()));
+            tableValues.Insert(std::move(key), std::move(tableValue.value()));
         }
     }
 
