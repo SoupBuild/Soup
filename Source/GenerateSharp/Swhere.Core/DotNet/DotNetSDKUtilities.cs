@@ -7,7 +7,6 @@ using Opal.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Path = Opal.Path;
 
@@ -20,24 +19,25 @@ public static class DotNetSDKUtilities
 		IList<(string Version, Path InstallDirectory)> SDKVersions,
 		IDictionary<string, IList<(string Version, Path InstallDirectory)>> Runtimes,
 		IDictionary<string, IList<(string Version, Path InstallDirectory)>> TargetingPacks,
-		IList<Path> SourceDirectories)> FindDotNetAsync()
+		IList<Path> SourceDirectories)> FindDotNetAsync(OSPlatform platform)
 	{
-		var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync("dotnet");
+		var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync(platform, "dotnet");
 		Log.HighPriority($"Using DotNet: {dotnetExecutablePath}");
-
 		Path dotnetInstallPath;
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		string newline;
+		switch (platform)
 		{
-			dotnetInstallPath = new Path("C:/Program Files/dotnet/");
-		}
-		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-		{
-			dotnetInstallPath = new Path("./usr/lib/dotnet/");
-		}
-		else
-		{
-			throw new InvalidOperationException("Unsupported operating system");
-		}
+			case OSPlatform.Windows:
+				dotnetInstallPath = new Path("C:/Program Files/dotnet/");
+				newline = "\r\n";
+				break;
+			case OSPlatform.Linux:
+				dotnetInstallPath = new Path("./usr/lib/dotnet/");
+				newline = "\n";
+				break;
+			default:
+				throw new InvalidOperationException("Unsupported operating system");
+		};
 
 		// Grant access to the install folder
 		var sourceDirectories = new List<Path>()
@@ -45,15 +45,16 @@ public static class DotNetSDKUtilities
 			dotnetInstallPath,
 		};
 
-		var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath);
-		var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath);
+		var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath, newline);
+		var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath, newline);
 		var dotnetTargetingPacks = FindDotNetTargetingPacksVersions(dotnetInstallPath);
 
 		return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories);
 	}
 
 	private static async Task<IList<(string Version, Path InstallDirectory)>> FindDotNetSDKVersionsAsync(
-		Path dotnetExecutablePath)
+		Path dotnetExecutablePath,
+		string newline)
 	{
 		// Check the default tools version
 		Log.HighPriority("Find DotNet SDK Versions");
@@ -61,7 +62,7 @@ public static class DotNetSDKUtilities
 			dotnetExecutablePath,
 			["--list-sdks"]);
 		var sdks = new List<(string, Path)>();
-		foreach (var sdkValue in sdksOutput.Split(Environment.NewLine).SkipLast(1))
+		foreach (var sdkValue in sdksOutput.Split(newline).SkipLast(1))
 		{
 			var splitIndex = sdkValue.IndexOf(' ', StringComparison.InvariantCulture);
 			if (splitIndex == -1)
@@ -82,7 +83,8 @@ public static class DotNetSDKUtilities
 	}
 
 	private static async Task<IDictionary<string, IList<(string Version, Path InstallDirectory)>>> FindDotNetRuntimeVersionsAsync(
-		Path dotnetExecutablePath)
+		Path dotnetExecutablePath,
+		string newline)
 	{
 		// Check the default tools version
 		Log.HighPriority("Find DotNet Runtime Versions");
@@ -90,7 +92,7 @@ public static class DotNetSDKUtilities
 			dotnetExecutablePath,
 			["--list-runtimes"]);
 		var runtimes = new Dictionary<string, IList<(string, Path)>>();
-		foreach (var runtimeValue in runtimesOutput.Split(Environment.NewLine).SkipLast(1))
+		foreach (var runtimeValue in runtimesOutput.Split(newline).SkipLast(1))
 		{
 			var split1Index = runtimeValue.IndexOf(' ', StringComparison.InvariantCulture);
 			var split2Index = runtimeValue.IndexOf(' ', split1Index + 1);

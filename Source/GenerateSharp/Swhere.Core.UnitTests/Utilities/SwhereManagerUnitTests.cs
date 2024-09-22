@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,7 +16,7 @@ namespace Soup.Build.Discover.UnitTests;
 public class SwhereManagerUnitTests
 {
 	[Fact]
-	public async Task Discover()
+	public async Task Discover_Windows()
 	{
 		// Register the test listener
 		var testListener = new TestTraceListener();
@@ -65,8 +66,11 @@ public class SwhereManagerUnitTests
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/"), IsDirectory = true, },
 			]);
 
+		var platform = OSPlatform.Windows;
 		bool includePrerelease = false;
-		await SwhereManager.DiscoverAsync(includePrerelease);
+		await SwhereManager.DiscoverAsync(platform, includePrerelease);
+
+		Console.WriteLine(string.Join("\r\n", testListener.Messages));
 
 		// Verify expected logs
 		Assert.Equal(
@@ -276,7 +280,7 @@ public class SwhereManagerUnitTests
 	}
 
 	[Fact]
-	public async Task Discover_Prerelease()
+	public async Task Discover_Prerelease_Windows()
 	{
 		// Register the test listener
 		var testListener = new TestTraceListener();
@@ -326,8 +330,9 @@ public class SwhereManagerUnitTests
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/"), IsDirectory = true, },
 			]);
 
+		var platform = OSPlatform.Windows;
 		bool includePrerelease = true;
-		await SwhereManager.DiscoverAsync(includePrerelease);
+		await SwhereManager.DiscoverAsync(platform, includePrerelease);
 
 		// Verify expected logs
 		Assert.Equal(
@@ -648,8 +653,9 @@ public class SwhereManagerUnitTests
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/"), IsDirectory = true, },
 			]);
 
+		var platform = OSPlatform.Windows;
 		bool includePrerelease = false;
-		await SwhereManager.DiscoverAsync(includePrerelease);
+		await SwhereManager.DiscoverAsync(platform, includePrerelease);
 
 		// Verify expected logs
 		Assert.Equal(

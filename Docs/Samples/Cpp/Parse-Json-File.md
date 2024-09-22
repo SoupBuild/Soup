@@ -10,14 +10,8 @@ Name: 'Samples.Cpp.ParseJsonFile'
 Language: (C++@0)
 Version: 1.0.0
 Type: 'Executable'
-Source: [
-  'Main.cpp'
-]
-
 Dependencies: {
-  Runtime: [
-    'mwasplund|json11@1'
-  ]
+  Runtime: [ 'mwasplund|json11@1' ]
 }
 ```
 
@@ -28,7 +22,7 @@ Version: 5
 Closures: {
   Root: {
     'C++': {
-      'mwasplund|json11': { Version: 1.1.2, Build: 'Build0', Tool: 'Tool0' }
+      'mwasplund|json11': { Version: 1.1.3, Build: 'Build0', Tool: 'Tool0' }
       'Samples.Cpp.ParseJsonFile': { Version: '../ParseJsonFile', Build: 'Build0', Tool: 'Tool0' }
     }
   }

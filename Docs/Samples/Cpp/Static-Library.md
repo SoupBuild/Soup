@@ -26,14 +26,14 @@ export module Samples.Cpp.StaticLibrary.Library;
 // Note: The namespace does not have to match the module name
 export namespace Samples::Cpp::StaticLibrary::Library
 {
-	class Helper
-	{
-	public:
-		static std::string GetName()
-		{
-			return "Soup";
-		}
-	};
+    class Helper
+    {
+    public:
+        static std::string GetName()
+        {
+            return "Soup";
+        }
+    };
 }
 ```
 
@@ -44,14 +44,8 @@ Name: 'Samples.Cpp.StaticLibrary.Application'
 Language: (C++@0)
 Type: 'Executable'
 Version: 1.0.0
-Source: [
-	'Main.cpp'
-]
-
 Dependencies: {
-	Runtime: [
-		'../Library/'
-	]
+    Runtime: [ '../Library/' ]
 }
 ```
 
