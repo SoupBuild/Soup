@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,7 +16,7 @@ namespace Soup.Build.Discover.UnitTests;
 public class SwhereManagerUnitTests
 {
 	[Fact]
-	public async Task Discover()
+	public async Task Discover_Windows()
 	{
 		// Register the test listener
 		var testListener = new TestTraceListener();
@@ -68,6 +69,8 @@ public class SwhereManagerUnitTests
 		var platform = OSPlatform.Windows;
 		bool includePrerelease = false;
 		await SwhereManager.DiscoverAsync(platform, includePrerelease);
+
+		Console.WriteLine(string.Join("\r\n", testListener.Messages));
 
 		// Verify expected logs
 		Assert.Equal(

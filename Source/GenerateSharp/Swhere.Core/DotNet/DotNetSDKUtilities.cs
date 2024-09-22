@@ -23,11 +23,20 @@ public static class DotNetSDKUtilities
 	{
 		var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync(platform, "dotnet");
 		Log.HighPriority($"Using DotNet: {dotnetExecutablePath}");
-		Path dotnetInstallPath = platform switch
+		Path dotnetInstallPath;
+		string newline;
+		switch (platform)
 		{
-			OSPlatform.Windows => new Path("C:/Program Files/dotnet/"),
-			OSPlatform.Linux => new Path("./usr/lib/dotnet/"),
-			_ => throw new InvalidOperationException("Unsupported operating system"),
+			case OSPlatform.Windows:
+				dotnetInstallPath = new Path("C:/Program Files/dotnet/");
+				newline = "\r\n";
+				break;
+			case OSPlatform.Linux:
+				dotnetInstallPath = new Path("./usr/lib/dotnet/");
+				newline = "\n";
+				break;
+			default:
+				throw new InvalidOperationException("Unsupported operating system");
 		};
 
 		// Grant access to the install folder
@@ -36,15 +45,16 @@ public static class DotNetSDKUtilities
 			dotnetInstallPath,
 		};
 
-		var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath);
-		var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath);
+		var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath, newline);
+		var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath, newline);
 		var dotnetTargetingPacks = FindDotNetTargetingPacksVersions(dotnetInstallPath);
 
 		return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories);
 	}
 
 	private static async Task<IList<(string Version, Path InstallDirectory)>> FindDotNetSDKVersionsAsync(
-		Path dotnetExecutablePath)
+		Path dotnetExecutablePath,
+		string newline)
 	{
 		// Check the default tools version
 		Log.HighPriority("Find DotNet SDK Versions");
@@ -52,7 +62,7 @@ public static class DotNetSDKUtilities
 			dotnetExecutablePath,
 			["--list-sdks"]);
 		var sdks = new List<(string, Path)>();
-		foreach (var sdkValue in sdksOutput.Split(Environment.NewLine).SkipLast(1))
+		foreach (var sdkValue in sdksOutput.Split(newline).SkipLast(1))
 		{
 			var splitIndex = sdkValue.IndexOf(' ', StringComparison.InvariantCulture);
 			if (splitIndex == -1)
@@ -73,7 +83,8 @@ public static class DotNetSDKUtilities
 	}
 
 	private static async Task<IDictionary<string, IList<(string Version, Path InstallDirectory)>>> FindDotNetRuntimeVersionsAsync(
-		Path dotnetExecutablePath)
+		Path dotnetExecutablePath,
+		string newline)
 	{
 		// Check the default tools version
 		Log.HighPriority("Find DotNet Runtime Versions");
@@ -81,7 +92,7 @@ public static class DotNetSDKUtilities
 			dotnetExecutablePath,
 			["--list-runtimes"]);
 		var runtimes = new Dictionary<string, IList<(string, Path)>>();
-		foreach (var runtimeValue in runtimesOutput.Split(Environment.NewLine).SkipLast(1))
+		foreach (var runtimeValue in runtimesOutput.Split(newline).SkipLast(1))
 		{
 			var split1Index = runtimeValue.IndexOf(' ', StringComparison.InvariantCulture);
 			var split2Index = runtimeValue.IndexOf(' ', split1Index + 1);
