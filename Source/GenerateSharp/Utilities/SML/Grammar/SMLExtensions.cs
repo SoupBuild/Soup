@@ -3,6 +3,7 @@
 // </copyright>
 
 using Opal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,7 +14,7 @@ public static partial class SMLExtensions
 {
 	private static readonly SMLToken CommaToken = new SMLToken(",");
 
-	private static readonly SMLToken NewlineToken = new SMLToken("\r\n");
+	private static readonly SMLToken NewlineToken = new SMLToken(Environment.NewLine);
 
 	private const string Indent = "\t";
 
