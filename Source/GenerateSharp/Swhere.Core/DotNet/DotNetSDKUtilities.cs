@@ -7,7 +7,6 @@ using Opal.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Path = Opal.Path;
 
@@ -20,24 +19,16 @@ public static class DotNetSDKUtilities
 		IList<(string Version, Path InstallDirectory)> SDKVersions,
 		IDictionary<string, IList<(string Version, Path InstallDirectory)>> Runtimes,
 		IDictionary<string, IList<(string Version, Path InstallDirectory)>> TargetingPacks,
-		IList<Path> SourceDirectories)> FindDotNetAsync()
+		IList<Path> SourceDirectories)> FindDotNetAsync(OSPlatform platform)
 	{
-		var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync("dotnet");
+		var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync(platform, "dotnet");
 		Log.HighPriority($"Using DotNet: {dotnetExecutablePath}");
-
-		Path dotnetInstallPath;
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		Path dotnetInstallPath = platform switch
 		{
-			dotnetInstallPath = new Path("C:/Program Files/dotnet/");
-		}
-		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-		{
-			dotnetInstallPath = new Path("./usr/lib/dotnet/");
-		}
-		else
-		{
-			throw new InvalidOperationException("Unsupported operating system");
-		}
+			OSPlatform.Windows => new Path("C:/Program Files/dotnet/"),
+			OSPlatform.Linux => new Path("./usr/lib/dotnet/"),
+			_ => throw new InvalidOperationException("Unsupported operating system"),
+		};
 
 		// Grant access to the install folder
 		var sourceDirectories = new List<Path>()

@@ -15,7 +15,7 @@ namespace Soup.Build.Discover.UnitTests;
 public class DotNetSDKUtilitiesUnitTests
 {
 	[Fact]
-	public async Task FindDotNet()
+	public async Task FindDotNet_Windows()
 	{
 		// Register the test listener
 		var testListener = new TestTraceListener();
@@ -46,7 +46,8 @@ public class DotNetSDKUtilitiesUnitTests
 				new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/"), IsDirectory = true, },
 			]);
 
-		var result = await DotNetSDKUtilities.FindDotNetAsync();
+		var platform = OSPlatform.Windows;
+		var result = await DotNetSDKUtilities.FindDotNetAsync(platform);
 
 		Assert.Equal(new Path("C:/Program Files/dotnet/dotnet.exe"), result.DotNetExecutable);
 		Assert.Equal(

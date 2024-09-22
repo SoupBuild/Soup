@@ -4,6 +4,7 @@
 
 using Opal;
 using Opal.System;
+using System;
 using System.Threading.Tasks;
 
 namespace Soup.Build.Discover;
@@ -39,7 +40,18 @@ public static class Program
 				return -1;
 			}
 
-			await SwhereManager.DiscoverAsync(includePrerelease);
+			if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+			{
+				await SwhereManager.DiscoverAsync(OSPlatform.Windows, includePrerelease);
+			}
+			else if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
+			{
+				await SwhereManager.DiscoverAsync(OSPlatform.Linux, includePrerelease);
+			}
+			else
+			{
+				throw new NotSupportedException("Unknown OS Platform");
+			}
 
 			return 0;
 		}
