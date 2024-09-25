@@ -13,6 +13,7 @@ TestState RunValueTableWriterTests()
 	state += Soup::Test::RunTest(className, "Serialize_SingleInteger", [&testClass]() { testClass->Serialize_SingleInteger(); });
 	state += Soup::Test::RunTest(className, "Serialize_SingleFloat", [&testClass]() { testClass->Serialize_SingleFloat(); });
 	state += Soup::Test::RunTest(className, "Serialize_SingleBoolean", [&testClass]() { testClass->Serialize_SingleBoolean(); });
+	state += Soup::Test::RunTest(className, "Serialize_Complex", [&testClass]() { testClass->Serialize_Complex(); });
 
 	return state;
 }

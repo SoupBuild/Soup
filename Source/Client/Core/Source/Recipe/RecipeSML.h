@@ -26,8 +26,16 @@ namespace Soup::Core
 		{
 			try
 			{
+				// Read the entire file for fastest read operation
+				stream.seekg(0, std::ios_base::end);
+				auto size = stream.tellg();
+				stream.seekg(0, std::ios_base::beg);
+
+				auto contentBuffer = std::vector<char>(size);
+				stream.read(contentBuffer.data(), size);
+			
 				// Read the contents of the recipe file
-				auto root = SMLDocument::Parse(stream);
+				auto root = SMLDocument::Parse(contentBuffer.data(), size);
 
 				// Load the entire root table
 				auto table = RecipeTable();
@@ -37,7 +45,8 @@ namespace Soup::Core
 			}
 			catch(const std::exception& ex)
 			{
-				throw std::runtime_error(std::string("Parsing the Recipe SML failed: ") + ex.what() + " " + recipeFile.ToString());
+				throw std::runtime_error(
+					std::format("Parsing the Recipe SML failed: {} {}", ex.what(), recipeFile.ToString()));
 			}
 		}
 
@@ -86,6 +95,18 @@ namespace Soup::Core
 					Parse(valueTable, source.AsTable());
 					return RecipeValue(std::move(valueTable));
 				}
+				case SMLValueType::Version:
+				{
+					return RecipeValue(source.AsVersion());
+				}
+				case SMLValueType::PackageReference:
+				{
+					return RecipeValue(source.AsPackageReference());
+				}
+				case SMLValueType::LanguageReference:
+				{
+					return RecipeValue(source.AsLanguageReference());
+				}
 				default:
 				{
 					throw std::runtime_error("Unknown SML type.");
@@ -98,7 +119,7 @@ namespace Soup::Core
 			for (const auto& [key, value] : source.GetValue())
 			{
 				auto recipeValue = Parse(value);
-				target.emplace(key, std::move(recipeValue));
+				target.Insert(key, std::move(recipeValue));
 			}
 		}
 
@@ -128,6 +149,12 @@ namespace Soup::Core
 					return SMLValue(value.AsFloat());
 				case RecipeValueType::Boolean:
 					return SMLValue(value.AsBoolean());
+				case RecipeValueType::Version:
+					return SMLValue(value.AsVersion());
+				case RecipeValueType::LanguageReference:
+					return SMLValue(value.AsLanguageReference());
+				case RecipeValueType::PackageReference:
+					return SMLValue(value.AsPackageReference());
 				default:
 					throw std::runtime_error("Unknown Recipe value type.");
 			}
@@ -135,11 +162,11 @@ namespace Soup::Core
 
 		static SMLTable Build(const RecipeTable& table)
 		{
-			auto result = std::unordered_map<std::string, SMLValue>();
+			auto result = SequenceMap<std::string, SMLValue>();
 
 			for (const auto& [key, value] : table)
 			{
-				result.emplace(key, Build(value));
+				result.Insert(key, Build(value));
 			}
 
 			return SMLTable(std::move(result));

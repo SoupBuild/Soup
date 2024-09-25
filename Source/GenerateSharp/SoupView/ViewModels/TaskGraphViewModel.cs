@@ -6,7 +6,11 @@ using GraphShape;
 using ReactiveUI;
 using Soup.Build.Utilities;
 using Soup.View.Views;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 using ValueType = Soup.Build.Utilities.ValueType;
 
@@ -22,37 +26,37 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		public required List<TaskDetails> Children { get; init; }
 	}
 
-	private GraphNodeViewModel? selectedNode;
-	private TaskDetailsViewModel? selectedTask;
-	private uint uniqueId;
-	private IList<GraphNodeViewModel>? graph;
-	private readonly Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = [];
+	private GraphNodeViewModel? _selectedNode;
+	private TaskDetailsViewModel? _selectedTask;
+	private uint _uniqueId;
+	private IList<GraphNodeViewModel>? _graph;
+	private readonly Dictionary<uint, TaskDetailsViewModel> _taskDetailsLookup = [];
 
 	public IList<GraphNodeViewModel>? Graph
 	{
-		get => graph;
-		private set => this.RaiseAndSetIfChanged(ref graph, value);
+		get => _graph;
+		private set => this.RaiseAndSetIfChanged(ref _graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
 	{
-		get => selectedNode;
+		get => _selectedNode;
 		set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref _selectedNode, value))
 			{
-				SelectedTask = selectedNode is not null ? this.taskDetailsLookup[selectedNode.Id] : null;
+				SelectedTask = _selectedNode is not null ? _taskDetailsLookup[_selectedNode.Id] : null;
 			}
 		}
 	}
 
 	public TaskDetailsViewModel? SelectedTask
 	{
-		get => selectedTask;
-		set => this.RaiseAndSetIfChanged(ref selectedTask, value);
+		get => _selectedTask;
+		set => this.RaiseAndSetIfChanged(ref _selectedTask, value);
 	}
 
-	public async Task LoadProjectAsync(Path? packageFolder)
+	public async Task LoadProjectAsync(Path? packageFolder, string? owner)
 	{
 		Graph = null;
 
@@ -64,9 +68,9 @@ public class TaskGraphViewModel : ContentPaneViewModel
 				var (isSuccess, result) = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
 				if (isSuccess)
 				{
-					var targetPath = await GetTargetPathAsync(packageFolder);
+					var targetPath = await GetTargetPathAsync(packageFolder, owner);
 
-					var soupTargetDirectory = targetPath + new Path(".soup/");
+					var soupTargetDirectory = targetPath + new Path("./.soup/");
 
 					var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateInfoFileName;
 					if (!ValueTableManager.TryLoadState(generateInfoStateFile, out var generateInfoTable))
@@ -91,8 +95,8 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 	private List<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)
 	{
-		this.taskDetailsLookup.Clear();
-		this.uniqueId = 1;
+		_taskDetailsLookup.Clear();
+		_uniqueId = 1;
 
 		if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != ValueType.List)
 		{
@@ -141,7 +145,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 				{
 					Name = taskName,
 					TaskInfo = taskInfo,
-					Id = this.uniqueId++,
+					Id = _uniqueId++,
 					Children = [],
 				});
 		}
@@ -193,7 +197,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 			result.Add(node);
 
-			this.taskDetailsLookup.Add(
+			_taskDetailsLookup.Add(
 				task.Id,
 				new TaskDetailsViewModel(task.TaskInfo));
 		}
@@ -201,9 +205,10 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		return result;
 	}
 
-	private async Task<Path> GetTargetPathAsync(Path packageDirectory)
+	private async Task<Path> GetTargetPathAsync(Path packageDirectory, string? owner)
 	{
-		var processInfo = new ProcessStartInfo("C:\\Program Files\\SoupBuild\\Soup\\Soup\\Soup.exe", $"target {packageDirectory}")
+		var optionalOwnerFlag = owner is null ? string.Empty : $" -owner {owner}";
+		var processInfo = new ProcessStartInfo("C:\\Program Files\\SoupBuild\\Soup\\Soup\\Soup.exe", $"target {packageDirectory}{optionalOwnerFlag}")
 		{
 			RedirectStandardOutput = true,
 			CreateNoWindow = true,

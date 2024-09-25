@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Soup.Build.Utilities;
 
 public class SMLTable : IEquatable<SMLTable>
@@ -59,7 +63,7 @@ public class SMLTable : IEquatable<SMLTable>
 
 	public override bool Equals(object? obj)
 	{
-		return this.Equals(obj as SMLTable);
+		return Equals(obj as SMLTable);
 	}
 
 	public bool Equals(SMLTable? other)
@@ -68,11 +72,11 @@ public class SMLTable : IEquatable<SMLTable>
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, other))
+		if (ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return Enumerable.SequenceEqual(this.Values, other.Values);
+		return Enumerable.SequenceEqual(Values, other.Values);
 	}
 
 	public override int GetHashCode()

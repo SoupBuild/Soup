@@ -12,7 +12,7 @@ SET ConfigHash=Oltq7cGwk0Rbgy1I-3mCMDDE5yM
 
 SET PKG_OWNER=mwasplund
 
-SET SOUP_VERSION=0.38.1
+SET SOUP_VERSION=0.39.1
 SET COPY_VERSION=1.1.0
 SET MKDIR_VERSION=1.1.0
 SET SOUP_WREN_VERSION=0.4.1
@@ -30,10 +30,10 @@ robocopy %OutDir%\Cpp\Local\mkdir\%MKDIR_VERSION%\%ConfigHash%\ %RunDir%\Soup\Bu
 robocopy %GlobalPackagesDir%\Wren\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy %GlobalOutDir%\Wren\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\msbuild\bin\Soup.Build.PackageManager\Release\net8.0\win-x64\publish\ %RunDir%\Soup\PackageManager\ /MIR /NJH /NJS /NDL > NUL
+robocopy %OutDir%\bin\Soup.Build.PackageManager\Release\net8.0\win-x64\publish\ %RunDir%\Soup\PackageManager\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\msbuild\bin\SoupView\Release\net8.0\win-x64\publish\ %RunDir%\Soup\View\ /MIR /NJH /NJS /NDL > NUL
+robocopy %OutDir%\bin\SoupView\Release\net8.0\win-x64\publish\ %RunDir%\Soup\View\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\msbuild\bin\Swhere\Release\net8.0\win-x64\publish\ %RunDir%\ swhere.exe /NJH /NJS /NDL > NUL
+robocopy %OutDir%\bin\Swhere\Release\net8.0\win-x64\publish\ %RunDir%\ swhere.exe /NJH /NJS /NDL > NUL
 
 %RunDir%\Soup.cmd %*

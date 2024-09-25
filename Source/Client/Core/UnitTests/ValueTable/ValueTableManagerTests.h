@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile/.soup/ValueTable.bin");
+			auto directory = Path("./TestFiles/NoFile/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -29,7 +29,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/NoFile/.soup/ValueTable.bin",
+					"TryOpenReadBinary: ./TestFiles/NoFile/.soup/ValueTable.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -54,10 +54,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageValueTable/.soup/ValueTable.bin"),
+				Path("./TestFiles/GarbageValueTable/.soup/ValueTable.bin"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageValueTable/.soup/ValueTable.bin");
+			auto directory = Path("./TestFiles/GarbageValueTable/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -66,8 +66,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/GarbageValueTable/.soup/ValueTable.bin",
-					"OpenReadBinary: ./TestFiles/GarbageValueTable/.soup/ValueTable.bin",
+					"TryOpenReadBinary: ./TestFiles/GarbageValueTable/.soup/ValueTable.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -100,10 +99,10 @@ namespace Soup::Core::UnitTests
 				0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleValueTable/.soup/ValueTable.bin"),
+				Path("./TestFiles/SimpleValueTable/.soup/ValueTable.bin"),
 				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto directory = Path("TestFiles/SimpleValueTable/.soup/ValueTable.bin");
+			auto directory = Path("./TestFiles/SimpleValueTable/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -121,8 +120,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleValueTable/.soup/ValueTable.bin",
-					"OpenReadBinary: ./TestFiles/SimpleValueTable/.soup/ValueTable.bin",
+					"TryOpenReadBinary: ./TestFiles/SimpleValueTable/.soup/ValueTable.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -145,7 +143,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto valueTableFile = Path("TestFiles/.soup/ValueTable.bin");
+			auto valueTableFile = Path("./TestFiles/.soup/ValueTable.bin");
 			auto valueTable = ValueTable(
 			{
 				{ "TestValue", Value(false) },
@@ -155,8 +153,6 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/.soup/",
-					"CreateDirectory: ./TestFiles/.soup/",
 					"OpenWriteBinary: ./TestFiles/.soup/ValueTable.bin",
 				}),
 				fileSystem->GetRequests(),
@@ -164,9 +160,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify expected logs
 			Assert::AreEqual(
-				std::vector<std::string>({
-					"INFO: Create Directory: ./TestFiles/.soup/",
-				}),
+				std::vector<std::string>({}),
 				testListener->GetMessages(),
 				"Verify messages match expected.");
 

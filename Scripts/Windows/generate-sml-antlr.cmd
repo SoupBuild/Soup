@@ -2,10 +2,10 @@
 SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
-SET RootDir=%ScriptsDir%..\..\
+SET RootDir=%ScriptsDir%..\..
 SET GrammarSourceDir=%RootDir%\Source\Grammar
 SET CSharpSourceDir=%RootDir%\Source\GenerateSharp\Utilities\SML\Grammar
-SET JAVA="C:\Program Files\Microsoft\jdk-11.0.12.7-hotspot\bin\java.exe"
+SET JAVA="C:\Program Files\Microsoft\jdk-11.0.23.9-hotspot\bin\java.exe"
 SET ANLTR=%JAVA% -jar %UserProfile%\Desktop\antlr-4.11.1-complete.jar
 
 pushd %GrammarSourceDir%

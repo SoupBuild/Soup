@@ -3,6 +3,9 @@
 // </copyright>
 
 using Opal;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Soup.Build.Utilities;
 
@@ -73,9 +76,15 @@ public class Recipe
 	/// </summary>
 	public SMLValue LanguageValue => GetValue(Document, Property_Language);
 
+	[SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Check specific types")]
 	public LanguageReference Language
 	{
-		get => LanguageReference.Parse(LanguageValue.AsString().Value);
+		get => LanguageValue.Type switch
+		{
+			SMLValueType.String => LanguageReference.Parse(LanguageValue.AsString().Value),
+			SMLValueType.LanguageReference => LanguageValue.AsLanguageReference().Value,
+			_ => throw new InvalidOperationException("Language must be string or LanguageReference"),
+		};
 		set => EnsureHasValue(Document, Property_Language, value.ToString());
 	}
 
@@ -83,17 +92,17 @@ public class Recipe
 	/// Gets or sets the package version
 	/// </summary>
 	public bool HasVersion => HasValue(Document, Property_Version);
+	public SMLValue VersionValue => GetValue(Document, Property_Version);
 
+	[SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Check specific types")]
 	public SemanticVersion Version
 	{
-		get
+		get => VersionValue.Type switch
 		{
-			if (!HasVersion)
-				throw new InvalidOperationException("No version.");
-
-			return SemanticVersion.Parse(
-				GetValue(Document, Property_Version).AsString().Value);
-		}
+			SMLValueType.String => SemanticVersion.Parse(VersionValue.AsString().Value),
+			SMLValueType.Version => VersionValue.AsVersion().Value,
+			_ => throw new InvalidOperationException("Version must be string or Version"),
+		};
 		set => EnsureHasValue(Document, Property_Version, value.ToString());
 	}
 

@@ -5,6 +5,10 @@
 using GraphShape;
 using ReactiveUI;
 using Soup.View.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.View.ViewModels;
@@ -27,9 +31,9 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 		get => selectedNode;
 		set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref selectedNode, value))
 			{
-				SelectedProject = selectedNode is not null ? this.projectDetailsLookup[selectedNode.Id] : null;
+				SelectedProject = selectedNode is not null ? projectDetailsLookup[selectedNode.Id] : null;
 			}
 		}
 	}
@@ -48,7 +52,7 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 	{
 		var activeGraph = await Task.Run(() =>
 		{
-			this.projectDetailsLookup.Clear();
+			projectDetailsLookup.Clear();
 
 			var workingDirectory = recipeFilePath.GetParent();
 			var packageProvider = SoupTools.LoadBuildGraph(workingDirectory);
@@ -66,7 +70,7 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 	private List<GraphNodeViewModel> BuildGraph(
 		PackageProvider packageProvider)
 	{
-		this.projectDetailsLookup.Clear();
+		projectDetailsLookup.Clear();
 
 		var currentGraphSet = GetCurrentGraphSet(packageProvider);
 
@@ -129,11 +133,12 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 
 			result.Add(node);
 
-			this.projectDetailsLookup.Add(
+			projectDetailsLookup.Add(
 				(uint)package.Id,
 				new ProjectDetailsViewModel(
 					package.Name,
-					packageFolder));
+					packageFolder,
+					package.Owner));
 		}
 
 		return result;

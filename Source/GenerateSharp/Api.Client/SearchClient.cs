@@ -2,10 +2,14 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Api.Client;
 
@@ -14,13 +18,13 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class SearchClient
 {
-	private readonly HttpClient httpClient;
-	private readonly string bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string _bearerToken;
 
 	public SearchClient(HttpClient httpClient, string bearerToken)
 	{
-		this.httpClient = httpClient;
-		this.bearerToken = bearerToken;
+		_httpClient = httpClient;
+		_bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -80,7 +84,7 @@ public class SearchClient
 
 		urlBuilder.Length--;
 
-		var client = this.httpClient;
+		var client = _httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -141,9 +145,9 @@ public class SearchClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(this.bearerToken))
+		if (!string.IsNullOrEmpty(_bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
 		}
 
 		return Task.FromResult(request);

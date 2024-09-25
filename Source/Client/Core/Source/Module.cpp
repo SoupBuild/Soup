@@ -34,6 +34,7 @@ module;
 #include <Windows.h>
 #undef max
 #undef min
+#undef CreateDirectory
 #undef CreateProcess
 #undef GetCurrentTime
 #undef GetClassName
@@ -102,6 +103,7 @@ using namespace Opal;
 
 #define CLIENT_CORE_IMPLEMENTATION
 
+#include "Utils/SequenceMap.h"
 #include "Build/RecipeBuildLocationManager.h"
 #include "Build/BuildEngine.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"

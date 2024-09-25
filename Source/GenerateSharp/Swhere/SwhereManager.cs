@@ -5,18 +5,20 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
-using System.Runtime.InteropServices;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
 
 public static class SwhereManager
 {
-	public static async Task DiscoverAsync(bool includePrerelease)
+	public static async Task DiscoverAsync(OSPlatform platform, bool includePrerelease)
 	{
 		// Load up the Local User Config
 		var localUserConfigPath = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-			new Path(".soup/LocalUserConfig.sml");
+			new Path("./.soup/LocalUserConfig.sml");
 		var (loadConfigResult, userConfig) =
 			await LocalUserConfigExtensions.TryLoadLocalUserConfigFromFileAsync(localUserConfigPath);
 		if (!loadConfigResult)
@@ -24,24 +26,27 @@ public static class SwhereManager
 			Log.Info("No existing local user config.");
 		}
 
-		await DiscoverSharedPlatformAsync(userConfig);
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		await DiscoverSharedPlatformAsync(platform, userConfig);
+		switch (platform)
 		{
-			await DiscoverWindowsPlatformAsync(includePrerelease, userConfig);
-		}
-		else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-		{
-			await DiscoverLinuxPlatformAsync(userConfig);
+			case OSPlatform.Windows:
+				await DiscoverWindowsPlatformAsync(includePrerelease, userConfig);
+				break;
+			case OSPlatform.Linux:
+				await DiscoverLinuxPlatformAsync(platform, userConfig);
+				break;
+			default:
+				throw new InvalidOperationException("Unknown platform");
 		}
 
 		// Save the result
 		await LocalUserConfigExtensions.SaveToFileAsync(localUserConfigPath, userConfig);
 	}
 
-	private static async Task DiscoverSharedPlatformAsync(LocalUserConfig userConfig)
+	private static async Task DiscoverSharedPlatformAsync(OSPlatform platform, LocalUserConfig userConfig)
 	{
 		var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories) =
-			await DotNetSDKUtilities.FindDotNetAsync();
+			await DotNetSDKUtilities.FindDotNetAsync(platform);
 		var dotnetSDK = userConfig.EnsureSDK("DotNet");
 		dotnetSDK.SourceDirectories = sourceDirectories;
 		dotnetSDK.SetProperties(
@@ -88,8 +93,8 @@ public static class SwhereManager
 		msvcSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-					{ "Version", msvcVersion },
-					{ "VCToolsRoot", msvcInstallPath.ToString() },
+				{ "Version", msvcVersion },
+				{ "VCToolsRoot", msvcInstallPath.ToString() },
 			});
 
 		var (windowsSDKVersion, windowsSDKInstallPath) = WindowsSDKUtilities.FindWindows10Kit();
@@ -101,8 +106,8 @@ public static class SwhereManager
 		windowsSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-					{ "Version", windowsSDKVersion },
-					{ "RootPath", windowsSDKInstallPath.ToString() },
+				{ "Version", windowsSDKVersion },
+				{ "RootPath", windowsSDKInstallPath.ToString() },
 			});
 
 		var netFXToolsPath = WindowsSDKUtilities.FindNetFXTools();
@@ -114,17 +119,17 @@ public static class SwhereManager
 		netFXToolsSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-					{ "ToolsRoot", netFXToolsPath.ToString() },
+				{ "ToolsRoot", netFXToolsPath.ToString() },
 			});
 
 		var (hasNuget, nugetPackagesPath, nugetPackages) = NugetSDKUtilities.FindNugetPackages();
 		if (hasNuget)
 		{
 			var nugetSDK = userConfig.EnsureSDK("Nuget");
-			nugetSDK.SourceDirectories.AddRange(
+			nugetSDK.SourceDirectories =
 				[
 					nugetPackagesPath,
-				]);
+				];
 
 			nugetSDK.SetProperties(
 				new Dictionary<string, string>()
@@ -173,17 +178,17 @@ public static class SwhereManager
 		}
 	}
 
-	private static async Task DiscoverLinuxPlatformAsync(LocalUserConfig userConfig)
+	private static async Task DiscoverLinuxPlatformAsync(OSPlatform platform, LocalUserConfig userConfig)
 	{
-		await DiscoverGCCAsync(userConfig);
-		await DiscoverClangAsync(userConfig);
+		await DiscoverGCCAsync(platform, userConfig);
+		await DiscoverClangAsync(platform, userConfig);
 	}
 
-	private static async Task DiscoverGCCAsync(LocalUserConfig userConfig)
+	private static async Task DiscoverGCCAsync(OSPlatform platform, LocalUserConfig userConfig)
 	{
 		// Find the GCC SDKs
-		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync("gcc");
-		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync("g++");
+		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "gcc");
+		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "g++");
 
 		var gccSDK = userConfig.EnsureSDK("GCC");
 		gccSDK.SourceDirectories = [];
@@ -195,12 +200,12 @@ public static class SwhereManager
 			});
 	}
 
-	private static async Task DiscoverClangAsync(LocalUserConfig userConfig)
+	private static async Task DiscoverClangAsync(OSPlatform platform, LocalUserConfig userConfig)
 	{
 		// Find the GCC SDKs
-		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync("clang");
-		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync("clang++");
-		var archiverPath = await WhereIsUtilities.FindExecutableAsync("ar");
+		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "clang");
+		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "clang++");
+		var archiverPath = await WhereIsUtilities.FindExecutableAsync(platform, "ar");
 
 		var clangSDK = userConfig.EnsureSDK("Clang");
 		clangSDK.SourceDirectories = [];

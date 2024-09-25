@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -25,24 +26,24 @@ public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 
 	public Value this[string key]
 	{
-		get => this._impl[key];
-		set => this._impl[key] = value;
+		get => _impl[key];
+		set => _impl[key] = value;
 	}
 
-	public IEnumerable<string> Keys => this._impl.Keys;
+	public IEnumerable<string> Keys => _impl.Keys;
 
-	public IEnumerable<Value> Values => this._impl.Values;
+	public IEnumerable<Value> Values => _impl.Values;
 
-	public int Count => this._impl.Count;
+	public int Count => _impl.Count;
 
 	public void Add(string key, Value value)
 	{
-		this._impl.Add(key, value);
+		_impl.Add(key, value);
 	}
 
 	public bool ContainsKey(string key)
 	{
-		return this._impl.ContainsKey(key);
+		return _impl.ContainsKey(key);
 	}
 
 	public ValueTable Clone()
@@ -52,24 +53,24 @@ public class ValueTable : IEnumerable, IEnumerable<KeyValuePair<string, Value>>
 
 	public IEnumerator<KeyValuePair<string, Value>> GetEnumerator()
 	{
-		return this._impl.GetEnumerator();
+		return _impl.GetEnumerator();
 	}
 
 	public bool Remove(string key)
 	{
-		return this._impl.Remove(key);
+		return _impl.Remove(key);
 	}
 
 	public bool TryGetValue(string key, [MaybeNullWhen(false)] out Value value)
 	{
-		var result = this._impl.TryGetValue(key, out var valueImpl);
+		var result = _impl.TryGetValue(key, out var valueImpl);
 		value = valueImpl;
 		return result;
 	}
 
 	IEnumerator IEnumerable.GetEnumerator()
 	{
-		return this._impl.GetEnumerator();
+		return _impl.GetEnumerator();
 	}
 
 	public override string ToString()

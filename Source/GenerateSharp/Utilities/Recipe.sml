@@ -1,6 +1,6 @@
 Name: 'Soup.Build.Utilities'
-Language: 'C#|0'
-Version: '1.0.0'
+Language: (C#@0)
+Version: 1.0.0
 Source: [
 	'LocalUserConfig/LocalUserConfig.cs'
 	'LocalUserConfig/LocalUserConfigExtensions.cs'

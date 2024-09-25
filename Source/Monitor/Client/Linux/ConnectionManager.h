@@ -29,9 +29,9 @@ namespace Monitor::Linux
 			close(pipeHandle);
 		}
 
-		virtual void UnsafeWriteMessage(const Message& message)
+		virtual bool TryUnsafeWriteMessage(const Message& message)
 		{
-			DebugTrace("ConnectionManager::UnsafeWriteMessage");
+			DebugTrace("ConnectionManager::TryUnsafeWriteMessage");
 
 			// Write the message
 			size_t countBytesToWrite = message.ContentSize +
@@ -44,14 +44,16 @@ namespace Monitor::Linux
 			if (countBytesWritten == -1)
 			{
 				DebugError("Failed write event logger");
-				exit(-1234);
+				return false;
 			}
 
 			if (countBytesWritten != countBytesToWrite)
 			{
 				DebugError("Did not write the expected number of bytes");
-				exit(-1234);
+				return false;
 			}
+
+			return true;
 		}
 
 	private:

@@ -81,6 +81,15 @@ namespace Soup::Core
 				case ValueType::Boolean:
 					wrenSetSlotBool(vm, slot, value.AsBoolean());
 					break;
+				case ValueType::Version:
+					wrenSetSlotString(vm, slot, value.AsVersion().ToString().c_str());
+					break;
+				case ValueType::PackageReference:
+					wrenSetSlotString(vm, slot, value.AsPackageReference().ToString().c_str());
+					break;
+				case ValueType::LanguageReference:
+					wrenSetSlotString(vm, slot, value.AsLanguageReference().ToString().c_str());
+					break;
 				default:
 					throw std::runtime_error("Unkown ValueType.");
 			}

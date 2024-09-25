@@ -5,6 +5,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Soup.Build.Utilities;
+using System;
 using System.Collections.ObjectModel;
 using ValueType = Soup.Build.Utilities.ValueType;
 
@@ -12,14 +13,14 @@ namespace Soup.View.ViewModels;
 
 public class TaskDetailsViewModel : ViewModelBase
 {
-	private readonly ObservableCollection<ValueTableItemViewModel> properties = [];
+	private readonly ObservableCollection<ValueTableItemViewModel> _properties = [];
 
 	public TaskDetailsViewModel(ValueTable taskInfo)
 	{
-		properties.Clear();
-		BuildValueTable(taskInfo, properties);
+		_properties.Clear();
+		BuildValueTable(taskInfo, _properties);
 
-		Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(properties)
+		Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(_properties)
 		{
 			Columns =
 				{
@@ -70,8 +71,18 @@ public class TaskDetailsViewModel : ViewModelBase
 					type = ValueTableItemType.Table;
 					BuildValueTable(value.Value.AsTable(), children);
 					break;
-				case ValueType.Empty:
-					throw new NotImplementedException();
+				case ValueType.Version:
+					title = $"{value.Key}: {value.Value}";
+					type = ValueTableItemType.Value;
+					break;
+				case ValueType.PackageReference:
+					title = $"{value.Key}: {value.Value}";
+					type = ValueTableItemType.Value;
+					break;
+				case ValueType.LanguageReference:
+					title = $"{value.Key}: {value.Value}";
+					type = ValueTableItemType.Value;
+					break;
 				default:
 					throw new InvalidOperationException("Unknown Value type");
 			}
@@ -124,8 +135,18 @@ public class TaskDetailsViewModel : ViewModelBase
 					type = ValueTableItemType.Table;
 					BuildValueTable(value.AsTable(), children);
 					break;
-				case ValueType.Empty:
-					throw new NotImplementedException();
+				case ValueType.Version:
+					title = $"{value}";
+					type = ValueTableItemType.Value;
+					break;
+				case ValueType.PackageReference:
+					title = $"{value}";
+					type = ValueTableItemType.Value;
+					break;
+				case ValueType.LanguageReference:
+					title = $"{value}";
+					type = ValueTableItemType.Value;
+					break;
 				default:
 					throw new InvalidOperationException("Unknown Value type");
 			}

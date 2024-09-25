@@ -21,14 +21,14 @@ namespace Soup::Core::Generate
 		void Run(const Path& soupTargetDirectory)
 		{
 			// Run all build operations in the correct order with incremental build checks
-			Log::Diag("Build generate start: " + soupTargetDirectory.ToString());
+			Log::Diag("Build generate start: {}", soupTargetDirectory.ToString());
 
 			// Load the input file
 			auto inputFile = soupTargetDirectory + BuildConstants::GenerateInputFileName();
 			auto inputTable = ValueTable();
 			if (!ValueTableManager::TryLoadState(inputFile, inputTable))
 			{
-				Log::Error("Failed to load the input file: " + inputFile.ToString());
+				Log::Error("Failed to load the input file: {}", inputFile.ToString());
 				throw std::runtime_error("Failed to load input file.");
 			}
 
@@ -45,7 +45,7 @@ namespace Soup::Core::Generate
 			Recipe recipe;
 			if (!RecipeExtensions::TryLoadRecipeFromFile(recipeFile, recipe))
 			{
-				Log::Error("Failed to load the recipe: " + recipeFile.ToString());
+				Log::Error("Failed to load the recipe: {}", recipeFile.ToString());
 				throw std::runtime_error("Failed to load recipe.");
 			}
 
@@ -128,10 +128,10 @@ namespace Soup::Core::Generate
 			// Run all build extension register callbacks
 			for (auto buildExtension : buildExtensionLibraries)
 			{
-				Log::Info("Loading Extension Script: " + buildExtension.first.ToString());
+				Log::Info("Loading Extension Script: {}", buildExtension.first.ToString());
 				if (buildExtension.second.has_value())
 				{
-					Log::Info("Bundles: " + buildExtension.second.value().ToString());
+					Log::Info("Bundles: {}", buildExtension.second.value().ToString());
 				}
 
 				// Create a temporary Wren Host to discover all build extensions
@@ -160,7 +160,7 @@ namespace Soup::Core::Generate
 
 			// Save the runtime information so Soup View can easily visualize runtime
 			auto generateInfoStateFile = soupTargetDirectory + BuildConstants::GenerateInfoFileName();
-			Log::Info("Save Generate Info State: " + generateInfoStateFile.ToString());
+			Log::Info("Save Generate Info State: {}", generateInfoStateFile.ToString());
 			ValueTableManager::SaveState(generateInfoStateFile, generateInfoTable);
 
 			// Resolve macros before saving evaluate graph
@@ -203,12 +203,12 @@ namespace Soup::Core::Generate
 				for (auto& sdk : sdks)
 				{
 					auto sdkName = sdk.GetName();
-					Log::Info("Found SDK: " + sdkName);
+					Log::Info("Found SDK: {}", sdkName);
 					if (sdk.HasSourceDirectories())
 					{
 						for (auto& sourceDirectory : sdk.GetSourceDirectories())
 						{
-							Log::Info("  Read Access: " + sourceDirectory.ToString());
+							Log::Info("  Read Access: {}", sourceDirectory.ToString());
 							sdkReadAccess.push_back(sourceDirectory);
 						}
 					}
@@ -261,7 +261,7 @@ namespace Soup::Core::Generate
 						auto sharedStateTable = ValueTable();
 						if (!ValueTableManager::TryLoadState(sharedStateFile, sharedStateTable))
 						{
-							Log::Error("Failed to load the shared state file: " + sharedStateFile.ToString());
+							Log::Error("Failed to load the shared state file: {}", sharedStateFile.ToString());
 							throw std::runtime_error("Failed to load shared state file.");
 						}
 
@@ -317,7 +317,7 @@ namespace Soup::Core::Generate
 			{
 				for (auto& [dependencyKey, dependencyValue] : buildDependenciesValue->second.AsTable())
 				{
-					Log::Info("Check Build Dependency: " + dependencyKey);
+					Log::Info("Check Build Dependency: {}", dependencyKey);
 					if (dependencyValue.IsTable())
 					{
 						auto& dependency = dependencyValue.AsTable();

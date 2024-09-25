@@ -7,9 +7,9 @@ This is a windows application that demonstrates creating a GUI windows applicati
 The Recipe file that defines the sample application.
 ```sml
 Name: 'Samples.C.WindowsApplication'
-Language: 'C|0'
+Language: (C@0)
 Type: 'Windows'
-Version: '1.0.0'
+Version: 1.0.0
 Resources: 'WindowsProject.rc'
 Source: [
   'WindowsProject.c'
@@ -28,13 +28,13 @@ Closures: {
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.C': { Version: '0.3.0' }
+      'mwasplund|Soup.C': { Version: 0.4.0 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

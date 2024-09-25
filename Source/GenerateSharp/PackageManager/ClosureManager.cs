@@ -5,8 +5,13 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager;
@@ -123,8 +128,8 @@ public class ClosureManager : IClosureManager
 					{
 						var projectTable = project.Value.AsTable();
 						var projectName = PackageName.Parse(projectUniqueName);
-						var projectVersion = projectTable.Values[PackageLock.Property_Version].Value.AsString().Value;
-						if (SemanticVersion.TryParse(projectVersion, out var version))
+						var projectVersionValue = projectTable.Values[PackageLock.Property_Version];
+						if (TryGetAsVersion(projectVersionValue.Value, out var version))
 						{
 							// Check if the package version already exists
 							if (projectName.HasOwner && projectName.Owner == BuiltInOwner &&
@@ -135,13 +140,11 @@ public class ClosureManager : IClosureManager
 							else
 							{
 								var languageSafeName = GetLanguageSafeName(languageName);
-								var userFolder = projectName.Owner is not null ? new Path(projectName.Owner) : new Path("Local");
+								var userFolder = projectName.Owner is not null ? new Path($"./{projectName.Owner}/") : new Path("./Local/");
 								var packageLanguageNameVersionPath =
-									new Path(languageSafeName) +
+									new Path($"./{languageSafeName}/") +
 									userFolder +
-									new Path(projectName.Name) +
-									new Path(version.ToString()) +
-									new Path();
+									new Path($"./{projectName.Name}/{version}/");
 								var packageContentDirectory = packageStoreDirectory + packageLanguageNameVersionPath;
 
 								// Place the lock in the lock store
@@ -167,7 +170,7 @@ public class ClosureManager : IClosureManager
 						else
 						{
 							// Process the local dependency and place the lock in the root
-							var referencePath = new Path(projectVersion);
+							var referencePath = new Path(projectVersionValue.Value.AsString().Value);
 							var dependencyPath = workingDirectory + referencePath;
 							var dependencyLockPath =
 								dependencyPath +
@@ -464,26 +467,13 @@ public class ClosureManager : IClosureManager
 		{
 			foreach (var (packageName, (package, buildClosure, toolClosure)) in languageClosure.OrderBy(value => value.Key))
 			{
-				var value = string.Empty;
-				var ownerName = string.Empty;
-				if (package.IsLocal)
-				{
-					value = package.Path.GetRelativeTo(workingDirectory).ToString();
-				}
-				else
-				{
-					if (package.Version == null)
-						throw new InvalidOperationException("Package lock closure must have version");
-					value = package.Version.ToString();
-					ownerName = package.Owner;
-				}
-
-				Log.Diag($"{RootClosureName}:{languageName} {packageName} -> {value}");
+				Log.Diag($"{RootClosureName}:{languageName} {packageName} -> {package}");
 				packageLock.AddProject(
+					workingDirectory,
 					RootClosureName,
 					languageName,
 					packageName,
-					value,
+					package,
 					buildClosure,
 					toolClosure);
 			}
@@ -496,26 +486,13 @@ public class ClosureManager : IClosureManager
 			{
 				foreach (var (packageName, package) in languageClosure)
 				{
-					var value = string.Empty;
-					var ownerName = string.Empty;
-					if (package.IsLocal)
-					{
-						value = package.Path.GetRelativeTo(workingDirectory).ToString();
-					}
-					else
-					{
-						if (package.Version == null)
-							throw new InvalidOperationException("Package lock closure must have version");
-						value = package.Version.ToString();
-						ownerName = package.Owner;
-					}
-
-					Log.Diag($"{buildClosure.Key}:{languageName} {packageName} -> {value}");
+					Log.Diag($"{buildClosure.Key}:{languageName} {packageName} -> {package}");
 					packageLock.AddProject(
+						workingDirectory,
 						buildClosure.Key,
 						languageName,
 						packageName,
-						value,
+						package,
 						null,
 						null);
 				}
@@ -529,24 +506,13 @@ public class ClosureManager : IClosureManager
 			{
 				foreach (var (packageName, package) in languageClosure)
 				{
-					var value = string.Empty;
-					if (package.IsLocal)
-					{
-						value = package.Path.GetRelativeTo(workingDirectory).ToString();
-					}
-					else
-					{
-						if (package.Version == null)
-							throw new InvalidOperationException("Package lock closure must have version");
-						value = package.Version.ToString();
-					}
-
-					Log.Diag($"{toolClosure.Key}:{languageName} {packageName} -> {value}");
+					Log.Diag($"{toolClosure.Key}:{languageName} {packageName} -> {package}");
 					packageLock.AddProject(
+						workingDirectory,
 						toolClosure.Key,
 						languageName,
 						packageName,
-						value,
+						package,
 						null,
 						null);
 				}
@@ -559,7 +525,7 @@ public class ClosureManager : IClosureManager
 	/// <summary>
 	/// Recursively discover all dependencies
 	/// </summary>
-	private async Task<int> EnsureDiscoverDependenciesAsync(
+	private static async Task<int> EnsureDiscoverDependenciesAsync(
 		Path recipeDirectory,
 		string? owner,
 		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
@@ -613,7 +579,7 @@ public class ClosureManager : IClosureManager
 	/// <summary>
 	/// Recursively discover all local dependencies, assume that the closure has been updated correctly for current recipe
 	/// </summary>
-	private async Task<IDictionary<string, ICollection<int>>> DiscoverDependenciesAsync(
+	private static async Task<IDictionary<string, ICollection<int>>> DiscoverDependenciesAsync(
 		Path recipeDirectory,
 		Recipe recipe,
 		IDictionary<int, (string Language, string? Owner, string Name, Path Path)> localPackageReverseLookup,
@@ -657,7 +623,7 @@ public class ClosureManager : IClosureManager
 	/// <summary>
 	/// Recursively restore all dependencies
 	/// </summary>
-	private async Task<IList<int>> DiscoverTypeDependenciesAsync(
+	private static async Task<IList<int>> DiscoverTypeDependenciesAsync(
 		Path recipeDirectory,
 		Recipe recipe,
 		string dependencyType,
@@ -749,8 +715,8 @@ public class ClosureManager : IClosureManager
 				{
 					var projectTable = project.Value.AsTable();
 					var projectName = PackageName.Parse(projectUniqueName);
-					var projectVersion = projectTable.Values[PackageLock.Property_Version].Value.AsString().Value;
-					if (SemanticVersion.TryParse(projectVersion, out var version))
+					var projectVersionValue = projectTable.Values[PackageLock.Property_Version];
+					if (TryGetAsVersion(projectVersionValue.Value, out var version))
 					{
 						await EnsurePackageDownloadedAsync(
 							isRuntime,
@@ -763,10 +729,42 @@ public class ClosureManager : IClosureManager
 					}
 					else
 					{
-						Log.Info($"Skip Package: {projectName} -> {projectVersion}");
+						Log.Info($"Skip Package: {projectName} -> {projectVersionValue.Value.AsString().Value}");
 					}
 				}
 			}
+		}
+	}
+
+	private static bool TryGetAsVersion(SMLValue value, out SemanticVersion version)
+	{
+		switch (value.Type)
+		{
+			case SMLValueType.String:
+				if (SemanticVersion.TryParse(value.AsString().Value, out var parseVersion))
+				{
+					version = parseVersion;
+					return true;
+				}
+				else
+				{
+					version = new SemanticVersion();
+					return false;
+				}
+			case SMLValueType.Version:
+				version = value.AsVersion().Value;
+				return true;
+			case SMLValueType.Empty:
+			case SMLValueType.Boolean:
+			case SMLValueType.Integer:
+			case SMLValueType.Float:
+			case SMLValueType.Table:
+			case SMLValueType.Array:
+			case SMLValueType.PackageReference:
+			case SMLValueType.LanguageReference:
+			default:
+				version = new SemanticVersion();
+				return false;
 		}
 	}
 
@@ -785,9 +783,9 @@ public class ClosureManager : IClosureManager
 		Log.HighPriority($"Install Package: {languageName} {ownerName} {packageName}@{packageVersion}");
 
 		var languageSafeName = GetLanguageSafeName(languageName);
-		var languageRootFolder = packageStore + new Path(languageSafeName);
-		var packageRootFolder = languageRootFolder + new Path(ownerName) + new Path(packageName);
-		var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path();
+		var languageRootFolder = packageStore + new Path($"./{languageSafeName}/");
+		var packageRootFolder = languageRootFolder + new Path($"./{ownerName}/{packageName}/");
+		var packageVersionFolder = packageRootFolder + new Path($"./{packageVersion}/");
 
 		// Check if the package version already exists
 		if (!isRuntime &&
@@ -803,7 +801,7 @@ public class ClosureManager : IClosureManager
 		{
 			// Download the archive
 			Log.HighPriority("Downloading package");
-			var archivePath = stagingDirectory + new Path(packageName + ".zip");
+			var archivePath = stagingDirectory + new Path($"./{packageName}.zip");
 
 			var client = new Api.Client.PackageVersionsClient(_httpClient, null)
 			{
@@ -833,7 +831,7 @@ public class ClosureManager : IClosureManager
 			}
 
 			// Create the package folder to extract to
-			var stagingVersionFolder = stagingDirectory + new Path($"{languageName}_{packageName}_{packageVersion}/");
+			var stagingVersionFolder = stagingDirectory + new Path($"./{languageName}_{packageName}_{packageVersion}/");
 			LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
 
 			// Unpack the contents of the archive

@@ -25,15 +25,13 @@ namespace Soup::Core
 			const Path& valueTableFile,
 			ValueTable& result)
 		{
-			// Verify the requested file exists
-			if (!System::IFileSystem::Current().Exists(valueTableFile))
+			// Open the file to read from
+			std::shared_ptr<System::IInputFile> file;
+			if (!System::IFileSystem::Current().TryOpenRead(valueTableFile, true, file))
 			{
 				Log::Info("Value Table file does not exist");
 				return false;
 			}
-
-			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(valueTableFile, true);
 
 			// Read the contents of the build state file
 			try

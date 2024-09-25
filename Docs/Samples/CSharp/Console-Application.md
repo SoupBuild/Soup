@@ -7,9 +7,9 @@ This is a console application with the minimal amount of code to get up and runn
 The Recipe file that defines the static library "Samples.CSharp.ConsoleApplication".
 ```sml
 Name: 'Samples.CSharp.ConsoleApplication'
-Language: 'C#|0'
+Language: (C#@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
   'Program.cs'
 ]
@@ -27,13 +27,13 @@ Closures: {
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.CSharp': { Version: '0.13.0' }
+      'mwasplund|Soup.CSharp': { Version: 0.13.0 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

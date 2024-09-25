@@ -55,15 +55,11 @@ namespace Soup::Core::Generate
 		}
 
 		virtual WrenForeignMethodFn TryBindForeignMethod(
-			std::string_view moduleName,
-			std::string_view className,
-			bool isStatic,
-			std::string_view signature) override final
+			std::string_view /*moduleName*/,
+			std::string_view /*className*/,
+			bool /*isStatic*/,
+			std::string_view /*signature*/) override final
 		{
-			(moduleName);
-			(className);
-			(isStatic);
-			(signature);
 			return nullptr;
 		}
 

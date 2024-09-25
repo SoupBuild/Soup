@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using System;
+
 namespace Soup.Build.Utilities;
 
 /// <summary>
@@ -64,7 +67,9 @@ public sealed class ValueTableReader
 			ValueType.Integer => new Value(reader.ReadInt64()),
 			ValueType.Float => new Value(reader.ReadDouble()),
 			ValueType.Boolean => new Value(ReadBoolean(reader)),
-			ValueType.Empty => throw new NotImplementedException(),
+			ValueType.Version => new Value(ReadVersion(reader)),
+			ValueType.PackageReference => new Value(ReadPackageReference(reader)),
+			ValueType.LanguageReference => new Value(ReadLanguageReference(reader)),
 			_ => throw new InvalidOperationException("Unknown ValueType"),
 		};
 	}
@@ -118,5 +123,23 @@ public sealed class ValueTableReader
 		var result = reader.ReadChars((int)size);
 
 		return new string(result);
+	}
+
+	private static SemanticVersion ReadVersion(System.IO.BinaryReader reader)
+	{
+		var result = ReadString(reader);
+		return SemanticVersion.Parse(result);
+	}
+
+	private static LanguageReference ReadLanguageReference(System.IO.BinaryReader reader)
+	{
+		var result = ReadString(reader);
+		return LanguageReference.Parse(result);
+	}
+
+	private static PackageReference ReadPackageReference(System.IO.BinaryReader reader)
+	{
+		var result = ReadString(reader);
+		return PackageReference.Parse(result);
 	}
 }

@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+
 namespace Soup.Build.Utilities;
 
 public class SMLStringValue : IEquatable<SMLStringValue>
@@ -44,7 +46,7 @@ public class SMLStringValue : IEquatable<SMLStringValue>
 
 	public override bool Equals(object? obj)
 	{
-		return this.Equals(obj as SMLStringValue);
+		return Equals(obj as SMLStringValue);
 	}
 
 	public bool Equals(SMLStringValue? other)
@@ -53,11 +55,11 @@ public class SMLStringValue : IEquatable<SMLStringValue>
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, other))
+		if (ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return this.Value == other.Value;
+		return Value == other.Value;
 	}
 
 	public override int GetHashCode()

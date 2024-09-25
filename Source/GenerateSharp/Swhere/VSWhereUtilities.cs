@@ -4,7 +4,9 @@
 
 using Opal;
 using Opal.System;
+using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
@@ -98,7 +100,7 @@ public static class VSWhereUtilities
 			throw new HandledException();
 		}
 
-		return new Path(path);
+		return Path.Parse($"{path}\\");
 	}
 
 	private static async Task<string> FindDefaultVCToolsVersionAsync(
@@ -106,7 +108,7 @@ public static class VSWhereUtilities
 	{
 		// Check the default tools version
 		var visualCompilerToolsDefaultVersionFile =
-			visualStudioInstallRoot + new Path("VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
+			visualStudioInstallRoot + new Path("./VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
 		if (!LifetimeManager.Get<IFileSystem>().Exists(visualCompilerToolsDefaultVersionFile))
 		{
 			Log.Error("VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());

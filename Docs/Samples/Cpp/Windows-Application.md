@@ -7,13 +7,10 @@ This is a windows application that demonstrates creating a GUI windows applicati
 The Recipe file that defines the sample application.
 ```
 Name: 'Samples.Cpp.WindowsApplication'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Windows'
-Version: '1.0.0'
+Version: 1.0.0
 Resources: 'WindowsProject.rc'
-Source: [
-	'WindowsProject.cpp'
-]
 ```
 
 ## PackageLock.sml
@@ -28,13 +25,13 @@ Closures: {
 	}
 	Build0: {
 		Wren: {
-			'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+			'mwasplund|Soup.Cpp': { Version: 0.13.2 }
 		}
 	}
 	Tool0: {
 		'C++': {
-			'mwasplund|copy': { Version: '1.1.0' }
-			'mwasplund|mkdir': { Version: '1.1.0' }
+			'mwasplund|copy': { Version: 1.1.0 }
+			'mwasplund|mkdir': { Version: 1.1.0 }
 		}
 	}
 }

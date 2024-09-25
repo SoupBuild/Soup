@@ -26,15 +26,13 @@ namespace Soup::Core
 			OperationGraph& result,
 			FileSystemState& fileSystemState)
 		{
-			// Verify the requested file exists
-			if (!System::IFileSystem::Current().Exists(operationGraphFile))
+			// Open the file to read from
+			std::shared_ptr<System::IInputFile> file;
+			if (!System::IFileSystem::Current().TryOpenRead(operationGraphFile, true, file))
 			{
 				Log::Info("Operation graph file does not exist");
 				return false;
 			}
-
-			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(operationGraphFile, true);
 
 			// Read the contents of the build state file
 			try

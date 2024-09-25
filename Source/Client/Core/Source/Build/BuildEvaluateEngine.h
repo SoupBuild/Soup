@@ -125,6 +125,7 @@ namespace Soup::Core
 	{
 	private:
 		bool _forceRebuild;
+		bool _disableMonitor;
 
 		// Shared Runtime State
 		FileSystemState& _fileSystemState;
@@ -136,8 +137,10 @@ namespace Soup::Core
 		/// </summary>
 		BuildEvaluateEngine(
 			bool forceRebuild,
+			bool disableMonitor,
 			FileSystemState& fileSystemState) :
 			_forceRebuild(forceRebuild),
+			_disableMonitor(disableMonitor),
 			_fileSystemState(fileSystemState),
 			_stateChecker(fileSystemState)
 		{
@@ -242,7 +245,7 @@ namespace Soup::Core
 			{
 				// Check if the executable has changed since the last run
 				bool executableOutOfDate = false;
-				if (operationInfo.Command.Executable != Path("writefile.exe"))
+				if (operationInfo.Command.Executable != Path("./writefile.exe"))
 				{
 					// Only check for "real" executables
 					auto executableFileId = _fileSystemState.ToFileId(
@@ -295,7 +298,7 @@ namespace Soup::Core
 				auto operationResult = OperationResult();
 
 				// Check for special in-process write operations
-				if (operationInfo.Command.Executable == Path("writefile.exe"))
+				if (operationInfo.Command.Executable == Path("./writefile.exe"))
 				{
 					ExecuteWriteFileOperation(
 						operationInfo,
@@ -343,7 +346,7 @@ namespace Soup::Core
 			}
 
 			auto fileName = Path(operationInfo.Command.Arguments[0]);
-			Log::Info("WritFile: " + fileName.ToString());
+			Log::Info("WritFile: {}", fileName.ToString());
 
 			auto filePath = fileName.HasRoot() ? fileName : operationInfo.Command.WorkingDirectory + fileName;
 			auto& content = operationInfo.Command.Arguments[1];
@@ -383,8 +386,14 @@ namespace Soup::Core
 			environment.emplace("TMP", temporaryDirectory.ToString());
 
 			// Allow access to the declared inputs/outputs
-			auto allowedReadAccess = _fileSystemState.GetFilePaths(operationInfo.ReadAccess);
-			auto allowedWriteAccess = _fileSystemState.GetFilePaths(operationInfo.WriteAccess);
+			bool enableAccessChecks = true;
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+			if (enableAccessChecks)
+			{
+				allowedReadAccess = _fileSystemState.GetFilePaths(operationInfo.ReadAccess);
+				allowedWriteAccess = _fileSystemState.GetFilePaths(operationInfo.WriteAccess);
+			}
 
 			// Allow access to the global overrides
 			std::copy(globalAllowedReadAccess.begin(), globalAllowedReadAccess.end(), std::back_inserter(allowedReadAccess));
@@ -397,16 +406,27 @@ namespace Soup::Core
 			for (auto& file : allowedWriteAccess)
 				Log::Diag(file.ToString());
 
-			bool enableAccessChecks = true;
-			auto process = Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
-				operationInfo.Command.Executable,
-				operationInfo.Command.Arguments,
-				operationInfo.Command.WorkingDirectory,
-				environment,
-				callback,
-				enableAccessChecks,
-				allowedReadAccess,
-				allowedWriteAccess);
+			std::shared_ptr<System::IProcess> process = nullptr;
+			if (_disableMonitor)
+			{
+				process = System::IProcessManager::Current().CreateProcess(
+					operationInfo.Command.Executable,
+					operationInfo.Command.Arguments,
+					operationInfo.Command.WorkingDirectory,
+					true);
+			}
+			else
+			{
+				process = Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
+					operationInfo.Command.Executable,
+					operationInfo.Command.Arguments,
+					operationInfo.Command.WorkingDirectory,
+					environment,
+					callback,
+					enableAccessChecks,
+					std::move(allowedReadAccess),
+					std::move(allowedWriteAccess));
+			}
 
 			process->Start();
 			process->WaitForExit();
@@ -440,16 +460,16 @@ namespace Soup::Core
 				auto input = std::vector<Path>();
 				for (auto& value : callback->GetInput())
 				{
-					auto path = Path(value);
-					// Log::Diag("ObservedInput: " + path.ToString());
+					auto path = Path::Parse(value);
+					// Log::Diag("ObservedInput: {}", path.ToString());
 					input.push_back(std::move(path));
 				}
 
 				auto output = std::vector<Path>();
 				for (auto& value : callback->GetOutput())
 				{
-					auto path = Path(value);
-					// Log::Diag("ObservedOutput: " + path.ToString());
+					auto path = Path::Parse(value);
+					// Log::Diag("ObservedOutput: {}", path.ToString());
 					output.push_back(std::move(path));
 				}
 
@@ -470,7 +490,7 @@ namespace Soup::Core
 			else
 			{
 				// Leave the previous state untouched and abandon the remaining operations
-				Log::Error("Operation exited with non-success code: " + std::to_string(exitCode));
+				Log::Error("Operation exited with non-success code: {}", exitCode);
 				throw BuildFailedException();
 			}
 		}
@@ -499,7 +519,11 @@ namespace Soup::Core
 					{
 						auto filePath = _fileSystemState.GetFilePath(fileId);
 						auto& existingOperation = evaluateState.OperationGraph.GetOperationInfo(matchedOutputOperationId);
-						auto message = "File \"" + filePath.ToString() + "\" observed as input for operation \"" + operationInfo.Title + "\" was written to by operation \"" + existingOperation.Title + "\" and must be declared as input";
+						auto message = std::format(
+							"File \"{}\" observed as input for operation \"{}\" was written to by operation \"{}\" and must be declared as input",
+							filePath.ToString(),
+							operationInfo.Title,
+							existingOperation.Title);
 						throw std::runtime_error(message);
 					}
 				}
@@ -513,7 +537,7 @@ namespace Soup::Core
 				if (findObservedInput != operationResult.ObservedInput.end())
 				{
 					auto filePath = _fileSystemState.GetFilePath(fileId);
-					Log::Warning("File \"" + filePath.ToString() + "\" observed as both input and output for operation \"" + operationInfo.Title + "\"");
+					Log::Warning("File \"{}\" observed as both input and output for operation \"{}\"", filePath.ToString(), operationInfo.Title);
 					Log::Warning("Removing from input list for now. Will be treated as error in the future.");
 					operationResult.ObservedInput.erase(findObservedInput);
 				}
@@ -526,7 +550,11 @@ namespace Soup::Core
 					{
 						auto filePath = _fileSystemState.GetFilePath(fileId);
 						auto& existingOperation = evaluateState.OperationGraph.GetOperationInfo(matchedOutputOperationId);
-						auto message = "File \"" + filePath.ToString() + "\" observed as output for operation \"" + operationInfo.Title + "\" was already written by operation \"" + existingOperation.Title + "\"";
+						auto message = std::format(
+							"File \"{}\" observed as output for operation \"{}\" was already written by operation \"{}\"",
+							filePath.ToString(),
+							operationInfo.Title,
+							existingOperation.Title);
 						throw std::runtime_error(message);
 					}
 				}
@@ -539,7 +567,10 @@ namespace Soup::Core
 						if (!matchedInputOperationIds->contains(operationInfo.Id))
 						{
 							auto filePath = _fileSystemState.GetFilePath(fileId);
-							auto message = "File \"" + filePath.ToString() + "\" observed as output from operation \"" + operationInfo.Title + "\" creates new dependency to existing declared inputs";
+							auto message = std::format(
+								"File \"{}\" observed as output from operation \"{}\" creates new dependency to existing declared inputs",
+								filePath.ToString(),
+								operationInfo.Title);
 							throw std::runtime_error(message);
 						}
 					}

@@ -7,8 +7,8 @@ This is a console application that has a custom build extension that alters the 
 The Recipe file that defines the build extension dynamic library "Samples.CSharp.BuildExtension.Extension" that will register new build tasks.
 ```sml
 Name: 'Samples.CSharp.BuildExtension.Extension'
-Language: 'Wren|0'
-Version: '1.0.0'
+Language: (Wren@0)
+Version: 1.0.0
 Source: [
   'CustomBuildTask.wren'
 ]
@@ -27,19 +27,19 @@ Version: 5
 Closures: {
   Root: {
     Wren: {
-      'mwasplund|Soup.Build.Utils': { Version: '0.7.0', Build: 'Build0', Tool: 'Tool0' }
+      'mwasplund|Soup.Build.Utils': { Version: 0.7.0, Build: 'Build0', Tool: 'Tool0' }
       'Samples.CSharp.BuildExtension.Extension': { Version: './', Build: 'Build0', Tool: 'Tool0' }
     }
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.Wren': { Version: '0.4.1' }
+      'mwasplund|Soup.Wren': { Version: 0.4.1 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }
@@ -95,9 +95,9 @@ class CustomBuildTask is SoupTask {
 The Recipe file that defines the executable "Samples.CSharp.BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```sml
 Name: 'Samples.CSharp.BuildExtension.Executable'
-Language: 'C#|0'
+Language: (C#@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
   'Program.cs'
 ]
@@ -122,13 +122,13 @@ Closures: {
   Build0: {
     Wren: {
       'Samples.CSharp.BuildExtension.Extension': { Version: '../Extension/' }
-      'mwasplund|Soup.CSharp': { Version: '0.13.0' }
+      'mwasplund|Soup.CSharp': { Version: 0.13.0 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

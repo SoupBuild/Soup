@@ -2,6 +2,8 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
+using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Path = Opal.Path;
 
@@ -9,10 +11,10 @@ namespace Soup.View.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-	private Path? recipeFile;
-	private readonly DependencyGraphViewModel dependencyGraph;
-	private readonly TaskGraphViewModel taskGraph;
-	private readonly OperationGraphViewModel operationGraph;
+	private Path? _recipeFile;
+	private readonly DependencyGraphViewModel _dependencyGraph;
+	private readonly TaskGraphViewModel _taskGraph;
+	private readonly OperationGraphViewModel _operationGraph;
 
 	public IStorageProvider? StorageProvider { get; set; }
 
@@ -30,14 +32,14 @@ public class MainWindowViewModel : ViewModelBase
 
 	public Path? RecipeFile
 	{
-		get => recipeFile;
+		get => _recipeFile;
 		private set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref recipeFile, value))
+			if (CheckRaiseAndSetIfChanged(ref _recipeFile, value))
 			{
-				if (recipeFile is not null)
+				if (_recipeFile is not null)
 				{
-					_ = dependencyGraph.LoadProjectAsync(recipeFile);
+					_ = _dependencyGraph.LoadProjectAsync(_recipeFile);
 				}
 			}
 		}
@@ -48,7 +50,7 @@ public class MainWindowViewModel : ViewModelBase
 		get => content;
 		private set
 		{
-			if (this.CheckRaiseAndSetIfChanged(ref content, value))
+			if (CheckRaiseAndSetIfChanged(ref content, value))
 			{
 				this.RaisePropertyChanged(nameof(IsRootSelected));
 				this.RaisePropertyChanged(nameof(IsTasksSelected));
@@ -66,45 +68,45 @@ public class MainWindowViewModel : ViewModelBase
 		SelectTasksCommand = ReactiveCommand.Create(OnSelectTasks);
 		SelectOperationsCommand = ReactiveCommand.Create(OnSelectOperations);
 
-		dependencyGraph = new DependencyGraphViewModel();
-		taskGraph = new TaskGraphViewModel();
-		operationGraph = new OperationGraphViewModel();
+		_dependencyGraph = new DependencyGraphViewModel();
+		_taskGraph = new TaskGraphViewModel();
+		_operationGraph = new OperationGraphViewModel();
 
-		dependencyGraph.PropertyChanged += DependencyGraph_PropertyChanged;
+		_dependencyGraph.PropertyChanged += DependencyGraph_PropertyChanged;
 
-		content = dependencyGraph;
+		content = _dependencyGraph;
 
 		if (packagePath is not null)
 		{
-			RecipeFile = new Path(packagePath);
+			RecipeFile = Path.Parse(packagePath);
 		}
 	}
 
 	private void DependencyGraph_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(dependencyGraph.SelectedProject))
+		if (e.PropertyName == nameof(_dependencyGraph.SelectedProject))
 		{
-			_ = taskGraph.LoadProjectAsync(dependencyGraph.SelectedProject?.Path);
-			_ = operationGraph.LoadProjectAsync(dependencyGraph.SelectedProject?.Path);
+			_ = _taskGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path, _dependencyGraph.SelectedProject?.Owner);
+			_ = _operationGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path);
 
 			this.RaisePropertyChanged(nameof(SelectedPackageName));
 		}
 	}
 
-	public string SelectedPackageName => this.dependencyGraph.SelectedProject?.Name ?? "[Package]";
+	public string SelectedPackageName => _dependencyGraph.SelectedProject?.Name ?? "[Package]";
 
-	public bool IsRootSelected => ReferenceEquals(content, dependencyGraph);
+	public bool IsRootSelected => ReferenceEquals(content, _dependencyGraph);
 
-	public bool IsTasksSelected => ReferenceEquals(content, taskGraph);
+	public bool IsTasksSelected => ReferenceEquals(content, _taskGraph);
 
-	public bool IsOperationsSelected => ReferenceEquals(content, operationGraph);
+	public bool IsOperationsSelected => ReferenceEquals(content, _operationGraph);
 
 	private async Task OnOpenAsync()
 	{
-		if (this.StorageProvider is null)
+		if (StorageProvider is null)
 			throw new InvalidOperationException("Missing storage provider");
 
-		var filePickerResult = await this.StorageProvider.OpenFilePickerAsync(
+		var filePickerResult = await StorageProvider.OpenFilePickerAsync(
 			new FilePickerOpenOptions()
 			{
 				AllowMultiple = false,
@@ -136,16 +138,16 @@ public class MainWindowViewModel : ViewModelBase
 
 	private void OnSelectRoot()
 	{
-		Content = dependencyGraph;
+		Content = _dependencyGraph;
 	}
 
 	private void OnSelectTasks()
 	{
-		Content = taskGraph;
+		Content = _taskGraph;
 	}
 
 	private void OnSelectOperations()
 	{
-		Content = operationGraph;
+		Content = _operationGraph;
 	}
 }

@@ -7,9 +7,9 @@ This is a desktop application that demonstrates creating a complex graphics wind
 The Recipe file that defines the directX sample application. Note the special module partition hierarchy that explicitly sets the references for partition units. The application also copies over the shader files that will be compiled at runtime.
 ```sml
 Name: 'Samples.Cpp.DirectX'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Windows'
-Version: '1.0.0'
+Version: 1.0.0
 Partitions: [
   { Source: 'D3D12HelloTriangle.cpp', Imports: [ 'DXSample.cpp', 'DXSampleHelper.cpp', 'Win32Application.cpp' ] }
   { Source: 'DXSample.cpp', Imports: [ 'DXSampleHelper.cpp' ] }
@@ -42,13 +42,13 @@ Closures: {
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+      'mwasplund|Soup.Cpp': { Version: 0.13.2 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

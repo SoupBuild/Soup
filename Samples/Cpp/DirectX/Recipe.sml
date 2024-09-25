@@ -1,7 +1,7 @@
 Name: 'Samples.Cpp.DirectX'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Windows'
-Version: '1.0.0'
+Version: 1.0.0
 Partitions: [
 	{ Source: 'D3D12HelloTriangle.cpp', Imports: [ 'DXSample.cpp', 'DXSampleHelper.cpp', 'Win32Application.cpp' ] }
 	{ Source: 'DXSample.cpp', Imports: [ 'DXSampleHelper.cpp' ] }

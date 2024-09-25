@@ -6,35 +6,35 @@ namespace Opal;
 
 public class EventTypeFilter : IEventFilter
 {
-	private TraceEvents types;
+	private TraceEvents _types;
 
 	public EventTypeFilter(TraceEvents eventTypes)
 	{
-		this.types = eventTypes;
+		_types = eventTypes;
 	}
 
 	public void Set(TraceEvents eventType)
 	{
-		this.types = eventType;
+		_types = eventType;
 	}
 
 	public void Disable(TraceEvents eventType)
 	{
-		this.types &= ~eventType;
+		_types &= ~eventType;
 	}
 
 	public void Enable(TraceEvents eventType)
 	{
-		this.types |= eventType;
+		_types |= eventType;
 	}
 
 	public bool IsEnabled(TraceEvents eventType)
 	{
-		return (this.types & eventType) == eventType;
+		return (_types & eventType) == eventType;
 	}
 
 	public virtual bool ShouldTrace(TraceEvents eventType)
 	{
-		return this.IsEnabled(eventType);
+		return IsEnabled(eventType);
 	}
 }

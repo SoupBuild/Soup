@@ -1,6 +1,6 @@
 Name: 'Soup.PackageManager'
-Language: 'C#|0'
-Version: '1.0.0'
+Language: (C#@0)
+Version: 1.0.0
 Type: 'Executable'
 Source: [
 	'AuthenticationManager.cs'

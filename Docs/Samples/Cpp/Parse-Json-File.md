@@ -7,17 +7,11 @@ A console application that reads in a json file using the an external module and
 The Recipe file that sets the standard name, type, version, as well as the single external dependency of the [json11](https://github.com/dropbox/json11) project.
 ```sml
 Name: 'Samples.Cpp.ParseJsonFile'
-Language: 'C++|0'
-Version: '1.0.0'
+Language: (C++@0)
+Version: 1.0.0
 Type: 'Executable'
-Source: [
-  'Main.cpp'
-]
-
 Dependencies: {
-  Runtime: [
-    'mwasplund|json11@1'
-  ]
+  Runtime: [ 'mwasplund|json11@1' ]
 }
 ```
 
@@ -28,19 +22,19 @@ Version: 5
 Closures: {
   Root: {
     'C++': {
-      'mwasplund|json11': { Version: '1.1.1', Build: 'Build0', Tool: 'Tool0' }
+      'mwasplund|json11': { Version: 1.1.3, Build: 'Build0', Tool: 'Tool0' }
       'Samples.Cpp.ParseJsonFile': { Version: '../ParseJsonFile', Build: 'Build0', Tool: 'Tool0' }
     }
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+      'mwasplund|Soup.Cpp': { Version: 0.13.2 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

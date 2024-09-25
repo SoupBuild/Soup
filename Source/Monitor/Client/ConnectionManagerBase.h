@@ -1,6 +1,7 @@
 
 #pragma once
 #include "Helpers.h"
+#include "MessageBuilder.h"
 
 namespace Monitor
 {
@@ -8,10 +9,12 @@ namespace Monitor
 	{
 	private:
 		std::mutex pipeMutex;
+		bool hadError;
 
 	public:
 		ConnectionManagerBase() :
-			pipeMutex()
+			pipeMutex(),
+			hadError(false)
 		{
 			DebugTrace("ConnectionManagerBase::ConnectionManagerBase");
 		}
@@ -38,7 +41,12 @@ namespace Monitor
 			Message message;
 			message.Type = MessageType::Shutdown;
 			message.ContentSize = 0;
-			UnsafeWriteMessage(message);
+			MessageBuilder::AppendValue(message, hadError);
+			if (!TryUnsafeWriteMessage(message))
+			{
+				// Not much we can do at the end...
+				hadError = true;
+			}
 
 			Disconnect();
 		}
@@ -46,9 +54,14 @@ namespace Monitor
 		void WriteMessage(const Message& message)
 		{
 			auto lock = std::lock_guard<std::mutex>(pipeMutex);
-			UnsafeWriteMessage(message);
+			if (!TryUnsafeWriteMessage(message))
+			{
+				// Save the failure for the final response
+				hadError = true;
+			}
 		}
 
+	#ifdef TRACE_DETOUR_CLIENT
 		void DebugError(std::string_view message, uint32_t value)
 		{
 			printf("DETOUR-CLIENT-ERROR: %s %u\n", message.data(), value);
@@ -58,19 +71,35 @@ namespace Monitor
 		{
 			printf("DETOUR-CLIENT-ERROR: %s\n", message.data());
 		}
-
-		void DebugTrace(std::string_view message)
+	#else
+		void DebugError(std::string_view /*message*/, uint32_t /*value*/)
 		{
-	#ifdef TRACE_DETOUR_CLIENT
-			printf("DETOUR-CLIENT: %s\n", message.data());
-	#elif defined(_WIN32)
-			(message);
-	#endif
 		}
+		
+		void DebugError(std::string_view /*message*/)
+		{
+		}
+	#endif
+
+
+	#ifdef TRACE_DETOUR_CLIENT
+		template<typename... Args>
+		static void DebugTrace(std::string_view message, Args&&... args)
+		{
+			auto result = std::vformat(message, std::make_format_args(args...));
+			printf("DETOUR-CLIENT: %s\n", result.c_str());
+		}
+	#else
+		template<typename... Args>
+		static void DebugTrace(std::string_view, Args&&...)
+		{
+			// NO-OP
+		}
+	#endif
 
 	protected:
 		virtual void Connect(int32_t traceProcessId) = 0;
 		virtual void Disconnect() = 0;
-		virtual void UnsafeWriteMessage(const Message& message) = 0;
+		virtual bool TryUnsafeWriteMessage(const Message& message) = 0;
 	};
 }

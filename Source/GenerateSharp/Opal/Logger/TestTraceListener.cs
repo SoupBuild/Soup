@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Opal;
 
 /// <summary>
@@ -17,13 +19,13 @@ public class TestTraceListener : TraceListener
 	public TestTraceListener()
 		: base(null, true, false)
 	{
-		this._messages = [];
+		_messages = [];
 	}
 
 	/// <summary>
 	/// Get the messages.
 	/// </summary>
-	public IReadOnlyList<string> Messages => this._messages;
+	public IReadOnlyList<string> Messages => _messages;
 
 	/// <summary>
 	/// Writes a message and newline terminator.
@@ -31,6 +33,6 @@ public class TestTraceListener : TraceListener
 	/// <param name="message">The message.</param>
 	protected override void WriteLine(string message)
 	{
-		this._messages.Add(message);
+		_messages.Add(message);
 	}
 }

@@ -7,9 +7,9 @@ A console application that uses a single module interface file used inside the s
 The Recipe file that sets the name, type, version, the public interface module and the single source file.
 ```sml
 Name: 'Samples.Cpp.ModuleInterface'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Interface: 'Module.cpp'
 Source: [
   'Main.cpp'
@@ -28,13 +28,13 @@ Closures: {
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+      'mwasplund|Soup.Cpp': { Version: 0.13.2 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

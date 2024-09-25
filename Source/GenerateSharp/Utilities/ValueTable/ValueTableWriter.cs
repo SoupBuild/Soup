@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.IO;
+
 namespace Soup.Build.Utilities;
 
 /// <summary>
@@ -51,7 +54,14 @@ public sealed class ValueTableWriter
 			case ValueType.Boolean:
 				WriteValue(writer, value.AsBoolean());
 				break;
-			case ValueType.Empty:
+			case ValueType.Version:
+				WriteValue(writer, value.AsVersion().ToString());
+				break;
+			case ValueType.LanguageReference:
+				WriteValue(writer, value.AsLanguageReference().ToString());
+				break;
+			case ValueType.PackageReference:
+				WriteValue(writer, value.AsPackageReference().ToString());
 				break;
 			default:
 				throw new InvalidOperationException("Unknown ValueType");

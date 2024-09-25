@@ -7,12 +7,9 @@ This is the smallest amount of code to get a console application building using 
 The Recipe file that sets the name, type, version and the single source file.
 ```sml
 Name: 'Samples.Cpp.ConsoleApplication'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Executable'
-Version: '1.0.0'
-Source: [
-  'Main.cpp'
-]
+Version: 1.0.0
 ```
 
 ## PackageLock.sml
@@ -27,13 +24,13 @@ Closures: {
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+      'mwasplund|Soup.Cpp': { Version: 0.13.2 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

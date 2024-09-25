@@ -34,8 +34,8 @@ namespace Monitor::Linux
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IMonitorCallback> callback,
 			bool enableAccessChecks,
-			const std::vector<Path>& allowedReadAccess,
-			const std::vector<Path>& allowedWriteAccess) override final
+			std::vector<Path> allowedReadAccess,
+			std::vector<Path> allowedWriteAccess) override final
 		{
 			return std::make_shared<LinuxMonitorProcess>(
 				executable,

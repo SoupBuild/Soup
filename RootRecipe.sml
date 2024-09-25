@@ -1,1 +1,1 @@
-OutputRoot: 'out/'
+OutputRoot: './out/'

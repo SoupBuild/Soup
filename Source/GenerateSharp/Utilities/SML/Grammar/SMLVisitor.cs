@@ -29,7 +29,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// </summary>
 /// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.11.1")]
-//[System.CLSCompliant(false)]
+[System.CLSCompliant(false)]
 public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="SMLParser.document"/>.
@@ -82,12 +82,76 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitArrayContent([NotNull] SMLParser.ArrayContentContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.languageName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLanguageName([NotNull] SMLParser.LanguageNameContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.userName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitUserName([NotNull] SMLParser.UserNameContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.packageName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPackageName([NotNull] SMLParser.PackageNameContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.language"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLanguage([NotNull] SMLParser.LanguageContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.languageReference"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLanguageReference([NotNull] SMLParser.LanguageReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.packageReference"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPackageReference([NotNull] SMLParser.PackageReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valueFloat</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValueFloat([NotNull] SMLParser.ValueFloatContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>valueInteger</c>
 	/// labeled alternative in <see cref="SMLParser.value"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitValueInteger([NotNull] SMLParser.ValueIntegerContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valueLanguageReference</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValueLanguageReference([NotNull] SMLParser.ValueLanguageReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valuePackageReference</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValuePackageReference([NotNull] SMLParser.ValuePackageReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valueVersion</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValueVersion([NotNull] SMLParser.ValueVersionContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>valueString</c>
 	/// labeled alternative in <see cref="SMLParser.value"/>.

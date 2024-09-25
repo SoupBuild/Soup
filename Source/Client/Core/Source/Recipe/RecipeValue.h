@@ -11,7 +11,7 @@ namespace Soup::Core
 {
 	class RecipeValue;
 	using RecipeList = std::vector<RecipeValue>;
-	using RecipeTable = std::unordered_map<std::string, RecipeValue>;
+	using RecipeTable = SequenceMap<std::string, RecipeValue>;
 
 	enum class RecipeValueType
 	{
@@ -21,6 +21,9 @@ namespace Soup::Core
 		Integer,
 		Float,
 		Boolean,
+		Version,
+		PackageReference,
+		LanguageReference,
 	};
 
 	class RecipeValue
@@ -58,6 +61,21 @@ namespace Soup::Core
 
 		RecipeValue(bool value) :
 			_value(value)
+		{
+		}
+
+		RecipeValue(SemanticVersion value) :
+			_value(value)
+		{
+		}
+
+		RecipeValue(PackageReference value) :
+			_value(std::move(value))
+		{
+		}
+
+		RecipeValue(LanguageReference value) :
+			_value(std::move(value))
 		{
 		}
 
@@ -175,6 +193,60 @@ namespace Soup::Core
 			}
 		}
 
+		bool IsVersion() const
+		{
+			return GetType() == RecipeValueType::Version;
+		}
+
+		SemanticVersion AsVersion() const
+		{
+			if (GetType() == RecipeValueType::Version)
+			{
+				return std::get<SemanticVersion>(_value);
+			}
+			else
+			{
+				// Wrong type
+				throw std::runtime_error("Attempt to access value as version with incorrect type.");
+			}
+		}
+
+		bool IsPackageReference() const
+		{
+			return GetType() == RecipeValueType::PackageReference;
+		}
+
+		PackageReference AsPackageReference() const
+		{
+			if (GetType() == RecipeValueType::PackageReference)
+			{
+				return std::get<PackageReference>(_value);
+			}
+			else
+			{
+				// Wrong type
+				throw std::runtime_error("Attempt to access value as package reference with incorrect type.");
+			}
+		}
+
+		bool IsLanguageReference() const
+		{
+			return GetType() == RecipeValueType::LanguageReference;
+		}
+
+		LanguageReference AsLanguageReference() const
+		{
+			if (GetType() == RecipeValueType::LanguageReference)
+			{
+				return std::get<LanguageReference>(_value);
+			}
+			else
+			{
+				// Wrong type
+				throw std::runtime_error("Attempt to access value as language reference with incorrect type.");
+			}
+		}
+
 		RecipeValueType GetType() const
 		{
 			switch (_value.index())
@@ -191,6 +263,12 @@ namespace Soup::Core
 					return RecipeValueType::Float;
 				case 5:
 					return RecipeValueType::Boolean;
+				case 6:
+					return RecipeValueType::Version;
+				case 7:
+					return RecipeValueType::PackageReference;
+				case 8:
+					return RecipeValueType::LanguageReference;
 				default:
 					throw std::runtime_error("Unknown recipe value type.");
 			}
@@ -217,6 +295,12 @@ namespace Soup::Core
 						return std::get<double>(_value) == std::get<double>(rhs._value);
 					case RecipeValueType::Boolean:
 						return std::get<bool>(_value) == std::get<bool>(rhs._value);
+					case RecipeValueType::Version:
+						return std::get<SemanticVersion>(_value) == std::get<SemanticVersion>(rhs._value);
+					case RecipeValueType::PackageReference:
+						return std::get<PackageReference>(_value) == std::get<PackageReference>(rhs._value);
+					case RecipeValueType::LanguageReference:
+						return std::get<LanguageReference>(_value) == std::get<LanguageReference>(rhs._value);
 					default:
 						throw std::runtime_error("Unkown Recipe ValueType for comparison.");
 				}
@@ -242,6 +326,9 @@ namespace Soup::Core
 			std::string,
 			int64_t,
 			double,
-			bool> _value;
+			bool,
+			SemanticVersion,
+			PackageReference,
+			LanguageReference> _value;
 	};
 }

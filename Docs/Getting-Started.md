@@ -17,7 +17,7 @@ You can either install Soup or download a reference the archive.
   winget install SoupBuild.Soup
   ```
 
-  ![Demo Video Executing WinGet Command](.assets/getting-started-winget.gif)
+  ![Demo Video Executing WinGet Command](assets/getting-started-winget.gif)
 
 * Installer
 
@@ -42,7 +42,7 @@ Use the SWhere tool to find the latest installed version of the SDKs on your loc
 ```
 swhere
 ```
-![Demo Video Executing Swhere Command](.assets/getting-started-swhere.gif)
+![Demo Video Executing Swhere Command](assets/getting-started-swhere.gif)
 
 ## Create First Project
 Run Initialize command to create a new project!
@@ -52,21 +52,21 @@ cd MyApp
 soup init
 ```
 
-![Demo Video Executing Init Command](.assets/getting-started-init.gif)
+![Demo Video Executing Init Command](assets/getting-started-init.gif)
 
 ## Build First Project
 ```cmd
 soup build
 ```
 
-![Demo Video Executing Build Command](.assets/getting-started-build.gif)
+![Demo Video Executing Build Command](assets/getting-started-build.gif)
 
 ## Run First Project
 ```cmd
 soup run
 ```
 
-![Demo Video Executing Run Command](.assets/getting-started-run.gif)
+![Demo Video Executing Run Command](assets/getting-started-run.gif)
 
 ## Enjoy!
 Check out the other [Samples](./Samples.md).

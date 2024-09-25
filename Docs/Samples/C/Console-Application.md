@@ -7,9 +7,9 @@ This is the smallest amount of code to get a console application building using 
 The Recipe file that sets the name, type, version and the single source file.
 ```sml
 Name: 'Samples.C.ConsoleApplication'
-Language: 'C|0'
+Language: (C@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
   'Main.c'
 ]
@@ -27,13 +27,13 @@ Closures: {
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.C': { Version: '0.3.0' }
+      'mwasplund|Soup.C': { Version: 0.4.0 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

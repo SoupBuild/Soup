@@ -3,6 +3,7 @@
 // </copyright>
 
 using GraphShape;
+using System.Collections.Generic;
 
 namespace Soup.View.ViewModels;
 

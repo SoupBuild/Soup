@@ -73,13 +73,22 @@ namespace Soup::Core
 			{
 				LanguageReference result;
 				if (LanguageReference::TryParse(languageValue.AsString(), result))
+				{
 					return result;
+				}
 				else
-					throw std::runtime_error("Invalid Language format in Recipe: " + languageValue.AsString());
+				{
+					throw std::runtime_error(
+						std::format("Invalid Language format in Recipe: {}", languageValue.AsString()));
+				}
+			}
+			else if (languageValue.IsLanguageReference())
+			{
+				return languageValue.AsLanguageReference();
 			}
 			else
 			{
-				throw std::runtime_error("The Recipe language must be of type String");
+				throw std::runtime_error("The Recipe language must be of type String or LanguageReference");
 			}
 		}
 
@@ -99,8 +108,10 @@ namespace Soup::Core
 			auto& versionValue = GetValue(_table, Property_Version);
 			if (versionValue.IsString())
 				return SemanticVersion::Parse(versionValue.AsString());
+			else if (versionValue.IsVersion())
+				return versionValue.AsVersion();
 			else
-				throw std::runtime_error("The Recipe version must be of type String");
+				throw std::runtime_error("The Recipe version must be of type String or Version");
 		}
 
 		/// <summary>
@@ -139,6 +150,10 @@ namespace Soup::Core
 				{
 					result.push_back(PackageReference::Parse(value.AsString()));
 				}
+				else if (value.IsPackageReference())
+				{
+					result.push_back(value.AsPackageReference());
+				}
 				else if (value.IsTable())
 				{
 					auto& valueTable = value.AsTable();
@@ -148,6 +163,10 @@ namespace Soup::Core
 					if (referenceValue.IsString())
 					{
 						result.push_back(PackageReference::Parse(referenceValue.AsString()));
+					}
+					else if (referenceValue.IsPackageReference())
+					{
+						result.push_back(referenceValue.AsPackageReference());
 					}
 					else
 					{
@@ -213,15 +232,15 @@ namespace Soup::Core
 
 		bool HasValue(const RecipeTable& table, std::string_view key) const
 		{
-			return table.contains(key.data());
+			return table.Contains(key.data());
 		}
 
 		const RecipeValue& GetValue(const RecipeTable& table, std::string_view key) const
 		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
+			const RecipeValue* value;
+			if (table.TryGet(key.data(), value))
 			{
-				return findItr->second;
+				return *value;
 			}
 			else
 			{
@@ -231,10 +250,10 @@ namespace Soup::Core
 
 		RecipeValue& GetValue(RecipeTable& table, std::string_view key)
 		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
+			RecipeValue* value;
+			if (table.TryGet(key.data(), value))
 			{
-				return findItr->second;
+				return *value;
 			}
 			else
 			{
@@ -244,10 +263,10 @@ namespace Soup::Core
 
 		RecipeValue& SetValue(RecipeTable& table, std::string_view key, RecipeValue&& value)
 		{
-			auto [insertIterator, wasInserted] = table.insert_or_assign(key.data(), std::move(value));
+			auto [wasInserted, valueReference] = table.TryInsert(key.data(), std::move(value));
 			if (wasInserted)
 			{
-				return insertIterator->second;
+				return *valueReference;
 			}
 			else
 			{
@@ -257,22 +276,22 @@ namespace Soup::Core
 
 		RecipeValue& EnsureTableValue(RecipeTable& table, std::string_view key)
 		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
+			RecipeValue* value;
+			if (table.TryGet(key.data(), value))
 			{
-				if (findItr->second.GetType() != RecipeValueType::Table)
+				if (value->GetType() != RecipeValueType::Table)
 				{
 					throw std::runtime_error("The recipe already has a non-table dependencies property");
 				}
 
-				return findItr->second;
+				return *value;
 			}
 			else
 			{
-				auto [insertIterator, wasInserted] = table.emplace(key.data(), RecipeValue(RecipeTable()));
+				auto [wasInserted, valueReference] = table.TryInsert(key.data(), RecipeValue(RecipeTable()));
 				if (wasInserted)
 				{
-					return insertIterator->second;
+					return *valueReference;
 				}
 				else
 				{

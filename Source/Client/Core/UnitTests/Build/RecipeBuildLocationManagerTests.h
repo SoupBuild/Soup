@@ -67,7 +67,7 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/RootRecipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					OutputRoot: 'BuildOut/'
+					OutputRoot: './BuildOut/'
 				)")));
 
 			auto packageName = Core::PackageName(std::nullopt, "MyPackage");
@@ -95,7 +95,10 @@ namespace Soup::Core::UnitTests
 				globalParameters,
 				recipeCache);
 
-			Assert::AreEqual(Path("C:/BuildOut/Cpp/Local/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"), targetDirectory, "Verify target directory matches expected.");
+			Assert::AreEqual(
+				Path("C:/BuildOut/Cpp/Local/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"),
+				targetDirectory,
+				"Verify target directory matches expected.");
 
 			// Verify expected logs
 			Assert::AreEqual(

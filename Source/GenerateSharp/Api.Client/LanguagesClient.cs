@@ -2,11 +2,15 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Globalization;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Api.Client;
 
@@ -15,13 +19,13 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class LanguagesClient
 {
-	private readonly HttpClient httpClient;
-	private readonly string bearerToken;
+	private readonly HttpClient _httpClient;
+	private readonly string _bearerToken;
 
 	public LanguagesClient(HttpClient httpClient, string bearerToken)
 	{
-		this.httpClient = httpClient;
-		this.bearerToken = bearerToken;
+		_httpClient = httpClient;
+		_bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -51,7 +55,7 @@ public class LanguagesClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/languages/{Uri.EscapeDataString(languageName)}");
 
-		var client = this.httpClient;
+		var client = _httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -86,7 +90,7 @@ public class LanguagesClient
 		try
 		{
 			using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-			var typedBody = await JsonSerializer.DeserializeAsync<T>(
+			var typedBody = await JsonSerializer.DeserializeAsync(
 				responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
 			if (typedBody is null)
 			{
@@ -109,9 +113,9 @@ public class LanguagesClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(this.bearerToken))
+		if (!string.IsNullOrEmpty(_bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
 		}
 
 		return Task.FromResult(request);

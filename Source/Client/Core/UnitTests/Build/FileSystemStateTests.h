@@ -92,6 +92,7 @@ namespace Soup::Core::UnitTests
 				std::unordered_map<FileId, Path>({
 					{ 2, Path("C:/Root/DoStuff.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({}));
 
 			auto lastWriteTime = uut.GetLastWriteTime(2);
@@ -120,6 +121,7 @@ namespace Soup::Core::UnitTests
 				std::unordered_map<FileId, Path>({
 					{ 2, Path("C:/Root/DoStuff.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 2, setLastWriteTime },
 				}));
@@ -174,7 +176,7 @@ namespace Soup::Core::UnitTests
 						Path("C:/Root/DoStuff.exe"),
 					}}));
 
-			FileId fileId = uut.ToFileId(Path("DoStuff.exe"), Path("C:/Root/"));
+			FileId fileId = uut.ToFileId(Path("./DoStuff.exe"), Path("C:/Root/"));
 
 			Assert::AreEqual<FileId>(8, fileId, "Verify file id matches expected.");
 
@@ -200,7 +202,7 @@ namespace Soup::Core::UnitTests
 						Path("C:/Root/DoStuff.exe"),
 					}}));
 
-			FileId fileId = uut.ToFileId(Path("DoStuff2.exe"), Path("C:/Root/"));
+			FileId fileId = uut.ToFileId(Path("./DoStuff2.exe"), Path("C:/Root/"));
 
 			Assert::AreEqual<FileId>(11, fileId, "Verify file id matches expected.");
 

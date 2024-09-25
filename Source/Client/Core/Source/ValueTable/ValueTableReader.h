@@ -29,11 +29,26 @@ namespace Soup::Core
 
 			auto contentBuffer = std::vector<char>(size);
 			stream.read(contentBuffer.data(), size);
-			auto content = contentBuffer.data();
+			auto data = contentBuffer.data();
+			size_t offset = 0;
+			
+			auto result = Deserialize(data, size, offset);
 
+			if (offset != contentBuffer.size())
+			{
+				throw std::runtime_error("Value Table file corrupted - Did not read the entire file");
+			}
+
+			return result;
+		}
+
+	private:
+		static ValueTable Deserialize(
+			char* data, size_t size, size_t& offset)
+		{
 			// Read the File Header with version
 			auto headerBuffer = std::array<char, 4>();
-			Read(content, headerBuffer.data(), 4);
+			Read(data, size, offset, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'B' ||
 				headerBuffer[1] != 'V' ||
 				headerBuffer[2] != 'T' ||
@@ -42,14 +57,14 @@ namespace Soup::Core
 				throw std::runtime_error("Invalid Value Table file header");
 			}
 
-			auto fileVersion = ReadUInt32(content);
+			auto fileVersion = ReadUInt32(data, size, offset);
 			if (fileVersion != FileVersion)
 			{
 				throw std::runtime_error("Value Table file version does not match expected");
 			}
 
 			// Read the root table
-			Read(content, headerBuffer.data(), 4);
+			Read(data, size, offset, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'T' ||
 				headerBuffer[1] != 'B' ||
 				headerBuffer[2] != 'L' ||
@@ -58,54 +73,54 @@ namespace Soup::Core
 				throw std::runtime_error("Invalid Value Table table header");
 			}
 
-			auto rootTable = ReadValueTable(content);
-
-			if (content != (contentBuffer.data() + size))
-			{
-				throw std::runtime_error("Value Table file corrupted - Did not read the entire file");
-			}
+			auto rootTable = ReadValueTable(data, size, offset);
 
 			return rootTable;
 		}
 
-	private:
-		static Value ReadValue(char*& content)
+		static Value ReadValue(char* data, size_t size, size_t& offset)
 		{
 			// Read the value type
-			auto valueType = static_cast<ValueType>(ReadUInt32(content));
+			auto valueType = static_cast<ValueType>(ReadUInt32(data, size, offset));
 
 			switch (valueType)
 			{
 				case ValueType::Table:
-					return Value(ReadValueTable(content));
+					return Value(ReadValueTable(data, size, offset));
 				case ValueType::List:
-					return Value(ReadValueList(content));
+					return Value(ReadValueList(data, size, offset));
 				case ValueType::String:
-					return Value(ReadString(content));
+					return Value(ReadString(data, size, offset));
 				case ValueType::Integer:
-					return Value(ReadInt64(content));
+					return Value(ReadInt64(data, size, offset));
 				case ValueType::Float:
-					return Value(ReadDouble(content));
+					return Value(ReadDouble(data, size, offset));
 				case ValueType::Boolean:
-					return Value(ReadBoolean(content));
+					return Value(ReadBoolean(data, size, offset));
+				case ValueType::Version:
+					return Value(SemanticVersion::Parse(ReadString(data, size, offset)));
+				case ValueType::PackageReference:
+					return Value(PackageReference::Parse(ReadString(data, size, offset)));
+				case ValueType::LanguageReference:
+					return Value(LanguageReference::Parse(ReadString(data, size, offset)));
 				default:
-					throw std::runtime_error("Unknown ValueType");
+					throw std::runtime_error("Read Unknown ValueType");
 			}
 		}
 
-		static ValueTable ReadValueTable(char*& content)
+		static ValueTable ReadValueTable(char* data, size_t size, size_t& offset)
 		{
 			// Write out the table size
-			auto size = ReadUInt32(content);
+			auto tableSize = ReadUInt32(data, size, offset);
 
 			auto table = ValueTable();
-			for (auto i = 0u; i < size; i++)
+			for (auto i = 0u; i < tableSize; i++)
 			{
 				// Read the key
-				auto key = ReadString(content);
+				auto key = ReadString(data, size, offset);
 
 				// Read the value
-				auto value = ReadValue(content);
+				auto value = ReadValue(data, size, offset);
 
 				table.emplace(std::move(key), std::move(value));
 			}
@@ -113,16 +128,16 @@ namespace Soup::Core
 			return table;
 		}
 
-		static ValueList ReadValueList(char*& content)
+		static ValueList ReadValueList(char* data, size_t size, size_t& offset)
 		{
 			// Write out the list size
-			auto size = ReadUInt32(content);
+			auto listSize = ReadUInt32(data, size, offset);
 
 			auto list = ValueList();
-			for (auto i = 0u; i < size; i++)
+			for (auto i = 0u; i < listSize; i++)
 			{
 				// Read the value
-				auto value = ReadValue(content);
+				auto value = ReadValue(data, size, offset);
 
 				list.push_back(std::move(value));
 			}
@@ -130,51 +145,53 @@ namespace Soup::Core
 			return list;
 		}
 
-		static int64_t ReadInt64(char*& content)
+		static int64_t ReadInt64(char* data, size_t size, size_t& offset)
 		{
 			int64_t result = 0;
-			Read(content, reinterpret_cast<char*>(&result), sizeof(int64_t));
+			Read(data, size, offset, reinterpret_cast<char*>(&result), sizeof(int64_t));
 
 			return result;
 		}
 
-		static uint32_t ReadUInt32(char*& content)
+		static uint32_t ReadUInt32(char* data, size_t size, size_t& offset)
 		{
 			uint32_t result = 0;
-			Read(content, reinterpret_cast<char*>(&result), sizeof(uint32_t));
+			Read(data, size, offset, reinterpret_cast<char*>(&result), sizeof(uint32_t));
 
 			return result;
 		}
 
-		static double ReadDouble(char*& content)
+		static double ReadDouble(char* data, size_t size, size_t& offset)
 		{
 			double result = 0;
-			Read(content, reinterpret_cast<char*>(&result), sizeof(double));
+			Read(data, size, offset, reinterpret_cast<char*>(&result), sizeof(double));
 
 			return result;
 		}
 
-		static bool ReadBoolean(char*& content)
+		static bool ReadBoolean(char* data, size_t size, size_t& offset)
 		{
 			uint32_t result = 0;
-			Read(content, reinterpret_cast<char*>(&result), sizeof(uint32_t));
+			Read(data, size, offset, reinterpret_cast<char*>(&result), sizeof(uint32_t));
 
 			return result != 0;
 		}
 
-		static std::string ReadString(char*& content)
+		static std::string ReadString(char* data, size_t size, size_t& offset)
 		{
-			auto size = ReadUInt32(content);
-			auto result = std::string(size, '\0');
-			Read(content, result.data(), size);
+			auto stringLength = ReadUInt32(data, size, offset);
+			auto result = std::string(stringLength, '\0');
+			Read(data, size, offset, result.data(), stringLength);
 
 			return result;
 		}
 
-		static void Read(char*& data, char* buffer, size_t count)
+		static void Read(char* data, size_t size, size_t& offset, char* buffer, size_t count)
 		{
-			memcpy(buffer, data, count);
-			data += count;
+			if (offset + count > size)
+				throw new std::runtime_error("Tried to read past end of data");
+			memcpy(buffer, data + offset, count);
+			offset += count;
 		}
 	};
 }

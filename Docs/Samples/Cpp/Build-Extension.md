@@ -7,12 +7,11 @@ This is a console application that has a custom build extension that alters the 
 The Recipe file that defines the build extension dynamic library "Samples.Cpp.BuildExtension.Extension" that will register new build tasks.
 ```sml
 Name: 'Samples.Cpp.BuildExtension.Extension'
-Language: 'Wren|0'
-Version: '1.0.0'
+Language: (Wren@0)
+Version: 1.0.0
 Source: [
   'CustomBuildTask.wren'
 ]
-
 Dependencies: {
   Runtime: [
     'mwasplund|Soup.Build.Utils@0'
@@ -27,19 +26,19 @@ Version: 5
 Closures: {
   Root: {
     Wren: {
-      'mwasplund|Soup.Build.Utils': { Version: '0.7.0', Build: 'Build0', Tool: 'Tool0' }
+      'mwasplund|Soup.Build.Utils': { Version: 0.7.0, Build: 'Build0', Tool: 'Tool0' }
       'Samples.Cpp.BuildExtension.Extension': { Version: './', Build: 'Build0', Tool: 'Tool0' }
     }
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.Wren': { Version: '0.4.1' }
+      'mwasplund|Soup.Wren': { Version: 0.4.1 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }
@@ -95,17 +94,11 @@ class CustomBuildTask is SoupTask {
 The Recipe file that defines the executable "Samples.Cpp.BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```sml
 Name: 'Samples.SimpleBuildExtension.Executable'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Executable'
-Version: '1.0.0'
-Source: [
-  'Main.cpp'
-]
-
+Version: 1.0.0
 Dependencies: {
-  Build: [
-    '../Extension/'
-  ]
+  Build: [ '../Extension/' ]
 }
 ```
 
@@ -122,13 +115,13 @@ Closures: {
   Build0: {
     Wren: {
       'Samples.Cpp.BuildExtension.Extension': { Version: '../Extension/' }
-      'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+      'mwasplund|Soup.Cpp': { Version: 0.13.2 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

@@ -7,8 +7,8 @@ This is a console application that has a single dynamic library dependency.
 The Recipe file that defines the static library "Samples.Cpp.ModuleDynamicLibrary.Library".
 ```sml
 Name: 'Samples.Cpp.ModuleDynamicLibrary.Library'
-Language: 'C++|0'
-Version: '1.0.0'
+Language: (C++@0)
+Version: 1.0.0
 Interface: 'Module.cpp'
 Type: 'DynamicLibrary'
 ```
@@ -44,9 +44,9 @@ export namespace Samples::Cpp::DynamicLibrary::Library
 The Recipe file that defines the executable "Samples.Cpp.ModuleDynamicLibrary.Application".
 ```sml
 Name: 'Samples.Cpp.ModuleDynamicLibrary.Application'
-Language: 'C++|0'
+Language: (C++@0)
 Type: 'Executable'
-Version: '1.0.0'
+Version: 1.0.0
 Source: [
   'Main.cpp'
 ]
@@ -71,13 +71,13 @@ Closures: {
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.Cpp': { Version: '0.12.0' }
+      'mwasplund|Soup.Cpp': { Version: 0.13.2 }
     }
   }
   Tool0: {
     'C++': {
-      'mwasplund|copy': { Version: '1.1.0' }
-      'mwasplund|mkdir': { Version: '1.1.0' }
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
     }
   }
 }

@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Opal.System;
@@ -24,7 +26,7 @@ public class RuntimeFileSystem : IFileSystem
 			? Environment.GetEnvironmentVariable("USERPROFILE")
 			: Environment.GetEnvironmentVariable("HOME")) ??
 			throw new InvalidOperationException("Unable to retrieve user profile");
-		return new Path(userProfileFolder);
+		return Path.Parse($"{userProfileFolder}\\");
 	}
 
 	public Path GetCurrentDirectory()
@@ -85,7 +87,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path(directory),
+				Path = Path.Parse(directory),
 				IsDirectory = true,
 			});
 		}
@@ -94,7 +96,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path(file),
+				Path = Path.Parse(file),
 				IsDirectory = false,
 			});
 		}
@@ -109,7 +111,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path(directory),
+				Path = Path.Parse($"{directory}/"),
 				IsDirectory = true,
 			});
 		}
@@ -124,7 +126,7 @@ public class RuntimeFileSystem : IFileSystem
 		{
 			result.Add(new DirectoryEntry()
 			{
-				Path = new Path(directory),
+				Path = Path.Parse(directory),
 				IsDirectory = true,
 			});
 		}
