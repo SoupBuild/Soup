@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile/Recipe.sml");
+			auto directory = Path("./TestFiles/NoFile/Recipe.sml");
 			Recipe actual;
 			auto result = RecipeExtensions::TryLoadRecipeFromFile(directory, actual);
 
@@ -29,7 +29,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/NoFile/Recipe.sml",
+					"TryOpenReadBinary: ./TestFiles/NoFile/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -55,10 +55,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageRecipe/Recipe.sml"),
+				Path("./TestFiles/GarbageRecipe/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageRecipe/Recipe.sml");
+			auto directory = Path("./TestFiles/GarbageRecipe/Recipe.sml");
 			Recipe actual;
 			auto result = RecipeExtensions::TryLoadRecipeFromFile(directory, actual);
 
@@ -67,8 +67,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/GarbageRecipe/Recipe.sml",
-					"OpenReadBinary: ./TestFiles/GarbageRecipe/Recipe.sml",
+					"TryOpenReadBinary: ./TestFiles/GarbageRecipe/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -95,13 +94,13 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleRecipe/Recipe.sml"),
+				Path("./TestFiles/SimpleRecipe/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 				)")));
 
-			auto directory = Path("TestFiles/SimpleRecipe/Recipe.sml");
+			auto directory = Path("./TestFiles/SimpleRecipe/Recipe.sml");
 			Recipe actual;
 			auto result = RecipeExtensions::TryLoadRecipeFromFile(directory, actual);
 
@@ -110,7 +109,7 @@ namespace Soup::Core::UnitTests
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -118,8 +117,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleRecipe/Recipe.sml",
-					"OpenReadBinary: ./TestFiles/SimpleRecipe/Recipe.sml",
+					"TryOpenReadBinary: ./TestFiles/SimpleRecipe/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -144,11 +142,11 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/SimpleRecipe/Recipe.sml");
+			auto directory = Path("./TestFiles/SimpleRecipe/Recipe.sml");
 			auto recipe = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 			RecipeExtensions::SaveToFile(directory, recipe);
 
@@ -170,9 +168,9 @@ namespace Soup::Core::UnitTests
 			// Verify the contents of the build file
 			std::string expectedBuildFile = 
 R"(Name: 'MyPackage'
-Language: 'C++|1'
+Language: (C++@1)
 )";
-			auto mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.sml"));
+			auto mockBuildFile = fileSystem->GetMockFile(Path("./TestFiles/SimpleRecipe/Recipe.sml"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
 		}
 	};

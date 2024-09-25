@@ -79,15 +79,15 @@ namespace Soup::Core
 	private:
 		bool HasValue(std::string_view key) const
 		{
-			return _table.contains(key.data());
+			return _table.Contains(key.data());
 		}
 
 		const RecipeValue& GetValue(std::string_view key) const
 		{
-			auto findItr = _table.find(key.data());
-			if (findItr != _table.end())
+			const RecipeValue* value;
+			if (_table.TryGet(key.data(), value))
 			{
-				return findItr->second;
+				return *value;
 			}
 			else
 			{

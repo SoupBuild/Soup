@@ -61,9 +61,16 @@ json11::Json ConvertToJson(const PackageLookupMap& lookup)
 			dependencies.emplace(dependency.first, std::move(dependencyChildren));
 		}
 
+		auto ownerValue = json11::Json();
+		if (value.second.Name.HasOwner())
+		{
+			ownerValue = value.second.Name.GetOwner();
+		}
+
 		auto jsonValue = json11::Json::object({
 			{ "Id", value.second.Id },
-			{ "Name", value.second.Name.ToString() },
+			{ "Name", value.second.Name.GetName() },
+			{ "Owner", std::move(ownerValue) },
 			{ "IsPrebuilt", value.second.IsPrebuilt },
 			{ "PackageRoot", value.second.PackageRoot.ToString() },
 			{ "TargetDirectory", value.second.TargetDirectory.ToString() },

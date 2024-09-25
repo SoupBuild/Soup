@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using Opal;
+
 namespace Soup.Build.Utilities;
 
 /// <summary>
@@ -76,10 +79,11 @@ public class PackageLock
 	}
 
 	public void AddProject(
+		Path workingDirectory,
 		string closure,
 		string language,
 		PackageName uniqueName,
-		string version,
+		PackageReference package,
 		string? buildClosure,
 		string? toolClosure)
 	{
@@ -88,7 +92,19 @@ public class PackageLock
 		var projectLanguageTable = EnsureHasTable(closureTable, language, 2);
 
 		var projectTable = projectLanguageTable.AddInlineTableWithSyntax(uniqueName.ToString(), 3);
-		projectTable.AddInlineItemWithSyntax(Property_Version, version);
+
+		if (package.IsLocal)
+		{
+			var relativePath = package.Path.GetRelativeTo(workingDirectory);
+			projectTable.AddInlineItemWithSyntax(Property_Version, relativePath.ToString());
+		}
+		else
+		{
+			if (package.Version is null)
+				throw new InvalidOperationException("Missing version on external package reference");
+			projectTable.AddInlineItemWithSyntax(Property_Version, package.Version);
+		}
+
 		if (buildClosure != null)
 		{
 			projectTable.AddInlineItemWithSyntax(Property_Build, buildClosure);

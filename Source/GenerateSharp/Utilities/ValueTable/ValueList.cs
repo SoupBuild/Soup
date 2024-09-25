@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -23,18 +24,18 @@ public class ValueList : IEnumerable, IEnumerable<Value>
 		_impl = new List<Value>(collection);
 	}
 
-	public Value this[int index] => this._impl[index];
+	public Value this[int index] => _impl[index];
 
-	public int Count => this._impl.Count;
+	public int Count => _impl.Count;
 
 	public void Add(Value item)
 	{
-		this._impl.Add(item);
+		_impl.Add(item);
 	}
 
 	public void Clear()
 	{
-		this._impl.Clear();
+		_impl.Clear();
 	}
 
 	public ValueList Clone()
@@ -44,12 +45,12 @@ public class ValueList : IEnumerable, IEnumerable<Value>
 
 	public IEnumerator<Value> GetEnumerator()
 	{
-		return this._impl.GetEnumerator();
+		return _impl.GetEnumerator();
 	}
 
 	IEnumerator IEnumerable.GetEnumerator()
 	{
-		return this._impl.GetEnumerator();
+		return _impl.GetEnumerator();
 	}
 
 	public override string ToString()

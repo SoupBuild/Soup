@@ -12,7 +12,7 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Deserialize_GarbageThrows()
 		{
-			auto recipeFile = Path("Recipe.sml");
+			auto recipeFile = Path("./Recipe.sml");
 			auto recipe = std::stringstream("garbage");
 			auto exception = Assert::Throws<std::runtime_error>([&recipeFile, &recipe]() {
 				auto actual = RecipeSML::Deserialize(recipeFile, recipe);
@@ -22,18 +22,18 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Deserialize_Simple()
 		{
-			auto recipeFile = Path("Recipe.sml");
+			auto recipeFile = Path("./Recipe.sml");
 			auto recipe = std::stringstream(
 				R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 				)");
 			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -42,19 +42,19 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Deserialize_Comments()
 		{
-			auto recipeFile = Path("Recipe.sml");
+			auto recipeFile = Path("./Recipe.sml");
 			auto recipe = std::stringstream(
 				R"(
 					# This is an awesome project
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 				)");
 			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -63,12 +63,18 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Deserialize_AllProperties()
 		{
-			auto recipeFile = Path("Recipe.sml");
+			auto recipeFile = Path("./Recipe.sml");
 			auto recipe = std::stringstream(
 				R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
-					Version: '1.2.3'
+					Language: (C++@1)
+					Version: 1.2.3
+					IntegerValue: 55
+					FloatValue: 1.2
+					TrueValue: true
+					FalseValue: false
+					PackageLanguageRef: <(C++)User1|Package1@1.2>
+					PackageRef: <User1|Package1@1>
 					Dependencies: {
 						Runtime: []
 						Build: []
@@ -80,8 +86,14 @@ namespace Soup::Core::UnitTests
 			auto expected = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
-				{ "Version", "1.2.3" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
+				{ "Version", SemanticVersion(1, 2, 3) },
+				{ "IntegerValue", (int64_t)55 },
+				{ "FloatValue", 1.2 },
+				{ "TrueValue", true },
+				{ "FalseValue", false },
+				{ "PackageLanguageRef", PackageReference("C++", "User1", "Package1", SemanticVersion(1, 2)) },
+				{ "PackageRef", PackageReference(std::nullopt, "User1", "Package1", SemanticVersion(1)) },
 				{
 					"Dependencies",
 					RecipeTable(
@@ -99,11 +111,11 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Serialize_Simple()
 		{
-			auto recipeFile = Path("Recipe.sml");
+			auto recipeFile = Path("./Recipe.sml");
 			auto recipe = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
 			}));
 
 			std::stringstream actual;
@@ -111,7 +123,7 @@ namespace Soup::Core::UnitTests
 
 			auto expected = 
 R"(Name: 'MyPackage'
-Language: 'C++|1'
+Language: (C++@1)
 )";
 
 			Assert::AreEqual(expected, actual.str(), "Verify matches expected.");
@@ -120,12 +132,16 @@ Language: 'C++|1'
 		// [[Fact]]
 		void Serialize_AllProperties()
 		{
-			auto recipeFile = Path("Recipe.sml");
+			auto recipeFile = Path("./Recipe.sml");
 			auto recipe = Recipe(RecipeTable(
 			{
 				{ "Name", "MyPackage" },
-				{ "Language", "C++|1" },
-				{ "Version", "1.2.3" },
+				{ "Language", LanguageReference("C++", SemanticVersion(1)) },
+				{ "Version", SemanticVersion(1, 2, 3) },
+				{ "IntegerValue", (int64_t)55 },
+				{ "FloatValue", 1.2 },
+				{ "TrueValue", true },
+				{ "FalseValue", false },
 				{
 					"Dependencies",
 					RecipeTable(
@@ -142,10 +158,14 @@ Language: 'C++|1'
 
 			auto expected = 
 R"(Name: 'MyPackage'
-Language: 'C++|1'
-Version: '1.2.3'
-Dependencies: {Build: []
-Runtime: []
+Language: (C++@1)
+Version: 1.2.3
+IntegerValue: 55
+FloatValue: 1.2
+TrueValue: true
+FalseValue: false
+Dependencies: {Runtime: []
+Build: []
 Test: []
 }
 )";

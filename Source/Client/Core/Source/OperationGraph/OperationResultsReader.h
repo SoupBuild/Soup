@@ -34,11 +34,29 @@ namespace Soup::Core
 
 			auto contentBuffer = std::vector<char>(size);
 			stream.read(contentBuffer.data(), size);
-			auto content = contentBuffer.data();
+			auto data = contentBuffer.data();
+			size_t offset = 0;
 
+			auto result = Deserialize(data, size, offset, fileSystemState);
+
+			if (offset != contentBuffer.size())
+			{
+				throw std::runtime_error("Operation results file corrupted - Did not read the entire file");
+			}
+
+			return result;
+		}
+
+	private:
+		static OperationResults Deserialize(
+			char* data,
+			size_t size,
+			size_t& offset,
+			FileSystemState& fileSystemState)
+		{
 			// Read the File Header with version
 			auto headerBuffer = std::array<char, 4>();
-			Read(content, headerBuffer.data(), 4);
+			Read(data, size, offset, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'B' ||
 				headerBuffer[1] != 'O' ||
 				headerBuffer[2] != 'R' ||
@@ -47,14 +65,14 @@ namespace Soup::Core
 				throw std::runtime_error("Invalid operation results file header");
 			}
 
-			auto fileVersion = ReadUInt32(content);
+			auto fileVersion = ReadUInt32(data, size, offset);
 			if (fileVersion != FileVersion)
 			{
 				throw std::runtime_error("Operation results file version does not match expected");
 			}
 
 			// Read the set of files
-			Read(content, headerBuffer.data(), 4);
+			Read(data, size, offset, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'F' ||
 				headerBuffer[1] != 'I' ||
 				headerBuffer[2] != 'S' ||
@@ -64,15 +82,15 @@ namespace Soup::Core
 			}
 
 			// Map up the incoming file ids to the active file system state ids
-			auto fileCount = ReadUInt32(content);
+			auto fileCount = ReadUInt32(data, size, offset);
 			auto activeFileIdMap = std::unordered_map<FileId, FileId>();
 			for (auto i = 0u; i < fileCount; i++)
 			{
 				// Read the command working directory
-				auto fileId = ReadUInt32(content);
+				auto fileId = ReadUInt32(data, size, offset);
 
-				auto fileString = ReadString(content);
-				auto file = Path::Load(std::move(fileString));
+				auto fileString = ReadString(data, size, offset);
+				auto file = Path(std::move(fileString));
 
 				auto activeFileId = fileSystemState.ToFileId(file);
 				auto insertMapResult = activeFileIdMap.emplace(fileId, activeFileId);
@@ -81,7 +99,7 @@ namespace Soup::Core
 			}
 
 			// Read the set of operations
-			Read(content, headerBuffer.data(), 4);
+			Read(data, size, offset, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'R' ||
 				headerBuffer[1] != 'T' ||
 				headerBuffer[2] != 'S' ||
@@ -90,35 +108,31 @@ namespace Soup::Core
 				throw std::runtime_error("Invalid operation results results header");
 			}
 
-			auto resultCount = ReadUInt32(content);
+			auto resultCount = ReadUInt32(data, size, offset);
 			auto results = OperationResults();
 			for (auto i = 0u; i < resultCount; i++)
 			{
-				ReadOperationResult(content, activeFileIdMap, results);
-			}
-
-			if (stream.peek() != std::char_traits<char>::eof())
-			{
-				throw std::runtime_error("Operation results file corrupted - Did not read the entire file");
+				ReadOperationResult(data, size, offset, activeFileIdMap, results);
 			}
 
 			return results;
 		}
 
-	private:
 		static void ReadOperationResult(
-			char*& content,
+			char* data,
+			size_t size,
+			size_t& offset,
 			const std::unordered_map<FileId, FileId>& activeFileIdMap,
 			OperationResults& results)
 		{
 			// Read the operation id
-			auto operationId = ReadUInt32(content);
+			auto operationId = ReadUInt32(data, size, offset);
 
 			// Read the value indicating if there was a successful run
-			auto wasSuccessfulRun = ReadBoolean(content);
+			auto wasSuccessfulRun = ReadBoolean(data, size, offset);
 
 			// Read the tick offset of the system clock since its epoch
-			auto evaluateTimeTicks = ReadInt64(content);
+			auto evaluateTimeTicks = ReadInt64(data, size, offset);
 			auto evaluateTimeDuration = ContentDuration(evaluateTimeTicks);
 
 			// Use system clock with a known epoch
@@ -130,10 +144,10 @@ namespace Soup::Core
 			#endif
 
 			// Read the observed input files
-			auto observedInput = ReadFileIdList(content, activeFileIdMap);
+			auto observedInput = ReadFileIdList(data, size, offset, activeFileIdMap);
 
 			// Read the observed output files
-			auto observedOutput = ReadFileIdList(content, activeFileIdMap);
+			auto observedOutput = ReadFileIdList(data, size, offset, activeFileIdMap);
 
 			auto result = OperationResult(
 				wasSuccessfulRun,
@@ -144,46 +158,47 @@ namespace Soup::Core
 			results.AddOrUpdateOperationResult(operationId, std::move(result));
 		}
 
-		static uint32_t ReadUInt32(char*& content)
+		static uint32_t ReadUInt32(char* data, size_t size, size_t& offset)
 		{
 			uint32_t result = 0;
-			Read(content, reinterpret_cast<char*>(&result), sizeof(uint32_t));
+			Read(data, size, offset, reinterpret_cast<char*>(&result), sizeof(uint32_t));
 
 			return result;
 		}
 
-		static int64_t ReadInt64(char*& content)
+		static int64_t ReadInt64(char* data, size_t size, size_t& offset)
 		{
 			int64_t result = 0;
-			Read(content, reinterpret_cast<char*>(&result), sizeof(int64_t));
+			Read(data, size, offset, reinterpret_cast<char*>(&result), sizeof(int64_t));
 
 			return result;
 		}
 
-		static bool ReadBoolean(char*& content)
+		static bool ReadBoolean(char* data, size_t size, size_t& offset)
 		{
 			uint32_t result = 0;
-			Read(content, reinterpret_cast<char*>(&result), sizeof(uint32_t));
+			Read(data, size, offset, reinterpret_cast<char*>(&result), sizeof(uint32_t));
 
 			return result != 0;
 		}
 
-		static std::string ReadString(char*& content)
+		static std::string ReadString(char* data, size_t size, size_t& offset)
 		{
-			auto size = ReadUInt32(content);
-			auto result = std::string(size, '\0');
-			Read(content, result.data(), size);
+			auto stringLength = ReadUInt32(data, size, offset);
+			auto result = std::string(stringLength, '\0');
+			Read(data, size, offset, result.data(), stringLength);
 
 			return result;
 		}
 
-		static std::vector<FileId> ReadFileIdList(char*& content, const std::unordered_map<FileId, FileId>& activeFileIdMap)
+		static std::vector<FileId> ReadFileIdList(
+			char* data, size_t size, size_t& offset, const std::unordered_map<FileId, FileId>& activeFileIdMap)
 		{
-			auto size = ReadUInt32(content);
-			auto result = std::vector<FileId>(size);
-			for (auto i = 0u; i < size; i++)
+			auto listLength = ReadUInt32(data, size, offset);
+			auto result = std::vector<FileId>(listLength);
+			for (auto i = 0u; i < listLength; i++)
 			{
-				auto fileId = ReadUInt32(content);
+				auto fileId = ReadUInt32(data, size, offset);
 
 				// Find the active file id that maps to the cached file id
 				auto findActiveFileId = activeFileIdMap.find(fileId);
@@ -196,22 +211,25 @@ namespace Soup::Core
 			return result;
 		}
 
-		static std::vector<OperationId> ReadOperationIdList(char*& content)
+		static std::vector<OperationId> ReadOperationIdList(
+			char* data, size_t size, size_t& offset)
 		{
-			auto size = ReadUInt32(content);
-			auto result = std::vector<OperationId>(size);
-			for (auto i = 0u; i < size; i++)
+			auto listLength = ReadUInt32(data, size, offset);
+			auto result = std::vector<OperationId>(listLength);
+			for (auto i = 0u; i < listLength; i++)
 			{
-				result[i] = ReadUInt32(content);
+				result[i] = ReadUInt32(data, size, offset);
 			}
 
 			return result;
 		}
 
-		static void Read(char*& data, char* buffer, size_t count)
+		static void Read(char* data, size_t size, size_t& offset, char* buffer, size_t count)
 		{
-			memcpy(buffer, data, count);
-			data += count;
+			if (offset + count > size)
+				throw new std::runtime_error("Tried to read past end of data");
+			memcpy(buffer, data + offset, count);
+			offset += count;
 		}
 	};
 }

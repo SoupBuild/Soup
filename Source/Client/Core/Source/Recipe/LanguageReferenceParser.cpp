@@ -209,6 +209,11 @@ namespace Soup::Core
 
 class LanguageReferenceParser : public LR::Lexer
 {
+private:
+    LanguageReferenceToken currentToken;
+    std::string name;
+    Opal::SemanticVersion version;
+
 public:
     LanguageReferenceParser(const reflex::Input& input) :
         Lexer(input),
@@ -220,7 +225,8 @@ public:
     bool TryParse()
     {
         // Parse the name
-        MoveNext();
+        if (!TryMoveNext())
+          return false;
         switch (currentToken)
         {
             case LanguageReferenceToken::Name:
@@ -231,7 +237,8 @@ public:
         }
 
         // Check for optional version
-        MoveNext();
+        if (!TryMoveNext())
+          return false;
         switch (currentToken)
         {
             case LanguageReferenceToken::Divider:
@@ -248,6 +255,7 @@ public:
         return LanguageReference(std::move(name), std::move(version));
     }
 
+  private:
     bool TryParseVersion()
     {
         int major;
@@ -255,7 +263,8 @@ public:
         std::optional<int> patch;
 
         // Parse the major version
-        MoveNext();
+        if (!TryMoveNext())
+          return false;
         switch (currentToken)
         {
             case LanguageReferenceToken::Integer:
@@ -266,7 +275,8 @@ public:
         }
 
         // Check for optional minor version
-        MoveNext();
+        if (!TryMoveNext())
+          return false;
         switch (currentToken)
         {
             case LanguageReferenceToken::Decimal:
@@ -281,7 +291,8 @@ public:
         }
 
         // Check for optional patch version
-        MoveNext();
+        if (!TryMoveNext())
+          return false;
         switch (currentToken)
         {
             case LanguageReferenceToken::Decimal:
@@ -296,7 +307,8 @@ public:
         }
 
         // Verify end of file
-        MoveNext();
+        if (!TryMoveNext())
+          return false;
         switch (currentToken)
         {
             case LanguageReferenceToken::EndOfFile:
@@ -307,11 +319,8 @@ public:
         }
     }
 
-private:
-    LanguageReferenceToken MoveNext()
+    bool TryMoveNext()
     {
-        if (currentToken == LanguageReferenceToken::EndOfFile)
-            throw std::runtime_error("Attempt to read past end of content");
         currentToken = (LanguageReferenceToken)lex();
 
         #ifdef SHOW_TOKENS
@@ -341,12 +350,8 @@ private:
             }
         #endif
 
-        return currentToken;
+        return true;
     }
-
-    LanguageReferenceToken currentToken;
-    std::string name;
-    Opal::SemanticVersion version;
 };
 
 /*static*/ bool LanguageReference::TryParse(const std::string& value, LanguageReference& result)

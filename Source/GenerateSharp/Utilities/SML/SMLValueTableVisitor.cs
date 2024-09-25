@@ -4,7 +4,11 @@
 
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using Opal;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Soup.Build.Utilities;
 
@@ -103,7 +107,7 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 
 	public virtual object VisitKeyLiteral(SMLParser.KeyLiteralContext context)
 	{
-		return BuildToken(context.KEY_LITERAL());
+		return BuildToken(context.ALPHA_LITERAL());
 	}
 
 	public virtual object VisitKeyString(SMLParser.KeyStringContext context)
@@ -151,6 +155,21 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		}
 
 		return arrayContent;
+	}
+
+	public virtual object VisitValueFloat(SMLParser.ValueFloatContext context)
+	{
+		var floatNode = context.FLOAT();
+		var value = double.Parse(floatNode.Symbol.Text, CultureInfo.InvariantCulture);
+		var floatToken = BuildToken(floatNode);
+
+		// Cache the last seen token
+		_lastToken = floatToken;
+
+		return new SMLValue(
+			new SMLFloatValue(
+				value,
+				floatToken));
 	}
 
 	public virtual object VisitValueInteger(SMLParser.ValueIntegerContext context)
@@ -226,6 +245,103 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		return new SMLValue(array);
 	}
 
+	public virtual object VisitValueVersion(SMLParser.ValueVersionContext context)
+	{
+		var versionToken = BuildToken(context.VERSION());
+
+		var literal = context.VERSION().Symbol.Text;
+		var value = SemanticVersion.Parse(literal);
+
+		// Cache the last seen token
+		_lastToken = versionToken;
+
+		var version = new SMLVersionValue(
+			value,
+			versionToken);
+		return new SMLValue(version);
+	}
+
+	public object VisitPackageReference(SMLParser.PackageReferenceContext context)
+	{
+		var lessThanToken = BuildToken(context.LESS_THAN());
+
+		var languageName = (SMLLanguageName?)context.language()?.Accept(this);
+
+		var userNameToken = (SMLToken)context.userName().Accept(this); ;
+		var userPipeToken = BuildToken(context.PIPE());
+
+		var packageNameToken = (SMLToken)context.packageName().Accept(this);
+		var atSignToken = BuildToken(context.AT_SIGN());
+		SMLToken versionReferenceToken;
+		if (context.INTEGER() is not null)
+			versionReferenceToken = BuildToken(context.INTEGER());
+		else
+			versionReferenceToken = BuildToken(context.FLOAT());
+
+		var greaterThanToken = BuildToken(context.GREATER_THAN());
+
+		// Cache the last seen token
+		_lastToken = greaterThanToken;
+
+		var value = new PackageReference(
+			languageName?.Value,
+			userNameToken.Text,
+			packageNameToken.Text,
+			SemanticVersion.Parse(versionReferenceToken.Text));
+
+		return new SMLPackageReferenceValue(
+			lessThanToken,
+			languageName,
+			userNameToken,
+			userPipeToken,
+			packageNameToken,
+			atSignToken,
+			versionReferenceToken,
+			greaterThanToken,
+			value);
+	}
+
+	public object VisitValuePackageReference(SMLParser.ValuePackageReferenceContext context)
+	{
+		var packageReference = (SMLPackageReferenceValue)context.packageReference().Accept(this);
+		return new SMLValue(packageReference);
+	}
+
+	public object VisitLanguageReference(SMLParser.LanguageReferenceContext context)
+	{
+		var openParenthesisToken = BuildToken(context.OPEN_PARENTHESIS());
+		var languageNameToken = (SMLToken)context.languageName().Accept(this);
+		var atSignToken = BuildToken(context.AT_SIGN());
+		SMLToken versionReferenceToken;
+		if (context.INTEGER() is not null)
+			versionReferenceToken = BuildToken(context.INTEGER());
+		else
+			versionReferenceToken = BuildToken(context.FLOAT());
+
+		var closeParenthesisToken = BuildToken(context.CLOSE_PARENTHESIS());
+
+		// Cache the last seen token
+		_lastToken = closeParenthesisToken;
+
+		var value = new LanguageReference(
+			languageNameToken.Text,
+			SemanticVersion.Parse(versionReferenceToken.Text));
+
+		return new SMLLanguageReferenceValue(
+			openParenthesisToken,
+			languageNameToken,
+			atSignToken,
+			versionReferenceToken,
+			closeParenthesisToken,
+			value);
+	}
+
+	public object VisitValueLanguageReference(SMLParser.ValueLanguageReferenceContext context)
+	{
+		var languageReference = (SMLLanguageReferenceValue)context.languageReference().Accept(this);
+		return new SMLValue(languageReference);
+	}
+
 	public virtual object VisitNewlineDelimiter(SMLParser.NewlineDelimiterContext context)
 	{
 		return context.NEWLINE().Select(BuildToken).ToList();
@@ -264,5 +380,48 @@ public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisito
 		var left = _tokens.GetHiddenTokensToLeft(node.Symbol.TokenIndex);
 		var leadingTrivia = left != null ? left.Select(value => value.Text).ToList() : [];
 		return leadingTrivia;
+	}
+
+	public object VisitLanguageName(SMLParser.LanguageNameContext context)
+	{
+		if (context.ALPHA_LITERAL() is not null)
+			return BuildToken(context.ALPHA_LITERAL());
+		else if (context.ALPHA_EXT3_LITERAL() is not null)
+			return BuildToken(context.ALPHA_EXT3_LITERAL());
+		else
+			throw new InvalidOperationException("Invalid LanguageName");
+	}
+
+	public object VisitUserName(SMLParser.UserNameContext context)
+	{
+		if (context.ALPHA_LITERAL() is not null)
+			return BuildToken(context.ALPHA_LITERAL());
+		else if (context.ALPHA_EXT1_LITERAL() is not null)
+			return BuildToken(context.ALPHA_EXT1_LITERAL());
+		else
+			throw new InvalidOperationException("Invalid UserName");
+	}
+
+	public object VisitPackageName(SMLParser.PackageNameContext context)
+	{
+		if (context.ALPHA_LITERAL() is not null)
+			return BuildToken(context.ALPHA_LITERAL());
+		else if (context.ALPHA_EXT2_LITERAL() is not null)
+			return BuildToken(context.ALPHA_EXT2_LITERAL());
+		else
+			throw new InvalidOperationException("Invalid PackageName");
+	}
+
+	public object VisitLanguage(SMLParser.LanguageContext context)
+	{
+		var openParenthesisToken = BuildToken(context.OPEN_PARENTHESIS());
+		var languageNameToken = (SMLToken)context.languageName().Accept(this);
+		var closeParenthesisToken = BuildToken(context.CLOSE_PARENTHESIS());
+
+		return new SMLLanguageName(
+			openParenthesisToken,
+			languageNameToken,
+			closeParenthesisToken,
+			languageNameToken.Text);
 	}
 }

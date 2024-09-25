@@ -46,8 +46,8 @@ namespace Monitor
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IMonitorCallback> callback,
 			bool enableAccessChecks,
-			const std::vector<Path>& allowedReadAccess,
-			const std::vector<Path>& allowedWriteAccess) = 0;
+			std::vector<Path> allowedReadAccess,
+			std::vector<Path> allowedWriteAccess) = 0;
 
 	private:
 		static std::shared_ptr<IMonitorProcessManager> _current;

@@ -6,7 +6,7 @@ namespace Monitor::Windows
 	{
 	public:
 		virtual void OnInitialize() = 0;
-		virtual void OnShutdown() = 0;
+		virtual void OnShutdown(bool hadError) = 0;
 		virtual void OnError(std::string_view message) = 0;
 
 		// FileApi

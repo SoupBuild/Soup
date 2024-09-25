@@ -47,7 +47,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			auto builtInPackageDirectory = Path("C:/BuiltIn/Packages/");
@@ -86,7 +86,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -109,14 +109,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 					Dependencies: {
 						Tool: [
 							'[C++]User1|TestTool@4.4.4'
@@ -128,7 +128,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/BuiltIn/Packages/User1/TestTool/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			// Create the package lock
@@ -144,12 +144,12 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {
 							'C++': {
-								'User1|TestTool': { Version: '4.4.4' }
+								'User1|TestTool': { Version: 4.4.4 }
 							}
 						}
 					}
@@ -229,14 +229,10 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/TestTool/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/TestTool/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/TestTool/4.4.4/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -281,7 +277,7 @@ namespace Soup::Core::UnitTests
 								PackageName(std::nullopt, "MyPackage"),
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								Path(""),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -342,14 +338,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -365,7 +361,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -437,12 +433,9 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -524,14 +517,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|4.5.6'
+					Language: (C++@4.5)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 					Dependencies: {
 						Tool: [
 							'[C++]User1|TestTool@4.4.4'
@@ -543,21 +536,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			// Create the package lock
@@ -573,12 +566,12 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '4.5.6' }
+								'User1|Soup.Cpp': { Version: 4.5.6 }
 							}
 						}
 						Tool0: {
 							'C++': {
-								'User1|TestTool': { Version: '3.3.3' }
+								'User1|TestTool': { Version: 3.3.3 }
 							}
 						}
 					}
@@ -596,7 +589,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -615,7 +608,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -693,22 +686,14 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/4.5.6/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/4.5.6/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/4.5.6/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -870,7 +855,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 					Dependencies: {
 						Build: [
 							'User1|TestBuild@3.3.3'
@@ -882,21 +867,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -912,8 +897,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3 }
 							}
 						}
 						Tool0: {
@@ -933,7 +918,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -1008,18 +993,12 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1154,7 +1133,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 					Dependencies: {
 						Build: [
 							'User1|TestBuild@3.3.3'
@@ -1166,7 +1145,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 					Dependencies: {
 						Tool: [
 							'[C++]User1|TestTool@4.4.4'
@@ -1178,21 +1157,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -1208,13 +1187,13 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3', Tool: 'Tool0' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3, Tool: 'Tool0' }
 							}
 						}
 						Tool0: {
 							'C++': {
-								'User1|TestTool': { Version: '3.3.3' }
+								'User1|TestTool': { Version: 3.3.3 }
 							}
 						}
 					}
@@ -1232,7 +1211,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -1251,7 +1230,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -1330,22 +1309,14 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1462,7 +1433,7 @@ namespace Soup::Core::UnitTests
 									PackageName("User1", "TestTool"),
 									false,
 									Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/"),
-									Path(""),
+									Path(),
 									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml")),
 									PackageChildrenMap({
 										{
@@ -1517,7 +1488,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 					Dependencies: {
 						Build: [
 							'../TestBuild/'
@@ -1529,21 +1500,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/TestBuild/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -1559,7 +1530,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -1578,7 +1549,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -1653,18 +1624,12 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/WorkingDirectory/TestBuild/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/TestBuild/Recipe.sml",
-					"Exists: C:/WorkingDirectory/TestBuild/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/TestBuild/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/TestBuild/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/TestBuild/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1793,7 +1758,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 					Dependencies: {
 						Build: [
 							'TestBuild@3.3.3'
@@ -1805,21 +1770,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -1835,8 +1800,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3 }
 							}
 						}
 						Tool0: {
@@ -1906,10 +1871,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1932,7 +1895,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 					Dependencies: {
 						Build: [
 							'User1|TestBuild@3.3.3'
@@ -1944,7 +1907,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 					Dependencies: {
 						Runtime: [
 							'TestBuild2@4.4.4'
@@ -1956,21 +1919,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild2'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -1986,8 +1949,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3', Tool: 'Tool0' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3, Tool: 'Tool0' }
 							}
 						}
 						Tool0: {}
@@ -2002,12 +1965,12 @@ namespace Soup::Core::UnitTests
 						Root: {
 							Wren: {
 								'User1|TestBuild': { Version: '../TestBuild/', Build: 'Build0', Tool: 'Tool0' }
-								'User1|TestBuild2': { Version: '3.3.3', Build: 'Build0', Tool: 'Tool0' }
+								'User1|TestBuild2': { Version: 3.3.3, Build: 'Build0', Tool: 'Tool0' }
 							}
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -2084,20 +2047,13 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -2201,7 +2157,7 @@ namespace Soup::Core::UnitTests
 								PackageName("User1", "TestBuild2"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/"),
-								Path(""),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2256,7 +2212,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 					Dependencies: {
 						Build: [
 							'User1|TestBuild@3.3.3'
@@ -2268,7 +2224,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 					Dependencies: {
 						Build: [
 							'TestBuild2@4.4.4'
@@ -2280,21 +2236,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild2'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -2310,8 +2266,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3', Tool: 'Tool0' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3, Tool: 'Tool0' }
 							}
 						}
 						Tool0: {}
@@ -2330,8 +2286,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
-								'User1|TestBuild2': { Version: '4.4.4' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
+								'User1|TestBuild2': { Version: 4.4.4 }
 							}
 						}
 						Tool0: {}
@@ -2350,7 +2306,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -2429,22 +2385,14 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild2/4.4.4/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild2/4.4.4/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild2/4.4.4/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -2556,7 +2504,7 @@ namespace Soup::Core::UnitTests
 								PackageName("User1", "TestBuild2"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/"),
-								Path(""),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild2/4.4.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2611,7 +2559,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 					Dependencies: {
 						Build: [
 							'User1|TestBuild@3.3.3'
@@ -2623,7 +2571,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 					Dependencies: {
 						Tool: [
 							'[C++]TestTool@4.4.4'
@@ -2635,21 +2583,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -2665,13 +2613,13 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
-								'User1|TestBuild': { Version: '3.3.3', Tool: 'Tool0' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
+								'User1|TestBuild': { Version: 3.3.3, Tool: 'Tool0' }
 							}
 						}
 						Tool0: {
 							'C++': {
-								'User1|TestTool': { Version: '3.3.3' }
+								'User1|TestTool': { Version: 3.3.3 }
 							}
 						}
 					}
@@ -2689,7 +2637,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -2708,7 +2656,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -2787,22 +2735,14 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -2919,7 +2859,7 @@ namespace Soup::Core::UnitTests
 								PackageName("User1", "TestTool"),
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/"),
-								Path(""),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2974,7 +2914,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 					Dependencies: {
 						Build: [
 							'User1|TestBuild@3.3.3'
@@ -2986,28 +2926,28 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestBuild'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/Wren/User1/Soup.Wren/2.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/1.1.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -3023,8 +2963,8 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.2' }
-								'User1|TestBuild': { Version: '3.3.4' }
+								'User1|Soup.Cpp': { Version: 1.1.2 }
+								'User1|TestBuild': { Version: 3.3.4 }
 							}
 						}
 						Tool0: {
@@ -3043,7 +2983,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.3' }
+								'User1|Soup.Wren': { Version: 2.2.3 }
 							}
 						}
 						Tool0: {
@@ -3063,7 +3003,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -3082,7 +3022,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -3169,24 +3109,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.4/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.4/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.4/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/Soup.Wren/2.2.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Wren/2.2.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/Soup.Wren/2.2.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Wren/2.2.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/1.1.2/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/1.1.2/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/1.1.2/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/1.1.2/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.4/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.4/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Wren/2.2.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Wren/2.2.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/1.1.2/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/1.1.2/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -3365,7 +3296,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C#|1'
+					Language: (C#@1)
 					Dependencies: {
 						Runtime: [
 							'../Package1/'
@@ -3377,21 +3308,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/Package1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Package1'
-					Language: 'C#|1'
+					Language: (C#@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/Wren/User1/Soup.CSharp/2.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.CSharp'
-					Language: 'Wren|2.2.2'
+					Language: (Wren@2.2)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Wren'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -3408,7 +3339,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.CSharp': { Version: '2.2.3' }
+								'User1|Soup.CSharp': { Version: 2.2.3 }
 							}
 						}
 						Tool0: {
@@ -3428,7 +3359,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Wren': { Version: '2.2.2' }
+								'User1|Soup.Wren': { Version: 2.2.2 }
 							}
 						}
 						Tool0: {}
@@ -3510,18 +3441,12 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/WorkingDirectory/Package1/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/Package1/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Wren/User1/Soup.CSharp/2.2.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.CSharp/2.2.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/locks/Wren/User1/Soup.CSharp/2.2.3/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.CSharp/2.2.3/PackageLock.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/Package1/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.CSharp/2.2.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.CSharp/2.2.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -3655,7 +3580,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 					Dependencies: {
 						Runtime: [
 							'User1|PackageA@3.3.3'
@@ -3667,7 +3592,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'PackageA'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 					Dependencies: {
 						Runtime: [
 							'User1|PackageB@4.4.4'
@@ -3678,13 +3603,13 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'PackageB'
-					Language: 'C++|1.1.1'
+					Language: (C++@1.1)
 				)")));
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -3696,13 +3621,13 @@ namespace Soup::Core::UnitTests
 						Root: {
 							'C++': {
 								MyPackage: { Version: '../MyPackage/', Build: 'Build0', Tool: 'Tool0' }
-								'User1|PackageA': { Version: '3.3.3', Build: 'Build0', Tool: 'Tool0' }
-								'User1|PackageB': { Version: '4.4.4', Build: 'Build0', Tool: 'Tool0' }
+								'User1|PackageA': { Version: 3.3.3, Build: 'Build0', Tool: 'Tool0' }
+								'User1|PackageB': { Version: 4.4.4, Build: 'Build0', Tool: 'Tool0' }
 							}
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Tool0: {}
@@ -3778,16 +3703,11 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -3918,7 +3838,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'MyPackage'
-					Language: 'C++|1'
+					Language: (C++@1)
 					Dependencies: {
 						Other: [
 							'[C#]User1|Package1@4.4.4'
@@ -3930,21 +3850,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Package1'
-					Language: 'C#|1'
+					Language: (C#@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.Cpp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Soup.CSharp'
-					Language: 'Wren|1'
+					Language: (Wren@1)
 				)")));
 
 			// Create the package lock
@@ -3958,17 +3878,17 @@ namespace Soup::Core::UnitTests
 								MyPackage: { Version: '../MyPackage/', Build: 'Build0', Tool: 'Tool0' }
 							}
 							'C#': {
-								'User1|Package1': { Version: '4.4.4', Build: 'Build1', Tool: 'Tool0' }
+								'User1|Package1': { Version: 4.4.4, Build: 'Build1', Tool: 'Tool0' }
 							}
 						}
 						Build0: {
 							Wren: {
-								'User1|Soup.Cpp': { Version: '1.1.1' }
+								'User1|Soup.Cpp': { Version: 1.1.1 }
 							}
 						}
 						Build1: {
 							Wren: {
-								'User1|Soup.CSharp': { Version: '3.3.3' }
+								'User1|Soup.CSharp': { Version: 3.3.3 }
 							}
 						}
 						Tool1: {
@@ -4056,16 +3976,11 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
-					"Exists: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
-					"OpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

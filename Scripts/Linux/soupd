@@ -15,7 +15,7 @@ CONFIG_HASH=OZlIVjblazFuKXg-raWUNoGEnG4
 
 OWNER=mwasplund
 
-SOUP_VERSION="0.38.0"
+SOUP_VERSION="0.39.1"
 COPY_VERSION="1.1.0"
 MKDIR_VERSION="1.1.0"
 SOUP_WREN_VERSION="0.4.1"
@@ -38,7 +38,7 @@ cp -p -R $OUT_DIR/Cpp/Local/mkdir/$MKDIR_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION
 cp -p $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml
-cp -p -R $GLOBAL_OUT_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/out/
+cp -p -R $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/out/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/out/
 
 cp -p -R $ROOT_DIR/Source/out/msbuild/bin/Soup.Build.PackageManager/Release/net8.0/linux-x64/publish/ $RUN_DIR/PackageManager
 

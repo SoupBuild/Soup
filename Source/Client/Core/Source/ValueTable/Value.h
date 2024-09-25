@@ -21,6 +21,9 @@ namespace Soup::Core
 		Integer = 4,
 		Float = 5,
 		Boolean = 6,
+		Version = 7,
+		PackageReference = 8,
+		LanguageReference = 9,
 	};
 
 	/// <summary>
@@ -38,6 +41,9 @@ namespace Soup::Core
 		Value(int64_t value);
 		Value(double value);
 		Value(bool value);
+		Value(SemanticVersion value);
+		Value(PackageReference value);
+		Value(LanguageReference value);
 
 		/// <summary>
 		/// Type checker methods
@@ -65,6 +71,9 @@ namespace Soup::Core
 		int64_t AsInteger() const;
 		double AsFloat() const;
 		bool AsBoolean() const;
+		SemanticVersion AsVersion() const;
+		PackageReference AsPackageReference() const;
+		LanguageReference AsLanguageReference() const;
 
 		/// <summary>
 		/// Equality operator
@@ -83,6 +92,9 @@ namespace Soup::Core
 			std::string,
 			int64_t,
 			double,
-			bool> _value;
+			bool,
+			SemanticVersion,
+			PackageReference,
+			LanguageReference> _value;
 	};
 }

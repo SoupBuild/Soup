@@ -15,19 +15,19 @@ MONITOR_CLIENT_DIR=$SOURCE_DIR/Monitor/Client
 
 # Build each version of the monitor client dll
 echo soup build $MONITOR_CLIENT_DIR -architecture x64 -flavor $FLAVOR
-eval soupd build $MONITOR_CLIENT_DIR -architecture x64 -flavor $FLAVOR
+eval soup build $MONITOR_CLIENT_DIR -architecture x64 -flavor $FLAVOR
 
 echo soup build $MONITOR_CLIENT_DIR -architecture x86 -flavor $FLAVOR
-eval soupd build $MONITOR_CLIENT_DIR -architecture x86 -flavor $FLAVOR
+eval soup build $MONITOR_CLIENT_DIR -architecture x86 -flavor $FLAVOR
 
 # Build the client
 echo soup build $CLIENT_CLI_DIR -flavor $FLAVOR
-eval soupd build $CLIENT_CLI_DIR -flavor $FLAVOR
+eval soup build $CLIENT_CLI_DIR -flavor $FLAVOR
 
 # Get the targets
-ClientCLIOutputDirectory=$(soupd target $CLIENT_CLI_DIR -flavor $FLAVOR)
-MonitorClientOutputX64Directory=$(soupd target $MONITOR_CLIENT_DIR -architecture x64 -flavor $FLAVOR)
-MonitorClientOutputX86Directory=$(soupd target $MONITOR_CLIENT_DIR -architecture x86 -flavor $FLAVOR)
+ClientCLIOutputDirectory=$(soup target $CLIENT_CLI_DIR -flavor $FLAVOR)
+MonitorClientOutputX64Directory=$(soup target $MONITOR_CLIENT_DIR -architecture x64 -flavor $FLAVOR)
+MonitorClientOutputX86Directory=$(soup target $MONITOR_CLIENT_DIR -architecture x86 -flavor $FLAVOR)
 
 # Copy the monitor client dlls
 echo cp "$MonitorClientOutputX64Directory/bin/Monitor.Client.so" "$ClientCLIOutputDirectory/bin/Monitor.Client.64.so"

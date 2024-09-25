@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile/LocalUserConfig.sml");
+			auto directory = Path("./TestFiles/NoFile/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 
@@ -29,7 +29,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/NoFile/LocalUserConfig.sml",
+					"TryOpenReadBinary: ./TestFiles/NoFile/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -55,10 +55,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml"),
+				Path("./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml");
+			auto directory = Path("./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 
@@ -67,8 +67,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
-					"OpenReadBinary: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
+					"TryOpenReadBinary: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -95,11 +94,11 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml"),
+				Path("./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					)")));
 
-			auto directory = Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml");
+			auto directory = Path("./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 
@@ -112,8 +111,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
-					"OpenReadBinary: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
+					"TryOpenReadBinary: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

@@ -2,9 +2,10 @@
 SETLOCAL
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\..
-SET SourceDir=%RootDir%\Source
-SET InstallerDir=%SourceDir%\Installer\SoupInstaller\msi
+SET OutDir=%RootDir%\out
 
-SET CertPath=%1
+SET SIGN_COMMAND=signtool sign /n "Open Source Developer, Matthew Asplund" /t http://time.certum.pl /fd sha1 /v
 
-signtool sign /tr http://timestamp.sectigo.com /td sha256 /fd sha256 /f %CertPath%  %InstallerDir%\*.msi
+SET SignFiles=%OutDir%\soup-build-0.39.1-windows-x64.msi
+
+%SIGN_COMMAND% %SignFiles%

@@ -18,6 +18,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystemState = FileSystemState();
 			auto uut = BuildEvaluateEngine(
 				false,
+				false,
 				fileSystemState);
 		}
 
@@ -39,6 +40,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -111,12 +113,13 @@ namespace Soup::Core::UnitTests
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.TouchFileRead(Path("InputFile2.in"), true, false);
-					callback.TouchFileWrite(Path("OutputFile2.out"), false);
+					callback.TouchFileRead(Path("./InputFile2.in"), true, false);
+					callback.TouchFileWrite(Path("./OutputFile2.out"), false);
 				});
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -228,8 +231,7 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			auto fileSystemState = FileSystemState(
 				1,
-				std::unordered_map<FileId, Path>({
-				}));
+				std::unordered_map<FileId, Path>({}));
 
 			// Register the test process manager
 			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
@@ -240,12 +242,13 @@ namespace Soup::Core::UnitTests
 				[](Monitor::IMonitorCallback& callback)
 				{
 					// Read and write the same file
-					callback.TouchFileRead(Path("File.txt"), true, false);
-					callback.TouchFileWrite(Path("File.txt"), false);
+					callback.TouchFileRead(Path("./File.txt"), true, false);
+					callback.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -308,7 +311,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"DIAG: Allowed Read Access:",
 					"DIAG: Allowed Write Access:",
-					"WARN: File \"C:/TestWorkingDirectory/FILE.TXT\" observed as both input and output for operation \"TestCommand: 1\"",
+					"WARN: File \"C:/TestWorkingDirectory/File.txt\" observed as both input and output for operation \"TestCommand: 1\"",
 					"WARN: Removing from input list for now. Will be treated as error in the future.",
 					"DIAG: Build evaluation end",
 				}),
@@ -373,12 +376,13 @@ namespace Soup::Core::UnitTests
 				[](Monitor::IMonitorCallback& callback)
 				{
 					// Read and write the same file
-					callback.TouchFileRead(Path("File.txt"), true, false);
-					callback.TouchFileWrite(Path("File.txt"), false);
+					callback.TouchFileRead(Path("./File.txt"), true, false);
+					callback.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -501,6 +505,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 3, executableInputTime },
 				}));
@@ -511,6 +516,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -644,6 +650,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, std::nullopt },
@@ -656,6 +663,7 @@ namespace Soup::Core::UnitTests
 
 			// Create the build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -788,6 +796,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },
@@ -800,6 +809,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -932,6 +942,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },
@@ -944,6 +955,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -1073,6 +1085,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
+				{},
 				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },
@@ -1085,6 +1098,7 @@ namespace Soup::Core::UnitTests
 
 			// Create the initial build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -1192,11 +1206,12 @@ namespace Soup::Core::UnitTests
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.TouchFileWrite(Path("OutputFile.out"), false);
+					callback.TouchFileWrite(Path("./OutputFile.out"), false);
 				});
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -1244,7 +1259,7 @@ namespace Soup::Core::UnitTests
 					temporaryDirectory,
 					globalAllowedReadAccess,
 					globalAllowedWriteAccess);
-				(ranOperations);
+				(void)ranOperations;
 			});
 
 			Assert::AreEqual<std::string_view>(
@@ -1328,11 +1343,12 @@ namespace Soup::Core::UnitTests
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.TouchFileWrite(Path("File.txt"), false);
+					callback.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -1380,7 +1396,7 @@ namespace Soup::Core::UnitTests
 					temporaryDirectory,
 					globalAllowedReadAccess,
 					globalAllowedWriteAccess);
-				(ranOperations);
+				(void)ranOperations;
 			});
 
 			Assert::AreEqual<std::string_view>(
@@ -1464,11 +1480,12 @@ namespace Soup::Core::UnitTests
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.TouchFileRead(Path("File.txt"), true, false);
+					callback.TouchFileRead(Path("./File.txt"), true, false);
 				});
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				fileSystemState);
 
@@ -1516,7 +1533,7 @@ namespace Soup::Core::UnitTests
 					temporaryDirectory,
 					globalAllowedReadAccess,
 					globalAllowedWriteAccess);
-				(ranOperations);
+				(void)ranOperations;
 			});
 
 			Assert::AreEqual<std::string_view>(

@@ -5,9 +5,12 @@
 using Moq;
 using Opal;
 using Opal.System;
+using System;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Xunit;
 using Path = Opal.Path;
 
@@ -52,23 +55,21 @@ public class PackageManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
 				"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 				"DIAG: Deleting staging directory",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"GetUserProfileDirectory",
 				"Exists: C:/Users/Me/.soup/packages/.staging/",
 				"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 				"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -99,8 +100,8 @@ public class PackageManagerUnitTests
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|3.2.1'
-			Version: '1.0.0'
+			Language: (C++@3.2)
+			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
@@ -112,8 +113,8 @@ public class PackageManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
-				Language: 'C++|3.2.1'
-				Version: '1.2.3'
+				Language: (C++@3.2)
+				Version: 1.2.3
 				"""))));
 
 		// Mock out the http
@@ -142,20 +143,18 @@ public class PackageManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
 				"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 				"INFO: Adding reference to recipe",
 				"INFO: Deleting staging directory",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
 				"GetUserProfileDirectory",
@@ -163,7 +162,7 @@ public class PackageManagerUnitTests
 				"Exists: C:/Users/Me/.soup/packages/.staging/",
 				"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 				"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -186,8 +185,8 @@ public class PackageManagerUnitTests
 		var expectedRecipe =
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|3.2.1'
-			Version: '1.0.0'
+			Language: (C++@3.2)
+			Version: 1.0.0
 			Dependencies: {
 				Runtime: [
 					'User1|OtherPackage@1.2.3'
@@ -213,8 +212,8 @@ public class PackageManagerUnitTests
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|3.2.1'
-			Version: '1.0.0'
+			Language: (C++@3.2)
+			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
@@ -226,8 +225,8 @@ public class PackageManagerUnitTests
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
-				Language: 'C++|3.2.1'
-				Version: '1.2.3'
+				Language: (C++@3.2)
+				Version: 1.2.3
 				"""))));
 
 		// Mock out the http
@@ -279,21 +278,19 @@ public class PackageManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
 				"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 				"HIGH: Latest Version: 1.2.3",
 				"INFO: Adding reference to recipe",
 				"INFO: Deleting staging directory",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
 				"GetUserProfileDirectory",
@@ -301,7 +298,7 @@ public class PackageManagerUnitTests
 				"Exists: C:/Users/Me/.soup/packages/.staging/",
 				"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 				"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify http requests
@@ -330,8 +327,8 @@ public class PackageManagerUnitTests
 		var expectedRecipe =
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|3.2.1'
-			Version: '1.0.0'
+			Language: (C++@3.2)
+			Version: 1.0.0
 			Dependencies: {
 				Runtime: [
 					'User1|OtherPackage@1.2.3'
@@ -357,8 +354,8 @@ public class PackageManagerUnitTests
 		await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
 			"""
 			Name: 'MyPackage'
-			Language: 'C++|0.1'
-			Version: '1.0.0'
+			Language: (C++@0.1)
+			Version: 1.0.0
 			"""));
 		_ = originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 		mockFileSystem.CreateMockFile(
@@ -431,8 +428,7 @@ public class PackageManagerUnitTests
 
 		// Verify expected logs
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"INFO: Publish Project: C:/Root/MyPackage/",
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
@@ -440,13 +436,12 @@ public class PackageManagerUnitTests
 				"INFO: Publish package",
 				"INFO: Package published",
 				"INFO: Cleanup staging directory",
-			},
+			],
 			testListener.Messages);
 
 		// Verify expected file system requests
 		Assert.Equal(
-			new List<string>()
-			{
+			[
 				"Exists: C:/Root/MyPackage/Recipe.sml",
 				"OpenRead: C:/Root/MyPackage/Recipe.sml",
 				"GetUserProfileDirectory",
@@ -455,7 +450,7 @@ public class PackageManagerUnitTests
 				"GetChildren: C:/Root/MyPackage/",
 				"OpenRead: C:/Users/Me/.soup/packages/.staging/MyPackage.zip",
 				"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-			},
+			],
 			mockFileSystem.Requests);
 
 		// Verify authentication requests

@@ -8,11 +8,11 @@ Create a PR with this change.
 ## Build Windows Release
 ```
 ./Scripts/Windows/build.cmd Release
-./Scripts/Windows/soup.cmd version
+./Scripts/Windows/soup-release.cmd version
+./Scripts/Windows/SignRuntime.cmd
 ./Scripts/Windows/release.cmd
+./Scripts/Windows/SignInstaller.cmd
 ```
-
-Manually build ./Source/Installer/Installer.sln
 
 ## Build Linux Release
 ```
@@ -23,8 +23,8 @@ Manually build ./Source/Installer/Installer.sln
 
 ## Create a GitHub Release
 Tag the new release
-* title: "Soup 0.\*.\* (Alpha)"
-* tag: "v0.\*.\*-alpha
+* title: "Soup 0.\*.\* (Beta)"
+* tag: "v0.\*.\*-beta
 
 Upload artifacts:
 * soup-build-[version]-linux-[architecture].tar.gz

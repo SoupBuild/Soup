@@ -37,7 +37,8 @@ namespace Soup::Client
 			}
 			else
 			{
-				workingDirectory = Path(_options.Path);
+				// Parse the path in any system valid format
+				workingDirectory = Path::Parse(std::format("{}/", _options.Path));
 
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())
@@ -54,7 +55,7 @@ namespace Soup::Client
 			const Core::Recipe* recipe;
 			if (!recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
-				Log::Error("The Recipe does not exist: " + recipePath.ToString());
+				Log::Error("The Recipe does not exist: {}", recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
 
 				// Nothing we can do, exit
@@ -62,7 +63,7 @@ namespace Soup::Client
 			}
 
 			// Build up the unique name
-			auto packageName = Core::PackageName(std::nullopt, recipe->GetName());
+			auto packageName = Core::PackageName(_options.Owner, recipe->GetName());
 
 			// Setup the build parameters
 			auto globalParameters = Core::ValueTable();

@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+using System.IO;
+
 namespace Soup.Build.Utilities;
 
 /// <summary>
@@ -17,7 +20,7 @@ internal static class OperationGraphWriter
 	internal static readonly char[] ROP = ['R', 'O', 'P', '\0'];
 	internal static readonly char[] OPS = ['O', 'P', 'S', '\0'];
 
-	public static void Serialize(OperationGraph state, System.IO.BinaryWriter writer)
+	public static void Serialize(OperationGraph state, BinaryWriter writer)
 	{
 		// Write the File Header with version
 		writer.Write(BOG);
@@ -47,7 +50,7 @@ internal static class OperationGraphWriter
 		}
 	}
 
-	private static void WriteOperationInfo(System.IO.BinaryWriter writer, OperationInfo operation)
+	private static void WriteOperationInfo(BinaryWriter writer, OperationInfo operation)
 	{
 		// Write out the operation id
 		writer.Write(operation.Id.Value);
@@ -83,13 +86,13 @@ internal static class OperationGraphWriter
 		writer.Write(operation.DependencyCount);
 	}
 
-	private static void WriteValue(System.IO.BinaryWriter writer, string value)
+	private static void WriteValue(BinaryWriter writer, string value)
 	{
 		writer.Write((uint)value.Length);
 		writer.Write(value.ToCharArray());
 	}
 
-	private static void WriteValues(System.IO.BinaryWriter writer, IReadOnlyList<string> values)
+	private static void WriteValues(BinaryWriter writer, IReadOnlyList<string> values)
 	{
 		writer.Write((uint)values.Count);
 		foreach (var value in values)
@@ -98,7 +101,7 @@ internal static class OperationGraphWriter
 		}
 	}
 
-	private static void WriteValues(System.IO.BinaryWriter writer, IList<FileId> values)
+	private static void WriteValues(BinaryWriter writer, IList<FileId> values)
 	{
 		writer.Write((uint)values.Count);
 		foreach (var value in values)
@@ -107,7 +110,7 @@ internal static class OperationGraphWriter
 		}
 	}
 
-	private static void WriteValues(System.IO.BinaryWriter writer, IList<OperationId> values)
+	private static void WriteValues(BinaryWriter writer, IList<OperationId> values)
 	{
 		writer.Write((uint)values.Count);
 		foreach (var value in values)

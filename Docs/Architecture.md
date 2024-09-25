@@ -22,7 +22,7 @@ When processing the state for a given Recipe file the system will walk up the di
 The [Local User Config](Architecture/Local-User-Config.md) allows the user to specify external SDK definitions that will grant read access to the specified folders and pass in the shared state to the build.
 
 ## Generate
-The Generate Phase takes the combined input Declaration along with the [Shared State](Architecture/Shared-State-Table.md) Generated from the dependencies and generates the [Operation](Architecture/.assets/Build-Operation.md) Graph that will be passed to the Evaluate phase, along with the output Shared State that downstream dependencies will consume.
+The Generate Phase takes the combined input Declaration along with the [Shared State](Architecture/Shared-State-Table.md) Generated from the dependencies and generates the [Operation](Architecture/assets/Build-Operation.md) Graph that will be passed to the Evaluate phase, along with the output Shared State that downstream dependencies will consume.
 
 All build logic is injected into the Generate phase through the [Build Extension](Architecture/Build-Extension.md) framework. Each build extension is simply a C# library package that contains one or more public implementations of the `SoupTask` interface. When referenced from another Recipe as a **Build** dependency the Generate Engine will discover and instantiate all instances of the build tasks. Each build task contains of a set of run before and after lists that instruct the Generate Engine in what order to run the tasks to ensure shared state is setup in the correct order. The tasks then invoke their single Run method that will allow them to read and write from the active and shared state and generate build Operations.
 
@@ -32,7 +32,7 @@ Along with the list of explicit Build dependencies that inject build extensions,
 The final stage of the build is to evaluate the build Operations that were generated from the build Tasks. These commands contain the executable and arguments to pass in, as well as the input and output files that will be used to perform incremental builds. During execution of each Operation the Engine will monitor the actual file system access to build a complete set of input and output files to be used for a guaranteed incremental build. The initial implementation will use a very simple time-stamp based incremental build that can be extended to use hashing of file contents in the future.
 
 ## Detailed Flow
-![Flow Diagram for Soup Build](Architecture/.assets/Soup-Flow.svg)
+![Flow Diagram for Soup Build](Architecture/assets/Soup-Flow.svg)
 
 The build Engine is responsible for recursively building all dependencies, facilitating the registration and execution of build Tasks, and evaluating all requirement build Operations. All build logic will be contained in Tasks and all build execution will be performed in Operations. Having this extra layer of separation between the build generate and the build evaluate allows for build Extensions to get fast incremental build support for "free" and will allow for future performance improvements without introducing breaking changes into the Extension Framework itself. This means **Soup** can support super fast builds for any possible unique build step or even be extended to support any language by only writing a new default build Extension layer.
 

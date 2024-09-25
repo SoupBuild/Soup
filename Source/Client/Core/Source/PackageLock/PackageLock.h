@@ -106,18 +106,30 @@ namespace Soup::Core
 
 						if (!HasValue(projectTable, Property_Version))
 							throw std::runtime_error("No Version on project table.");
-						auto& versionValue = GetValue(projectTable, Property_Version).AsString();
+						auto& versionValue = GetValue(projectTable, Property_Version);
 
-						SemanticVersion version;
 						PackageReference reference;
-						if (SemanticVersion::TryParse(versionValue, version))
+						if (versionValue.IsVersion())
 						{
+							auto version = versionValue.AsVersion();
 							reference = PackageReference(std::nullopt, projectName.GetOwner(), projectName.GetName(), version);
+						}
+						else if (versionValue.IsString())
+						{
+							SemanticVersion version;
+							if (SemanticVersion::TryParse(versionValue.AsString(), version))
+							{
+								reference = PackageReference(std::nullopt, projectName.GetOwner(), projectName.GetName(), version);
+							}
+							else
+							{
+								// Assume that the version value is a path
+								reference = PackageReference(Path(versionValue.AsString()));
+							}
 						}
 						else
 						{
-							// Assume that the version value is a path
-							reference = PackageReference(Path(versionValue));
+							throw std::runtime_error("Package version must be a Version or String.");
 						}
 
 						std::optional<std::string> buildValue = std::nullopt;
@@ -168,15 +180,15 @@ namespace Soup::Core
 	private:
 		bool HasValue(const RecipeTable& table, std::string_view key) const
 		{
-			return table.contains(key.data());
+			return table.Contains(key.data());
 		}
 
 		const RecipeValue& GetValue(const RecipeTable& table, std::string_view key) const
 		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
+			const RecipeValue* value;
+			if (table.TryGet(key.data(), value))
 			{
-				return findItr->second;
+				return *value;
 			}
 			else
 			{
@@ -186,10 +198,10 @@ namespace Soup::Core
 
 		RecipeValue& GetValue(RecipeTable& table, std::string_view key)
 		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
+			RecipeValue* value;
+			if (table.TryGet(key.data(), value))
 			{
-				return findItr->second;
+				return *value;
 			}
 			else
 			{

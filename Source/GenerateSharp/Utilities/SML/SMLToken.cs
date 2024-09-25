@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Soup.Build.Utilities;
 
 public class SMLToken : IEquatable<SMLToken>
@@ -28,7 +32,7 @@ public class SMLToken : IEquatable<SMLToken>
 
 	public override bool Equals(object? obj)
 	{
-		return this.Equals(obj as SMLToken);
+		return Equals(obj as SMLToken);
 	}
 
 	public bool Equals(SMLToken? other)
@@ -37,11 +41,11 @@ public class SMLToken : IEquatable<SMLToken>
 			return false;
 
 		// Optimization for a common success case.
-		if (object.ReferenceEquals(this, other))
+		if (ReferenceEquals(this, other))
 			return true;
 
 		// Return true if the fields match.
-		return this.Text == other.Text &&
+		return Text == other.Text &&
 			Enumerable.SequenceEqual(LeadingTrivia, other.LeadingTrivia) &&
 			Enumerable.SequenceEqual(TrailingTrivia, other.TrailingTrivia);
 	}

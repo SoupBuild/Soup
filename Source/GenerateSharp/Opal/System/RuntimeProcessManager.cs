@@ -2,12 +2,12 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Reflection;
+using System;
 
 namespace Opal.System;
 
 /// <summary>
-/// A windows splatform specific process executable using system
+/// A windows platform specific process executable using system
 /// </summary>
 public class RuntimeProcessManager : IProcessManager
 {
@@ -23,7 +23,7 @@ public class RuntimeProcessManager : IProcessManager
 	/// </summary>
 	public Path GetCurrentProcessFileName()
 	{
-		return new Path(Assembly.GetEntryAssembly()?.Location ?? string.Empty);
+		return new Path(AppContext.BaseDirectory);
 	}
 
 	/// <summary>

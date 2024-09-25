@@ -37,7 +37,8 @@ namespace Soup::Client
 			}
 			else
 			{
-				workingDirectory = Path(_options.Path);
+				// Parse the path in any system valid format
+				workingDirectory = Path::Parse(std::format("{}/", _options.Path));
 
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())
@@ -54,7 +55,7 @@ namespace Soup::Client
 			const Core::Recipe* recipe;
 			if (!recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
-				Log::Error("The Recipe does not exist: " + recipePath.ToString());
+				Log::Error("The Recipe does not exist: {}", recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
 
 				// Nothing we can do, exit
@@ -91,7 +92,7 @@ namespace Soup::Client
 			auto generateInputTable = Core::ValueTable();
 			if (!Core::ValueTableManager::TryLoadState(generateInputFile, generateInputTable))
 			{
-				Log::Error("Failed to load the generate input file: " + generateInputFile.ToString());
+				Log::Error("Failed to load the generate input file: {}", generateInputFile.ToString());
 				return;
 			}
 
@@ -108,7 +109,7 @@ namespace Soup::Client
 			auto sharedStateTable = Core::ValueTable();
 			if (!Core::ValueTableManager::TryLoadState(sharedStateFile, sharedStateTable))
 			{
-				Log::Error("Failed to load the shared state file: " + sharedStateFile.ToString());
+				Log::Error("Failed to load the shared state file: {}", sharedStateFile.ToString());
 				return;
 			}
 
@@ -134,7 +135,7 @@ namespace Soup::Client
 			}
 
 			auto runExecutable = Path(macroManager.ResolveMacros(buildTable.at("RunExecutable").AsString()));
-			Log::Info("Executable: " + runExecutable.ToString());
+			Log::Info("Executable: {}", runExecutable.ToString());
 			if (!System::IFileSystem::Current().Exists(runExecutable))
 			{
 				Log::Error("The run executable does not exist");

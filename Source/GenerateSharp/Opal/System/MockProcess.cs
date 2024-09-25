@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace Opal.System;
 
 /// <summary>
@@ -10,14 +14,14 @@ namespace Opal.System;
 public class MockProcess : IProcess
 {
 	// Input
-	private readonly int id;
-	private readonly IList<string> requests;
+	private readonly int _id;
+	private readonly IList<string> _requests;
 
 	// Result
-	private bool isFinished;
-	private readonly string stdOut;
-	private readonly string stdErr;
-	private readonly int exitCode;
+	private bool _isFinished;
+	private readonly string _stdOut;
+	private readonly string _stdErr;
+	private readonly int _exitCode;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockProcess'/> class.
@@ -34,12 +38,12 @@ public class MockProcess : IProcess
 		string stdOut,
 		string stdErr)
 	{
-		this.id = id;
-		this.requests = requests;
-		this.isFinished = false;
-		this.stdOut = stdOut;
-		this.stdErr = stdErr;
-		this.exitCode = exitCode;
+		_id = id;
+		_requests = requests;
+		_isFinished = false;
+		_stdOut = stdOut;
+		_stdErr = stdErr;
+		_exitCode = exitCode;
 	}
 
 	/// <summary>
@@ -47,7 +51,7 @@ public class MockProcess : IProcess
 	/// </summary>
 	public void Start()
 	{
-		this.requests.Add($"ProcessStart: {this.id}");
+		_requests.Add($"ProcessStart: {_id}");
 	}
 
 	/// <summary>
@@ -55,9 +59,9 @@ public class MockProcess : IProcess
 	/// </summary>
 	public Task WaitForExitAsync()
 	{
-		this.requests.Add($"WaitForExit: {this.id}");
+		_requests.Add($"WaitForExit: {_id}");
 
-		this.isFinished = true;
+		_isFinished = true;
 		return Task.CompletedTask;
 	}
 
@@ -66,11 +70,11 @@ public class MockProcess : IProcess
 	/// </summary>
 	public int GetExitCode()
 	{
-		this.requests.Add($"GetExitCode: {this.id}");
+		_requests.Add($"GetExitCode: {_id}");
 
-		if (!this.isFinished)
+		if (!_isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return this.exitCode;
+		return _exitCode;
 	}
 
 	/// <summary>
@@ -78,11 +82,11 @@ public class MockProcess : IProcess
 	/// </summary>
 	public string GetStandardOutput()
 	{
-		this.requests.Add($"GetStandardOutput: {this.id}");
+		_requests.Add($"GetStandardOutput: {_id}");
 
-		if (!this.isFinished)
+		if (!_isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return this.stdOut;
+		return _stdOut;
 	}
 
 	/// <summary>
@@ -90,10 +94,10 @@ public class MockProcess : IProcess
 	/// </summary>
 	public string GetStandardError()
 	{
-		this.requests.Add($"GetStandardError: {this.id}");
+		_requests.Add($"GetStandardError: {_id}");
 
-		if (!this.isFinished)
+		if (!_isFinished)
 			throw new InvalidOperationException("Process has not finished.");
-		return this.stdErr;
+		return _stdErr;
 	}
 }

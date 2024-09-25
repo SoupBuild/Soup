@@ -24,16 +24,14 @@ namespace Soup::Core
 			const Path& packageLockFile,
 			PackageLock& result)
 		{
-			// Verify the requested file exists
-			Log::Diag("Load PackageLock: " + packageLockFile.ToString());
-			if (!System::IFileSystem::Current().Exists(packageLockFile))
+			// Open the file to read from
+			Log::Diag("Load PackageLock: {}", packageLockFile.ToString());
+			std::shared_ptr<System::IInputFile> file;
+			if (!System::IFileSystem::Current().TryOpenRead(packageLockFile, true, file))
 			{
 				Log::Info("PackageLock file does not exist");
 				return false;
 			}
-
-			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(packageLockFile, true);
 
 			// Read the contents of the recipe file
 			try
@@ -46,7 +44,7 @@ namespace Soup::Core
 			}
 			catch (std::exception& ex)
 			{
-				Log::Error(std::string("Deserialize Threw: ") + ex.what());
+				Log::Error("Deserialize Threw: {}", ex.what());
 				Log::Info("Failed to parse PackageLock.");
 				return false;
 			}

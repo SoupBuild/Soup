@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using System;
 using System.Globalization;
 
 namespace Soup.Build.Utilities;
@@ -16,12 +18,6 @@ public class Value
 	{
 		Type = type;
 		RawValue = rawValue;
-	}
-
-	public Value()
-	{
-		Type = ValueType.Empty;
-		RawValue = null;
 	}
 
 	public Value(bool value)
@@ -57,6 +53,24 @@ public class Value
 	public Value(ValueList value)
 	{
 		Type = ValueType.List;
+		RawValue = value;
+	}
+
+	public Value(SemanticVersion value)
+	{
+		Type = ValueType.Version;
+		RawValue = value;
+	}
+
+	public Value(LanguageReference value)
+	{
+		Type = ValueType.LanguageReference;
+		RawValue = value;
+	}
+
+	public Value(PackageReference value)
+	{
+		Type = ValueType.PackageReference;
 		RawValue = value;
 	}
 
@@ -143,17 +157,58 @@ public class Value
 			throw new InvalidOperationException("Attempt to get value as incorrect type: Boolean");
 	}
 
+	public bool IsVersion()
+	{
+		return Type == ValueType.Version;
+	}
+
+	public SemanticVersion AsVersion()
+	{
+		if (IsVersion() && RawValue is SemanticVersion result)
+			return result;
+		else
+			throw new InvalidOperationException("Attempt to get value as incorrect type: Version");
+	}
+
+	public bool IsLanguageReference()
+	{
+		return Type == ValueType.LanguageReference;
+	}
+
+	public LanguageReference AsLanguageReference()
+	{
+		if (IsLanguageReference() && RawValue is LanguageReference result)
+			return result;
+		else
+			throw new InvalidOperationException("Attempt to get value as incorrect type: LanguageReference");
+	}
+
+	public bool IsPackageReference()
+	{
+		return Type == ValueType.PackageReference;
+	}
+
+	public PackageReference AsPackageReference()
+	{
+		if (IsPackageReference() && RawValue is PackageReference result)
+			return result;
+		else
+			throw new InvalidOperationException("Attempt to get value as incorrect type: PackageReference");
+	}
+
 	public override string ToString()
 	{
 		return Type switch
 		{
-			ValueType.Table => this.AsTable().ToString() ?? string.Empty,
-			ValueType.List => this.AsList().ToString() ?? string.Empty,
-			ValueType.String => $"\"{this.AsString()}\"",
-			ValueType.Integer => this.AsInteger().ToString(CultureInfo.InvariantCulture),
-			ValueType.Float => this.AsFloat().ToString(CultureInfo.InvariantCulture),
-			ValueType.Boolean => this.AsBoolean().ToString(),
-			ValueType.Empty => string.Empty,
+			ValueType.Table => AsTable().ToString() ?? string.Empty,
+			ValueType.List => AsList().ToString() ?? string.Empty,
+			ValueType.String => $"\"{AsString()}\"",
+			ValueType.Integer => AsInteger().ToString(CultureInfo.InvariantCulture),
+			ValueType.Float => AsFloat().ToString(CultureInfo.InvariantCulture),
+			ValueType.Boolean => AsBoolean().ToString(),
+			ValueType.Version => AsVersion().ToString(),
+			ValueType.PackageReference => AsPackageReference().ToString(),
+			ValueType.LanguageReference => AsLanguageReference().ToString(),
 			_ => "UNKNOWN",
 		};
 	}

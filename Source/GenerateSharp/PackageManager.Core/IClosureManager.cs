@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Threading.Tasks;
 using Path = Opal.Path;
 
 namespace Soup.Build.PackageManager;

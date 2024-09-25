@@ -7,6 +7,7 @@ namespace Monitor::Windows
 {
 	class ConnectionManager : public ConnectionManagerBase
 	{
+	private:
 	public:
 		ConnectionManager() :
 		 	ConnectionManagerBase(),
@@ -51,7 +52,7 @@ namespace Monitor::Windows
 						else
 						{
 							auto error = GetLastError();
-							DebugTrace("ConnectionManager::Connect SetNamedPipeHandleState failed" + std::to_string(error));
+							DebugTrace("ConnectionManager::Connect SetNamedPipeHandleState failed {}", error);
 							throw std::runtime_error("SetNamedPipeHandleState failed with unknown error.");
 						}
 					}
@@ -66,7 +67,7 @@ namespace Monitor::Windows
 							DebugTrace("ConnectionManager::Connect WaitNamedPipeA ERROR_SEM_TIMEOUT");
 							break;
 						default:
-							DebugTrace("ConnectionManager::Connect WaitNamedPipeA Unknown error " + std::to_string(error));
+							DebugTrace("ConnectionManager::Connect WaitNamedPipeA Unknown error {}", error);
 							throw std::runtime_error("WaitNamedPipeA failed with unknown error.");
 					}
 				}
@@ -87,12 +88,12 @@ namespace Monitor::Windows
 			}
 		}
 
-		virtual void UnsafeWriteMessage(const Message& message)
+		virtual bool TryUnsafeWriteMessage(const Message& message)
 		{
 			if (pipeHandle == INVALID_HANDLE_VALUE)
 			{
 				DebugError("Handle not ready", (uint32_t)message.Type);
-				exit(-1234);
+				return false;
 			}
 
 			// Write the message
@@ -107,15 +108,19 @@ namespace Monitor::Windows
 				&countBytesWritten,
 				nullptr))
 			{
+				int error = GetLastError();
+				(error);
 				DebugError("Failed write event logger");
-				exit(-1234);
+				return false;
 			}
 
 			if (countBytesWritten != countBytesToWrite)
 			{
 				DebugError("Did not write the expected number of bytes");
-				exit(-1234);
+				return false;
 			}
+
+			return true;
 		}
 
 	private:

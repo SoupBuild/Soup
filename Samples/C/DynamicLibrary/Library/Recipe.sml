@@ -1,10 +1,15 @@
 Name: 'Samples.C.DynamicLibrary.Library'
-Language: 'C|0'
-Version: '1.0.0'
+Language: (C@0)
+Version: 1.0.0
 Type: 'DynamicLibrary'
-Source: [
-	'Library.c'
+IncludePaths: [
+	'public/'
 ]
 PublicHeaders: [
-	'Library.h'
+	{
+		Root: 'public/'
+		Files: [
+			'Library.h'
+		]
+	}
 ]

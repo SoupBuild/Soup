@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Swhere.Core.Nuget;
 
 public class NugetPackage

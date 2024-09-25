@@ -41,7 +41,17 @@ public enum ValueType
 	Boolean = 6,
 
 	/// <summary>
-	/// Empty
+	/// Version
 	/// </summary>
-	Empty = 7,
+	Version = 7,
+
+	/// <summary>
+	/// PackageReference
+	/// </summary>
+	PackageReference = 8,
+
+	/// <summary>
+	/// LanguageReference
+	/// </summary>
+	LanguageReference = 9,
 }

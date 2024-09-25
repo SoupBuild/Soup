@@ -37,7 +37,8 @@ namespace Soup::Client
 			}
 			else
 			{
-				workingDirectory = Path(_options.Path + "/");
+				// Parse the path in any system valid format
+				workingDirectory = Path::Parse(std::format("{}/", _options.Path));
 
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())
@@ -56,11 +57,11 @@ namespace Soup::Client
 
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
-			auto soupViewFolder = moduleFolder + Path("View/");
+			auto soupViewFolder = moduleFolder + Path("./View/");
 			#if defined(_WIN32)
-			auto executable = soupViewFolder + Path("SoupView.exe");
+			auto executable = soupViewFolder + Path("./SoupView.exe");
 			#elif defined(__linux__)
-			auto executable = soupViewFolder + Path("SoupView");
+			auto executable = soupViewFolder + Path("./SoupView");
 			#else
 			#error "Unknown platform"
 			#endif

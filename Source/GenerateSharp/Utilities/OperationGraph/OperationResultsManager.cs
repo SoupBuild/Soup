@@ -4,6 +4,8 @@
 
 using Opal;
 using Opal.System;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Path = Opal.Path;
@@ -110,7 +112,7 @@ public static class OperationResultsManager
 		OperationGraphWriter.Serialize(state, writer);
 	}
 
-	private static void UpdateFileIds(IList<FileId> fileIds, IDictionary<FileId, FileId> activeFileIdMap)
+	private static void UpdateFileIds(IList<FileId> fileIds, Dictionary<FileId, FileId> activeFileIdMap)
 	{
 		for (var i = 0; i < fileIds.Count; i++)
 		{

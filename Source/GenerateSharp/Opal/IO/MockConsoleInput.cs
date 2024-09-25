@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Opal.IO;
 
 /// <summary>
@@ -19,9 +21,9 @@ public class MockConsoleInput : IConsoleInput
 	/// <param name="parentRequests">The parent requests.</param>
 	public MockConsoleInput(IList<string> parentRequests)
 	{
-		this._parentRequests = parentRequests;
-		this._readPasswordResponse = string.Empty;
-		this._readLineResponse = string.Empty;
+		_parentRequests = parentRequests;
+		_readPasswordResponse = string.Empty;
+		_readLineResponse = string.Empty;
 	}
 
 	/// <summary>
@@ -30,7 +32,7 @@ public class MockConsoleInput : IConsoleInput
 	/// <param name="response">The response.</param>
 	public void SetReadPasswordResponse(string response)
 	{
-		this._readPasswordResponse = response;
+		_readPasswordResponse = response;
 	}
 
 	/// <summary>
@@ -39,7 +41,7 @@ public class MockConsoleInput : IConsoleInput
 	/// <param name="response">The response.</param>
 	public void SetReadLineResponse(string response)
 	{
-		this._readLineResponse = response;
+		_readLineResponse = response;
 	}
 
 	/// <summary>
@@ -47,9 +49,9 @@ public class MockConsoleInput : IConsoleInput
 	/// </summary>
 	public virtual string ReadLine()
 	{
-		this._parentRequests.Add($"ReadLine: {this._readLineResponse}");
+		_parentRequests.Add($"ReadLine: {_readLineResponse}");
 
-		return this._readLineResponse;
+		return _readLineResponse;
 	}
 
 	/// <summary>
@@ -57,8 +59,8 @@ public class MockConsoleInput : IConsoleInput
 	/// </summary>
 	public virtual string ReadPassword()
 	{
-		this._parentRequests.Add($"ReadPassword: {this._readPasswordResponse}");
+		_parentRequests.Add($"ReadPassword: {_readPasswordResponse}");
 
-		return this._readPasswordResponse;
+		return _readPasswordResponse;
 	}
 }

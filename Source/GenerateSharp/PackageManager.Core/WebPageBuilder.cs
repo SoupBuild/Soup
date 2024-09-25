@@ -15,11 +15,11 @@ public static class WebPageBuilder
 	private static readonly CompositeFormat PageFormat = CompositeFormat.Parse(
 		"""
 		<!DOCTYPE html>
-		<html lang="en" class="h-100">
+		<html lang="en" class="h-100" data-bs-theme="dark">
 		<head>
 			<meta charset="utf-8" />
 			<meta name="viewport" content="width=device-width, initial-scale=1">
-			<link rel="icon" type="image/x-icon" href="/Shared/favicon.ico">
+			<link rel="icon" type="image/x-icon" href="/shared/favicon.ico">
 			<title>{0}</title>
 			<link href="https://auth.soupbuild.com/shared/css/app.min.css" rel="stylesheet" />
 		</head>
@@ -41,14 +41,14 @@ public static class WebPageBuilder
 			</main>
 			<footer class="mt-auto">
 			<div class="container">
-				&copy; 2020-2023 - Soup Build
+				&copy; 2020-2024 - Soup Build
 				<ul class="nav">
 					<li class="nav-item"><a class="nav-link ps-0" href="https://github.com/SoupBuild/Soup" target="_blank" rel="noopener noreferrer">GitHub</a></li>
 				</ul>
 			</div>
 		</footer>
-			<script src="https://auth.soupbuild.com/Shared/js/jquery.slim.min.js"></script>
-			<script src="https://auth.soupbuild.com/Shared/js/bootstrap.bundle.min.js"></script>
+			<script src="https://auth.soupbuild.com/shared/js/jquery.slim.min.js"></script>
+			<script src="https://auth.soupbuild.com/shared/js/bootstrap.bundle.min.js"></script>
 		</body>
 		</html>
 		""");

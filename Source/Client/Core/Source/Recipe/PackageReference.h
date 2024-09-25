@@ -33,8 +33,8 @@ namespace Soup::Core
 			auto parseValue = value;
 			if (parseValue.starts_with("C++|"))
 			{
-				parseValue = "[C++]mwasplund|" + parseValue.substr(4);
-				Log::Info("Replace C++| -> " + parseValue);
+				parseValue = std::format("[C++]mwasplund|{}", parseValue.substr(4));
+				Log::Info("Replace C++| -> {}", parseValue);
 			}
 
 			// Attempt to parse Named reference

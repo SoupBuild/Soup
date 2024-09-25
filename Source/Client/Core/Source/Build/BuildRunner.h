@@ -115,14 +115,14 @@ namespace Soup::Core
 				else
 				{
 					// Cache the build state for upstream dependencies
-					Log::Diag("Package was prebuilt: " + packageInfo.Name.ToString());
+					Log::Diag("Package was prebuilt: {}", packageInfo.Name.ToString());
 					_buildCache.emplace(
 						packageInfo.Id,
 						RecipeBuildCacheState(
 							packageInfo.Name.ToString(),
-							Path("/(TARGET_" + packageInfo.Name.ToString() + ")/"),
+							Path(std::format("/(TARGET_{})/", packageInfo.Name.ToString())),
 							packageInfo.TargetDirectory,
-							packageInfo.TargetDirectory + Path(".soup/"),
+							packageInfo.TargetDirectory + Path("./.soup/"),
 							{},
 							{}));
 				}
@@ -168,13 +168,12 @@ namespace Soup::Core
 			try
 			{
 				Log::SetActiveId(packageInfo.Id);
-				auto languagePackageName = "[" + packageInfo.Recipe->GetLanguage().GetName() + "]" + packageInfo.Name.ToString();
-				Log::Diag("Running Build: " + languagePackageName);
+				Log::Diag("Running Build: [{}]{}", packageInfo.Recipe->GetLanguage().GetName(), packageInfo.Name.ToString());
 
 				// Check if we already built this package down a different dependency path
 				if (_buildCache.contains(packageInfo.Id))
 				{
-					Log::Diag("Recipe already built: " + languagePackageName);
+					Log::Diag("Recipe already built: [{}]{}", packageInfo.Recipe->GetLanguage().GetName(), packageInfo.Name.ToString());
 				}
 				else
 				{
@@ -196,11 +195,13 @@ namespace Soup::Core
 		/// </summary>
 		void RunBuild(const PackageGraph& packageGraph, const PackageInfo& packageInfo)
 		{
-			Log::Info("Build '" + packageInfo.Name.ToString() + "'");
+			Log::Info("Build '{}'", packageInfo.Name.ToString());
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Name.ToString() + ")/");
-			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Name.ToString() + ")/");
+			auto macroPackageDirectory = Path(
+				std::format("/(PACKAGE_{})/", packageInfo.Name.ToString()));
+			auto macroTargetDirectory = Path(
+				std::format("/(TARGET_{})/", packageInfo.Name.ToString()));
 			auto realTargetDirectory = _locationManager.GetOutputDirectory(
 				packageInfo.Name,
 				packageInfo.PackageRoot,
@@ -215,6 +216,10 @@ namespace Soup::Core
 				macroPackageDirectory,
 				macroTargetDirectory,
 				realTargetDirectory);
+
+			// Preload target
+			// TODO: Ideally this should be done in the preload step, but easier here with the graph id
+			_fileSystemState.PreloadDirectory(realTargetDirectory, false);
 
 			//////////////////////////////////////////////
 			// SETUP
@@ -260,6 +265,13 @@ namespace Soup::Core
 			/////////////////////////////////////////////
 			if (!_arguments.SkipGenerate)
 			{
+				// Ensure the target directories exists
+				if (!System::IFileSystem::Current().Exists(soupTargetDirectory))
+				{
+					Log::Info("Create Directory: {}", soupTargetDirectory.ToString());
+					System::IFileSystem::Current().CreateDirectory(soupTargetDirectory);
+				}
+
 				auto ranGenerate = RunIncrementalGenerate(
 					packageInfo,
 					macroPackageDirectory,
@@ -356,6 +368,10 @@ namespace Soup::Core
 			// Generate the dependencies input state
 			globalState.emplace("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
 
+			// Pass along the file system state
+			auto fileSystemRoot = BuildDirectoryStructure(packageInfo.PackageRoot);
+			globalState.emplace("FileSystem", std::move(fileSystemRoot));
+
 			inputTable.emplace("GlobalState", std::move(globalState));
 
 			// Build up the input state for the generate call
@@ -398,7 +414,7 @@ namespace Soup::Core
 			inputTable.emplace("EvaluateMacros", std::move(evaluateMacros));
 
 			auto inputFile = soupTargetDirectory + BuildConstants::GenerateInputFileName();
-			Log::Info("Check outdated generate input file: " + inputFile.ToString());
+			Log::Info("Check outdated generate input file: {}", inputFile.ToString());
 			if (IsOutdated(inputTable, inputFile))
 			{
 				Log::Info("Save Generate Input file");
@@ -413,9 +429,9 @@ namespace Soup::Core
 			auto generateFolder = moduleName.GetParent();
 
 			#if defined(_WIN32)
-			auto generateExecutable = generateFolder + Path("Soup.Generate.exe");
+			auto generateExecutable = generateFolder + Path("./Soup.Generate.exe");
 			#elif defined(__linux__)
-			auto generateExecutable = generateFolder + Path("generate");
+			auto generateExecutable = generateFolder + Path("./generate");
 			#else
 			#error "Unknown platform"
 			#endif
@@ -425,7 +441,7 @@ namespace Soup::Core
 			generateArguments.push_back(soupTargetDirectory.ToString());
 			auto generateOperation = OperationInfo(
 				generateOperationId,
-				"Generate: [" + packageInfo.Recipe->GetLanguage().GetName() + "]" + packageInfo.Name.ToString(),
+				std::format("Generate: [{}]{}", packageInfo.Recipe->GetLanguage().GetName(), packageInfo.Name.ToString()),
 				CommandInfo(
 					packageInfo.PackageRoot,
 					generateExecutable,
@@ -553,8 +569,8 @@ namespace Soup::Core
 			// Ensure the temporary directories exists
 			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
 			{
-				Log::Info("Create Directory: " + temporaryDirectory.ToString());
-				System::IFileSystem::Current().CreateDirectory2(temporaryDirectory);
+				Log::Info("Create Directory: {}", temporaryDirectory.ToString());
+				System::IFileSystem::Current().CreateDirectory(temporaryDirectory);
 			}
 
 			try
@@ -636,8 +652,11 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
-						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+						Log::Error("Dependency does not exist in build cache: {}", dependencyPackageInfo.PackageRoot.ToString());
+						throw std::runtime_error(
+							std::format(
+								"Dependency does not exist in build cache: {}",
+								dependencyPackageInfo.PackageRoot.ToString()));
 					}
 				}
 
@@ -691,8 +710,11 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
-						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+						Log::Error("Dependency does not exist in build cache: {}", dependencyPackageInfo.PackageRoot.ToString());
+						throw std::runtime_error(
+							std::format(
+								"Dependency does not exist in build cache: {}",
+								dependencyPackageInfo.PackageRoot.ToString()));
 					}
 				}
 
@@ -758,7 +780,8 @@ namespace Soup::Core
 							if (dependencyType == _dependencyTypeBuild)
 							{
 								// Replace with unique macro to prevent collisions
-								auto macroBuildTargetDirectory = Path("/(BUILD_TARGET_" + dependencyPackageInfo.Name.ToString() + ")/");
+								auto macroBuildTargetDirectory = Path(
+									std::format("/(BUILD_TARGET_{})/", dependencyPackageInfo.Name.ToString()));
 								targetSet.GenerateSubGraphMacros.emplace(
 									dependencyState.MacroTargetDirectory.ToString(),
 									macroBuildTargetDirectory.ToString());
@@ -773,7 +796,8 @@ namespace Soup::Core
 							else if (dependencyType == _dependencyTypeTool)
 							{
 								// Replace with unique macro to prevent collisions
-								auto macroToolTargetDirectory = Path("/(TOOL_TARGET_" + dependencyPackageInfo.Name.ToString() + ")/");
+								auto macroToolTargetDirectory = Path(
+									std::format("/(TOOL_TARGET_{})/", dependencyPackageInfo.Name.ToString()));
 								targetSet.GenerateSubGraphMacros.emplace(
 									dependencyState.MacroTargetDirectory.ToString(),
 									macroToolTargetDirectory.ToString());
@@ -788,7 +812,8 @@ namespace Soup::Core
 							}
 							else
 							{
-								throw std::runtime_error("Invalid subgraph dependency type: " + dependencyType);
+								throw std::runtime_error(
+									std::format("Invalid subgraph dependency type: {}", dependencyType));
 							}
 						}
 						else
@@ -811,13 +836,47 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
-						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+						Log::Error("Dependency does not exist in build cache: {}", dependencyPackageInfo.PackageRoot.ToString());
+						throw std::runtime_error(
+							std::format("Dependency does not exist in build cache: {}", dependencyPackageInfo.PackageRoot.ToString()));
 					}
 				}
 			}
 
 			return targetSet;
+		}
+
+		ValueList BuildDirectoryStructure(const Path& directory)
+		{
+			auto directoryState = _fileSystemState.GetDirectoryState(directory);
+
+			auto result = ValueList();
+			BuildDirectoryStructure(directoryState, result);
+
+			return result;
+		}
+
+		void BuildDirectoryStructure(DirectoryState& activeDirectory, ValueList& result)
+		{
+			for (auto& file : activeDirectory.Files)
+			{
+				result.push_back(file);
+			}
+
+			if (!activeDirectory.ChildDirectories.empty())
+			{
+				auto childDirectories = ValueTable();
+				for (auto& childDirectory : activeDirectory.ChildDirectories)
+				{
+					auto childDirectoryStructure = ValueList();
+					BuildDirectoryStructure(childDirectory.second, childDirectoryStructure);
+					childDirectories.emplace(
+						childDirectory.first,
+						std::move(childDirectoryStructure));
+				}
+
+				result.push_back(std::move(childDirectories));
+			}
 		}
 	};
 }

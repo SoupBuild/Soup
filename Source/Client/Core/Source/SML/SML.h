@@ -19,38 +19,41 @@ namespace Soup::Core
 		Integer,
 		Float,
 		Boolean,
+		Version,
+		PackageReference,
+		LanguageReference,
 	};
 
 	class SMLTable
 	{
+	private:
+		SequenceMap<std::string, SMLValue> _value;
+
 	public:
 		SMLTable() :
 			_value()
 		{
 		}
 
-		SMLTable(std::unordered_map<std::string, SMLValue> value) :
+		SMLTable(SequenceMap<std::string, SMLValue> value) :
 			_value(std::move(value))
 		{
 		}
 
 		bool Contains(const std::string& key) const
 		{
-			return _value.contains(key);
+			return _value.Contains(key);
 		}
 
 		const SMLValue& operator[](const std::string& key) const
 		{
-			return _value.at(key);
+			return _value[key];
 		}
 
-		const std::unordered_map<std::string, SMLValue>& GetValue() const
+		const SequenceMap<std::string, SMLValue>& GetValue() const
 		{
 			return _value;
 		}
-
-	private:
-		std::unordered_map<std::string, SMLValue> _value;
 	};
 
 	class SMLArray
@@ -80,6 +83,7 @@ namespace Soup::Core
 		/// Load from stream
 		/// </summary>
 		static SMLDocument Parse(std::istream& stream);
+		static SMLDocument Parse(const char* data, size_t size);
 
 	public:
 		SMLDocument(SMLTable root) :
@@ -129,6 +133,21 @@ namespace Soup::Core
 		{
 		}
 
+		SMLValue(SemanticVersion value) :
+			_value(value)
+		{
+		}
+
+		SMLValue(PackageReference value) :
+			_value(value)
+		{
+		}
+
+		SMLValue(LanguageReference value) :
+			_value(value)
+		{
+		}
+
 		SMLValueType GetType() const
 		{
 			switch (_value.index())
@@ -145,6 +164,12 @@ namespace Soup::Core
 					return SMLValueType::Float;
 				case 5:
 					return SMLValueType::Boolean;
+				case 6:
+					return SMLValueType::Version;
+				case 7:
+					return SMLValueType::PackageReference;
+				case 8:
+					return SMLValueType::LanguageReference;
 				default:
 					throw std::runtime_error("Unknown SML value type.");
 			}
@@ -198,6 +223,30 @@ namespace Soup::Core
 				return std::get<bool>(_value);
 		}
 
+		SemanticVersion AsVersion() const
+		{
+			if (GetType() != SMLValueType::Version)
+				throw std::runtime_error("Incorrect access type: Value is not Version");
+			else
+				return std::get<SemanticVersion>(_value);
+		}
+
+		PackageReference AsPackageReference() const
+		{
+			if (GetType() != SMLValueType::PackageReference)
+				throw std::runtime_error("Incorrect access type: Value is not PackageReference");
+			else
+				return std::get<PackageReference>(_value);
+		}
+
+		LanguageReference AsLanguageReference() const
+		{
+			if (GetType() != SMLValueType::LanguageReference)
+				throw std::runtime_error("Incorrect access type: Value is not LanguageReference");
+			else
+				return std::get<LanguageReference>(_value);
+		}
+
 	private:
 		std::variant<
 			SMLTable,
@@ -205,7 +254,10 @@ namespace Soup::Core
 			std::string,
 			int64_t,
 			double,
-			bool> _value;
+			bool,
+			SemanticVersion,
+			PackageReference,
+			LanguageReference> _value;
 	};
 
 	std::ostream& operator<<(std::ostream& stream, const SMLValue& value);
@@ -278,7 +330,10 @@ namespace Soup::Core
 		switch (value.GetType())
 		{
 			case SMLValueType::Boolean:
-				stream << value.AsBoolean();
+				if (value.AsBoolean())
+					stream << "true";
+				else
+					stream << "false";
 				break;
 			case SMLValueType::Integer:
 				stream << value.AsInteger();
@@ -295,6 +350,27 @@ namespace Soup::Core
 				break;
 			case SMLValueType::Table:
 				stream <<  value.AsTable();
+				break;
+			case SMLValueType::Version:
+				stream << value.AsVersion().ToString();
+				break;
+			case SMLValueType::PackageReference:
+				{
+					const auto& packageReference = value.AsPackageReference();
+					stream << "<";
+					if (packageReference.HasLanguage())
+					{
+						stream << "(" << packageReference.GetLanguage() << ")";
+					}
+
+					stream << packageReference.GetOwner() << "|" << packageReference.GetName() << "@" << packageReference.GetVersion().ToString() << ">";
+				}
+				break;
+			case SMLValueType::LanguageReference:
+				{
+					const auto& languageReference = value.AsLanguageReference();
+					stream << "(" << languageReference.GetName() << "@" << languageReference.GetVersion().ToString() << ")";
+				}
 				break;
 			default:
 				throw std::runtime_error("Unknown SML type.");

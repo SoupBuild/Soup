@@ -5,43 +5,40 @@ This is the smallest amount of code to get a console application building using 
 
 ## Recipe.sml
 The Recipe file that sets the name, type, version and the single source file.
-```
-Name: "Samples.Cpp.ConsoleApplication"
-Language: "C++|0"
-Type: "Executable"
-Version: "1.0.0"
-Source: [
-  "Main.cpp"
-]
+```sml
+Name: 'Samples.Cpp.ConsoleApplication'
+Language: (C++@0)
+Type: 'Executable'
+Version: 1.0.0
 ```
 
 ## PackageLock.sml
 The package lock that was generated to capture the unique dependencies required to build this project.
-```
-Version: 4
+```sml
+Version: 5
 Closures: {
   Root: {
-    "C++": [
-      { Name: "Samples.Cpp.ConsoleApplication", Version: "./", Build: "Build0", Tool: "Tool0" }
-    ]
+    'C++': {
+      'Samples.Cpp.ConsoleApplication': { Version: '../ConsoleApplication', Build: 'Build0', Tool: 'Tool0' }
+    }
   }
   Build0: {
-    Wren: [
-      { Name: "Soup.Cpp", Version: "0.10.1" }
-    ]
+    Wren: {
+      'mwasplund|Soup.Cpp': { Version: 0.13.2 }
+    }
   }
   Tool0: {
-    "C++": [
-      { Name: "copy", Version: "1.0.0" }
-      { Name: "mkdir", Version: "1.0.0" }
-    ]
+    'C++': {
+      'mwasplund|copy': { Version: 1.1.0 }
+      'mwasplund|mkdir': { Version: 1.1.0 }
+    }
   }
 }
 ```
 
 ## Main.cpp
 A simple main method that prints our "Hello World, Soup Style!" and returns a success status.
-```
+```cpp
 #include <iostream>
 
 int main()

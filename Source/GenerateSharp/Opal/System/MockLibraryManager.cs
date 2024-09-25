@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+
 namespace Opal.System;
 
 /// <summary>
@@ -18,8 +21,8 @@ public class MockLibraryManager : ILibraryManager
 	/// </summary>
 	public MockLibraryManager()
 	{
-		this._libraries = [];
-		this._requests = [];
+		_libraries = [];
+		_requests = [];
 	}
 
 	/// <summary>
@@ -29,7 +32,7 @@ public class MockLibraryManager : ILibraryManager
 	public MockLibrary RegisterLibrary(Path path)
 	{
 		var library = new MockLibrary();
-		this._libraries.Add(path, library);
+		_libraries.Add(path, library);
 
 		return library;
 	}
@@ -37,7 +40,7 @@ public class MockLibraryManager : ILibraryManager
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> Requests => this._requests;
+	public IReadOnlyList<string> Requests => _requests;
 
 	/// <summary>
 	/// Creates a Library for the provided executable path.
@@ -45,9 +48,9 @@ public class MockLibraryManager : ILibraryManager
 	/// <param name="library">The path.</param>
 	public ILibrary LoadDynamicLibrary(Path library)
 	{
-		this._requests.Add($"LoadDynamicLibrary: {library}");
+		_requests.Add($"LoadDynamicLibrary: {library}");
 
-		if (this._libraries.TryGetValue(library, out var libraryValue))
+		if (_libraries.TryGetValue(library, out var libraryValue))
 		{
 			return libraryValue;
 		}

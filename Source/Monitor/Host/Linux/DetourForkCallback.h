@@ -17,10 +17,10 @@ namespace Monitor::Linux
 			_callback2->OnInitialize();
 		}
 
-		void OnShutdown() override final
+		void OnShutdown(bool hadError) override final
 		{
-			_callback1->OnShutdown();
-			_callback2->OnShutdown();
+			_callback1->OnShutdown(hadError);
+			_callback2->OnShutdown(hadError);
 		}
 
 		void OnError(std::string_view message) override final

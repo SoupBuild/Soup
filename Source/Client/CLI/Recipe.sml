@@ -1,9 +1,7 @@
 Name: 'Soup'
-Version: '0.38.0'
-Language: 'C++|0'
-
+Version: 0.39.1
+Language: (C++@0)
 Type: 'Executable'
-
 Source: [
 	'Source/Main.cpp'
 ]
@@ -11,7 +9,6 @@ IncludePaths: [
 	'Source/Commands/'
 	'Source/Options/'
 ]
-
 Dependencies: {
 	# Ensure the core build extensions are runtime dependencies
 	Runtime: [
@@ -31,7 +28,6 @@ Dependencies: {
 		# TODO: 'Soup.Test.Assert@0.3.0'
 	]
 }
-
 Tests: {
 	Source: [
 		'UnitTests/gen/Main.cpp'

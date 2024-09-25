@@ -48,9 +48,9 @@ namespace Soup::Core
 		virtual void OnCreateProcess(std::string_view applicationName, bool wasDetoured) override final
 		{
 			if (wasDetoured)
-				Log::Diag("SystemAccessTracker::OnCreateDetouredProcess - " + std::string(applicationName));
+				Log::Diag("SystemAccessTracker::OnCreateDetouredProcess - {}", applicationName);
 			else
-				Log::Diag("SystemAccessTracker::OnCreateProcess - " + std::string(applicationName));
+				Log::Diag("SystemAccessTracker::OnCreateProcess - {}", applicationName);
 		}
 
 		virtual void TouchFileRead(Path filePath, bool exists, bool wasBlocked) override final
@@ -58,14 +58,14 @@ namespace Soup::Core
 			if (wasBlocked)
 			{
 				// TODO: Warning
-				Log::Info("FileReadBlocked: " + filePath.ToString());
+				Log::Info("FileReadBlocked: {}", filePath.ToString());
 			}
 			else
 			{
 				auto value = filePath.ToString();
 
 				#ifdef TRACE_SYSTEM_ACCESS
-				Log::Diag("TouchFileRead " + value);
+				Log::Diag("TouchFileRead {}", value);
 				#endif
 
 				if (exists)
@@ -84,14 +84,14 @@ namespace Soup::Core
 			if (wasBlocked)
 			{
 				// TODO: Warning
-				Log::Info("FileWriteBlocked: " + filePath.ToString());
+				Log::Info("FileWriteBlocked: {}", filePath.ToString());
 			}
 			else
 			{
 				auto value = filePath.ToString();
 
 				#ifdef TRACE_SYSTEM_ACCESS
-				Log::Diag("TouchFileWrite " + value);
+				Log::Diag("TouchFileWrite {}", value);
 				#endif
 
 				_output.insert(value);
@@ -103,14 +103,14 @@ namespace Soup::Core
 			if (wasBlocked)
 			{
 				// TODO: Warning
-				Log::Info("FileDeleteBlocked: " + filePath.ToString());
+				Log::Info("FileDeleteBlocked: {}", filePath.ToString());
 			}
 			else
 			{
 				auto value = filePath.ToString();
 
 				#ifdef TRACE_SYSTEM_ACCESS
-				Log::Diag("TouchFileDelete " + value);
+				Log::Diag("TouchFileDelete {}", value);
 				#endif
 
 				// If this was an output file extract it as it was a transient file
@@ -125,7 +125,7 @@ namespace Soup::Core
 			auto value = filePath.ToString();
 
 			#ifdef TRACE_SYSTEM_ACCESS
-			Log::Diag("TouchFileDeleteOnClose " + value);
+			Log::Diag("TouchFileDeleteOnClose {}", value);
 			#endif
 
 			_deleteOnClose.insert(std::move(value));
@@ -133,7 +133,7 @@ namespace Soup::Core
 
 		virtual void SearchPath(std::string_view path, std::string_view filename) override final
 		{
-			Log::Warning("Search Path encountered: " + std::string(path) + " - " + std::string(filename));
+			Log::Warning("Search Path encountered: {} - {}", path, filename);
 		}
 	};
 }

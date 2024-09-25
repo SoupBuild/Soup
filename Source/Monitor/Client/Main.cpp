@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <locale>
 #include <codecvt>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <mutex>
