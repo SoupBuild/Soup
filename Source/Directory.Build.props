@@ -9,7 +9,7 @@
     <GenerateSharpDirectory>$(RootDirectory)\GenerateSharp</GenerateSharpDirectory>
     <ViewDirectory>$(RootDirectory)\GenerateSharp</ViewDirectory>
     <RootDirectory>$([System.IO.Path]::GetDirectoryName($(SourceDirectory)))</RootDirectory>
-    <OutDirectory>$(RootDirectory)\out\msbuild</OutDirectory>
+    <OutDirectory>$(RootDirectory)\out</OutDirectory>
     <ObjectRoot>$(OutDirectory)\obj</ObjectRoot>
     <BinaryRoot>$(OutDirectory)\bin</BinaryRoot>
     <TempRoot>$(OutDirectory)\temp</TempRoot>
