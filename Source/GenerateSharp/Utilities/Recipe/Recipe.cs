@@ -85,7 +85,7 @@ public class Recipe
 			SMLValueType.LanguageReference => LanguageValue.AsLanguageReference().Value,
 			_ => throw new InvalidOperationException("Language must be string or LanguageReference"),
 		};
-		set => EnsureHasValue(Document, Property_Language, value.ToString());
+		set => EnsureHasValue(Document, Property_Language, value);
 	}
 
 	/// <summary>
@@ -103,7 +103,7 @@ public class Recipe
 			SMLValueType.Version => VersionValue.AsVersion().Value,
 			_ => throw new InvalidOperationException("Version must be string or Version"),
 		};
-		set => EnsureHasValue(Document, Property_Version, value.ToString());
+		set => EnsureHasValue(Document, Property_Version, value);
 	}
 
 	/// <summary>
@@ -243,6 +243,45 @@ public class Recipe
 
 		var values = GetValue(Document, Property_Dependencies).AsTable();
 		return values;
+	}
+
+	private static void EnsureHasValue(SMLDocument document, string name, LanguageReference value)
+	{
+		if (document.Values.TryGetValue(name, out var existingValue))
+		{
+			if (existingValue.Value.Type != SMLValueType.LanguageReference)
+				throw new InvalidOperationException("The recipe already has a non-string property");
+
+			// Find the Syntax for the table
+			var languageReferenceValue = existingValue.Value.AsLanguageReference();
+			languageReferenceValue.Value = value;
+			languageReferenceValue.LanguageName.Text = value.Name;
+			languageReferenceValue.VersionReference.Text = value.Version.ToString();
+		}
+		else
+		{
+			// Create a new table
+			document.AddItemWithSyntax(name, value);
+		}
+	}
+
+	private static void EnsureHasValue(SMLDocument document, string name, SemanticVersion value)
+	{
+		if (document.Values.TryGetValue(name, out var existingValue))
+		{
+			if (existingValue.Value.Type != SMLValueType.Version)
+				throw new InvalidOperationException("The recipe already has a non-string property");
+
+			// Find the Syntax for the table
+			var versionValue = existingValue.Value.AsVersion();
+			versionValue.Value = value;
+			versionValue.Content.Text = value.ToString();
+		}
+		else
+		{
+			// Create a new table
+			document.AddItemWithSyntax(name, value);
+		}
 	}
 
 	private static void EnsureHasValue(SMLDocument document, string name, string value)

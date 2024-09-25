@@ -5,6 +5,8 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Utilities;
+using System;
+using System.Threading.Tasks;
 using System.Xml;
 using Path = Opal.Path;
 
@@ -62,7 +64,7 @@ public static class MigrationManager
 	private static async Task BuildRecipeAsync(Path target, CSProjParser parser)
 	{
 		var projectName = target.FileStem;
-		var targetRecipe = target.GetParent() + new Path("Recipe.sml");
+		var targetRecipe = target.GetParent() + new Path("./Recipe.sml");
 
 		var recipe = new Recipe(projectName, new LanguageReference("C#", new SemanticVersion(0)))
 		{

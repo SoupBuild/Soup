@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.ObjectModel;
 using System.Xml;
 using Path = Opal.Path;
@@ -79,28 +80,28 @@ public class CSProjParser
 		switch (node.Name)
 		{
 			case "OutputType":
-				this.OutputType = node.InnerText;
+				OutputType = node.InnerText;
 				return true;
 			case "TargetFramework":
-				this.TargetFramework = node.InnerText;
+				TargetFramework = node.InnerText;
 				return true;
 			case "PublishSingleFile":
-				this.PublishSingleFile = bool.Parse(node.InnerText);
+				PublishSingleFile = bool.Parse(node.InnerText);
 				return true;
 			case "SelfContained":
-				this.SelfContained = bool.Parse(node.InnerText);
+				SelfContained = bool.Parse(node.InnerText);
 				return true;
 			case "PublishReadyToRun":
-				this.PublishReadyToRun = bool.Parse(node.InnerText);
+				PublishReadyToRun = bool.Parse(node.InnerText);
 				return true;
 			case "PublishTrimmed":
-				this.PublishTrimmed = bool.Parse(node.InnerText);
+				PublishTrimmed = bool.Parse(node.InnerText);
 				return true;
 			case "Platforms":
-				this.Platforms = node.InnerText;
+				Platforms = node.InnerText;
 				return true;
 			case "NoWarn":
-				this.NoWarn = node.InnerText;
+				NoWarn = node.InnerText;
 				return true;
 			default:
 				return false;
@@ -136,7 +137,7 @@ public class CSProjParser
 		switch (attribute.Name)
 		{
 			case "Include":
-				projectReference.Include = new Path(attribute.Value);
+				projectReference.Include = Path.Parse(attribute.Value);
 				return true;
 			default:
 				return false;

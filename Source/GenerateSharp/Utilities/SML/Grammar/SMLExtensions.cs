@@ -184,6 +184,48 @@ public static partial class SMLExtensions
 		return newTable;
 	}
 
+	public static void AddItemWithSyntax(this SMLDocument document, string key, LanguageReference value)
+	{
+		// Create a new item and matching syntax
+		var newValue = new SMLValue(
+			new SMLLanguageReferenceValue(
+				new SMLToken("("),
+				new SMLToken(value.Name),
+				new SMLToken("@"),
+				new SMLToken(value.Version.ToString()),
+				new SMLToken(")"),
+				value));
+
+		// Update the previous last item to have a comma delimiter
+		if (document.Values.Count > 0)
+		{
+			var lastItem = document.Values.Last();
+			lastItem.Value.Delimiter.Add(NewlineToken);
+		}
+
+		// Add the model to the parent table model
+		document.Values.Add(key, CreateTableValue(key, newValue));
+	}
+
+	public static void AddItemWithSyntax(this SMLDocument document, string key, SemanticVersion value)
+	{
+		// Create a new item and matching syntax
+		var newValue = new SMLValue(
+			new SMLVersionValue(
+				value,
+				new SMLToken(value.ToString())));
+
+		// Update the previous last item to have a comma delimiter
+		if (document.Values.Count > 0)
+		{
+			var lastItem = document.Values.Last();
+			lastItem.Value.Delimiter.Add(NewlineToken);
+		}
+
+		// Add the model to the parent table model
+		document.Values.Add(key, CreateTableValue(key, newValue));
+	}
+
 	public static void AddItemWithSyntax(this SMLDocument document, string key, long value)
 	{
 		// Create a new item and matching syntax

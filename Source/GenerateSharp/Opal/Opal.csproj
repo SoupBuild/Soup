@@ -3,11 +3,4 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
-	<ItemGroup>
-		<Compile Remove="IO\SystemConsoleInputStream.cs" />
-		<Compile Remove="IO\SystemConsoleManager.cs" />
-		<Compile Remove="Logger\TextWriterExtendedTraceListener.cs" />
-		<Compile Remove="System\WindowsDynamicLibrary.cs" />
-		<Compile Remove="System\WindowsDynamicLibraryManager.cs" />
-	</ItemGroup>
 </Project>
