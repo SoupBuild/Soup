@@ -113,23 +113,22 @@ public class DotNetSDKUtilitiesUnitTests
 			new DictionaryOfListsComparer<(string Version, Path InstallDirectory)>());
 
 		Assert.Equal(
-			new Dictionary<string, IList<(string Version, Path InstallDirectory)>>()
+			new Dictionary<string, IList<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>>()
 			{
 				{
 					"Microsoft.NETCore.App.Ref",
-					new List<(string Version, Path InstallDirectory)>()
+					new List<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>()
 					{
-						("5.0.0", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/")),
-						("6.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/")),
-						("6.0.8", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/")),
-						("6.0.9", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/")),
-						("7.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/")),
-
+						("5.0.0", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
+						("6.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
+						("6.0.8", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
+						("6.0.9", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
+						("7.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
 					}
 				},
 			},
 			result.TargetingPacks,
-			new DictionaryOfListsComparer<(string Version, Path InstallDirectory)>());
+			new DictionaryOfListsComparer<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>());
 
 		// Verify expected logs
 		Assert.Equal(

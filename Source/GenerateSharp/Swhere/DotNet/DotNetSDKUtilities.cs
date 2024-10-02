@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
@@ -18,7 +19,7 @@ public static class DotNetSDKUtilities
 		Path DotNetExecutable,
 		IList<(string Version, Path InstallDirectory)> SDKVersions,
 		IDictionary<string, IList<(string Version, Path InstallDirectory)>> Runtimes,
-		IDictionary<string, IList<(string Version, Path InstallDirectory)>> TargetingPacks,
+		IDictionary<string, IList<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>> TargetingPacks,
 		IList<Path> SourceDirectories)> FindDotNetAsync(OSPlatform platform)
 	{
 		var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync(platform, "dotnet");
@@ -122,7 +123,7 @@ public static class DotNetSDKUtilities
 		return runtimes;
 	}
 
-	private static Dictionary<string, IList<(string Version, Path InstallDirectory)>> FindDotNetTargetingPacksVersions(
+	private static Dictionary<string, IList<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>> FindDotNetTargetingPacksVersions(
 		Path dotnetInstallPath)
 	{
 		var knownPacks = new List<string>()
@@ -130,7 +131,7 @@ public static class DotNetSDKUtilities
 			"Microsoft.NETCore.App.Ref",
 		};
 
-		var result = new Dictionary<string, IList<(string Version, Path InstallDirectory)>>();
+		var result = new Dictionary<string, IList<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>>();
 		foreach (var packageName in knownPacks)
 		{
 			var packageVersions = FindDotNetTargetingPackVersions(dotnetInstallPath, packageName);
@@ -140,7 +141,7 @@ public static class DotNetSDKUtilities
 		return result;
 	}
 
-	private static List<(string Version, Path InstallDirectory)> FindDotNetTargetingPackVersions(
+	private static List<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)> FindDotNetTargetingPackVersions(
 		Path dotnetInstallPath,
 		string packageName)
 	{
@@ -148,13 +149,14 @@ public static class DotNetSDKUtilities
 
 		// Check the default tools version
 		Log.HighPriority("FindDotNetPackVersions: " + dotnetPacksPath.ToString());
-		var versions = new List<(string Version, Path InstallDirectory)>();
+		var versions = new List<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>();
 		if (LifetimeManager.Get<IFileSystem>().Exists(dotnetPacksPath))
 		{
 			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetPacksPath))
 			{
 				var folderName = child.Path.DecomposeDirectories().Last();
-				versions.Add((folderName, dotnetPacksPath));
+				var frameworkList = LoadFrameworkList(child.Path);
+				versions.Add((folderName, dotnetPacksPath, frameworkList));
 			}
 		}
 		else
@@ -163,5 +165,36 @@ public static class DotNetSDKUtilities
 		}
 
 		return versions;
+	}
+
+
+	private static FrameworkFileList? LoadFrameworkList(
+		Path dotnetPackPath)
+	{
+		var fileSystem = LifetimeManager.Get<IFileSystem>();
+
+		// Load the XML file
+		var frameworkListFile = dotnetPackPath + new Path("./data/FrameworkList.xml");
+		if (!fileSystem.Exists(frameworkListFile))
+		{
+			Log.Warning($"Missing FrameworkList file: {frameworkListFile}");
+			return null;
+		}
+
+		using var frameworkList = fileSystem.OpenRead(frameworkListFile);
+		using var reader = XmlReader.Create(frameworkList.GetInStream(), new XmlReaderSettings() { Async = true });
+
+		FrameworkFileList fileList;
+		try
+		{
+			fileList = FrameworkFileList.Deserialize(reader);
+		}
+		catch (InvalidOperationException)
+		{
+			Log.Warning($"Failed to parse Framework List file: {frameworkListFile}");
+			return null;
+		}
+
+		return fileList;
 	}
 }

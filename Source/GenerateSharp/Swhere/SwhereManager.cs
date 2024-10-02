@@ -77,7 +77,16 @@ public static class SwhereManager
 			var packTable = packsTable.EnsureTableWithSyntax(pack.Key, 4);
 			foreach (var packVersion in pack.Value)
 			{
-				packTable.AddItemWithSyntax(packVersion.Version, packVersion.InstallDirectory.ToString(), 5);
+				var packVersionTable = packTable.AddTableWithSyntax(packVersion.Version, 5);
+				packVersionTable.AddItemWithSyntax("Name", packVersion.InstallDirectory.ToString(), 6);
+				var fileListArray = packVersionTable.AddArrayWithSyntax("FileList", 6);
+				if (packVersion.FrameworkList is not null)
+				{
+					foreach (var file in packVersion.FrameworkList.Files)
+					{
+						fileListArray.AddItemWithSyntax(file.Path.ToString(), 7);
+					}
+				}
 			}
 		}
 	}
