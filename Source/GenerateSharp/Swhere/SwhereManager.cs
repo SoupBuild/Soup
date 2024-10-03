@@ -78,13 +78,25 @@ public static class SwhereManager
 			foreach (var packVersion in pack.Value)
 			{
 				var packVersionTable = packTable.AddTableWithSyntax(packVersion.Version, 5);
-				packVersionTable.AddItemWithSyntax("Name", packVersion.InstallDirectory.ToString(), 6);
-				var fileListArray = packVersionTable.AddArrayWithSyntax("FileList", 6);
+				packVersionTable.AddItemWithSyntax("Path", packVersion.InstallDirectory.ToString(), 6);
+				var analyzerArray = packVersionTable.AddArrayWithSyntax("Analyzer", 6);
+				var managedArray = packVersionTable.AddArrayWithSyntax("Managed", 6);
 				if (packVersion.FrameworkList is not null)
 				{
 					foreach (var file in packVersion.FrameworkList.Files)
 					{
-						fileListArray.AddItemWithSyntax(file.Path.ToString(), 7);
+						switch (file.Type)
+						{
+							case "Analyzer":
+								analyzerArray.AddItemWithSyntax(file.Path.ToString(), 7);
+								break;
+							case "Managed":
+								managedArray.AddItemWithSyntax(file.Path.ToString(), 7);
+								break;
+							default:
+								Log.Warning($"Unknown File Type: {file.Type}");
+								break;
+						}
 					}
 				}
 			}

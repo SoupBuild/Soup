@@ -17,7 +17,7 @@ public class FrameworkFile
 	public Path Path { get; set; } = new Path();
 
 	[XmlAttribute("Language")]
-	public string Language { get; set; } = string.Empty;
+	public string? Language { get; set; }
 
 	[XmlAttribute("AssemblyName")]
 	public string AssemblyName { get; set; } = string.Empty;

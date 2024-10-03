@@ -74,7 +74,7 @@ public static class DotNetSDKUtilities
 
 			var version = sdkValue[..splitIndex];
 			var installationValue = sdkValue.Substring(splitIndex + 2, sdkValue.Length - splitIndex - 3);
-			var installationPath = Path.Parse($"{installationValue}\\");
+			var installationPath = Path.Parse($"{installationValue}\\{version}\\");
 
 			Log.Info($"Found SDK: {version} {installationPath}");
 			sdks.Add((version, installationPath));
@@ -156,7 +156,7 @@ public static class DotNetSDKUtilities
 			{
 				var folderName = child.Path.DecomposeDirectories().Last();
 				var frameworkList = LoadFrameworkList(child.Path);
-				versions.Add((folderName, dotnetPacksPath, frameworkList));
+				versions.Add((folderName, child.Path, frameworkList));
 			}
 		}
 		else
