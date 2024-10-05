@@ -32,7 +32,7 @@ public static class Program
 				return -1;
 			}
 
-			var target = new Path(args[0]);
+			var target = Path.Parse(args[0]);
 			await MigrationManager.RunAsync(target);
 
 			return 0;
