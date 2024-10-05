@@ -84,6 +84,20 @@ public static class MigrationManager
 				throw new InvalidOperationException($"Unknown output type {parser.OutputType}");
 		}
 
+		switch (parser.TargetFramework)
+		{
+			case "net8.0":
+				recipe.Document.EnsureValueWithSyntax("TargetFramework", parser.TargetFramework);
+				break;
+			default:
+				throw new InvalidOperationException($"Unknown target framework {parser.TargetFramework}");
+		}
+
+		if (parser.PackageReferenceItems.Count > 0)
+		{
+			recipe.AddBuildDependency("mwasplund|Soup.CSharp.Nuget@0");
+		}
+
 		foreach (var reference in parser.ProjectReferenceItems)
 		{
 			if (reference.Include is null)
@@ -91,6 +105,26 @@ public static class MigrationManager
 
 			var referencePath = reference.Include.GetParent();
 			recipe.AddRuntimeDependency(referencePath.ToString());
+		}
+
+		if (parser.PackageReferenceItems.Count > 0)
+		{
+			var nugetTable = recipe.Document.EnsureTableWithSyntax("Nuget");
+			var dependenciesTable = nugetTable.EnsureTableWithSyntax("Dependencies", 1);
+			var runtimeDependencies = dependenciesTable.EnsureArrayWithSyntax("Runtime", 2);
+
+			foreach (var reference in parser.PackageReferenceItems)
+			{
+				if (reference.Include is null)
+					throw new InvalidOperationException("Missing include on package reference");
+
+				if (reference.Version is null)
+					throw new InvalidOperationException("Missing version on package reference");
+
+				var referenceTable = runtimeDependencies.AddInlineTableWithSyntax(3);
+				referenceTable.AddInlineItemWithSyntax("Name", reference.Include);
+				referenceTable.AddInlineItemWithSyntax("Version", reference.Version);
+			}
 		}
 
 		await RecipeExtensions.SaveToFileAsync(targetRecipe, recipe);

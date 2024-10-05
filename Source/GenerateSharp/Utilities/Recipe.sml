@@ -10,10 +10,9 @@ Dependencies: {
 		'../Opal/'
 	]
 }
-
 Nuget: {
 	Dependencies: {
-		'Runtime': [
+		Runtime: [
 			{ Name: 'Antlr4.Runtime.Standard', Version: '4.13.1' }
 		]
 	}

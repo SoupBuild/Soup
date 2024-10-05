@@ -68,7 +68,7 @@ public class Recipe
 	public string Name
 	{
 		get => NameValue.AsString().Value;
-		set => EnsureHasValue(Document, Property_Name, value);
+		set => Document.EnsureValueWithSyntax(Property_Name, value);
 	}
 
 	/// <summary>
@@ -85,7 +85,7 @@ public class Recipe
 			SMLValueType.LanguageReference => LanguageValue.AsLanguageReference().Value,
 			_ => throw new InvalidOperationException("Language must be string or LanguageReference"),
 		};
-		set => EnsureHasValue(Document, Property_Language, value);
+		set => Document.EnsureValueWithSyntax(Property_Language, value);
 	}
 
 	/// <summary>
@@ -103,7 +103,7 @@ public class Recipe
 			SMLValueType.Version => VersionValue.AsVersion().Value,
 			_ => throw new InvalidOperationException("Version must be string or Version"),
 		};
-		set => EnsureHasValue(Document, Property_Version, value);
+		set => Document.EnsureValueWithSyntax(Property_Version, value);
 	}
 
 	/// <summary>
@@ -120,7 +120,7 @@ public class Recipe
 
 			return GetValue(Document, Property_Type).AsString().Value;
 		}
-		set => EnsureHasValue(Document, Property_Type, value);
+		set => Document.EnsureValueWithSyntax(Property_Type, value);
 	}
 
 	/// <summary>
@@ -185,16 +185,21 @@ public class Recipe
 
 	public void AddSource(string value)
 	{
-		var sourceList = EnsureHasList(Document, Property_Source);
+		var sourceList = Document.EnsureArrayWithSyntax(Property_Source);
 		sourceList.AddItemWithSyntax(value, 1);
 	}
 
 	public void AddNamedDependency(string type, string value)
 	{
-		var dependencies = EnsureHasTable(Document, Property_Dependencies);
-		var runtimeDependencies = EnsureHasList(dependencies, type);
+		var dependencies = Document.EnsureTableWithSyntax(Property_Dependencies);
+		var runtimeDependencies = dependencies.EnsureArrayWithSyntax(type);
 
 		runtimeDependencies.AddItemWithSyntax(value, 2);
+	}
+
+	public void AddBuildDependency(string value)
+	{
+		AddNamedDependency(Property_Build, value);
 	}
 
 	public void AddRuntimeDependency(string value)
@@ -243,115 +248,6 @@ public class Recipe
 
 		var values = GetValue(Document, Property_Dependencies).AsTable();
 		return values;
-	}
-
-	private static void EnsureHasValue(SMLDocument document, string name, LanguageReference value)
-	{
-		if (document.Values.TryGetValue(name, out var existingValue))
-		{
-			if (existingValue.Value.Type != SMLValueType.LanguageReference)
-				throw new InvalidOperationException("The recipe already has a non-string property");
-
-			// Find the Syntax for the table
-			var languageReferenceValue = existingValue.Value.AsLanguageReference();
-			languageReferenceValue.Value = value;
-			languageReferenceValue.LanguageName.Text = value.Name;
-			languageReferenceValue.VersionReference.Text = value.Version.ToString();
-		}
-		else
-		{
-			// Create a new table
-			document.AddItemWithSyntax(name, value);
-		}
-	}
-
-	private static void EnsureHasValue(SMLDocument document, string name, SemanticVersion value)
-	{
-		if (document.Values.TryGetValue(name, out var existingValue))
-		{
-			if (existingValue.Value.Type != SMLValueType.Version)
-				throw new InvalidOperationException("The recipe already has a non-string property");
-
-			// Find the Syntax for the table
-			var versionValue = existingValue.Value.AsVersion();
-			versionValue.Value = value;
-			versionValue.Content.Text = value.ToString();
-		}
-		else
-		{
-			// Create a new table
-			document.AddItemWithSyntax(name, value);
-		}
-	}
-
-	private static void EnsureHasValue(SMLDocument document, string name, string value)
-	{
-		if (document.Values.TryGetValue(name, out var existingValue))
-		{
-			if (existingValue.Value.Type != SMLValueType.String)
-				throw new InvalidOperationException("The recipe already has a non-string property");
-
-			// Find the Syntax for the table
-			var stringValue = existingValue.Value.AsString();
-			stringValue.Value = value;
-			stringValue.Content.Text = value;
-		}
-		else
-		{
-			// Create a new table
-			document.AddItemWithSyntax(name, value);
-		}
-	}
-
-	private static SMLTable EnsureHasTable(SMLDocument document, string name)
-	{
-		if (document.Values.TryGetValue(name, out var value))
-		{
-			if (value.Value.Type != SMLValueType.Table)
-				throw new InvalidOperationException("The recipe already has a non-table dependencies property");
-
-			// Find the Syntax for the table
-			return value.Value.AsTable();
-		}
-		else
-		{
-			// Create a new table
-			return document.AddTableWithSyntax(name);
-		}
-	}
-
-	private static SMLArray EnsureHasList(SMLTable table, string name)
-	{
-		if (table.Values.TryGetValue(name, out var value))
-		{
-			if (value.Value.Type != SMLValueType.Array)
-				throw new InvalidOperationException("The recipe already has a non-list dependencies property");
-
-			// Find the Syntax for the table
-			return value.Value.AsArray();
-		}
-		else
-		{
-			// Create a new list
-			return table.AddArrayWithSyntax(name, 1);
-		}
-	}
-
-	private static SMLArray EnsureHasList(SMLDocument document, string name)
-	{
-		if (document.Values.TryGetValue(name, out var value))
-		{
-			if (value.Value.Type != SMLValueType.Array)
-				throw new InvalidOperationException("The recipe already has a non-list dependencies property");
-
-			// Find the Syntax for the table
-			return value.Value.AsArray();
-		}
-		else
-		{
-			// Create a new list
-			return document.AddArrayWithSyntax(name);
-		}
 	}
 
 	private static bool HasValue(SMLTable table, string key)

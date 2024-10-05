@@ -171,7 +171,10 @@ public class CSProjParser
 		}
 	}
 
-	private static void DeserializeNode(XmlNode node, Func<XmlNode, bool>? childHandler, Func<XmlAttribute, bool>? attributeHandler)
+	private static void DeserializeNode(
+		XmlNode node,
+		Func<XmlNode, bool>? childHandler,
+		Func<XmlAttribute, bool>? attributeHandler)
 	{
 		if (node.Attributes is not null)
 		{

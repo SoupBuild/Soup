@@ -5,7 +5,6 @@ Type: 'Executable'
 TargetFramework: 'net8.0'
 Dependencies: {
 	Runtime: [
-		'../Opal/'
 		'../Utilities/'
 	]
 }
