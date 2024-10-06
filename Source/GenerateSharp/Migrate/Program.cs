@@ -16,6 +16,7 @@ public static class Program
 		try
 		{
 			var traceFlags =
+				TraceEvents.Diagnostic |
 				TraceEvents.Information |
 				TraceEvents.HighPriority |
 				TraceEvents.Critical |

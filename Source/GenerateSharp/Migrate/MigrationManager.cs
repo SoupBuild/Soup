@@ -16,14 +16,18 @@ public static class MigrationManager
 {
 	public static async Task RunAsync(Path target)
 	{
+		Log.Info($"Migrate {target}");
 		switch (target.FileExtension)
 		{
 			case ".csproj":
 				await MigrateCSProjAsync(target);
 				break;
 			default:
+				Log.Error("Unknown file extension");
 				throw new HandledException($"Invalid target {target}");
 		}
+
+		Log.Info("Migrate Finished");
 	}
 
 	private static async Task MigrateCSProjAsync(Path target)
