@@ -52,12 +52,12 @@ public class DotNetSDKUtilitiesUnitTests
 		Assert.Equal(new Path("C:/Program Files/dotnet/dotnet.exe"), result.DotNetExecutable);
 		Assert.Equal(
 			[
-				("5.0.0", new Path("C:/Program Files/dotnet/sdk/")),
-				("6.0.8", new Path("C:/Program Files/dotnet/sdk/")),
-				("7.0.201", new Path("C:/Program Files/dotnet/sdk/")),
-				("7.0.300-preview.23179.2", new Path("C:/Program Files/dotnet/sdk/")),
-				("7.0.304", new Path("C:/Program Files/dotnet/sdk/")),
-				("7.0.400-preview.23274.1", new Path("C:/Program Files/dotnet/sdk/")),
+				("5.0.0", new Path("C:/Program Files/dotnet/sdk/5.0.0/")),
+				("6.0.8", new Path("C:/Program Files/dotnet/sdk/6.0.8/")),
+				("7.0.201", new Path("C:/Program Files/dotnet/sdk/7.0.201/")),
+				("7.0.300-preview.23179.2", new Path("C:/Program Files/dotnet/sdk/7.0.300-preview.23179.2/")),
+				("7.0.304", new Path("C:/Program Files/dotnet/sdk/7.0.304/")),
+				("7.0.400-preview.23274.1", new Path("C:/Program Files/dotnet/sdk/7.0.400-preview.23274.1/")),
 			],
 			result.SDKVersions);
 		Assert.Equal(
@@ -119,11 +119,11 @@ public class DotNetSDKUtilitiesUnitTests
 					"Microsoft.NETCore.App.Ref",
 					new List<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>()
 					{
-						("5.0.0", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
-						("6.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
-						("6.0.8", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
-						("6.0.9", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
-						("7.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"), null),
+						("5.0.0", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/"), null),
+						("6.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/"), null),
+						("6.0.8", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/"), null),
+						("6.0.9", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/"), null),
+						("7.0.7", new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/"), null),
 					}
 				},
 			},
@@ -137,12 +137,12 @@ public class DotNetSDKUtilitiesUnitTests
 				"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
 				"HIGH: Find DotNet SDK Versions",
 				"INFO: C:/Program Files/dotnet/dotnet.exe --list-sdks",
-				"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk/",
+				"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk/5.0.0/",
+				"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk/6.0.8/",
+				"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk/7.0.201/",
+				"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk/7.0.300-preview.23179.2/",
+				"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk/7.0.304/",
+				"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk/7.0.400-preview.23274.1/",
 				"HIGH: Find DotNet Runtime Versions",
 				"INFO: C:/Program Files/dotnet/dotnet.exe --list-runtimes",
 				"INFO: Found Runtime: Microsoft.AspNetCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App/",
@@ -173,6 +173,11 @@ public class DotNetSDKUtilitiesUnitTests
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/",
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/",
 				"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/data/FrameworkList.xml",
 			],
 			testListener.Messages);
 
@@ -181,6 +186,11 @@ public class DotNetSDKUtilitiesUnitTests
 			[
 				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 				"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/data/FrameworkList.xml",
 			],
 			mockFileSystem.Requests);
 
