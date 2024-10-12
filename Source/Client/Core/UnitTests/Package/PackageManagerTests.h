@@ -27,7 +27,11 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: RestorePackages",
 					"INFO: Running PackageManager",
-					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe restore-packages C:/TestLocation",
+					#ifdef _WIN32
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe restore-packages C:/TestLocation",
+					#else
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager restore-packages C:/TestLocation",
+					#endif
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
