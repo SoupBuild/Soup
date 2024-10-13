@@ -2,12 +2,12 @@ Version: 5
 Closures: {
 	Root: {
 		'C#': {
-			'Samples.CSharp.BuildExtension.Executable': { Version: '../Executable', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.CSharp.Library.Library': { Version: '../Library/', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.CSharp.Library.ConsoleApplication': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
 		Wren: {
-			'Samples.CSharp.BuildExtension.Extension': { Version: '../Extension/' }
 			'mwasplund|Soup.CSharp': { Version: 0.15.0 }
 		}
 	}

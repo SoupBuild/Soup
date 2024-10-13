@@ -6,9 +6,12 @@
 		<SelfContained>true</SelfContained>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishTrimmed>true</PublishTrimmed>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<TrimmableAssembly Include="Antlr4.Runtime.Standard" />
-		<ProjectReference Include="..\Swhere.Core\Swhere.Core.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
 	</ItemGroup>
 </Project>

@@ -2,10 +2,9 @@ Version: 5
 Closures: {
 	Root: {
 		'C#': {
+			Migrate: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 			Opal: { Version: '../Opal/', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.Build.Utilities': { Version: '../Utilities/', Build: 'Build1', Tool: 'Tool0' }
-			Swhere: { Version: '../Swhere', Build: 'Build0', Tool: 'Tool0' }
-			'Swhere.Core': { Version: '../Swhere.Core/', Build: 'Build0', Tool: 'Tool0' }
+			'Soup.Utilities': { Version: '../Utilities/', Build: 'Build1', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

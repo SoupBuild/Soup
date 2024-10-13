@@ -27,7 +27,11 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: RestorePackages",
 					"INFO: Running PackageManager",
-					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe restore-packages C:/TestLocation",
+					#ifdef _WIN32
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe restore-packages C:/TestLocation",
+					#else
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager restore-packages C:/TestLocation",
+					#endif
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -98,7 +102,11 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: InstallPackageReference",
 					"INFO: Running PackageManager",
-					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage@2.2.2",
+					#ifdef _WIN32
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage@2.2.2",
+					#else
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager install-package C:/TestLocation TheirPackage@2.2.2",
+					#endif
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -134,7 +142,11 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: InstallPackageReference",
 					"INFO: Running PackageManager",
-					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage",
+					#ifdef _WIN32
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage",
+					#else
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager install-package C:/TestLocation TheirPackage",
+					#endif
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -169,7 +181,11 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: PublishPackage",
 					"INFO: Running PackageManager",
-					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe publish-package C:/TestLocation",
+					#ifdef _WIN32
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe publish-package C:/TestLocation",
+					#else
+						"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager publish-package C:/TestLocation",
+					#endif
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
