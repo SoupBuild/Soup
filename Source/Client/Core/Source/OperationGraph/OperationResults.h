@@ -18,7 +18,7 @@ namespace Soup::Core
 	class OperationResults
 	{
 	private:
-		std::unordered_map<OperationId, OperationResult> _results;
+		std::map<OperationId, OperationResult> _results;
 
 	public:
 		/// <summary>
@@ -33,7 +33,7 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="OperationResults"/> class.
 		/// </summary>
 		OperationResults(
-			std::unordered_map<OperationId, OperationResult> results) :
+			std::map<OperationId, OperationResult> results) :
 			_results(std::move(results))
 		{
 		}
@@ -41,11 +41,11 @@ namespace Soup::Core
 		/// <summary>
 		/// Get Results
 		/// </summary>
-		const std::unordered_map<OperationId, OperationResult>& GetResults() const
+		const std::map<OperationId, OperationResult>& GetResults() const
 		{
 			return _results;
 		}
-		std::unordered_map<OperationId, OperationResult>& GetResults()
+		std::map<OperationId, OperationResult>& GetResults()
 		{
 			return _results;
 		}

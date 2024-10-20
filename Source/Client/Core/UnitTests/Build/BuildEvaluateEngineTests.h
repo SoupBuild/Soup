@@ -61,7 +61,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(),
+				std::map<OperationId, OperationResult>(),
 				operationResults.GetResults(),
 				"Verify operation results match expected.");
 
@@ -156,7 +156,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
+				std::map<OperationId, OperationResult>(
 				{
 					{
 						1,
@@ -286,7 +286,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
+				std::map<OperationId, OperationResult>(
 				{
 					{
 						1,
@@ -420,7 +420,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
+				std::map<OperationId, OperationResult>(
 				{
 					{
 						1,
@@ -563,7 +563,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
+				std::map<OperationId, OperationResult>(
 				{
 					{
 						1,
@@ -709,7 +709,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
+				std::map<OperationId, OperationResult>(
 				{
 					{
 						1,
@@ -855,7 +855,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
+				std::map<OperationId, OperationResult>(
 				{
 					{
 						1,
@@ -1001,7 +1001,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
+				std::map<OperationId, OperationResult>(
 				{
 					{
 						1,
@@ -1144,7 +1144,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
+				std::map<OperationId, OperationResult>(
 				{
 					{
 						1,
@@ -1269,7 +1269,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(),
+				std::map<OperationId, OperationResult>(),
 				operationResults.GetResults(),
 				"Verify operation results match expected.");
 
@@ -1406,7 +1406,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(),
+				std::map<OperationId, OperationResult>(),
 				operationResults.GetResults(),
 				"Verify operation results match expected.");
 
@@ -1543,7 +1543,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(),
+				std::map<OperationId, OperationResult>(),
 				operationResults.GetResults(),
 				"Verify operation results match expected.");
 
