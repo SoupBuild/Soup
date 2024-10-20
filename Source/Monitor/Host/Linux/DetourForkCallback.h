@@ -78,10 +78,10 @@ namespace Monitor::Linux
 			_callback2->OnRemove(pathname, result);
 		}
 
-		void OnFOpen(std::string_view pathname, std::string_view mode) override final
+		void OnFOpen(std::string_view pathname, std::string_view mode, uint64_t result) override final
 		{
-			_callback1->OnFOpen(pathname, mode);
-			_callback2->OnFOpen(pathname, mode);
+			_callback1->OnFOpen(pathname, mode, result);
+			_callback2->OnFOpen(pathname, mode, result);
 		}
 
 		void OnFDOpen(int32_t fd, std::string_view mode) override final

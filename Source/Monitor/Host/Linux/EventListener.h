@@ -157,7 +157,8 @@ namespace Monitor::Linux
 				{
 					auto pathname = ReadStringValue(message, offset);
 					auto mode = ReadStringValue(message, offset);
-					m_callback->OnFOpen(pathname, mode);
+					auto result = ReadUInt64Value(message, offset);
+					m_callback->OnFOpen(pathname, mode, result);
 					break;
 				}
 				case DetourEventType::fdopen:

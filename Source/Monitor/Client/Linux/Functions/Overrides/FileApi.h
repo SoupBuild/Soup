@@ -163,6 +163,7 @@ FILE* fopen(const char * pathname, const char * mode)
 
 	message.AppendValue(pathname);
 	message.AppendValue(mode);
+	message.AppendValue((uint64_t)result);
 
 	return result;
 }

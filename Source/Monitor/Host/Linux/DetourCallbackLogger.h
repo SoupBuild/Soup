@@ -67,24 +67,24 @@ namespace Monitor::Linux
 			m_stream << "remove: " << pathname << std::endl;
 		}
 
-		void OnFOpen(std::string_view pathname, std::string_view mode) override final
+		void OnFOpen(std::string_view pathname, std::string_view mode, uint64_t result) override final
 		{
-			m_stream << "fopen: " << pathname << std::endl;
+			m_stream << "fopen: " << pathname << " " << mode << std::endl;
 		}
 
 		void OnFDOpen(int32_t fd, std::string_view mode) override final
 		{
-			m_stream << "fdopen: " << std::endl;
+			m_stream << "fdopen: "  << mode << std::endl;
 		}
 
 		void OnFReopen(std::string_view pathname, std::string_view mode) override final
 		{
-			m_stream << "freopen: " << pathname << std::endl;
+			m_stream << "freopen: " << pathname << " " << mode << std::endl;
 		}
 
 		void OnMkdir(std::string_view path, std::string_view mode) override final
 		{
-			m_stream << "mkdir: " << path << std::endl;
+			m_stream << "mkdir: " << path << " " << mode << std::endl;
 		}
 
 		void OnRmdir(std::string_view pathname, int32_t result) override final
