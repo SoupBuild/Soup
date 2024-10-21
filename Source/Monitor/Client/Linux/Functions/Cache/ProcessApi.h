@@ -11,8 +11,12 @@ extern "C"
 	// typedef int (*execle_ptr) (const char *path, const char *arg, ..., char * const envp[]);
 	typedef int (*execv_ptr) (const char *path, char *const argv[]);
 	typedef int (*execvp_ptr) (const char *file, char *const argv[]);
-	typedef int (*execvpe_ptr) (const char *file, char *const argv[], char *const envp[]); 
-} 
+	typedef int (*execvpe_ptr) (const char *file, char *const argv[], char *const envp[]);
+
+	typedef int (*execve_ptr) (const char *pathname, char *const argv[], char *const envp[]);
+	typedef int (*execveat_ptr) (int dirfd, const char *pathname, char *const argv[], char *const envp[], int flags);
+	typedef int (*fexecve_ptr) (int fd, char *const argv[], char *const envp[]);
+}
 
 namespace Monitor::Linux::Functions::Cache::ProcessApi
 {
@@ -26,4 +30,8 @@ namespace Monitor::Linux::Functions::Cache::ProcessApi
 	execv_ptr execv;
 	execvp_ptr execvp;
 	execvpe_ptr execvpe;
+
+	execve_ptr execve;
+	execveat_ptr execveat;
+	fexecve_ptr fexecve;
 }

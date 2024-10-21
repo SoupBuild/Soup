@@ -187,6 +187,18 @@ namespace Monitor::Linux
 		{
 		}
 
+		void OnExecve(std::string_view file, int32_t result) override final
+		{
+		}
+
+		void OnExecveat(std::string_view file, int32_t result) override final
+		{
+		}
+
+		void OnFexecve(int32_t result) override final
+		{
+		}
+
 	private:
 		void OnCreateProcess(bool wasDetoured, std::wstring_view applicationName)
 		{

@@ -133,6 +133,21 @@ namespace Monitor::Linux
 			m_stream << "execvpe: " << file << std::endl;
 		}
 
+		void OnExecve(std::string_view file, int32_t result) override final
+		{
+			m_stream << "execve: " << file << std::endl;
+		}
+
+		void OnExecveat(std::string_view file, int32_t result) override final
+		{
+			m_stream << "execveat: " << file << std::endl;
+		}
+
+		void OnFexecve(int32_t result) override final
+		{
+			m_stream << "fexecve: " << std::endl;
+		}
+
 	private:
 		std::ostream& m_stream;
 	};

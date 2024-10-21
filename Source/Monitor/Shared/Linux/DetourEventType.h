@@ -31,5 +31,8 @@ namespace Monitor::Linux
 		execv,
 		execvp,
 		execvpe,
+		execve,
+		execveat,
+		fexecve,
 	};
 }

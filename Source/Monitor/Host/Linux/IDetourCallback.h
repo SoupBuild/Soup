@@ -33,5 +33,8 @@ namespace Monitor::Linux
 		virtual void OnExecv(std::string_view path, int32_t result) = 0;
 		virtual void OnExecvp(std::string_view file, int32_t result) = 0;
 		virtual void OnExecvpe(std::string_view file, int32_t result) = 0;
+		virtual void OnExecve(std::string_view file, int32_t result) = 0;
+		virtual void OnExecveat(std::string_view file, int32_t result) = 0;
+		virtual void OnFexecve(int32_t result) = 0;
 	};
 }

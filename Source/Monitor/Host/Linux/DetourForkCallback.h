@@ -157,6 +157,24 @@ namespace Monitor::Linux
 			_callback2->OnExecvpe(file, result);
 		}
 
+		void OnExecve(std::string_view file, int32_t result) override final
+		{
+			_callback1->OnExecve(file, result);
+			_callback2->OnExecve(file, result);
+		}
+
+		void OnExecveat(std::string_view file, int32_t result) override final
+		{
+			_callback1->OnExecveat(file, result);
+			_callback2->OnExecveat(file, result);
+		}
+
+		void OnFexecve(int32_t result) override final
+		{
+			_callback1->OnFexecve(result);
+			_callback2->OnFexecve(result);
+		}
+
 	private:
 		std::shared_ptr<IDetourCallback> _callback1;
 		std::shared_ptr<IDetourCallback> _callback2;

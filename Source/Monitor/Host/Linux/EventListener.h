@@ -243,6 +243,26 @@ namespace Monitor::Linux
 					m_callback->OnExecvpe(file, result);
 					break;
 				}
+				case DetourEventType::execve:
+				{
+					auto file = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecve(file, result);
+					break;
+				}
+				case DetourEventType::execveat:
+				{
+					auto file = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecveat(file, result);
+					break;
+				}
+				case DetourEventType::fexecve:
+				{
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnFexecve(result);
+					break;
+				}
 				default:
 				{
 					throw std::runtime_error("Unknown detour event type");

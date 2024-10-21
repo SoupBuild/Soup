@@ -30,5 +30,9 @@ namespace Monitor::Linux
 		Functions::Cache::ProcessApi::execv = (execv_ptr)dlsym(RTLD_NEXT, "execv");
 		Functions::Cache::ProcessApi::execvp = (execvp_ptr)dlsym(RTLD_NEXT, "execvp");
 		Functions::Cache::ProcessApi::execvpe = (execvpe_ptr)dlsym(RTLD_NEXT, "execvpe");
+		
+		Functions::Cache::ProcessApi::execve = (execve_ptr)dlsym(RTLD_NEXT, "execve");
+		Functions::Cache::ProcessApi::execveat = (execveat_ptr)dlsym(RTLD_NEXT, "execveat");
+		Functions::Cache::ProcessApi::fexecve = (fexecve_ptr)dlsym(RTLD_NEXT, "fexecve");
 	}
 }
