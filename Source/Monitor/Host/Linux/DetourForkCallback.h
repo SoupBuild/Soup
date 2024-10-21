@@ -121,6 +121,30 @@ namespace Monitor::Linux
 			_callback2->OnFork();
 		}
 
+		void OnVFork() override final
+		{
+			_callback1->OnVFork();
+			_callback2->OnVFork();
+		}
+
+		void OnClone() override final
+		{
+			_callback1->OnClone();
+			_callback2->OnClone();
+		}
+
+		void OnClone2() override final
+		{
+			_callback1->OnClone2();
+			_callback2->OnClone2();
+		}
+
+		void OnClone3() override final
+		{
+			_callback1->OnClone3();
+			_callback2->OnClone3();
+		}
+
 		void OnExecl(std::string_view path, int32_t result) override final
 		{
 			_callback1->OnExecl(path, result);

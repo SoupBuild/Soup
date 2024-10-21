@@ -103,6 +103,26 @@ namespace Monitor::Linux
 			m_stream << "fork: " << std::endl;
 		}
 
+		void OnVFork() override final
+		{
+			m_stream << "vfork: " << std::endl;
+		}
+
+		void OnClone() override final
+		{
+			m_stream << "clone: " << std::endl;
+		}
+
+		void OnClone2() override final
+		{
+			m_stream << "__clone2: " << std::endl;
+		}
+
+		void OnClone3() override final
+		{
+			m_stream << "clone3: " << std::endl;
+		}
+
 		void OnExecl(std::string_view path, int32_t result) override final
 		{
 			m_stream << "execl: " << path << std::endl;

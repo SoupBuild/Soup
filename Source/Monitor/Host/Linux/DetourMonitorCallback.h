@@ -163,6 +163,22 @@ namespace Monitor::Linux
 		{
 		}
 
+		void OnVFork() override final
+		{
+		}
+
+		void OnClone() override final
+		{
+		}
+
+		void OnClone2() override final
+		{
+		}
+
+		void OnClone3() override final
+		{
+		}
+
 		void OnExecl(std::string_view path, int32_t result) override final
 		{
 		}

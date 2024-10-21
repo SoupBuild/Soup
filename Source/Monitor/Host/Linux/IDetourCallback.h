@@ -27,6 +27,10 @@ namespace Monitor::Linux
 		// ProcessApi
 		virtual void OnSystem(std::string_view command) = 0;
 		virtual void OnFork() = 0;
+		virtual void OnVFork() = 0;
+		virtual void OnClone() = 0;
+		virtual void OnClone2() = 0;
+		virtual void OnClone3() = 0;
 		virtual void OnExecl(std::string_view path, int32_t result) = 0;
 		virtual void OnExeclp(std::string_view file, int32_t result) = 0;
 		virtual void OnExecle(std::string_view path, int32_t result) = 0;

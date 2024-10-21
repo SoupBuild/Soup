@@ -201,6 +201,26 @@ namespace Monitor::Linux
 					m_callback->OnFork();
 					break;
 				}
+				case DetourEventType::vfork:
+				{
+					m_callback->OnVFork();
+					break;
+				}
+				case DetourEventType::clone:
+				{
+					m_callback->OnClone();
+					break;
+				}
+				case DetourEventType::__clone2:
+				{
+					m_callback->OnClone2();
+					break;
+				}
+				case DetourEventType::clone3:
+				{
+					m_callback->OnClone3();
+					break;
+				}
 				case DetourEventType::execl:
 				{
 					auto path = ReadStringValue(message, offset);

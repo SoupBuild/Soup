@@ -25,6 +25,10 @@ namespace Monitor::Linux
 		// ProcessApi
 		system,
 		fork,
+		vfork,
+		clone,
+		__clone2,
+		clone3,
 		execl,
 		execlp,
 		execle,
