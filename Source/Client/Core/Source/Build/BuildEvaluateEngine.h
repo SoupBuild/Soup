@@ -461,7 +461,9 @@ namespace Soup::Core
 				for (auto& value : callback->GetInput())
 				{
 					auto path = Path::Parse(value);
-					// Log::Diag("ObservedInput: {}", path.ToString());
+					#ifdef TRACE_FILE_SYSTEM_STATE
+						Log::Diag("ObservedInput: {}", path.ToString());
+					#endif
 					input.push_back(std::move(path));
 				}
 
@@ -469,7 +471,9 @@ namespace Soup::Core
 				for (auto& value : callback->GetOutput())
 				{
 					auto path = Path::Parse(value);
-					// Log::Diag("ObservedOutput: {}", path.ToString());
+					#ifdef TRACE_FILE_SYSTEM_STATE
+						Log::Diag("ObservedOutput: {}", path.ToString());
+					#endif
 					output.push_back(std::move(path));
 				}
 

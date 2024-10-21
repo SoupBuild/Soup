@@ -157,7 +157,8 @@ namespace Monitor::Linux
 				{
 					auto pathname = ReadStringValue(message, offset);
 					auto mode = ReadStringValue(message, offset);
-					m_callback->OnFOpen(pathname, mode);
+					auto result = ReadUInt64Value(message, offset);
+					m_callback->OnFOpen(pathname, mode, result);
 					break;
 				}
 				case DetourEventType::fdopen:
@@ -200,6 +201,26 @@ namespace Monitor::Linux
 					m_callback->OnFork();
 					break;
 				}
+				case DetourEventType::vfork:
+				{
+					m_callback->OnVFork();
+					break;
+				}
+				case DetourEventType::clone:
+				{
+					m_callback->OnClone();
+					break;
+				}
+				case DetourEventType::__clone2:
+				{
+					m_callback->OnClone2();
+					break;
+				}
+				case DetourEventType::clone3:
+				{
+					m_callback->OnClone3();
+					break;
+				}
 				case DetourEventType::execl:
 				{
 					auto path = ReadStringValue(message, offset);
@@ -240,6 +261,26 @@ namespace Monitor::Linux
 					auto file = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
 					m_callback->OnExecvpe(file, result);
+					break;
+				}
+				case DetourEventType::execve:
+				{
+					auto file = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecve(file, result);
+					break;
+				}
+				case DetourEventType::execveat:
+				{
+					auto file = ReadStringValue(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnExecveat(file, result);
+					break;
+				}
+				case DetourEventType::fexecve:
+				{
+					auto result = ReadInt32Value(message, offset);
+					m_callback->OnFexecve(result);
 					break;
 				}
 				default:

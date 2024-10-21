@@ -97,9 +97,39 @@ namespace Monitor::Linux
 			TouchFileDelete(pathname, wasBlocked);
 		}
 
-		void OnFOpen(std::string_view pathname, std::string_view mode) override final
+		void OnFOpen(std::string_view pathname, std::string_view mode, uint64_t result) override final
 		{
-			// TouchFileWrite(pathName, wasBlocked);
+			if (mode.length() == 0)
+				throw std::runtime_error("Mode must have at least one character");
+
+			bool isWrite = false;
+			switch (mode[0])
+			{
+				case 'r':
+					if (mode.length() > 1 && mode[1] == '+')
+					{
+						isWrite = true;
+					}
+
+					break;
+				case 'w':
+					isWrite = true;
+					break;
+				case 'a':
+					isWrite = true;
+					break;
+			}
+
+			bool wasBlocked = false;
+			if (isWrite)
+			{
+				TouchFileWrite(pathname, wasBlocked);
+			}
+			else
+			{
+				bool exists = result != 0;
+				TouchFileRead(pathname, exists, wasBlocked);
+			}
 		}
 
 		void OnFDOpen(int32_t fd, std::string_view mode) override final
@@ -133,6 +163,22 @@ namespace Monitor::Linux
 		{
 		}
 
+		void OnVFork() override final
+		{
+		}
+
+		void OnClone() override final
+		{
+		}
+
+		void OnClone2() override final
+		{
+		}
+
+		void OnClone3() override final
+		{
+		}
+
 		void OnExecl(std::string_view path, int32_t result) override final
 		{
 		}
@@ -154,6 +200,18 @@ namespace Monitor::Linux
 		}
 
 		void OnExecvpe(std::string_view file, int32_t result) override final
+		{
+		}
+
+		void OnExecve(std::string_view file, int32_t result) override final
+		{
+		}
+
+		void OnExecveat(std::string_view file, int32_t result) override final
+		{
+		}
+
+		void OnFexecve(int32_t result) override final
 		{
 		}
 

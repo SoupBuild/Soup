@@ -29,7 +29,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// </summary>
 /// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.11.1")]
-[System.CLSCompliant(false)]
+// [System.CLSCompliant(false)]
 public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="SMLParser.document"/>.

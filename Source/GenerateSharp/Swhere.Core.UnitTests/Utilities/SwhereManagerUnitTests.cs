@@ -82,12 +82,12 @@ public class SwhereManagerUnitTests
 				"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
 				"HIGH: Find DotNet SDK Versions",
 				"INFO: C:/Program Files/dotnet/dotnet.exe --list-sdks",
-				"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk/",
+				"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk/5.0.0/",
+				"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk/6.0.8/",
+				"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk/7.0.201/",
+				"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk/7.0.300-preview.23179.2/",
+				"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk/7.0.304/",
+				"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk/7.0.400-preview.23274.1/",
 				"HIGH: Find DotNet Runtime Versions",
 				"INFO: C:/Program Files/dotnet/dotnet.exe --list-runtimes",
 				"INFO: Found Runtime: Microsoft.AspNetCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App/",
@@ -118,6 +118,11 @@ public class SwhereManagerUnitTests
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/",
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/",
 				"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/data/FrameworkList.xml",
 				"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community/",
 				"HIGH: Using VC Version: 14.33.31629",
@@ -135,6 +140,11 @@ public class SwhereManagerUnitTests
 				"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 				"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/data/FrameworkList.xml",
 				"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 				"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -192,12 +202,12 @@ public class SwhereManagerUnitTests
 		Properties: {
 			DotNetExecutable: 'C:/Program Files/dotnet/dotnet.exe'
 			SDKs: {
-				'5.0.0': 'C:/Program Files/dotnet/sdk/'
-				'6.0.8': 'C:/Program Files/dotnet/sdk/'
-				'7.0.201': 'C:/Program Files/dotnet/sdk/'
-				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk/'
-				'7.0.304': 'C:/Program Files/dotnet/sdk/'
-				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk/'
+				'5.0.0': 'C:/Program Files/dotnet/sdk/5.0.0/'
+				'6.0.8': 'C:/Program Files/dotnet/sdk/6.0.8/'
+				'7.0.201': 'C:/Program Files/dotnet/sdk/7.0.201/'
+				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk/7.0.300-preview.23179.2/'
+				'7.0.304': 'C:/Program Files/dotnet/sdk/7.0.304/'
+				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk/7.0.400-preview.23274.1/'
 			}
 			Runtimes: {
 				'Microsoft.AspNetCore.App': {
@@ -236,11 +246,51 @@ public class SwhereManagerUnitTests
 			}
 			TargetingPacks: {
 				'Microsoft.NETCore.App.Ref': {
-					'5.0.0': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.8': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.9': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'7.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
+					'5.0.0': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.7': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.8': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.9': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'7.0.7': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
 				}
 			}
 		}
@@ -344,12 +394,12 @@ public class SwhereManagerUnitTests
 				"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
 				"HIGH: Find DotNet SDK Versions",
 				"INFO: C:/Program Files/dotnet/dotnet.exe --list-sdks",
-				"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk/",
+				"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk/5.0.0/",
+				"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk/6.0.8/",
+				"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk/7.0.201/",
+				"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk/7.0.300-preview.23179.2/",
+				"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk/7.0.304/",
+				"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk/7.0.400-preview.23274.1/",
 				"HIGH: Find DotNet Runtime Versions",
 				"INFO: C:/Program Files/dotnet/dotnet.exe --list-runtimes",
 				"INFO: Found Runtime: Microsoft.AspNetCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App/",
@@ -380,6 +430,11 @@ public class SwhereManagerUnitTests
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/",
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/",
 				"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/data/FrameworkList.xml",
 				"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 				"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview/",
 				"HIGH: Using VC Version: 14.34.31823",
@@ -397,6 +452,11 @@ public class SwhereManagerUnitTests
 				"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 				"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/data/FrameworkList.xml",
 				"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 				"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -455,12 +515,12 @@ public class SwhereManagerUnitTests
 		Properties: {
 			DotNetExecutable: 'C:/Program Files/dotnet/dotnet.exe'
 			SDKs: {
-				'5.0.0': 'C:/Program Files/dotnet/sdk/'
-				'6.0.8': 'C:/Program Files/dotnet/sdk/'
-				'7.0.201': 'C:/Program Files/dotnet/sdk/'
-				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk/'
-				'7.0.304': 'C:/Program Files/dotnet/sdk/'
-				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk/'
+				'5.0.0': 'C:/Program Files/dotnet/sdk/5.0.0/'
+				'6.0.8': 'C:/Program Files/dotnet/sdk/6.0.8/'
+				'7.0.201': 'C:/Program Files/dotnet/sdk/7.0.201/'
+				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk/7.0.300-preview.23179.2/'
+				'7.0.304': 'C:/Program Files/dotnet/sdk/7.0.304/'
+				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk/7.0.400-preview.23274.1/'
 			}
 			Runtimes: {
 				'Microsoft.AspNetCore.App': {
@@ -499,11 +559,51 @@ public class SwhereManagerUnitTests
 			}
 			TargetingPacks: {
 				'Microsoft.NETCore.App.Ref': {
-					'5.0.0': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.8': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.9': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'7.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
+					'5.0.0': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.7': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.8': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.9': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'7.0.7': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
 				}
 			}
 		}
@@ -665,12 +765,12 @@ public class SwhereManagerUnitTests
 				"HIGH: Using DotNet: C:/Program Files/dotnet/dotnet.exe",
 				"HIGH: Find DotNet SDK Versions",
 				"INFO: C:/Program Files/dotnet/dotnet.exe --list-sdks",
-				"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk/",
-				"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk/",
+				"INFO: Found SDK: 5.0.0 C:/Program Files/dotnet/sdk/5.0.0/",
+				"INFO: Found SDK: 6.0.8 C:/Program Files/dotnet/sdk/6.0.8/",
+				"INFO: Found SDK: 7.0.201 C:/Program Files/dotnet/sdk/7.0.201/",
+				"INFO: Found SDK: 7.0.300-preview.23179.2 C:/Program Files/dotnet/sdk/7.0.300-preview.23179.2/",
+				"INFO: Found SDK: 7.0.304 C:/Program Files/dotnet/sdk/7.0.304/",
+				"INFO: Found SDK: 7.0.400-preview.23274.1 C:/Program Files/dotnet/sdk/7.0.400-preview.23274.1/",
 				"HIGH: Find DotNet Runtime Versions",
 				"INFO: C:/Program Files/dotnet/dotnet.exe --list-runtimes",
 				"INFO: Found Runtime: Microsoft.AspNetCore.App 3.1.32 C:/Program Files/dotnet/shared/Microsoft.AspNetCore.App/",
@@ -701,6 +801,11 @@ public class SwhereManagerUnitTests
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.5 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/",
 				"INFO: Found Runtime: Microsoft.WindowsDesktop.App 7.0.7 C:/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/",
 				"HIGH: FindDotNetPackVersions: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/data/FrameworkList.xml",
+				"WARN: Missing FrameworkList file: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/data/FrameworkList.xml",
 				"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community/",
 				"HIGH: Using VC Version: 14.33.31629",
@@ -719,6 +824,11 @@ public class SwhereManagerUnitTests
 				"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
 				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 				"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/data/FrameworkList.xml",
+				"Exists: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/data/FrameworkList.xml",
 				"Exists: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
 				"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 				"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -785,12 +895,12 @@ public class SwhereManagerUnitTests
 		Properties: {
 			DotNetExecutable: 'C:/Program Files/dotnet/dotnet.exe'
 			SDKs: {
-				'5.0.0': 'C:/Program Files/dotnet/sdk/'
-				'6.0.8': 'C:/Program Files/dotnet/sdk/'
-				'7.0.201': 'C:/Program Files/dotnet/sdk/'
-				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk/'
-				'7.0.304': 'C:/Program Files/dotnet/sdk/'
-				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk/'
+				'5.0.0': 'C:/Program Files/dotnet/sdk/5.0.0/'
+				'6.0.8': 'C:/Program Files/dotnet/sdk/6.0.8/'
+				'7.0.201': 'C:/Program Files/dotnet/sdk/7.0.201/'
+				'7.0.300-preview.23179.2': 'C:/Program Files/dotnet/sdk/7.0.300-preview.23179.2/'
+				'7.0.304': 'C:/Program Files/dotnet/sdk/7.0.304/'
+				'7.0.400-preview.23274.1': 'C:/Program Files/dotnet/sdk/7.0.400-preview.23274.1/'
 			}
 			Runtimes: {
 				'Microsoft.AspNetCore.App': {
@@ -829,11 +939,51 @@ public class SwhereManagerUnitTests
 			}
 			TargetingPacks: {
 				'Microsoft.NETCore.App.Ref': {
-					'5.0.0': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.8': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'6.0.9': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
-					'7.0.7': 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/'
+					'5.0.0': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.7': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.8': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'6.0.9': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
+					'7.0.7': {
+						Path: 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.7/'
+						Analyzer: [
+
+						]
+						Managed: [
+
+						]
+					}
 				}
 			}
 		}

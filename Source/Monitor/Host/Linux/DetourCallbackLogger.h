@@ -67,24 +67,24 @@ namespace Monitor::Linux
 			m_stream << "remove: " << pathname << std::endl;
 		}
 
-		void OnFOpen(std::string_view pathname, std::string_view mode) override final
+		void OnFOpen(std::string_view pathname, std::string_view mode, uint64_t result) override final
 		{
-			m_stream << "fopen: " << pathname << std::endl;
+			m_stream << "fopen: " << pathname << " " << mode << std::endl;
 		}
 
 		void OnFDOpen(int32_t fd, std::string_view mode) override final
 		{
-			m_stream << "fdopen: " << std::endl;
+			m_stream << "fdopen: "  << mode << std::endl;
 		}
 
 		void OnFReopen(std::string_view pathname, std::string_view mode) override final
 		{
-			m_stream << "freopen: " << pathname << std::endl;
+			m_stream << "freopen: " << pathname << " " << mode << std::endl;
 		}
 
 		void OnMkdir(std::string_view path, std::string_view mode) override final
 		{
-			m_stream << "mkdir: " << path << std::endl;
+			m_stream << "mkdir: " << path << " " << mode << std::endl;
 		}
 
 		void OnRmdir(std::string_view pathname, int32_t result) override final
@@ -101,6 +101,26 @@ namespace Monitor::Linux
 		void OnFork() override final
 		{
 			m_stream << "fork: " << std::endl;
+		}
+
+		void OnVFork() override final
+		{
+			m_stream << "vfork: " << std::endl;
+		}
+
+		void OnClone() override final
+		{
+			m_stream << "clone: " << std::endl;
+		}
+
+		void OnClone2() override final
+		{
+			m_stream << "__clone2: " << std::endl;
+		}
+
+		void OnClone3() override final
+		{
+			m_stream << "clone3: " << std::endl;
 		}
 
 		void OnExecl(std::string_view path, int32_t result) override final
@@ -131,6 +151,21 @@ namespace Monitor::Linux
 		void OnExecvpe(std::string_view file, int32_t result) override final
 		{
 			m_stream << "execvpe: " << file << std::endl;
+		}
+
+		void OnExecve(std::string_view file, int32_t result) override final
+		{
+			m_stream << "execve: " << file << std::endl;
+		}
+
+		void OnExecveat(std::string_view file, int32_t result) override final
+		{
+			m_stream << "execveat: " << file << std::endl;
+		}
+
+		void OnFexecve(int32_t result) override final
+		{
+			m_stream << "fexecve: " << std::endl;
 		}
 
 	private:

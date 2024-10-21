@@ -82,6 +82,81 @@ public static partial class SMLExtensions
 		}
 	}
 
+	public static void EnsureValueWithSyntax(this SMLDocument document, string name, string value)
+	{
+		if (document.Values.TryGetValue(name, out var existingValue))
+		{
+			if (existingValue.Value.Type != SMLValueType.String)
+				throw new InvalidOperationException("The recipe already has a non-string property");
+
+			// Find the Syntax for the table
+			var stringValue = existingValue.Value.AsString();
+			stringValue.Value = value;
+			stringValue.Content.Text = value;
+		}
+		else
+		{
+			// Create a new table
+			document.AddItemWithSyntax(name, value);
+		}
+	}
+
+	public static void EnsureValueWithSyntax(this SMLDocument document, string name, LanguageReference value)
+	{
+		if (document.Values.TryGetValue(name, out var existingValue))
+		{
+			if (existingValue.Value.Type != SMLValueType.LanguageReference)
+				throw new InvalidOperationException("The recipe already has a non-string property");
+
+			// Find the Syntax for the table
+			var languageReferenceValue = existingValue.Value.AsLanguageReference();
+			languageReferenceValue.Value = value;
+			languageReferenceValue.LanguageName.Text = value.Name;
+			languageReferenceValue.VersionReference.Text = value.Version.ToString();
+		}
+		else
+		{
+			// Create a new table
+			document.AddItemWithSyntax(name, value);
+		}
+	}
+
+	public static void EnsureValueWithSyntax(this SMLDocument document, string name, SemanticVersion value)
+	{
+		if (document.Values.TryGetValue(name, out var existingValue))
+		{
+			if (existingValue.Value.Type != SMLValueType.Version)
+				throw new InvalidOperationException("The recipe already has a non-string property");
+
+			// Find the Syntax for the table
+			var versionValue = existingValue.Value.AsVersion();
+			versionValue.Value = value;
+			versionValue.Content.Text = value.ToString();
+		}
+		else
+		{
+			// Create a new table
+			document.AddItemWithSyntax(name, value);
+		}
+	}
+
+	public static SMLArray EnsureArrayWithSyntax(this SMLDocument document, string name)
+	{
+		if (document.Values.TryGetValue(name, out var value))
+		{
+			if (value.Value.Type != SMLValueType.Array)
+				throw new InvalidOperationException("The recipe already has a non-list dependencies property");
+
+			// Find the Syntax for the table
+			return value.Value.AsArray();
+		}
+		else
+		{
+			// Create a new list
+			return document.AddArrayWithSyntax(name);
+		}
+	}
+
 	public static SMLTable AddTableWithSyntax(this SMLDocument document, string name)
 	{
 		return document.Values.AddTableWithSyntax(name, 0);
@@ -101,6 +176,40 @@ public static partial class SMLExtensions
 		else
 		{
 			return table.AddTableWithSyntax(name, indentLevel);
+		}
+	}
+
+	public static SMLTable EnsureTableWithSyntax(this SMLTable table, string name)
+	{
+		if (table.Values.TryGetValue(name, out var value))
+		{
+			if (value.Value.Type != SMLValueType.Table)
+				throw new InvalidOperationException("The recipe already has a non-table dependencies property");
+
+			// Find the Syntax for the table
+			return value.Value.AsTable();
+		}
+		else
+		{
+			// Create a new table
+			return table.AddTableWithSyntax(name, 0);
+		}
+	}
+
+	public static SMLArray EnsureArrayWithSyntax(this SMLTable table, string name)
+	{
+		if (table.Values.TryGetValue(name, out var value))
+		{
+			if (value.Value.Type != SMLValueType.Array)
+				throw new InvalidOperationException("The recipe already has a non-list dependencies property");
+
+			// Find the Syntax for the table
+			return value.Value.AsArray();
+		}
+		else
+		{
+			// Create a new list
+			return table.AddArrayWithSyntax(name, 1);
 		}
 	}
 
@@ -182,6 +291,48 @@ public static partial class SMLExtensions
 		array.Values.Add(newItem);
 
 		return newTable;
+	}
+
+	public static void AddItemWithSyntax(this SMLDocument document, string key, LanguageReference value)
+	{
+		// Create a new item and matching syntax
+		var newValue = new SMLValue(
+			new SMLLanguageReferenceValue(
+				new SMLToken("("),
+				new SMLToken(value.Name),
+				new SMLToken("@"),
+				new SMLToken(value.Version.ToString()),
+				new SMLToken(")"),
+				value));
+
+		// Update the previous last item to have a comma delimiter
+		if (document.Values.Count > 0)
+		{
+			var lastItem = document.Values.Last();
+			lastItem.Value.Delimiter.Add(NewlineToken);
+		}
+
+		// Add the model to the parent table model
+		document.Values.Add(key, CreateTableValue(key, newValue));
+	}
+
+	public static void AddItemWithSyntax(this SMLDocument document, string key, SemanticVersion value)
+	{
+		// Create a new item and matching syntax
+		var newValue = new SMLValue(
+			new SMLVersionValue(
+				value,
+				new SMLToken(value.ToString())));
+
+		// Update the previous last item to have a comma delimiter
+		if (document.Values.Count > 0)
+		{
+			var lastItem = document.Values.Last();
+			lastItem.Value.Delimiter.Add(NewlineToken);
+		}
+
+		// Add the model to the parent table model
+		document.Values.Add(key, CreateTableValue(key, newValue));
 	}
 
 	public static void AddItemWithSyntax(this SMLDocument document, string key, long value)

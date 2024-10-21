@@ -78,10 +78,10 @@ namespace Monitor::Linux
 			_callback2->OnRemove(pathname, result);
 		}
 
-		void OnFOpen(std::string_view pathname, std::string_view mode) override final
+		void OnFOpen(std::string_view pathname, std::string_view mode, uint64_t result) override final
 		{
-			_callback1->OnFOpen(pathname, mode);
-			_callback2->OnFOpen(pathname, mode);
+			_callback1->OnFOpen(pathname, mode, result);
+			_callback2->OnFOpen(pathname, mode, result);
 		}
 
 		void OnFDOpen(int32_t fd, std::string_view mode) override final
@@ -121,6 +121,30 @@ namespace Monitor::Linux
 			_callback2->OnFork();
 		}
 
+		void OnVFork() override final
+		{
+			_callback1->OnVFork();
+			_callback2->OnVFork();
+		}
+
+		void OnClone() override final
+		{
+			_callback1->OnClone();
+			_callback2->OnClone();
+		}
+
+		void OnClone2() override final
+		{
+			_callback1->OnClone2();
+			_callback2->OnClone2();
+		}
+
+		void OnClone3() override final
+		{
+			_callback1->OnClone3();
+			_callback2->OnClone3();
+		}
+
 		void OnExecl(std::string_view path, int32_t result) override final
 		{
 			_callback1->OnExecl(path, result);
@@ -155,6 +179,24 @@ namespace Monitor::Linux
 		{
 			_callback1->OnExecvpe(file, result);
 			_callback2->OnExecvpe(file, result);
+		}
+
+		void OnExecve(std::string_view file, int32_t result) override final
+		{
+			_callback1->OnExecve(file, result);
+			_callback2->OnExecve(file, result);
+		}
+
+		void OnExecveat(std::string_view file, int32_t result) override final
+		{
+			_callback1->OnExecveat(file, result);
+			_callback2->OnExecveat(file, result);
+		}
+
+		void OnFexecve(int32_t result) override final
+		{
+			_callback1->OnFexecve(result);
+			_callback2->OnFexecve(result);
 		}
 
 	private:

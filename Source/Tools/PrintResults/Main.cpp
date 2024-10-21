@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 	{
 		Opal::System::IFileSystem::Register(std::make_shared<Opal::System::STLFileSystem>());
 
-		auto operationResultsFile = Opal::Path(argv[1]);
+		auto operationResultsFile = Opal::Path::Parse(argv[1]);
 		LoadAndPrintResults(operationResultsFile);
 	}
 	catch(const std::exception& e)

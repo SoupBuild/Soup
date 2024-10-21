@@ -6,6 +6,7 @@
 		<SelfContained>true</SelfContained>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishTrimmed>false</PublishTrimmed>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -13,6 +14,7 @@
 		<PackageReference Include="IdentityModel.OidcClient" Version="6.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\PackageManager.Core\Soup.Build.PackageManager.Core.csproj" />
+		<ProjectReference Include="..\Api.Client\Soup.Build.Api.Client.csproj" />
+		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
 	</ItemGroup>
 </Project>

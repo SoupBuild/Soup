@@ -96,7 +96,7 @@ namespace Soup::Core::UnitTests
 			auto actual = OperationResultsReader::Deserialize(content, fileSystemState);
 
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(),
+				std::map<OperationId, OperationResult>(),
 				actual.GetResults(),
 				"Verify results match expected.");
 		}
@@ -121,7 +121,7 @@ namespace Soup::Core::UnitTests
 			auto actual = OperationResultsReader::Deserialize(content, fileSystemState);
 
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>({
+				std::map<OperationId, OperationResult>({
 					{
 						5,
 						OperationResult(
@@ -167,7 +167,7 @@ namespace Soup::Core::UnitTests
 			auto actual = OperationResultsReader::Deserialize(content, fileSystemState);
 
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>({
+				std::map<OperationId, OperationResult>({
 					{
 						5,
 						OperationResult(
@@ -225,7 +225,7 @@ namespace Soup::Core::UnitTests
 
 			auto actual = OperationResultsReader::Deserialize(content, fileSystemState);
 
-			auto expected = std::unordered_map<OperationId, OperationResult>(
+			auto expected = std::map<OperationId, OperationResult>(
 			{
 				{
 					5,

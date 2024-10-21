@@ -17,7 +17,7 @@ namespace Soup::Core
 	{
 	private:
 		std::vector<OperationId> _rootOperations;
-		std::unordered_map<OperationId, OperationInfo> _operations;
+		std::map<OperationId, OperationInfo> _operations;
 		std::unordered_map<CommandInfo, OperationId> _operationLookup;
 
 	public:
@@ -67,7 +67,7 @@ namespace Soup::Core
 		/// <summary>
 		/// Get Operations
 		/// </summary>
-		const std::unordered_map<OperationId, OperationInfo>& GetOperations() const
+		const std::map<OperationId, OperationInfo>& GetOperations() const
 		{
 			return _operations;
 		}
@@ -75,7 +75,7 @@ namespace Soup::Core
 		/// <summary>
 		/// Get Operations
 		/// </summary>
-		std::unordered_map<OperationId, OperationInfo>& GetOperations()
+		std::map<OperationId, OperationInfo>& GetOperations()
 		{
 			return _operations;
 		}
