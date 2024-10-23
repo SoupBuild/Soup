@@ -159,6 +159,10 @@ public class Recipe
 			{
 				result.Add(PackageReference.Parse(value.Value.AsString().Value));
 			}
+			else if (value.Value.Type == SMLValueType.PackageReference)
+			{
+				result.Add(value.Value.AsPackageReference().Value);
+			}
 			else if (value.Value.Type == SMLValueType.Table)
 			{
 				var valueTable = value.Value.AsTable();
@@ -176,7 +180,7 @@ public class Recipe
 			}
 			else
 			{
-				throw new InvalidOperationException("Unknown Recipe dependency type.");
+				throw new InvalidOperationException($"Unknown Recipe dependency type {value.Value.Type}.");
 			}
 		}
 

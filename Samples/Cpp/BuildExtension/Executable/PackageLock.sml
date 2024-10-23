@@ -2,7 +2,7 @@ Version: 5
 Closures: {
 	Root: {
 		'C++': {
-			'Samples.SimpleBuildExtension.Executable': { Version: '../Executable', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.SimpleBuildExtension.Executable': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
@@ -13,6 +13,7 @@ Closures: {
 	}
 	Tool0: {
 		'C++': {
+			'Samples.SimpleBuildExtension.Tool': { Version: '../Tool/' }
 			'mwasplund|copy': { Version: 1.1.0 }
 			'mwasplund|mkdir': { Version: 1.1.0 }
 		}
