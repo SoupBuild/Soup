@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Functions/Overrides/FileApi.h"
+#include "Functions/Overrides/ProcessApi.h"
 
 #include "ConnectionManager.h"
 #include "AttachDetours.h"

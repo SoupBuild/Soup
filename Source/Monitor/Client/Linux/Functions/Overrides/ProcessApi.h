@@ -15,7 +15,7 @@ int system(const char *command)
 	return result;
 }
 
-pid_t fork(void)
+pid_t fork()
 {
 	connectionManager.DebugTrace("fork");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
@@ -26,7 +26,7 @@ pid_t fork(void)
 	return result;
 }
 
-pid_t vfork(void)
+pid_t vfork()
 {
 	connectionManager.DebugTrace("vfork");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
@@ -37,7 +37,7 @@ pid_t vfork(void)
 	return result;
 }
 
-int clone(int (*fn)(void *_Nullable), void *stack, int flags, void * arg, ...)
+int clone(int (*fn)(void *), void *stack, int flags, void * arg, ...)
 {
 	connectionManager.DebugTrace("clone");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
@@ -53,7 +53,7 @@ int clone(int (*fn)(void *_Nullable), void *stack, int flags, void * arg, ...)
 	return result;
 }
 
-int __clone2(int (*fn)(void *_Nullable), void *stack, int flags, void * arg, ...)
+int __clone2(int (*fn)(void *), void *stack, int flags, void * arg, ...)
 {
 	connectionManager.DebugTrace("__clone2");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
@@ -69,7 +69,7 @@ int __clone2(int (*fn)(void *_Nullable), void *stack, int flags, void * arg, ...
 	return result;
 }
 
-int clone3(int (*fn)(void *_Nullable), void *stack, int flags, void * arg, ...)
+int clone3(int (*fn)(void *), void *stack, int flags, void * arg, ...)
 {
 	connectionManager.DebugTrace("clone3");
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
@@ -184,10 +184,12 @@ int execve(const char *pathname, char *const argv[], char *const envp[])
 	auto message = Monitor::MessageSender(Monitor::MessageType::Detour);
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::execve));
 
-	auto result = Monitor::Linux::Functions::Cache::ProcessApi::execve(file, argv, envp);
+	auto result = Monitor::Linux::Functions::Cache::ProcessApi::execve(pathname, argv, envp);
 
 	message.AppendValue(pathname);
 	message.AppendValue(result);
+
+	return result;
 }
 
 int execveat(int dirfd, const char *pathname, char *const argv[], char *const envp[], int flags)
@@ -200,6 +202,8 @@ int execveat(int dirfd, const char *pathname, char *const argv[], char *const en
 
 	message.AppendValue(pathname);
 	message.AppendValue(result);
+
+	return result;
 }
 
 int fexecve(int fd, char *const argv[], char *const envp[])
@@ -211,4 +215,6 @@ int fexecve(int fd, char *const argv[], char *const envp[])
 	auto result = Monitor::Linux::Functions::Cache::ProcessApi::fexecve(fd, argv, envp);
 
 	message.AppendValue(result);
+
+	return result;
 }
