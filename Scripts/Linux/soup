@@ -40,10 +40,10 @@ mkdir -p $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION
 cp -p $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml
 cp -p -R $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/out/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/out/
 
-cp -p -R $ROOT_DIR/Source/out/msbuild/bin/Soup.Build.PackageManager/Release/net8.0/linux-x64/publish/ $RUN_DIR/PackageManager
+cp -p -R $ROOT_DIR/Source/out/bin/Soup.Build.PackageManager/Release/net8.0/linux-x64/publish/ $RUN_DIR/PackageManager
 
-cp -p -R $ROOT_DIR/Source/out/msbuild/bin/SoupView/Release/net8.0/linux-x64/publish/ $RUN_DIR/View
+cp -p -R $ROOT_DIR/Source/out/bin/SoupView/Release/net8.0/linux-x64/publish/ $RUN_DIR/View
 
-cp -p -R $ROOT_DIR/Source/out/msbuild/bin/Swhere/Release/net8.0/linux-x64/publish/Swhere $RUN_DIR/swhere
+cp -p -R $ROOT_DIR/Source/out/bin/Swhere/Release/net8.0/linux-x64/publish/Swhere $RUN_DIR/swhere
 
 eval $RUN_DIR/soup "$@"

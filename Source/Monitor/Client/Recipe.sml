@@ -13,6 +13,7 @@ Source: [
 
 Dependencies: {
 	Runtime: [
+		'[C]mwasplund|libseccomp@2.5'
 		'mwasplund|Detours@4'
 		'../Shared/'
 		'mwasplund|Opal@0'
