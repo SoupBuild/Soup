@@ -1,31 +1,35 @@
-﻿// <copyright file="EventListener.h" company="Soup">
+﻿// <copyright file="LinuxDetourEventListener.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IDetourCallback.h"
+#include "ILinuxSystemMonitor.h"
 
 namespace Monitor::Linux
 {
 	/// <summary>
 	/// The event listener knows how to parse an incoming message and pass it along to the
-	/// registered callback.
+	/// registered monitor.
 	/// </summary>
-	class EventListener
+	class LinuxDetourEventListener
 	{
+	private:
+		// Input
+		std::shared_ptr<ILinuxSystemMonitor> m_monitor;
+
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref='EventListener'/> class.
+		/// Initializes a new instance of the <see cref='LinuxDetourEventListener'/> class.
 		/// </summary>
-		EventListener(
-			std::shared_ptr<IDetourCallback> callback) :
-			m_callback(std::move(callback))
+		LinuxDetourEventListener(
+			std::shared_ptr<ILinuxSystemMonitor> monitor) :
+			m_monitor(std::move(monitor))
 		{
 		}
 
 		void LogError(std::string_view message)
 		{
-			m_callback->OnError(message);
+			m_monitor->OnError(message);
 		}
 
 		void SafeLogMessage(Message& message)
@@ -49,19 +53,19 @@ namespace Monitor::Linux
 				// Info
 				case MessageType::Initialize:
 				{
-					m_callback->OnInitialize();
+					m_monitor->OnInitialize();
 					break;
 				}
 				case MessageType::Shutdown:
 				{
 					auto hadError = ReadBoolValue(message, offset);
-					m_callback->OnShutdown(hadError);
+					m_monitor->OnShutdown(hadError);
 					break;
 				}
 				case MessageType::Error:
 				{
 					auto errorMessage = ReadStringValue(message, offset);
-					m_callback->OnError(errorMessage);
+					m_monitor->OnError(errorMessage);
 					break;
 				}
 				case MessageType::Detour:
@@ -93,14 +97,14 @@ namespace Monitor::Linux
 					auto path = ReadStringValue(message, offset);
 					auto oflag = ReadInt32Value(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnOpen(path, oflag, result);
+					m_monitor->OnOpen(path, oflag, result);
 					break;
 				}
 				case DetourEventType::creat:
 				{
 					auto path = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnCreat(path, result);
+					m_monitor->OnCreat(path, result);
 					break;
 				}
 				case DetourEventType::openat:
@@ -109,7 +113,7 @@ namespace Monitor::Linux
 					auto path = ReadStringValue(message, offset);
 					auto oflag = ReadInt32Value(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnOpenat(dirfd, path, oflag, result);
+					m_monitor->OnOpenat(dirfd, path, oflag, result);
 					break;
 				}
 				case DetourEventType::link:
@@ -117,7 +121,7 @@ namespace Monitor::Linux
 					auto oldpath = ReadStringValue(message, offset);
 					auto newpath = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnLink(oldpath, newpath, result);
+					m_monitor->OnLink(oldpath, newpath, result);
 					break;
 				}
 				case DetourEventType::linkat:
@@ -128,7 +132,7 @@ namespace Monitor::Linux
 					auto newpath = ReadStringValue(message, offset);
 					auto flags = ReadInt32Value(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
+					m_monitor->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
 					break;
 				}
 				case DetourEventType::rename:
@@ -136,21 +140,21 @@ namespace Monitor::Linux
 					auto oldpath = ReadStringValue(message, offset);
 					auto newpath = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnRename(oldpath, newpath, result);
+					m_monitor->OnRename(oldpath, newpath, result);
 					break;
 				}
 				case DetourEventType::unlink:
 				{
 					auto pathname = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnUnlink(pathname, result);
+					m_monitor->OnUnlink(pathname, result);
 					break;
 				}
 				case DetourEventType::remove:
 				{
 					auto pathname = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnRemove(pathname, result);
+					m_monitor->OnRemove(pathname, result);
 					break;
 				}
 				case DetourEventType::fopen:
@@ -158,129 +162,129 @@ namespace Monitor::Linux
 					auto pathname = ReadStringValue(message, offset);
 					auto mode = ReadStringValue(message, offset);
 					auto result = ReadUInt64Value(message, offset);
-					m_callback->OnFOpen(pathname, mode, result);
+					m_monitor->OnFOpen(pathname, mode, result);
 					break;
 				}
 				case DetourEventType::fdopen:
 				{
 					auto fd = ReadInt32Value(message, offset);
 					auto mode = ReadStringValue(message, offset);
-					m_callback->OnFDOpen(fd, mode);
+					m_monitor->OnFDOpen(fd, mode);
 					break;
 				}
 				case DetourEventType::freopen:
 				{
 					auto pathname = ReadStringValue(message, offset);
 					auto mode = ReadStringValue(message, offset);
-					m_callback->OnFReopen(pathname, mode);
+					m_monitor->OnFReopen(pathname, mode);
 					break;
 				}
 				case DetourEventType::mkdir:
 				{
 					auto path = ReadStringValue(message, offset);
 					auto mode = ReadStringValue(message, offset);
-					m_callback->OnMkdir(path, mode);
+					m_monitor->OnMkdir(path, mode);
 					break;
 				}
 				case DetourEventType::rmdir:
 				{
 					auto pathname = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnRmdir(pathname, result);
+					m_monitor->OnRmdir(pathname, result);
 					break;
 				}
 				// ProcessApi
 				case DetourEventType::system:
 				{
 					auto command = ReadStringValue(message, offset);
-					m_callback->OnSystem(command);
+					m_monitor->OnSystem(command);
 					break;
 				}
 				case DetourEventType::fork:
 				{
-					m_callback->OnFork();
+					m_monitor->OnFork();
 					break;
 				}
 				case DetourEventType::vfork:
 				{
-					m_callback->OnVFork();
+					m_monitor->OnVFork();
 					break;
 				}
 				case DetourEventType::clone:
 				{
-					m_callback->OnClone();
+					m_monitor->OnClone();
 					break;
 				}
 				case DetourEventType::__clone2:
 				{
-					m_callback->OnClone2();
+					m_monitor->OnClone2();
 					break;
 				}
 				case DetourEventType::clone3:
 				{
-					m_callback->OnClone3();
+					m_monitor->OnClone3();
 					break;
 				}
 				case DetourEventType::execl:
 				{
 					auto path = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnExecl(path, result);
+					m_monitor->OnExecl(path, result);
 					break;
 				}
 				case DetourEventType::execlp:
 				{
 					auto file = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnExeclp(file, result);
+					m_monitor->OnExeclp(file, result);
 					break;
 				}
 				case DetourEventType::execle:
 				{
 					auto path = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnExecle(path, result);
+					m_monitor->OnExecle(path, result);
 					break;
 				}
 				case DetourEventType::execv:
 				{
 					auto path = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnExecv(path, result);
+					m_monitor->OnExecv(path, result);
 					break;
 				}
 				case DetourEventType::execvp:
 				{
 					auto file = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnExecvp(file, result);
+					m_monitor->OnExecvp(file, result);
 					break;
 				}
 				case DetourEventType::execvpe:
 				{
 					auto file = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnExecvpe(file, result);
+					m_monitor->OnExecvpe(file, result);
 					break;
 				}
 				case DetourEventType::execve:
 				{
 					auto file = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnExecve(file, result);
+					m_monitor->OnExecve(file, result);
 					break;
 				}
 				case DetourEventType::execveat:
 				{
 					auto file = ReadStringValue(message, offset);
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnExecveat(file, result);
+					m_monitor->OnExecveat(file, result);
 					break;
 				}
 				case DetourEventType::fexecve:
 				{
 					auto result = ReadInt32Value(message, offset);
-					m_callback->OnFexecve(result);
+					m_monitor->OnFexecve(result);
 					break;
 				}
 				default:
@@ -290,6 +294,7 @@ namespace Monitor::Linux
 			}
 		}
 
+	private:
 		bool ReadBoolValue(Message& message, uint32_t& offset)
 		{
 			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
@@ -343,9 +348,5 @@ namespace Monitor::Linux
 				throw std::runtime_error("ReadWStringValue past end of content");
 			return result;
 		}
-
-	private:
-		// Input
-		std::shared_ptr<IDetourCallback> m_callback;
 	};
 }

@@ -116,7 +116,7 @@ namespace Soup::Core::UnitTests
 			// Emulate generate phase
 			monitorProcessManager->RegisterExecuteCallback(
 				"CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
-				[&](Monitor::IMonitorCallback& /*callback*/)
+				[&](Monitor::ISystemAccessMonitor& /*monitor*/)
 				{
 					auto myPackageOperationGraph = OperationGraph(
 						std::vector<OperationId>(),
@@ -131,7 +131,7 @@ namespace Soup::Core::UnitTests
 
 			monitorProcessManager->RegisterExecuteCallback(
 				"CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/Soup.Generate.exe C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
-				[&](Monitor::IMonitorCallback& /*callback*/)
+				[&](Monitor::ISystemAccessMonitor& /*monitor*/)
 				{
 					auto soupCppOperationGraph = OperationGraph(
 						std::vector<OperationId>(),
@@ -1148,6 +1148,10 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Build evaluation end",
 					"INFO: 1>Done",
+					"",
+					"",
+					"",
+					"",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

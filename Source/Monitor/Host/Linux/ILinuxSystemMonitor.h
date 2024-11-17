@@ -2,7 +2,7 @@
 
 namespace Monitor::Linux
 {
-	class IDetourCallback
+	class ILinuxSystemMonitor
 	{
 	public:
 		virtual void OnInitialize() = 0;

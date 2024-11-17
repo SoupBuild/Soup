@@ -111,10 +111,10 @@ namespace Soup::Core::UnitTests
 
 			monitorProcessManager->RegisterExecuteCallback(
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IMonitorCallback& callback)
+				[](Monitor::ISystemAccessMonitor& monitor)
 				{
-					callback.TouchFileRead(Path("./InputFile2.in"), true, false);
-					callback.TouchFileWrite(Path("./OutputFile2.out"), false);
+					monitor.TouchFileRead(Path("./InputFile2.in"), true, false);
+					monitor.TouchFileWrite(Path("./OutputFile2.out"), false);
 				});
 
 			// Setup the input build state
@@ -239,11 +239,11 @@ namespace Soup::Core::UnitTests
 
 			monitorProcessManager->RegisterExecuteCallback(
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IMonitorCallback& callback)
+				[](Monitor::ISystemAccessMonitor& monitor)
 				{
 					// Read and write the same file
-					callback.TouchFileRead(Path("./File.txt"), true, false);
-					callback.TouchFileWrite(Path("./File.txt"), false);
+					monitor.TouchFileRead(Path("./File.txt"), true, false);
+					monitor.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -373,11 +373,11 @@ namespace Soup::Core::UnitTests
 
 			monitorProcessManager->RegisterExecuteCallback(
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IMonitorCallback& callback)
+				[](Monitor::ISystemAccessMonitor& monitor)
 				{
 					// Read and write the same file
-					callback.TouchFileRead(Path("./File.txt"), true, false);
-					callback.TouchFileWrite(Path("./File.txt"), false);
+					monitor.TouchFileRead(Path("./File.txt"), true, false);
+					monitor.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -1204,9 +1204,9 @@ namespace Soup::Core::UnitTests
 
 			monitorProcessManager->RegisterExecuteCallback(
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IMonitorCallback& callback)
+				[](Monitor::ISystemAccessMonitor& monitor)
 				{
-					callback.TouchFileWrite(Path("./OutputFile.out"), false);
+					monitor.TouchFileWrite(Path("./OutputFile.out"), false);
 				});
 
 			// Setup the input build state
@@ -1341,9 +1341,9 @@ namespace Soup::Core::UnitTests
 
 			monitorProcessManager->RegisterExecuteCallback(
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IMonitorCallback& callback)
+				[](Monitor::ISystemAccessMonitor& monitor)
 				{
-					callback.TouchFileWrite(Path("./File.txt"), false);
+					monitor.TouchFileWrite(Path("./File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -1478,9 +1478,9 @@ namespace Soup::Core::UnitTests
 
 			monitorProcessManager->RegisterExecuteCallback(
 				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IMonitorCallback& callback)
+				[](Monitor::ISystemAccessMonitor& monitor)
 				{
-					callback.TouchFileRead(Path("./File.txt"), true, false);
+					monitor.TouchFileRead(Path("./File.txt"), true, false);
 				});
 
 			// Setup the input build state

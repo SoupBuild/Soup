@@ -3,10 +3,10 @@
 // </copyright>
 
 #pragma once
-#include "DetourMonitorCallback.h"
-#include "DetourCallbackLogger.h"
-#include "DetourForkCallback.h"
-#include "EventListener.h"
+#include "WindowsSystemAccessMonitor.h"
+#include "WindowsSystemLoggerMonitor.h"
+#include "WindowsSystemMonitorFork.h"
+#include "WindowsDetourEventListener.h"
 
 namespace Monitor::Windows
 {
@@ -76,7 +76,7 @@ namespace Monitor::Windows
 			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
-			std::shared_ptr<IMonitorCallback> callback,
+			std::shared_ptr<ISystemAccessMonitor> monitor,
 			bool enableAccessChecks,
 			std::vector<Path> allowedReadAccess,
 			std::vector<Path> allowedWriteAccess) :
@@ -85,11 +85,11 @@ namespace Monitor::Windows
 			m_workingDirectory(workingDirectory),
 			m_environmentVariables(environmentVariables),
 #ifdef TRACE_DETOUR_SERVER
-			m_eventListener(std::make_shared<DetourForkCallback>(
-				std::make_shared<DetourCallbackLogger>(std::cout),
-				std::make_shared<DetourMonitorCallback>(std::move(callback)))),
+			m_eventListener(std::make_shared<WindowsSystemMonitorFork>(
+				std::make_shared<WindowsSystemLoggerMonitor>(std::cout),
+				std::make_shared<WindowsSystemAccessMonitor>(std::move(monitor)))),
 #else
-			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
+			m_eventListener(std::make_shared<WindowsSystemAccessMonitor>(std::move(monitor))),
 #endif
 			m_enableAccessChecks(enableAccessChecks),
 			m_allowedReadAccess(std::move(allowedReadAccess)),

@@ -1,12 +1,15 @@
 ﻿#pragma once 
-#include "IDetourCallback.h"
+#include "ILinuxSystemMonitor.h"
 
 namespace Monitor::Linux
 {
-	class DetourCallbackLogger : public IDetourCallback
+	class LinuxSystemLoggerMonitor : public ILinuxSystemMonitor
 	{
+	private:
+		std::ostream& m_stream;
+
 	public:
-		DetourCallbackLogger(std::ostream& stream) :
+		LinuxSystemLoggerMonitor(std::ostream& stream) :
 			m_stream(stream)
 		{
 		}
@@ -167,8 +170,5 @@ namespace Monitor::Linux
 		{
 			m_stream << "fexecve: " << std::endl;
 		}
-
-	private:
-		std::ostream& m_stream;
 	};
 }

@@ -29,7 +29,7 @@ namespace Monitor::Windows
 			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
-			std::shared_ptr<IMonitorCallback> callback,
+			std::shared_ptr<ISystemAccessMonitor> monitor,
 			bool enableAccessChecks,
 			std::vector<Path> allowedReadAccess,
 			std::vector<Path> allowedWriteAccess) override final
@@ -39,7 +39,7 @@ namespace Monitor::Windows
 				std::move(arguments),
 				workingDirectory,
 				environmentVariables,
-				std::move(callback),
+				std::move(monitor),
 				enableAccessChecks,
 				std::move(allowedReadAccess),
 				std::move(allowedWriteAccess));

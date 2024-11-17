@@ -3,27 +3,29 @@
 // </copyright>
 
 #pragma once
-#include "DetourMonitorCallback.h"
-#include "DetourCallbackLogger.h"
-#include "DetourForkCallback.h"
-#include "EventListener.h"
+#include "LinuxSystemAccessMonitor.h"
+#include "LinuxSystemLoggerMonitor.h"
+#include "LinuxSystemMonitorFork.h"
+#include "LinuxTraceEventListener.h"
+#include "LinuxDetourEventListener.h"
 
 namespace Monitor::Linux
 {
 	/// <summary>
 	/// A Linux platform specific process executable using system
 	/// </summary>
-	#ifdef SOUP_BUILD
-	export
-	#endif
-	class LinuxMonitorProcess : public Opal::System::IProcess
+	export class LinuxMonitorProcess : public Opal::System::IProcess
 	{
 	private:
 		// Input
 		Path m_executable;
 		std::vector<std::string> m_arguments;
 		Path m_workingDirectory;
-		EventListener m_eventListener;
+#ifdef USE_PTRACE
+		LinuxTraceEventListener m_eventListener;
+#else
+		LinuxDetourEventListener m_eventListener;
+#endif
 
 		// Runtime
 		pid_t m_processId;
@@ -50,16 +52,26 @@ namespace Monitor::Linux
 			const Path& executable,
 			std::vector<std::string> arguments,
 			const Path& workingDirectory,
-			std::shared_ptr<IMonitorCallback> callback) :
+			std::shared_ptr<ISystemAccessMonitor> monitor) :
 			m_executable(executable),
 			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
-#ifdef TRACE_DETOUR_SERVER
-			m_eventListener(std::make_shared<DetourForkCallback>(
-				std::make_shared<DetourCallbackLogger>(std::cout),
-				std::make_shared<DetourMonitorCallback>(std::move(callback)))),
+#ifdef USE_PTRACE
+	#ifdef TRACE_DETOUR_SERVER
+			m_eventListener(std::make_shared<LinuxSystemMonitorFork>(
+				std::make_shared<LinuxSystemLoggerMonitor>(std::cout),
+				std::make_shared<LinuxSystemAccessMonitor>(std::move(monitor)))),
+	#else
+			m_eventListener(std::make_shared<LinuxSystemAccessMonitor>(std::move(monitor))),
+	#endif
 #else
-			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
+	#ifdef TRACE_DETOUR_SERVER
+			m_eventListener(std::make_shared<LinuxSystemMonitorFork>(
+				std::make_shared<LinuxSystemLoggerMonitor>(std::cout),
+				std::make_shared<LinuxSystemAccessMonitor>(std::move(monitor)))),
+	#else
+			m_eventListener(std::make_shared<LinuxSystemAccessMonitor>(std::move(monitor))),
+	#endif
 #endif
 			m_processId(),
 			m_stdOutReadHandle(),
@@ -93,11 +105,13 @@ namespace Monitor::Linux
 			if (pipe(stdErrPipe) < 0)
 				throw std::runtime_error("Failed to create stdErrPipe");
 
-			// Initialize the pipes so they are ready for the process and the worker thread
-			DebugTrace("Create fifo");
-			auto pipeName = std::string("/tmp/soupbuildfifo");
-			if (mkfifo(pipeName.c_str(), 0666) != 0)
-				throw std::runtime_error("Failed to create pipe");
+			#ifndef USE_PTRACE
+				// Initialize the pipes so they are ready for the process and the worker thread
+				DebugTrace("Create fifo");
+				auto pipeName = std::string("/tmp/soupbuildfifo");
+				if (mkfifo(pipeName.c_str(), 0666) != 0)
+					throw std::runtime_error("Failed to create pipe");
+			#endif
 
 			// Create a child process
 			DebugTrace("Fork");
@@ -127,7 +141,7 @@ namespace Monitor::Linux
 				m_processRunning = true;
 				m_workerFailed = false;
 				DebugTrace("Thread");
-				m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this));
+				m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this), processId);
 				
 				DebugTrace("Parent done");
 			}
@@ -246,19 +260,45 @@ namespace Monitor::Linux
 				close(stdOutPipe[1]);
 				close(stdErrPipe[1]);
 
-				// Build up the Monitor dlls absolute path
-				auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
-				auto moduleFolder = moduleName.GetParent();
-				auto dllPath = moduleFolder + Path("./Monitor.Client.64.so");
-
 				auto environment = std::vector<std::string>();
 
 				environment.push_back("HOME=/");
 				environment.push_back("USER=USERNAME");
 				environment.push_back("PAHT=/usr/bin");
 
-				// Preload the monitor client first
-				environment.push_back("LD_PRELOAD=" + dllPath.ToString());
+				#ifdef USE_PTRACE
+					scmp_filter_ctx ctx;
+					try
+					{
+						scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_ALLOW);
+						if (ctx == NULL)
+							throw std::runtime_error("seccomp_init failed");
+
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(write), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+
+						if (seccomp_load(ctx) < 0)
+							throw std::runtime_error("seccomp_load failed");
+
+						seccomp_release(ctx);
+					}
+					catch(const std::exception& e)
+					{
+						// Ensure we cleanup nicely
+						seccomp_release(ctx);
+						throw;
+					}
+
+					ptrace(PTRACE_TRACEME, 0, NULL, NULL);
+				#else
+					// Build up the Monitor dlls absolute path
+					auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
+					auto moduleFolder = moduleName.GetParent();
+					auto dllPath = moduleFolder + Path("./Monitor.Client.64.so");
+					
+					// Preload the monitor client first
+					environment.push_back("LD_PRELOAD=" + dllPath.ToString());
+				#endif
 
 				std::vector<const char*> arguments;
 				arguments.push_back(m_executable.ToString().c_str());
@@ -291,7 +331,43 @@ namespace Monitor::Linux
 		/// The main entry point for the worker thread that will monitor incoming messages from all
 		/// client connections.
 		/// </summary>
-		void WorkerThread()
+		void WorkerThread(pid_t childId)
+		{
+			#ifdef USE_PTRACE
+				TraceWorkerThread(childId);
+			#else
+				DetourWorkerThread();
+			#endif
+		}
+
+#ifdef USE_PTRACE
+		void TraceWorkerThread(pid_t childId)
+		{
+			Log::Diag("WorkerThread Start");
+			int status;
+
+			// Wait for the first notification from the child
+			waitpid(childId, &status, 0);
+
+			// Enable SecComp filtering
+			ptrace(PTRACE_SETOPTIONS, childId, 0, PTRACE_O_TRACESECCOMP);
+			ptrace(PTRACE_CONT, childId, NULL, NULL);
+
+			while (1)
+			{
+				wait(&status);
+				if (WIFEXITED(status))
+					break;
+				if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_SECCOMP << 8)))
+				{
+					m_eventListener.ProcessSysCall(childId);
+				}
+
+				ptrace(PTRACE_CONT, childId, NULL, NULL);
+			}
+		}
+#else
+		void DetourWorkerThread()
 		{
 			auto pipeName = std::string("/tmp/soupbuildfifo");
 
@@ -408,6 +484,7 @@ namespace Monitor::Linux
 			DebugTrace("LogMessage");
 			m_eventListener.SafeLogMessage(message);
 		}
+#endif
 
 		void DebugTrace(std::string_view message, uint32_t value)
 		{

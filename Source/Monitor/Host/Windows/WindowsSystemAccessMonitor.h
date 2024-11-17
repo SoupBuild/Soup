@@ -1,34 +1,34 @@
 ﻿#pragma once
-#include "IDetourCallback.h"
+#include "ISystemAccessMonitor.h"
 
 namespace Monitor::Windows
 {
-	/// The monitor callback wrapper that maps Windows Detour events to the shared events
-	class DetourMonitorCallback : public IDetourCallback
+	/// The monitor wrapper that maps Windows Detour events to the shared events
+	class WindowsSystemAccessMonitor : public IWindowsSystemMonitor
 	{
 	private:
-		std::shared_ptr<IMonitorCallback> _callback;
+		std::shared_ptr<ISystemAccessMonitor> _monitor;
 
 	public:
-		DetourMonitorCallback(
-			std::shared_ptr<IMonitorCallback> callback) :
-			_callback(std::move(callback))
+		WindowsSystemAccessMonitor(
+			std::shared_ptr<ISystemAccessMonitor> monitor) :
+			_monitor(std::move(monitor))
 		{
 		}
 
 		void OnInitialize() override final
 		{
-			Log::Diag("DetourMonitorCallback::OnInitialize");
+			Log::Diag("WindowsSystemAccessMonitor::OnInitialize");
 		}
 
 		void OnShutdown(bool hadError) override final
 		{
-			Log::Diag("DetourMonitorCallback::OnShutdown {}", hadError);
+			Log::Diag("WindowsSystemAccessMonitor::OnShutdown {}", hadError);
 		}
 
 		void OnError(std::string_view message) override final
 		{
-			Log::Error("DetourMonitorCallback::Error - {}", message);
+			Log::Error("WindowsSystemAccessMonitor::Error - {}", message);
 		}
 
 		// FileApi
@@ -551,7 +551,7 @@ namespace Monitor::Windows
 
 		void OnExitProcess(uint32_t exitCode) override final
 		{
-			Log::Diag("DetourMonitorCallback::OnExitProcess - {}", exitCode);
+			Log::Diag("WindowsSystemAccessMonitor::OnExitProcess - {}", exitCode);
 		}
 
 		// UndocumentedApi
@@ -1173,7 +1173,7 @@ namespace Monitor::Windows
 
 		void OnCreateProcess(bool wasDetoured, std::string_view applicationName)
 		{
-			_callback->OnCreateProcess(applicationName, wasDetoured);
+			_monitor->OnCreateProcess(applicationName, wasDetoured);
 		}
 
 		void TouchFileRead(std::wstring_view fileName, bool exists, bool wasBlocked)
@@ -1187,7 +1187,7 @@ namespace Monitor::Windows
 			// Verify not a special file
 			if (!IsSpecialFile(fileName))
 			{
-				_callback->TouchFileRead(Path::Parse(fileName), exists, wasBlocked);
+				_monitor->TouchFileRead(Path::Parse(fileName), exists, wasBlocked);
 			}
 		}
 
@@ -1202,7 +1202,7 @@ namespace Monitor::Windows
 			// Verify not a special file
 			if (!IsSpecialFile(fileName))
 			{
-				_callback->TouchFileWrite(Path::Parse(fileName), wasBlocked);
+				_monitor->TouchFileWrite(Path::Parse(fileName), wasBlocked);
 			}
 		}
 
@@ -1214,7 +1214,7 @@ namespace Monitor::Windows
 
 		void TouchFileDelete(std::string_view fileName, bool wasBlocked)
 		{
-			_callback->TouchFileDelete(Path::Parse(fileName), wasBlocked);
+			_monitor->TouchFileDelete(Path::Parse(fileName), wasBlocked);
 		}
 
 		void TouchFileDeleteOnClose(std::wstring_view fileName)
@@ -1225,7 +1225,7 @@ namespace Monitor::Windows
 
 		void TouchFileDeleteOnClose(std::string_view fileName)
 		{
-			_callback->TouchFileDeleteOnClose(Path::Parse(fileName));
+			_monitor->TouchFileDeleteOnClose(Path::Parse(fileName));
 		}
 
 		bool IsSpecialFile(std::string_view fileName)
@@ -1246,7 +1246,7 @@ namespace Monitor::Windows
 
 		void SearchPath(std::string_view path, std::string_view filename)
 		{
-			_callback->SearchPath(path, filename);
+			_monitor->SearchPath(path, filename);
 		}
 	};
 }

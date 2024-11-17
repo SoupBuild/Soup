@@ -3,12 +3,12 @@
 // </copyright>
 
 #pragma once
-#include "IMonitorCallback.h"
+#include "ISystemAccessMonitor.h"
 
 namespace Monitor
 {
 	/// <summary>
-	/// The process manager interface that supports monitor callbacks
+	/// The process manager interface that supports monitoring
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
 	#ifdef SOUP_BUILD
@@ -44,7 +44,7 @@ namespace Monitor
 			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
-			std::shared_ptr<IMonitorCallback> callback,
+			std::shared_ptr<ISystemAccessMonitor> monitor,
 			bool enableAccessChecks,
 			std::vector<Path> allowedReadAccess,
 			std::vector<Path> allowedWriteAccess) = 0;
