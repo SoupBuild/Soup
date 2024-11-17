@@ -160,11 +160,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "User1", "Soup.CSharp")
+					KnownLanguage("User1", "Soup.CSharp")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -373,11 +373,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "User1", "Soup.CSharp")
+					KnownLanguage("User1", "Soup.CSharp")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -533,7 +533,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
 					Language: (C++@1.1)
@@ -597,7 +597,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml"),
+				Path("C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Version: 5
 					Closures: {
@@ -620,11 +620,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "User1", "Soup.Wren")
+					KnownLanguage("User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -674,8 +674,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/4.5.6/PackageLock.sml",
 					"INFO: Package lock loaded",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
@@ -690,8 +690,8 @@ namespace Soup::Core::UnitTests
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/Soup.Cpp/4.5.6/Recipe.sml",
 					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/Soup.Cpp/4.5.6/PackageLock.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
@@ -799,9 +799,9 @@ namespace Soup::Core::UnitTests
 								3,
 								PackageName("User1", "TestTool"),
 								false,
-								Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/"),
+								Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/"),
 								Path(),
-								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -930,11 +930,11 @@ namespace Soup::Core::UnitTests
 				{
 					{
 						"C++",
-						KnownLanguage("Cpp", "User1", "Soup.Cpp")
+						KnownLanguage("User1", "Soup.Cpp")
 					},
 					{
 						"Wren",
-						KnownLanguage("Wren", "User1", "Soup.Wren")
+						KnownLanguage("User1", "Soup.Wren")
 					},
 				});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -1154,7 +1154,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
 					Language: (C++@1.1)
@@ -1219,7 +1219,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml"),
+				Path("C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Version: 5
 					Closures: {
@@ -1242,11 +1242,11 @@ namespace Soup::Core::UnitTests
 				{
 					{
 						"C++",
-						KnownLanguage("Cpp", "User1", "Soup.Cpp")
+						KnownLanguage("User1", "Soup.Cpp")
 					},
 					{
 						"Wren",
-						KnownLanguage("Wren", "User1", "Soup.Wren")
+						KnownLanguage("User1", "Soup.Wren")
 					},
 				});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -1296,8 +1296,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
 					"INFO: Package lock loaded",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
@@ -1313,8 +1313,8 @@ namespace Soup::Core::UnitTests
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
 					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
@@ -1432,9 +1432,9 @@ namespace Soup::Core::UnitTests
 									3,
 									PackageName("User1", "TestTool"),
 									false,
-									Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/"),
+									Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/"),
 									Path(),
-									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml")),
+									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml")),
 									PackageChildrenMap({
 										{
 											"Build",
@@ -1561,11 +1561,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "User1", "Soup.Wren")
+					KnownLanguage("User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -1814,11 +1814,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "User1", "Soup.Wren")
+					KnownLanguage("User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -1982,11 +1982,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "User1", "Soup.Wren")
+					KnownLanguage("User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -2318,11 +2318,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "User1", "Soup.Wren")
+					KnownLanguage("User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -2580,7 +2580,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'TestTool'
 					Language: (C++@1.1)
@@ -2645,7 +2645,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml"),
+				Path("C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Version: 5
 					Closures: {
@@ -2668,11 +2668,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "User1", "Soup.Wren")
+					KnownLanguage("User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -2722,8 +2722,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
 					"INFO: Package lock loaded",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
@@ -2739,8 +2739,8 @@ namespace Soup::Core::UnitTests
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/User1/TestBuild/3.3.3/Recipe.sml",
 					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Wren/User1/TestBuild/3.3.3/PackageLock.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/locks/Cpp/User1/TestTool/3.3.3/PackageLock.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/locks/C++/User1/TestTool/3.3.3/PackageLock.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Wren/2.2.2/Recipe.sml",
 				}),
@@ -2858,9 +2858,9 @@ namespace Soup::Core::UnitTests
 								3,
 								PackageName("User1", "TestTool"),
 								false,
-								Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/"),
+								Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/"),
 								Path(),
-								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/TestTool/3.3.3/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/User1/TestTool/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -3034,11 +3034,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					KnownLanguage("Wren", "User1", "Soup.Wren")
+					KnownLanguage("User1", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -3371,11 +3371,11 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"Wren",
-					KnownLanguage("Wren", "User1", "Soup.Wren")
+					KnownLanguage("User1", "Soup.Wren")
 				},
 				{
 					"C#",
-					KnownLanguage("CSharp", "User1", "Soup.CSharp")
+					KnownLanguage("User1", "Soup.CSharp")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -3589,7 +3589,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/C++/User1/PackageA/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'PackageA'
 					Language: (C++@1.1)
@@ -3600,7 +3600,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/C++/User1/PackageB/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'PackageB'
 					Language: (C++@1.1)
@@ -3639,11 +3639,11 @@ namespace Soup::Core::UnitTests
 				{
 					{
 						"C++",
-						KnownLanguage("Cpp", "User1", "Soup.Cpp")
+						KnownLanguage("User1", "Soup.Cpp")
 					},
 					{
 						"C#",
-						KnownLanguage("CSharp", "User1", "Soup.CSharp")
+						KnownLanguage("User1", "Soup.CSharp")
 					},
 				});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -3690,8 +3690,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/User1/PackageA/3.3.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/User1/PackageB/4.4.4/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 					"DIAG: Graph already loaded: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/",
 					"DIAG: Recipe already loaded: [C++]User1|PackageB",
@@ -3705,8 +3705,8 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/C++/User1/PackageA/3.3.3/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/C++/User1/PackageB/4.4.4/Recipe.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
@@ -3769,9 +3769,9 @@ namespace Soup::Core::UnitTests
 									2,
 									PackageName("User1", "PackageA"),
 									false,
-									Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/"),
+									Path("C:/Users/Me/.soup/packages/C++/User1/PackageA/3.3.3/"),
 									Path(),
-									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageA/3.3.3/Recipe.sml")),
+									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/User1/PackageA/3.3.3/Recipe.sml")),
 									PackageChildrenMap({
 										{
 											"Build",
@@ -3793,9 +3793,9 @@ namespace Soup::Core::UnitTests
 									3,
 									PackageName("User1", "PackageB"),
 									false,
-									Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/"),
+									Path("C:/Users/Me/.soup/packages/C++/User1/PackageB/4.4.4/"),
 									Path(),
-									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/User1/PackageB/4.4.4/Recipe.sml")),
+									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/User1/PackageB/4.4.4/Recipe.sml")),
 									PackageChildrenMap({
 										{
 											"Build",
@@ -3847,7 +3847,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/C#/User1/Package1/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: 'Package1'
 					Language: (C#@1)
@@ -3901,15 +3901,15 @@ namespace Soup::Core::UnitTests
 				{
 					{
 						"C++",
-						KnownLanguage("Cpp", "User1", "Soup.Cpp")
+						KnownLanguage("User1", "Soup.Cpp")
 					},
 					{
 						"Wren",
-						KnownLanguage("Wren", "User1", "Soup.Wren")
+						KnownLanguage("User1", "Soup.Wren")
 					},
 					{
 						"C#",
-						KnownLanguage("CSharp", "User1", "Soup.CSharp")
+						KnownLanguage("User1", "Soup.CSharp")
 					},
 				});
 			auto builtInPackages = std::map<std::string, std::map<PackageName, SemanticVersion>>(
@@ -3966,7 +3966,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/User1/Package1/4.4.4/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
 					"DIAG: Load Recipe: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
@@ -3978,7 +3978,7 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"TryOpenReadBinary: C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml",
+					"TryOpenReadBinary: C:/Users/Me/.soup/packages/C#/User1/Package1/4.4.4/Recipe.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.CSharp/3.3.3/Recipe.sml",
 					"TryOpenReadBinary: C:/BuiltIn/Packages/User1/Soup.Cpp/1.1.1/Recipe.sml",
 				}),
@@ -4051,9 +4051,9 @@ namespace Soup::Core::UnitTests
 									2,
 									PackageName("User1", "Package1"),
 									false,
-									Path("C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/"),
+									Path("C:/Users/Me/.soup/packages/C#/User1/Package1/4.4.4/"),
 									Path(),
-									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/User1/Package1/4.4.4/Recipe.sml")),
+									&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/User1/Package1/4.4.4/Recipe.sml")),
 									PackageChildrenMap({
 										{
 											"Build",

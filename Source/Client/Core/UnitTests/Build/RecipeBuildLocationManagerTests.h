@@ -30,7 +30,7 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				}
 			});
 			auto uut = RecipeBuildLocationManager(knownLanguages);
@@ -84,7 +84,7 @@ namespace Soup::Core::UnitTests
 			{
 				{
 					"C++",
-					KnownLanguage("Cpp", "User1", "Soup.Cpp")
+					KnownLanguage("User1", "Soup.Cpp")
 				}
 			});
 			auto uut = RecipeBuildLocationManager(knownLanguages);
@@ -96,7 +96,7 @@ namespace Soup::Core::UnitTests
 				recipeCache);
 
 			Assert::AreEqual(
-				Path("C:/BuildOut/Cpp/Local/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"),
+				Path("C:/BuildOut/C++/Local/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"),
 				targetDirectory,
 				"Verify target directory matches expected.");
 
@@ -105,7 +105,7 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: Found Root Recipe: 'C:/RootRecipe.sml'",
 					"DIAG: Load Root Recipe: C:/RootRecipe.sml",
-					"INFO: Override root output: C:/BuildOut/Cpp/Local/MyPackage/1.2.3/",
+					"INFO: Override root output: C:/BuildOut/C++/Local/MyPackage/1.2.3/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
