@@ -48,43 +48,18 @@ namespace Monitor::Linux
 
 		void ProcessSysCall(pid_t pid)
 		{
-			long originalRAX = ptrace(PTRACE_PEEKUSER, pid, sizeof(long) * ORIG_RAX, NULL);
-			auto registers = GetSysCallArgs(pid);
-			auto args = registers.Arugments;
-	
 			WaitForSyscallExit(pid);
 			
-			auto args2 = GetSysCallArgs(pid);
-			
-			dissected_long_t rax = {
-				.val = ptrace(PTRACE_PEEKUSER, pid, sizeof(long) * RAX, NULL)
-			};
-			std::cout << "RAX: " << rax.intData[0] << " " << rax.intData[1] << std::endl;
-			auto result = rax.intData[0];
-
-			result = args2.Return;
-			switch (originalRAX)
+			auto registers = GetSysCallArgs(pid);
+			auto args = registers.Arugments;
+			auto result = registers.Return;
+			switch (registers.Command)
 			{
 				// FileApi
-				case SCMP_SYS(open):
-				{
-					auto path = ReadNullTerminatedStringValue(pid, args[0]);
-					auto oflag = (int32_t)args[1];
-					m_monitor->OnOpen(path, oflag, result);
-					break;
-				}
 				case SCMP_SYS(creat):
 				{
 					auto path = ReadNullTerminatedStringValue(pid, args[0]);
 					m_monitor->OnCreat(path, result);
-					break;
-				}
-				case SCMP_SYS(openat):
-				{
-					auto dirfd = (int32_t)args[0];
-					auto path = ReadNullTerminatedStringValue(pid, args[1]);
-					auto oflag = (int32_t)args[2];
-					m_monitor->OnOpenat(dirfd, path, oflag, result);
 					break;
 				}
 				case SCMP_SYS(link):
@@ -101,7 +76,45 @@ namespace Monitor::Linux
 					auto newdirfd = (int32_t)args[2];
 					auto newpath = ReadNullTerminatedStringValue(pid, args[3]);
 					auto flags = (int32_t)args[4];
-					m_monitor->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
+					m_monitor->OnLinkAt(olddirfd, oldpath, newdirfd, newpath, flags, result);
+					break;
+				}
+				case SCMP_SYS(mkdir):
+				{
+					auto path = ReadNullTerminatedStringValue(pid, args[0]);
+					auto mode = (uint32_t)args[1];
+					m_monitor->OnMkdir(path, mode, result);
+					break;
+				}
+				case SCMP_SYS(mkdirat):
+				{
+					auto dirfd = (int32_t)args[0];
+					auto path = ReadNullTerminatedStringValue(pid, args[1]);
+					auto mode = (uint32_t)args[2];
+					m_monitor->OnMkdirAt(dirfd, path, mode, result);
+					break;
+				}
+				case SCMP_SYS(open):
+				{
+					auto path = ReadNullTerminatedStringValue(pid, args[0]);
+					auto oflag = (int32_t)args[1];
+					m_monitor->OnOpen(path, oflag, result);
+					break;
+				}
+				case SCMP_SYS(openat):
+				{
+					auto dirfd = (int32_t)args[0];
+					auto path = ReadNullTerminatedStringValue(pid, args[1]);
+					auto oflag = (int32_t)args[2];
+					m_monitor->OnOpenAt(dirfd, path, oflag, result);
+					break;
+				}
+				case SCMP_SYS(openat2):
+				{
+					auto dirfd = (int32_t)args[0];
+					auto path = ReadNullTerminatedStringValue(pid, args[1]);
+					auto oflag = (int32_t)args[2];
+					m_monitor->OnOpenAt2(dirfd, path, oflag, result);
 					break;
 				}
 				case SCMP_SYS(rename):
@@ -111,44 +124,22 @@ namespace Monitor::Linux
 					m_monitor->OnRename(oldpath, newpath, result);
 					break;
 				}
-				case SCMP_SYS(unlink):
+				case SCMP_SYS(renameat):
 				{
-					auto pathname = ReadNullTerminatedStringValue(pid, args[0]);
-					m_monitor->OnUnlink(pathname, result);
+					auto oldfd = (int32_t)args[0];
+					auto oldpath = ReadNullTerminatedStringValue(pid, args[1]);
+					auto newfd = (int32_t)args[2];
+					auto newpath = ReadNullTerminatedStringValue(pid, args[3]);
+					m_monitor->OnRenameAt(oldfd, oldpath, newfd, newpath, result);
 					break;
 				}
-				// case SCMP_SYS(remove):
-				// {
-				// 	auto pathname = ReadStringValue(message, offset);
-				// 	m_monitor->OnRemove(pathname);
-				// 	break;
-				// }
-				// case SCMP_SYS(fopen):
-				// {
-				// 	auto pathname = ReadStringValue(message, offset);
-				// 	auto mode = ReadStringValue(message, offset);
-				// 	m_monitor->OnFOpen(pathname, mode);
-				// 	break;
-				// }
-				// case SCMP_SYS(fdopen):
-				// {
-				// 	auto fd = ReadInt32Value(message, offset);
-				// 	auto mode = ReadStringValue(message, offset);
-				// 	m_monitor->OnFDOpen(fd, mode);
-				// 	break;
-				// }
-				// case SCMP_SYS(freopen):
-				// {
-				// 	auto pathname = ReadStringValue(message, offset);
-				// 	auto mode = ReadStringValue(message, offset);
-				// 	m_monitor->OnFReopen(pathname, mode);
-				// 	break;
-				// }
-				case SCMP_SYS(mkdir):
+				case SCMP_SYS(renameat2):
 				{
-					auto path = ReadNullTerminatedStringValue(pid, args[0]);
-					auto mode = (uint32_t)args[1];
-					m_monitor->OnMkdir(path, mode, result);
+					auto oldfd = (int32_t)args[0];
+					auto oldpath = ReadNullTerminatedStringValue(pid, args[1]);
+					auto newfd = (int32_t)args[2];
+					auto newpath = ReadNullTerminatedStringValue(pid, args[3]);
+					m_monitor->OnRenameAt2(oldfd, oldpath, newfd, newpath, result);
 					break;
 				}
 				case SCMP_SYS(rmdir):
@@ -157,12 +148,36 @@ namespace Monitor::Linux
 					m_monitor->OnRmdir(pathname, result);
 					break;
 				}
-				// case SCMP_SYS(system):
-				// {
-				// 	auto command = ReadStringValue(message, offset);
-				// 	m_monitor->OnSystem(command);
-				// 	break;
-				// }
+				case SCMP_SYS(unlink):
+				{
+					auto pathname = ReadNullTerminatedStringValue(pid, args[0]);
+					m_monitor->OnUnlink(pathname, result);
+					break;
+				}
+
+				// ProcessApi
+				case SCMP_SYS(clone):
+				{
+					m_monitor->OnClone(result);
+					break;
+				}
+				case SCMP_SYS(clone3):
+				{
+					m_monitor->OnClone3(result);
+					break;
+				}
+				case SCMP_SYS(execve):
+				{
+					auto file = ReadNullTerminatedStringValue(pid, args[0]);
+					m_monitor->OnExecve(file, result);
+					break;
+				}
+				case SCMP_SYS(execveat):
+				{
+					auto file = ReadNullTerminatedStringValue(pid, args[0]);
+					m_monitor->OnExecveAt(file, result);
+					break;
+				}
 				case SCMP_SYS(fork):
 				{
 					m_monitor->OnFork(result);
@@ -173,75 +188,8 @@ namespace Monitor::Linux
 					m_monitor->OnVFork(result);
 					break;
 				}
-				
-				case SCMP_SYS(clone):
-				{
-					m_monitor->OnClone(result);
-					break;
-				}
-				// case SCMP_SYS(__clone2):
-				// {
-				// 	m_monitor->OnClone2();
-				// 	break;
-				// }
-				case SCMP_SYS(clone3):
-				{
-					m_monitor->OnClone3(result);
-					break;
-				}
-				// case SCMP_SYS(execl):
-				// {
-				// 	auto path = ReadStringValue(message, offset);
-				// 	m_monitor->OnExecl(path);
-				// 	break;
-				// }
-				// case SCMP_SYS(execlp):
-				// {
-				// 	auto file = ReadStringValue(message, offset);
-				// 	m_monitor->OnExeclp(file);
-				// 	break;
-				// }
-				// case SCMP_SYS(execle):
-				// {
-				// 	auto path = ReadStringValue(message, offset);
-				// 	m_monitor->OnExecle(path);
-				// 	break;
-				// }
-				// case SCMP_SYS(execv):
-				// {
-				// 	auto path = ReadStringValue(message, offset);
-				// 	m_monitor->OnExecv(path);
-				// 	break;
-				// }
-				// case SCMP_SYS(execvp):
-				// {
-				// 	auto file = ReadStringValue(message, offset);
-				// 	m_monitor->OnExecvp(file);
-				// 	break;
-				// }
-				// case SCMP_SYS(execvpe):
-				// {
-				// 	auto file = ReadStringValue(message, offset);
-				// 	m_monitor->OnExecvpe(file);
-				// 	break;
-				// }
-				case SCMP_SYS(execve):
-				{
-				// 	auto file = ReadStringValue(message, offset);
-				// 	m_monitor->OnExecve(file);
-					break;
-				}
-				case SCMP_SYS(execveat):
-				{
-				// 	auto file = ReadStringValue(message, offset);
-				// 	m_monitor->OnExecveat(file);
-					break;
-				}
-				// case SCMP_SYS(fexecve):
-				// {
-				// 	m_monitor->OnFexecve();
-				// 	break;
-				// }
+
+				// Uknown
 				default:
 				{
 					throw std::runtime_error("Unknown system call type");

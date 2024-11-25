@@ -34,6 +34,32 @@ namespace Monitor::Linux
 		}
 
 		// FileApi
+		void OnCreat(std::string_view pathname, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileWrite(pathname, wasBlocked);
+		}
+
+		void OnLink(std::string_view oldpath, std::string_view newpath, int32_t result) override final
+		{
+		}
+
+		void OnLinkAt(int32_t olddirfd, std::string_view oldpath, int32_t newdirfd, std::string_view newpath, int32_t flags, int32_t result) override final
+		{
+		}
+
+		void OnMkdir(std::string_view path, uint32_t mode, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileWrite(path, wasBlocked);
+		}
+
+		void OnMkdirAt(int32_t dirfd, std::string_view path, uint32_t mode, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileWrite(path, wasBlocked);
+		}
+
 		void OnOpen(std::string_view path, int32_t oflag, int32_t result) override final
 		{
 			bool isWrite = (oflag & O_WRONLY) != 0 || (oflag & O_RDWR) != 0;
@@ -49,13 +75,22 @@ namespace Monitor::Linux
 			}
 		}
 
-		void OnCreat(std::string_view pathname, int32_t result) override final
+		void OnOpenAt(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) override final
 		{
+			bool isWrite = (flags & O_WRONLY) != 0 || (flags & O_RDWR) != 0;
 			bool wasBlocked = false;
-			TouchFileWrite(pathname, wasBlocked);
+			if (isWrite)
+			{
+				TouchFileWrite(pathname, wasBlocked);
+			}
+			else
+			{
+				bool exists = result != -1;
+				TouchFileRead(pathname, exists, wasBlocked);
+			}
 		}
-
-		void OnOpenat(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) override final
+		
+		void OnOpenAt2(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) override final
 		{
 			bool isWrite = (flags & O_WRONLY) != 0 || (flags & O_RDWR) != 0;
 			bool wasBlocked = false;
@@ -70,12 +105,10 @@ namespace Monitor::Linux
 			}
 		}
 
-		void OnLink(std::string_view oldpath, std::string_view newpath, int32_t result) override final
+		void OnRemove(std::string_view pathname, int32_t result) override final
 		{
-		}
-
-		void OnLinkat(int32_t olddirfd, std::string_view oldpath, int32_t newdirfd, std::string_view newpath, int32_t flags, int32_t result) override final
-		{
+			bool wasBlocked = false;
+			TouchFileDelete(pathname, wasBlocked);
 		}
 
 		void OnRename(std::string_view oldpath, std::string_view newpath, int32_t result) override final
@@ -85,67 +118,18 @@ namespace Monitor::Linux
 			TouchFileWrite(newpath, wasBlocked);
 		}
 
-		void OnUnlink(std::string_view pathname, int32_t result) override final
+		void OnRenameAt(int32_t oldfd, std::string_view oldpath, int32_t newfd, std::string_view newpath, int32_t result) override final
 		{
 			bool wasBlocked = false;
-			TouchFileDelete(pathname, wasBlocked);
+			TouchFileDelete(oldpath, wasBlocked);
+			TouchFileWrite(newpath, wasBlocked);
 		}
 
-		void OnRemove(std::string_view pathname, int32_t result) override final
+		void OnRenameAt2(int32_t oldfd, std::string_view oldpath, int32_t newfd, std::string_view newpath, int32_t result) override final
 		{
 			bool wasBlocked = false;
-			TouchFileDelete(pathname, wasBlocked);
-		}
-
-		void OnFOpen(std::string_view pathname, std::string_view mode, uint64_t result) override final
-		{
-			if (mode.length() == 0)
-				throw std::runtime_error("Mode must have at least one character");
-
-			bool isWrite = false;
-			switch (mode[0])
-			{
-				case 'r':
-					if (mode.length() > 1 && mode[1] == '+')
-					{
-						isWrite = true;
-					}
-
-					break;
-				case 'w':
-					isWrite = true;
-					break;
-				case 'a':
-					isWrite = true;
-					break;
-			}
-
-			bool wasBlocked = false;
-			if (isWrite)
-			{
-				TouchFileWrite(pathname, wasBlocked);
-			}
-			else
-			{
-				bool exists = result != 0;
-				TouchFileRead(pathname, exists, wasBlocked);
-			}
-		}
-
-		void OnFDOpen(int32_t fd, std::string_view mode, int32_t result) override final
-		{
-			// TouchFileWrite(pathName, wasBlocked);
-		}
-
-		void OnFReopen(std::string_view pathname, std::string_view mode, int32_t result) override final
-		{
-			// TouchFileWrite(pathName, wasBlocked);
-		}
-
-		void OnMkdir(std::string_view path, uint32_t mode, int32_t result) override final
-		{
-			bool wasBlocked = false;
-			TouchFileWrite(path, wasBlocked);
+			TouchFileDelete(oldpath, wasBlocked);
+			TouchFileWrite(newpath, wasBlocked);
 		}
 
 		void OnRmdir(std::string_view pathname, int32_t result) override final
@@ -154,8 +138,27 @@ namespace Monitor::Linux
 			TouchFileDelete(pathname, wasBlocked);
 		}
 
+		void OnUnlink(std::string_view pathname, int32_t result) override final
+		{
+			bool wasBlocked = false;
+			TouchFileDelete(pathname, wasBlocked);
+		}
+
 		// ProcessApi
-		void OnSystem(std::string_view command, int32_t result) override final
+		void OnClone(int32_t result) override final
+		{
+		}
+
+		void OnClone3(int32_t result) override final
+		{
+		}
+
+
+		void OnExecve(std::string_view file, int32_t result) override final
+		{
+		}
+
+		void OnExecveAt(std::string_view file, int32_t result) override final
 		{
 		}
 
@@ -164,54 +167,6 @@ namespace Monitor::Linux
 		}
 
 		void OnVFork(int32_t result) override final
-		{
-		}
-
-		void OnClone(int32_t result) override final
-		{
-		}
-
-		void OnClone2(int32_t result) override final
-		{
-		}
-
-		void OnClone3(int32_t result) override final
-		{
-		}
-
-		void OnExecl(std::string_view path, int32_t result) override final
-		{
-		}
-
-		void OnExeclp(std::string_view file, int32_t result) override final
-		{
-		}
-
-		void OnExecle(std::string_view path, int32_t result) override final
-		{
-		}
-
-		void OnExecv(std::string_view path, int32_t result) override final
-		{
-		}
-
-		void OnExecvp(std::string_view file, int32_t result) override final
-		{
-		}
-
-		void OnExecvpe(std::string_view file, int32_t result) override final
-		{
-		}
-
-		void OnExecve(std::string_view file, int32_t result) override final
-		{
-		}
-
-		void OnExecveat(std::string_view file, int32_t result) override final
-		{
-		}
-
-		void OnFexecve(int32_t result) override final
 		{
 		}
 
