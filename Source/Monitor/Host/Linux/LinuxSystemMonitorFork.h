@@ -90,22 +90,22 @@ namespace Monitor::Linux
 			_monitor2->OnFOpen(pathname, mode, result);
 		}
 
-		void OnFDOpen(int32_t fd, std::string_view mode) override final
+		void OnFDOpen(int32_t fd, std::string_view mode, int32_t result) override final
 		{
-			_monitor1->OnFDOpen(fd, mode);
-			_monitor2->OnFDOpen(fd, mode);
+			_monitor1->OnFDOpen(fd, mode, result);
+			_monitor2->OnFDOpen(fd, mode, result);
 		}
 
-		void OnFReopen(std::string_view pathname, std::string_view mode) override final
+		void OnFReopen(std::string_view pathname, std::string_view mode, int32_t result) override final
 		{
-			_monitor1->OnFReopen(pathname, mode);
-			_monitor2->OnFReopen(pathname, mode);
+			_monitor1->OnFReopen(pathname, mode, result);
+			_monitor2->OnFReopen(pathname, mode, result);
 		}
 
-		void OnMkdir(std::string_view path, std::string_view mode) override final
+		void OnMkdir(std::string_view path, uint32_t mode, int32_t result) override final
 		{
-			_monitor1->OnMkdir(path, mode);
-			_monitor2->OnMkdir(path, mode);
+			_monitor1->OnMkdir(path, mode, result);
+			_monitor2->OnMkdir(path, mode, result);
 		}
 
 		void OnRmdir(std::string_view pathname, int32_t result) override final
@@ -115,40 +115,40 @@ namespace Monitor::Linux
 		}
 
 		// ProcessApi
-		void OnSystem(std::string_view command) override final
+		void OnSystem(std::string_view command, int32_t result) override final
 		{
-			_monitor1->OnSystem(command);
-			_monitor2->OnSystem(command);
+			_monitor1->OnSystem(command, result);
+			_monitor2->OnSystem(command, result);
 		}
 
-		void OnFork() override final
+		void OnFork(int32_t result) override final
 		{
-			_monitor1->OnFork();
-			_monitor2->OnFork();
+			_monitor1->OnFork(result);
+			_monitor2->OnFork(result);
 		}
 
-		void OnVFork() override final
+		void OnVFork(int32_t result) override final
 		{
-			_monitor1->OnVFork();
-			_monitor2->OnVFork();
+			_monitor1->OnVFork(result);
+			_monitor2->OnVFork(result);
 		}
 
-		void OnClone() override final
+		void OnClone(int32_t result) override final
 		{
-			_monitor1->OnClone();
-			_monitor2->OnClone();
+			_monitor1->OnClone(result);
+			_monitor2->OnClone(result);
 		}
 
-		void OnClone2() override final
+		void OnClone2(int32_t result) override final
 		{
-			_monitor1->OnClone2();
-			_monitor2->OnClone2();
+			_monitor1->OnClone2(result);
+			_monitor2->OnClone2(result);
 		}
 
-		void OnClone3() override final
+		void OnClone3(int32_t result) override final
 		{
-			_monitor1->OnClone3();
-			_monitor2->OnClone3();
+			_monitor1->OnClone3(result);
+			_monitor2->OnClone3(result);
 		}
 
 		void OnExecl(std::string_view path, int32_t result) override final

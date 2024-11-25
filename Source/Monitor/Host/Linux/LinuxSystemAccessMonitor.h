@@ -132,17 +132,17 @@ namespace Monitor::Linux
 			}
 		}
 
-		void OnFDOpen(int32_t fd, std::string_view mode) override final
+		void OnFDOpen(int32_t fd, std::string_view mode, int32_t result) override final
 		{
 			// TouchFileWrite(pathName, wasBlocked);
 		}
 
-		void OnFReopen(std::string_view pathname, std::string_view mode) override final
+		void OnFReopen(std::string_view pathname, std::string_view mode, int32_t result) override final
 		{
 			// TouchFileWrite(pathName, wasBlocked);
 		}
 
-		void OnMkdir(std::string_view path, std::string_view mode) override final
+		void OnMkdir(std::string_view path, uint32_t mode, int32_t result) override final
 		{
 			bool wasBlocked = false;
 			TouchFileWrite(path, wasBlocked);
@@ -155,27 +155,27 @@ namespace Monitor::Linux
 		}
 
 		// ProcessApi
-		void OnSystem(std::string_view command) override final
+		void OnSystem(std::string_view command, int32_t result) override final
 		{
 		}
 
-		void OnFork() override final
+		void OnFork(int32_t result) override final
 		{
 		}
 
-		void OnVFork() override final
+		void OnVFork(int32_t result) override final
 		{
 		}
 
-		void OnClone() override final
+		void OnClone(int32_t result) override final
 		{
 		}
 
-		void OnClone2() override final
+		void OnClone2(int32_t result) override final
 		{
 		}
 
-		void OnClone3() override final
+		void OnClone3(int32_t result) override final
 		{
 		}
 

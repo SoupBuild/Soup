@@ -178,6 +178,7 @@ FILE* fdopen(int fd, const char *mode)
 
 	message.AppendValue(fd);
 	message.AppendValue(mode);
+	message.AppendValue(result);
 
 	return result;
 }

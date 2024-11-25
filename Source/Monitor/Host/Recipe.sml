@@ -2,6 +2,7 @@ Name: 'Monitor.Host'
 Language: (C++@0)
 Version: 1.0.0
 Defines: [
+	'USE_PTRACE'
 	# 'TRACE_DETOUR_SERVER'
 	# 'TRACE_MONITOR_HOST'
 ]

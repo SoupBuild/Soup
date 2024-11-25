@@ -29,6 +29,7 @@ module;
 #include <sys/stat.h>
 #include <poll.h>
 #include <fcntl.h>
+#include <cstring>
 
 #include <seccomp.h>
 

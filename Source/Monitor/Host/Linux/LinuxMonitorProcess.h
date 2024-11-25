@@ -141,8 +141,10 @@ namespace Monitor::Linux
 				m_processRunning = true;
 				m_workerFailed = false;
 				DebugTrace("Thread");
-				m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this), processId);
+				// m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this), processId);
 				
+				WorkerThread();
+
 				DebugTrace("Parent done");
 			}
 		}
@@ -153,11 +155,12 @@ namespace Monitor::Linux
 		void WaitForExit() override final
 		{
 			// Wait until child process exits.
-			int status;
-			auto waitResult = waitpid(m_processId, &status, 0);
+			// int status;
+			// auto waitResult = waitpid(m_processId, &status, 0);
+			// std::cout << "WaitResult: " << waitResult << std::endl;
 			m_processRunning = false;
-			if (!waitResult)
-				throw std::runtime_error("Execute waitpid Failed Unknown");
+			// if (waitResult == -1)
+			// 	throw std::runtime_error("Execute waitpid Failed Unknown");
 
 			// Read all and write to stdout
 			// TODO: May want to switch over to a background thread with peak to read in order
@@ -169,6 +172,7 @@ namespace Monitor::Linux
 			while (true)
 			{
 				dwRead = read(m_stdOutReadHandle, buffer, BufferSize);
+				std::cout << "Read: " << dwRead << std::endl;
 				if(dwRead < 0)
 					break;
 				if (dwRead == 0)
@@ -176,6 +180,8 @@ namespace Monitor::Linux
 
 				m_stdOut << std::string_view(buffer, dwRead);
 			}
+
+			m_stdOut << std::flush;
 
 			close(m_stdOutReadHandle);
 
@@ -192,13 +198,15 @@ namespace Monitor::Linux
 				m_stdErr << std::string_view(buffer, dwRead);
 			}
 
+			m_stdErr << std::flush;
+
 			close(m_stdErrReadHandle);
 
-			m_exitCode = status;
+			m_exitCode = 0;//status;
 			m_isFinished = true;
 
 			// Wait for the worker thread to exit
-			m_workerThread.join();
+			// m_workerThread.join();
 
 			if (m_workerFailed)
 			{
@@ -274,8 +282,62 @@ namespace Monitor::Linux
 						if (ctx == NULL)
 							throw std::runtime_error("seccomp_init failed");
 
-						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(write), 0) < 0)
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(open), 0) < 0)
 							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(creat), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(openat), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(link), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(linkat), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(rename), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(unlink), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(remove), 0) < 0)
+						// 	throw std::runtime_error("seccomp_rule_add failed");
+						// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(fopen), 0) < 0)
+						// 	throw std::runtime_error("seccomp_rule_add failed");
+						// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(fdopen), 0) < 0)
+						// 	throw std::runtime_error("seccomp_rule_add failed");
+						// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(freopen), 0) < 0)
+						// 	throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(mkdir), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(rmdir), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(system), 0) < 0)
+						// 	throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(fork), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(vfork), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(clone), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(__clone2), 0) < 0)
+						// 	throw std::runtime_error("seccomp_rule_add failed");
+						if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(clone3), 0) < 0)
+							throw std::runtime_error("seccomp_rule_add failed");
+						// // if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execl), 0) < 0)
+						// // 	throw std::runtime_error("seccomp_rule_add failed");
+						// // if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execlp), 0) < 0)
+						// // 	throw std::runtime_error("seccomp_rule_add failed");
+						// // if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execle), 0) < 0)
+						// // 	throw std::runtime_error("seccomp_rule_add failed");
+						// // if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execv), 0) < 0)
+						// // 	throw std::runtime_error("seccomp_rule_add failed");
+						// // if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execvp), 0) < 0)
+						// // 	throw std::runtime_error("seccomp_rule_add failed");
+						// // if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execvpe), 0) < 0)
+						// // 	throw std::runtime_error("seccomp_rule_add failed");
+						// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execve), 0) < 0)
+						// 	throw std::runtime_error("seccomp_rule_add failed");
+						// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execveat), 0) < 0)
+						// 	throw std::runtime_error("seccomp_rule_add failed");
+						// // if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(fexecve), 0) < 0)
+						// // 	throw std::runtime_error("seccomp_rule_add failed");
 
 						if (seccomp_load(ctx) < 0)
 							throw std::runtime_error("seccomp_load failed");
@@ -331,39 +393,102 @@ namespace Monitor::Linux
 		/// The main entry point for the worker thread that will monitor incoming messages from all
 		/// client connections.
 		/// </summary>
-		void WorkerThread(pid_t childId)
+		void WorkerThread()
 		{
 			#ifdef USE_PTRACE
-				TraceWorkerThread(childId);
+				TraceWorkerThread();
 			#else
 				DetourWorkerThread();
 			#endif
 		}
 
 #ifdef USE_PTRACE
-		void TraceWorkerThread(pid_t childId)
+		void TraceWorkerThread()
 		{
 			Log::Diag("WorkerThread Start");
 			int status;
 
 			// Wait for the first notification from the child
-			waitpid(childId, &status, 0);
+			auto currentProcessId = waitpid(m_processId, &status, 0);
+			if (currentProcessId == -1)
+				throw std::runtime_error("Wait failed");
 
 			// Enable SecComp filtering
-			ptrace(PTRACE_SETOPTIONS, childId, 0, PTRACE_O_TRACESECCOMP);
-			ptrace(PTRACE_CONT, childId, NULL, NULL);
+			unsigned int ptraceOptions =
+				PTRACE_O_TRACESECCOMP |
+				PTRACE_O_TRACECLONE |
+				PTRACE_O_TRACEFORK |
+				PTRACE_O_TRACEVFORK;
 
-			while (1)
+			ptrace(PTRACE_SETOPTIONS, m_processId, 0, ptraceOptions);
+			ptrace(PTRACE_CONT, m_processId, NULL, NULL);
+
+			while (true)
 			{
-				wait(&status);
+				currentProcessId = wait(&status);
+				if (currentProcessId == -1)
+					throw std::runtime_error("Wait failed");
+
 				if (WIFEXITED(status))
-					break;
-				if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_SECCOMP << 8)))
 				{
-					m_eventListener.ProcessSysCall(childId);
+					int exitCode = WEXITSTATUS(status);
+					if (currentProcessId == m_processId)
+					{
+						m_exitCode = exitCode;
+						return;
+					}
+					else
+					{
+						std::cout << "Child exit: " << currentProcessId << " " << exitCode << std::endl;
+					}
 				}
 
-				ptrace(PTRACE_CONT, childId, NULL, NULL);
+				if (WIFSTOPPED(status))
+				{
+					auto signal = WSTOPSIG(status);
+					switch (signal)
+					{
+						case SIGTRAP:
+						{
+							auto event = (unsigned int)status >> 16;
+							switch (event)
+							{
+								case 0:
+									// Process start
+									break;
+								case PTRACE_EVENT_SECCOMP:
+									m_eventListener.ProcessSysCall(currentProcessId);
+									break;
+								case PTRACE_EVENT_FORK:
+								case PTRACE_EVENT_VFORK:
+								case PTRACE_EVENT_CLONE:
+									// Entering child process
+									break;
+								default:
+									std::cout << "UNKNOWN PTRACE EVENT: " << event << " STATUS: " << status << " PID: " << currentProcessId << std::endl;
+									break;
+							}
+
+							break;
+						}
+						case SIGSTOP:
+						{
+							// Trace clone
+							break;
+						}
+						default:
+						{
+							std::cout << "UNKNOWN SIGNAL: " << signal << " STATUS: " << status << " PID: " << currentProcessId << std::endl;
+							break;
+						}
+					}
+				}
+				else
+				{
+					std::cout << "UNKNOWN STATUS: " << status << " PID: " << currentProcessId << std::endl;
+				}
+
+				ptrace(PTRACE_CONT, currentProcessId, NULL, NULL);
 			}
 		}
 #else

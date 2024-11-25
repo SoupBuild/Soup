@@ -7,6 +7,20 @@
 
 namespace Monitor::Linux
 {
+	struct SysCallStatus
+	{
+		long Command;
+		long Return;
+		long Error;
+		std::array<long, 6> Arugments;
+	};
+
+	typedef union {
+		long val;
+		int32_t intData[sizeof(long) / sizeof(int32_t)];
+		char data[sizeof(long)];
+	} dissected_long_t;
+	
 	/// <summary>
 	/// The event listener knows how to parse an incoming message and pass it along to the
 	/// registered monitor.
@@ -35,202 +49,197 @@ namespace Monitor::Linux
 		void ProcessSysCall(pid_t pid)
 		{
 			long originalRAX = ptrace(PTRACE_PEEKUSER, pid, sizeof(long) * ORIG_RAX, NULL);
+			auto registers = GetSysCallArgs(pid);
+			auto args = registers.Arugments;
+	
+			WaitForSyscallExit(pid);
+			
+			auto args2 = GetSysCallArgs(pid);
+			
+			dissected_long_t rax = {
+				.val = ptrace(PTRACE_PEEKUSER, pid, sizeof(long) * RAX, NULL)
+			};
+			std::cout << "RAX: " << rax.intData[0] << " " << rax.intData[1] << std::endl;
+			auto result = rax.intData[0];
+
+			result = args2.Return;
 			switch (originalRAX)
 			{
-				// // FileApi
-				// case DetourEventType::open:
-				// {
-				// 	auto path = ReadStringValue(message, offset);
-				// 	auto oflag = ReadInt32Value(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnOpen(path, oflag, result);
-				// 	break;
-				// }
-				// case DetourEventType::creat:
-				// {
-				// 	auto path = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnCreat(path, result);
-				// 	break;
-				// }
-				// case DetourEventType::openat:
-				// {
-				// 	auto dirfd = ReadInt32Value(message, offset);
-				// 	auto path = ReadStringValue(message, offset);
-				// 	auto oflag = ReadInt32Value(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnOpenat(dirfd, path, oflag, result);
-				// 	break;
-				// }
-				// case DetourEventType::link:
-				// {
-				// 	auto oldpath = ReadStringValue(message, offset);
-				// 	auto newpath = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnLink(oldpath, newpath, result);
-				// 	break;
-				// }
-				// case DetourEventType::linkat:
-				// {
-				// 	auto olddirfd = ReadInt32Value(message, offset);
-				// 	auto oldpath = ReadStringValue(message, offset);
-				// 	auto newdirfd = ReadInt32Value(message, offset);
-				// 	auto newpath = ReadStringValue(message, offset);
-				// 	auto flags = ReadInt32Value(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
-				// 	break;
-				// }
-				// case DetourEventType::rename:
-				// {
-				// 	auto oldpath = ReadStringValue(message, offset);
-				// 	auto newpath = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnRename(oldpath, newpath, result);
-				// 	break;
-				// }
-				// case DetourEventType::unlink:
-				// {
-				// 	auto pathname = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnUnlink(pathname, result);
-				// 	break;
-				// }
-				// case DetourEventType::remove:
+				// FileApi
+				case SCMP_SYS(open):
+				{
+					auto path = ReadNullTerminatedStringValue(pid, args[0]);
+					auto oflag = (int32_t)args[1];
+					m_monitor->OnOpen(path, oflag, result);
+					break;
+				}
+				case SCMP_SYS(creat):
+				{
+					auto path = ReadNullTerminatedStringValue(pid, args[0]);
+					m_monitor->OnCreat(path, result);
+					break;
+				}
+				case SCMP_SYS(openat):
+				{
+					auto dirfd = (int32_t)args[0];
+					auto path = ReadNullTerminatedStringValue(pid, args[1]);
+					auto oflag = (int32_t)args[2];
+					m_monitor->OnOpenat(dirfd, path, oflag, result);
+					break;
+				}
+				case SCMP_SYS(link):
+				{
+					auto oldpath = ReadNullTerminatedStringValue(pid, args[0]);
+					auto newpath = ReadNullTerminatedStringValue(pid, args[1]);
+					m_monitor->OnLink(oldpath, newpath, result);
+					break;
+				}
+				case SCMP_SYS(linkat):
+				{
+					auto olddirfd = (int32_t)args[0];
+					auto oldpath = ReadNullTerminatedStringValue(pid, args[1]);
+					auto newdirfd = (int32_t)args[2];
+					auto newpath = ReadNullTerminatedStringValue(pid, args[3]);
+					auto flags = (int32_t)args[4];
+					m_monitor->OnLinkat(olddirfd, oldpath, newdirfd, newpath, flags, result);
+					break;
+				}
+				case SCMP_SYS(rename):
+				{
+					auto oldpath = ReadNullTerminatedStringValue(pid, args[0]);
+					auto newpath = ReadNullTerminatedStringValue(pid, args[1]);
+					m_monitor->OnRename(oldpath, newpath, result);
+					break;
+				}
+				case SCMP_SYS(unlink):
+				{
+					auto pathname = ReadNullTerminatedStringValue(pid, args[0]);
+					m_monitor->OnUnlink(pathname, result);
+					break;
+				}
+				// case SCMP_SYS(remove):
 				// {
 				// 	auto pathname = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnRemove(pathname, result);
+				// 	m_monitor->OnRemove(pathname);
 				// 	break;
 				// }
-				// case DetourEventType::fopen:
+				// case SCMP_SYS(fopen):
 				// {
 				// 	auto pathname = ReadStringValue(message, offset);
 				// 	auto mode = ReadStringValue(message, offset);
-				// 	auto result = ReadUInt64Value(message, offset);
-				// 	m_monitor->OnFOpen(pathname, mode, result);
+				// 	m_monitor->OnFOpen(pathname, mode);
 				// 	break;
 				// }
-				// case DetourEventType::fdopen:
+				// case SCMP_SYS(fdopen):
 				// {
 				// 	auto fd = ReadInt32Value(message, offset);
 				// 	auto mode = ReadStringValue(message, offset);
 				// 	m_monitor->OnFDOpen(fd, mode);
 				// 	break;
 				// }
-				// case DetourEventType::freopen:
+				// case SCMP_SYS(freopen):
 				// {
 				// 	auto pathname = ReadStringValue(message, offset);
 				// 	auto mode = ReadStringValue(message, offset);
 				// 	m_monitor->OnFReopen(pathname, mode);
 				// 	break;
 				// }
-				// case DetourEventType::mkdir:
-				// {
-				// 	auto path = ReadStringValue(message, offset);
-				// 	auto mode = ReadStringValue(message, offset);
-				// 	m_monitor->OnMkdir(path, mode);
-				// 	break;
-				// }
-				// case DetourEventType::rmdir:
-				// {
-				// 	auto pathname = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnRmdir(pathname, result);
-				// 	break;
-				// }
-				// // ProcessApi
-				// case DetourEventType::system:
+				case SCMP_SYS(mkdir):
+				{
+					auto path = ReadNullTerminatedStringValue(pid, args[0]);
+					auto mode = (uint32_t)args[1];
+					m_monitor->OnMkdir(path, mode, result);
+					break;
+				}
+				case SCMP_SYS(rmdir):
+				{
+					auto pathname = ReadNullTerminatedStringValue(pid, args[0]);
+					m_monitor->OnRmdir(pathname, result);
+					break;
+				}
+				// case SCMP_SYS(system):
 				// {
 				// 	auto command = ReadStringValue(message, offset);
 				// 	m_monitor->OnSystem(command);
 				// 	break;
 				// }
-				// case DetourEventType::fork:
-				// {
-				// 	m_monitor->OnFork();
-				// 	break;
-				// }
-				// case DetourEventType::vfork:
-				// {
-				// 	m_monitor->OnVFork();
-				// 	break;
-				// }
-				// case DetourEventType::clone:
-				// {
-				// 	m_monitor->OnClone();
-				// 	break;
-				// }
-				// case DetourEventType::__clone2:
+				case SCMP_SYS(fork):
+				{
+					m_monitor->OnFork(result);
+					break;
+				}
+				case SCMP_SYS(vfork):
+				{
+					m_monitor->OnVFork(result);
+					break;
+				}
+				
+				case SCMP_SYS(clone):
+				{
+					m_monitor->OnClone(result);
+					break;
+				}
+				// case SCMP_SYS(__clone2):
 				// {
 				// 	m_monitor->OnClone2();
 				// 	break;
 				// }
-				// case DetourEventType::clone3:
-				// {
-				// 	m_monitor->OnClone3();
-				// 	break;
-				// }
-				// case DetourEventType::execl:
-				// {
-				// 	auto path = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnExecl(path, result);
-				// 	break;
-				// }
-				// case DetourEventType::execlp:
-				// {
-				// 	auto file = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnExeclp(file, result);
-				// 	break;
-				// }
-				// case DetourEventType::execle:
+				case SCMP_SYS(clone3):
+				{
+					m_monitor->OnClone3(result);
+					break;
+				}
+				// case SCMP_SYS(execl):
 				// {
 				// 	auto path = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnExecle(path, result);
+				// 	m_monitor->OnExecl(path);
 				// 	break;
 				// }
-				// case DetourEventType::execv:
+				// case SCMP_SYS(execlp):
+				// {
+				// 	auto file = ReadStringValue(message, offset);
+				// 	m_monitor->OnExeclp(file);
+				// 	break;
+				// }
+				// case SCMP_SYS(execle):
 				// {
 				// 	auto path = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnExecv(path, result);
+				// 	m_monitor->OnExecle(path);
 				// 	break;
 				// }
-				// case DetourEventType::execvp:
+				// case SCMP_SYS(execv):
+				// {
+				// 	auto path = ReadStringValue(message, offset);
+				// 	m_monitor->OnExecv(path);
+				// 	break;
+				// }
+				// case SCMP_SYS(execvp):
 				// {
 				// 	auto file = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnExecvp(file, result);
+				// 	m_monitor->OnExecvp(file);
 				// 	break;
 				// }
-				// case DetourEventType::execvpe:
+				// case SCMP_SYS(execvpe):
 				// {
 				// 	auto file = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnExecvpe(file, result);
+				// 	m_monitor->OnExecvpe(file);
 				// 	break;
 				// }
-				// case DetourEventType::execve:
-				// {
+				case SCMP_SYS(execve):
+				{
 				// 	auto file = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnExecve(file, result);
-				// 	break;
-				// }
-				// case DetourEventType::execveat:
-				// {
+				// 	m_monitor->OnExecve(file);
+					break;
+				}
+				case SCMP_SYS(execveat):
+				{
 				// 	auto file = ReadStringValue(message, offset);
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnExecveat(file, result);
-				// 	break;
-				// }
-				// case DetourEventType::fexecve:
+				// 	m_monitor->OnExecveat(file);
+					break;
+				}
+				// case SCMP_SYS(fexecve):
 				// {
-				// 	auto result = ReadInt32Value(message, offset);
-				// 	m_monitor->OnFexecve(result);
+				// 	m_monitor->OnFexecve();
 				// 	break;
 				// }
 				default:
@@ -241,6 +250,83 @@ namespace Monitor::Linux
 		}
 
 	private:
+		void WaitForSyscallExit(const pid_t pid)
+		{
+			bool entered = false;
+			int  status  = 0;
+
+			while (true)
+			{
+				ptrace(PTRACE_SYSCALL, pid, 0, 0);
+				waitpid(pid, &status, 0);
+
+				if (WIFSTOPPED(status))
+				{
+					auto signal = WSTOPSIG(status);
+					if (signal == SIGTRAP)
+					{
+						// Linux 4.8+ only needs a single step to get return
+						return;
+
+						// TODO: 4.7-
+						if (entered)
+						{
+							// If we had already entered before, then current SIGTRAP signal means exiting
+							return;
+						}
+
+						entered = true;
+					}
+					else if (WIFEXITED(status) || WIFSIGNALED(status) || WCOREDUMP(status))
+					{
+						throw std::runtime_error("The child has unexpectedly exited.");
+					}
+				}
+			}
+		}
+
+		SysCallStatus GetSysCallArgs(pid_t pid)
+		{
+			// auto test1 = std::array<long, 6>({
+			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * RDI, NULL),
+			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * RSI, NULL),
+			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * RDX, NULL),
+			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * R10, NULL),
+			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * R8, NULL),
+			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * R9, NULL),
+			// });
+
+			user_regs_struct regs;
+			iovec io;
+			io.iov_base = &regs;
+			io.iov_len = sizeof(regs);
+
+			if (ptrace(PTRACE_GETREGSET, pid, (void*)NT_PRSTATUS, (void*)&io) == -1)
+				throw std::runtime_error("PTRACE_GETREGSET failed");
+
+			auto returnValue = (long)regs.rax;
+			auto error = 0;
+			if (returnValue < 0)
+			{
+				error = -returnValue;
+				returnValue = -1;
+			}
+
+			return {
+				(long)regs.orig_rax,
+				returnValue,
+				error,
+				std::array<long, 6>({
+					(long)regs.rdi,
+					(long)regs.rsi,
+					(long)regs.rdx,
+					(long)regs.r10,
+					(long)regs.r8,
+					(long)regs.r9,
+				})
+			};
+		}
+
 		bool ReadBoolValue(Message& message, uint32_t& offset)
 		{
 			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
@@ -277,12 +363,88 @@ namespace Monitor::Linux
 			return result;
 		}
 
-		std::string_view ReadStringValue(Message& message, uint32_t& offset)
+		std::string ReadStringValue(pid_t pid, long addr, size_t length)
 		{
-			auto result = std::string_view(reinterpret_cast<char*>(message.Content + offset));
-			offset += static_cast<uint32_t>(result.size()) + 1;
-			if (offset > message.ContentSize)
-				throw std::runtime_error("ReadStringValue past end of content");
+			auto result = std::string(length, '\0');
+			char *laddr = result.data();
+			int i, j;
+			union u
+			{
+				long val;
+				char chars[sizeof(long)];
+			} data;
+
+			i = 0;
+			j = length / sizeof(long);
+
+			while (i < j)
+			{
+				data.val = ptrace(PTRACE_PEEKDATA, pid, addr + i * 8, NULL);
+				memcpy(laddr, data.chars, sizeof(long));
+				++i;
+				laddr += sizeof(long);
+			}
+
+			j = length % sizeof(long);
+			if (j != 0)
+			{
+				data.val = ptrace(PTRACE_PEEKDATA,
+								pid, addr + i * 8,
+								NULL);
+				memcpy(laddr, data.chars, j);
+			}
+
+			return result;
+		}
+
+		std::string ReadNullTerminatedStringValue(pid_t pid, long addr)
+		{
+			auto result = std::string(4096, '\0');
+
+			char *laddr = result.data();
+
+			unsigned long len = 4096;
+			unsigned int nread = 0;
+			unsigned int residue = addr & (sizeof(long) - 1);
+			void *const orig_addr = laddr;
+
+			while (len) {
+				addr &= -sizeof(long);		/* aligned address */
+
+				errno = 0;
+				dissected_long_t u = {
+					.val = ptrace(PTRACE_PEEKDATA, pid, addr, 0)
+				};
+
+				switch (errno) {
+					case 0:
+						break;
+					case ESRCH: case EINVAL:
+						throw std::runtime_error("Could be seen if the process is gone");
+					case EFAULT: case EIO: case EPERM:
+						throw std::runtime_error("address space is inaccessible");
+					default:
+						throw std::runtime_error("all the rest is strange and should be reported");
+				}
+
+				unsigned long m = std::min(sizeof(long) - residue, len);
+				memcpy(laddr, &u.data[residue], m);
+				while (residue < sizeof(long))
+				{
+					if (u.data[residue++] == '\0')
+					{
+						result.resize(nread + residue - 1);
+						return result;
+					}
+				}
+
+				residue = 0;
+				addr += sizeof(long);
+				laddr += m;
+				nread += m;
+				len -= m;
+			}
+
 			return result;
 		}
 

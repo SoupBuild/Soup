@@ -11,6 +11,7 @@ int system(const char *command)
 	auto result = Monitor::Linux::Functions::Cache::ProcessApi::system(command);
 
 	message.AppendValue(command);
+	message.AppendValue(result);
 
 	return result;
 }
@@ -23,6 +24,8 @@ pid_t fork()
 
 	auto result = Monitor::Linux::Functions::Cache::ProcessApi::fork();
 
+	message.AppendValue(result);
+
 	return result;
 }
 
@@ -33,6 +36,8 @@ pid_t vfork()
 	message.AppendValue(static_cast<uint32_t>(Monitor::Linux::DetourEventType::vfork));
 
 	auto result = Monitor::Linux::Functions::Cache::ProcessApi::vfork();
+
+	message.AppendValue(result);
 
 	return result;
 }

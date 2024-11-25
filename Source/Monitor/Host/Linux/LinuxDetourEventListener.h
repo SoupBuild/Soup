@@ -169,21 +169,24 @@ namespace Monitor::Linux
 				{
 					auto fd = ReadInt32Value(message, offset);
 					auto mode = ReadStringValue(message, offset);
-					m_monitor->OnFDOpen(fd, mode);
+					auto result = ReadUInt64Value(message, offset);
+					m_monitor->OnFDOpen(fd, mode, result);
 					break;
 				}
 				case DetourEventType::freopen:
 				{
 					auto pathname = ReadStringValue(message, offset);
 					auto mode = ReadStringValue(message, offset);
-					m_monitor->OnFReopen(pathname, mode);
+					auto result = ReadInt32Value(message, offset);
+					m_monitor->OnFReopen(pathname, mode, result);
 					break;
 				}
 				case DetourEventType::mkdir:
 				{
 					auto path = ReadStringValue(message, offset);
-					auto mode = ReadStringValue(message, offset);
-					m_monitor->OnMkdir(path, mode);
+					auto mode = ReadUInt32Value(message, offset);
+					auto result = ReadInt32Value(message, offset);
+					m_monitor->OnMkdir(path, mode, result);
 					break;
 				}
 				case DetourEventType::rmdir:
@@ -197,32 +200,38 @@ namespace Monitor::Linux
 				case DetourEventType::system:
 				{
 					auto command = ReadStringValue(message, offset);
-					m_monitor->OnSystem(command);
+					auto result = ReadInt32Value(message, offset);
+					m_monitor->OnSystem(command, result);
 					break;
 				}
 				case DetourEventType::fork:
 				{
-					m_monitor->OnFork();
+					auto result = ReadInt32Value(message, offset);
+					m_monitor->OnFork(result);
 					break;
 				}
 				case DetourEventType::vfork:
 				{
-					m_monitor->OnVFork();
+					auto result = ReadInt32Value(message, offset);
+					m_monitor->OnVFork(result);
 					break;
 				}
 				case DetourEventType::clone:
 				{
-					m_monitor->OnClone();
+					auto result = ReadInt32Value(message, offset);
+					m_monitor->OnClone(result);
 					break;
 				}
 				case DetourEventType::__clone2:
 				{
-					m_monitor->OnClone2();
+					auto result = ReadInt32Value(message, offset);
+					m_monitor->OnClone2(result);
 					break;
 				}
 				case DetourEventType::clone3:
 				{
-					m_monitor->OnClone3();
+					auto result = ReadInt32Value(message, offset);
+					m_monitor->OnClone3(result);
 					break;
 				}
 				case DetourEventType::execl:
