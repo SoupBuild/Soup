@@ -109,7 +109,7 @@ public class PackageManagerUnitTests
 			new MockFile(originalContent));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/Users/Me/.soup/packages/Cpp/OtherPackage/1.2.3/Recipe.sml"),
+			new Path("C:/Users/Me/.soup/packages/C++/OtherPackage/1.2.3/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'
@@ -221,7 +221,7 @@ public class PackageManagerUnitTests
 			new MockFile(originalContent));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/Users/Me/.soup/packages/Cpp/OtherPackage/1.2.3/Recipe.sml"),
+			new Path("C:/Users/Me/.soup/packages/C++/OtherPackage/1.2.3/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package1'

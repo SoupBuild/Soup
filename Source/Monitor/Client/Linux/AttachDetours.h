@@ -24,11 +24,20 @@ namespace Monitor::Linux
 		// ProcessApi
 		Functions::Cache::ProcessApi::system = (system_ptr)dlsym(RTLD_NEXT, "system");
 		Functions::Cache::ProcessApi::fork = (fork_ptr)dlsym(RTLD_NEXT, "fork");
+		Functions::Cache::ProcessApi::vfork = (fork_ptr)dlsym(RTLD_NEXT, "vfork");
+		Functions::Cache::ProcessApi::clone = (clone_ptr)dlsym(RTLD_NEXT, "clone");
+		Functions::Cache::ProcessApi::__clone2 = (__clone2_ptr)dlsym(RTLD_NEXT, "__clone2");
+		Functions::Cache::ProcessApi::clone3 = (clone3_ptr)dlsym(RTLD_NEXT, "clone3");
+
 		Functions::Cache::ProcessApi::execl = (execl_ptr)dlsym(RTLD_NEXT, "execl");
 		Functions::Cache::ProcessApi::execlp = (execlp_ptr)dlsym(RTLD_NEXT, "execlp");
-		// Functions::Cache::ProcessApi::execle = (execle_ptr)dlsym(RTLD_NEXT, "execle");
+		Functions::Cache::ProcessApi::execle = (execle_ptr)dlsym(RTLD_NEXT, "execle");
 		Functions::Cache::ProcessApi::execv = (execv_ptr)dlsym(RTLD_NEXT, "execv");
 		Functions::Cache::ProcessApi::execvp = (execvp_ptr)dlsym(RTLD_NEXT, "execvp");
 		Functions::Cache::ProcessApi::execvpe = (execvpe_ptr)dlsym(RTLD_NEXT, "execvpe");
+		
+		Functions::Cache::ProcessApi::execve = (execve_ptr)dlsym(RTLD_NEXT, "execve");
+		Functions::Cache::ProcessApi::execveat = (execveat_ptr)dlsym(RTLD_NEXT, "execveat");
+		Functions::Cache::ProcessApi::fexecve = (fexecve_ptr)dlsym(RTLD_NEXT, "fexecve");
 	}
 }

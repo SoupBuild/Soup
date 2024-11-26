@@ -3,33 +3,29 @@
 // </copyright>
 
 #pragma once
-#include "DetourMonitorCallback.h"
-#include "DetourCallbackLogger.h"
-#include "DetourForkCallback.h"
-#include "EventListener.h"
+#include "LinuxSystemAccessMonitor.h"
+#include "LinuxSystemLoggerMonitor.h"
+#include "LinuxSystemMonitorFork.h"
+#include "LinuxTraceEventListener.h"
 
 namespace Monitor::Linux
 {
 	/// <summary>
 	/// A Linux platform specific process executable using system
 	/// </summary>
-	#ifdef SOUP_BUILD
-	export
-	#endif
-	class LinuxMonitorProcess : public Opal::System::IProcess
+	export class LinuxMonitorProcess : public Opal::System::IProcess
 	{
 	private:
 		// Input
 		Path m_executable;
 		std::vector<std::string> m_arguments;
 		Path m_workingDirectory;
-		EventListener m_eventListener;
+		LinuxTraceEventListener m_eventListener;
 
 		// Runtime
 		pid_t m_processId;
 		int m_stdOutReadHandle;
 		int m_stdErrReadHandle;
-		int m_pipeHandle;
 
 		std::thread m_workerThread;
 		std::atomic<bool> m_processRunning;
@@ -50,21 +46,20 @@ namespace Monitor::Linux
 			const Path& executable,
 			std::vector<std::string> arguments,
 			const Path& workingDirectory,
-			std::shared_ptr<IMonitorCallback> callback) :
+			std::shared_ptr<ISystemAccessMonitor> monitor) :
 			m_executable(executable),
 			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
-#ifdef TRACE_DETOUR_SERVER
-			m_eventListener(std::make_shared<DetourForkCallback>(
-				std::make_shared<DetourCallbackLogger>(std::cout),
-				std::make_shared<DetourMonitorCallback>(std::move(callback)))),
-#else
-			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
-#endif
+	#ifdef TRACE_DETOUR_SERVER
+			m_eventListener(std::make_shared<LinuxSystemMonitorFork>(
+				std::make_shared<LinuxSystemLoggerMonitor>(std::cout),
+				std::make_shared<LinuxSystemAccessMonitor>(std::move(monitor)))),
+	#else
+			m_eventListener(std::make_shared<LinuxSystemAccessMonitor>(std::move(monitor))),
+	#endif
 			m_processId(),
 			m_stdOutReadHandle(),
 			m_stdErrReadHandle(),
-			m_pipeHandle(),
 			m_workerThread(),
 			m_processRunning(),
 			m_workerFailed(),
@@ -93,12 +88,6 @@ namespace Monitor::Linux
 			if (pipe(stdErrPipe) < 0)
 				throw std::runtime_error("Failed to create stdErrPipe");
 
-			// Initialize the pipes so they are ready for the process and the worker thread
-			DebugTrace("Create fifo");
-			auto pipeName = std::string("/tmp/soupbuildfifo");
-			if (mkfifo(pipeName.c_str(), 0666) != 0)
-				throw std::runtime_error("Failed to create pipe");
-
 			// Create a child process
 			DebugTrace("Fork");
 			pid_t processId = fork();
@@ -123,12 +112,14 @@ namespace Monitor::Linux
 				m_stdOutReadHandle = stdOutPipe[0];
 				m_stdErrReadHandle = stdErrPipe[0];
 
-				// Create the worker thread that will act as the pipe server
+				// Create the worker thread that will monitor the child process
 				m_processRunning = true;
 				m_workerFailed = false;
 				DebugTrace("Thread");
-				m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this));
+				// m_workerThread = std::thread(&LinuxMonitorProcess::WorkerThread, std::ref(*this));
 				
+				WorkerThread();
+
 				DebugTrace("Parent done");
 			}
 		}
@@ -139,11 +130,9 @@ namespace Monitor::Linux
 		void WaitForExit() override final
 		{
 			// Wait until child process exits.
-			int status;
-			auto waitResult = waitpid(m_processId, &status, 0);
+			// m_workerThread.join();
+
 			m_processRunning = false;
-			if (!waitResult)
-				throw std::runtime_error("Execute waitpid Failed Unknown");
 
 			// Read all and write to stdout
 			// TODO: May want to switch over to a background thread with peak to read in order
@@ -163,6 +152,8 @@ namespace Monitor::Linux
 				m_stdOut << std::string_view(buffer, dwRead);
 			}
 
+			m_stdOut << std::flush;
+
 			close(m_stdOutReadHandle);
 
 			// Read all errors
@@ -178,13 +169,11 @@ namespace Monitor::Linux
 				m_stdErr << std::string_view(buffer, dwRead);
 			}
 
+			m_stdErr << std::flush;
+
 			close(m_stdErrReadHandle);
 
-			m_exitCode = status;
 			m_isFinished = true;
-
-			// Wait for the worker thread to exit
-			m_workerThread.join();
 
 			if (m_workerFailed)
 			{
@@ -246,19 +235,74 @@ namespace Monitor::Linux
 				close(stdOutPipe[1]);
 				close(stdErrPipe[1]);
 
-				// Build up the Monitor dlls absolute path
-				auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
-				auto moduleFolder = moduleName.GetParent();
-				auto dllPath = moduleFolder + Path("./Monitor.Client.64.so");
-
 				auto environment = std::vector<std::string>();
 
 				environment.push_back("HOME=/");
 				environment.push_back("USER=USERNAME");
 				environment.push_back("PAHT=/usr/bin");
 
-				// Preload the monitor client first
-				environment.push_back("LD_PRELOAD=" + dllPath.ToString());
+				scmp_filter_ctx ctx;
+				try
+				{
+					scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_ALLOW);
+					if (ctx == NULL)
+						throw std::runtime_error("seccomp_init failed");
+
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(open), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(openat), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(openat2), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(creat), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(link), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(linkat), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(rename), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(renameat), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(renameat2), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(unlink), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(mkdir), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(mkdirat), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(rmdir), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(fork), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(vfork), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(clone), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(clone3), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+					// TODO: Allow first execve when the parent has not connected yet to allow it
+					// Maybe try to filter to the known exe and only allow that and trace others
+					// https://lore.kernel.org/lkml/20201029075841.GB29881@ircssh-2.c.rugged-nimbus-611.internal/T/
+					// if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execve), 0) < 0)
+					// 	throw std::runtime_error("seccomp_rule_add failed");
+					if (seccomp_rule_add(ctx, SCMP_ACT_TRACE(1), SCMP_SYS(execveat), 0) < 0)
+						throw std::runtime_error("seccomp_rule_add failed");
+
+					if (seccomp_load(ctx) < 0)
+						throw std::runtime_error("seccomp_load failed");
+
+					seccomp_release(ctx);
+				}
+				catch(const std::exception& e)
+				{
+					// Ensure we cleanup nicely
+					seccomp_release(ctx);
+					throw;
+				}
+
+				ptrace(PTRACE_TRACEME, 0, NULL, NULL);
 
 				std::vector<const char*> arguments;
 				arguments.push_back(m_executable.ToString().c_str());
@@ -273,10 +317,12 @@ namespace Monitor::Linux
 
 				// Replace runtime with child program
 				DebugTrace("child exec");
-				execve(
+				auto result = execve(
 					m_executable.ToString().c_str(),
 					const_cast<char**>(arguments.data()),
 					const_cast<char**>(environmentArray.data()));
+				if (result == -1)
+					throw std::runtime_error("Failed to start child");
 			}
 			catch(const std::exception& e)
 			{
@@ -293,120 +339,100 @@ namespace Monitor::Linux
 		/// </summary>
 		void WorkerThread()
 		{
-			auto pipeName = std::string("/tmp/soupbuildfifo");
+			Log::Diag("WorkerThread Start");
+			int status;
 
-			try
+			// Wait for the first notification from the child
+			auto currentProcessId = waitpid(m_processId, &status, 0);
+			if (currentProcessId == -1)
+				throw std::runtime_error("Wait failed");
+
+			// Enable SecComp filtering
+			unsigned int ptraceOptions =
+				PTRACE_O_TRACESECCOMP |
+				PTRACE_O_TRACECLONE |
+				PTRACE_O_TRACEFORK |
+				PTRACE_O_TRACEVFORK;
+
+			ptrace(PTRACE_SETOPTIONS, m_processId, 0, ptraceOptions);
+			ptrace(PTRACE_CONT, m_processId, NULL, NULL);
+
+			while (true)
 			{
-				Log::Diag("WorkerThread Start");
+				currentProcessId = wait(&status);
+				if (currentProcessId == -1)
+					throw std::runtime_error("Wait failed");
 
-				Log::Diag("Open read pipe");
-				m_pipeHandle = open(pipeName.c_str(), O_RDONLY | O_NONBLOCK);
-				if (m_pipeHandle < 0)
+				if (WIFEXITED(status))
 				{
-					Log::Error("Open read pipe failed");
-					throw std::runtime_error("Open read pipe failed");
-				}
-
-				Log::Diag("Waiting on first message");
-
-				// Read until we get a client and then all clients disconnect
-				struct pollfd waiter = {.fd = m_pipeHandle, .events = POLLIN};
-				bool writerClosed = false;
-				while (m_processRunning && !writerClosed)
-				{
-					// 100 seconds
-					auto waitStatus = poll(&waiter, 1, 100 * 1000);
-					switch (waitStatus)
+					int exitCode = WEXITSTATUS(status);
+					if (currentProcessId == m_processId)
 					{
-						case 0:
-							Log::Error("Read pipe timeout");
-							writerClosed = true;
-						case 1:
-							if (waiter.revents & POLLIN)
-							{
-								ReadMessage();
-							}
-							else if (waiter.revents & POLLERR)
-							{
-								Log::Error("POLLERR");
-								throw std::runtime_error("POLLERR");
-							}
-							else if (waiter.revents & POLLHUP)
-							{
-								Log::Diag("Writer closed");
-								writerClosed = true;
-							}
-							break;
-						default:
-							Log::Error("Unknown poll status");
-							throw std::runtime_error("Unknown poll status");
+						m_exitCode = exitCode;
+						return;
+					}
+					else
+					{
+						DebugTrace("Child exit: ", currentProcessId);
 					}
 				}
-			}
-			catch (...)
-			{
-				Log::Error("WorkerThread Failed");
-				m_workerException = std::current_exception();
-				m_workerFailed = true;
-			}
-
-			// Cleanup
-			Log::Diag("close pipe");
-			if (close(m_pipeHandle) != 0)
-			{
-				Log::Error("Close pipe failed");
-				throw std::runtime_error("Close pipe failed");
-			}
-
-			Log::Diag("delete pipe");
-			if (unlink(pipeName.c_str()) != 0)
-			{
-				Log::Error("unlink pipe failed");
-				throw std::runtime_error("unlink pipe failed");
-			}
-		}
-
-		void ReadMessage()
-		{
-			DebugTrace("Read message");
-
-			Message message;
-			int expectedHeaderSize = sizeof(Message::Type) + sizeof(Message::ContentSize);
-			int bytesRead = read(m_pipeHandle, &message, expectedHeaderSize);
-			if (bytesRead > 0)
-			{
-				// Handle the event
-				DebugTrace("Handle Event");
-				if (bytesRead != expectedHeaderSize)
+				else if (WIFSTOPPED(status))
 				{
-					throw std::runtime_error(
-						std::format("HandlePipeEvent - Header size wrong: {} {}",
-							bytesRead,
-							expectedHeaderSize));
+					auto signal = WSTOPSIG(status);
+					switch (signal)
+					{
+						case SIGTRAP:
+						{
+							auto event = (unsigned int)status >> 16;
+							switch (event)
+							{
+								case 0:
+									// Process start
+									break;
+								case PTRACE_EVENT_SECCOMP:
+									m_eventListener.ProcessSysCall(currentProcessId);
+									break;
+								case PTRACE_EVENT_FORK:
+								case PTRACE_EVENT_VFORK:
+								case PTRACE_EVENT_CLONE:
+									// Entering child process
+									break;
+								default:
+									std::cout << "UNKNOWN PTRACE EVENT: " << event << " STATUS: " << status << " PID: " << currentProcessId << std::endl;
+									break;
+							}
+
+							break;
+						}
+						case SIGWINCH:
+						{
+							// Window size changed?
+							break;
+						}
+						case SIGSTOP:
+						{
+							// Trace clone
+							break;
+						}
+						case SIGCLD:
+						{
+							// Child signaled
+							break;
+						}
+						default:
+						{
+							std::cout << "UNKNOWN SIGNAL: " << signal << " STATUS: " << status << " PID: " << currentProcessId << std::endl;
+							break;
+						}
+					}
+				}
+				else
+				{
+					std::cout << "UNKNOWN STATUS: " << status << " PID: " << currentProcessId << std::endl;
 				}
 
-				// Read the raw content
-				auto expectedSize = message.ContentSize +
-					sizeof(Message::Type) +
-					sizeof(Message::ContentSize);
-				bytesRead = read(m_pipeHandle, &(message.Content), message.ContentSize);
-				if (bytesRead != message.ContentSize)
-				{
-					throw std::runtime_error(
-						std::format(
-							"HandlePipeEvent - Size Mismatched: {} {}",
-							bytesRead,
-							message.ContentSize));
-				}
-
-				LogMessage(message);
+				ptrace(PTRACE_CONT, currentProcessId, NULL, NULL);
 			}
-		}
-
-		void LogMessage(Message& message)
-		{
-			DebugTrace("LogMessage");
-			m_eventListener.SafeLogMessage(message);
 		}
 
 		void DebugTrace(std::string_view message, uint32_t value)

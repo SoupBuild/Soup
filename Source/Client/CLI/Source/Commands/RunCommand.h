@@ -29,28 +29,28 @@ namespace Soup::Client
 		{
 			Log::Diag("RunCommand::Run");
 
-			auto workingDirectory = Path();
+			auto recipeDirectory = Path();
 			if (_options.Path.empty())
 			{
 				// Build in the current directory
-				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory();
+				recipeDirectory = System::IFileSystem::Current().GetCurrentDirectory();
 			}
 			else
 			{
 				// Parse the path in any system valid format
-				workingDirectory = Path::Parse(std::format("{}/", _options.Path));
+				recipeDirectory = Path::Parse(std::format("{}/", _options.Path));
 
 				// Check if this is relative to current directory
-				if (!workingDirectory.HasRoot())
+				if (!recipeDirectory.HasRoot())
 				{
-					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory() + workingDirectory;
+					recipeDirectory = System::IFileSystem::Current().GetCurrentDirectory() + recipeDirectory;
 				}
 			}
 
 			// Load the recipe
 			auto recipeCache = Core::RecipeCache();
 			auto recipePath =
-				workingDirectory +
+				recipeDirectory +
 				Core::BuildConstants::RecipeFileName();
 			const Core::Recipe* recipe;
 			if (!recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
@@ -81,7 +81,7 @@ namespace Soup::Client
 			auto locationManager = Core::RecipeBuildLocationManager(knownLanguages);
 			auto targetDirectory = locationManager.GetOutputDirectory(
 				packageName,
-				workingDirectory,
+				recipeDirectory,
 				*recipe,
 				globalParameters,
 				recipeCache);
@@ -156,6 +156,7 @@ namespace Soup::Client
 
 			// Execute the requested target
 			Log::Info("CreateProcess");
+			auto workingDirectory = Path();
 			auto process = System::IProcessManager::Current().CreateProcess(
 				runExecutable,
 				std::move(arguments),
@@ -167,7 +168,10 @@ namespace Soup::Client
 			auto exitCode = process->GetExitCode();
 
 			if (exitCode != 0)
+			{
+				Log::Diag("Process exit nonzero " + std::to_string(exitCode));
 				throw Core::HandledException(exitCode);
+			}
 		}
 
 	private:

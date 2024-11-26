@@ -294,13 +294,13 @@ namespace Soup::Core
 			{
 				// Build the global store location path
 				auto packageStore = _userDataPath + Path("./packages/");
-				auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
+				auto& languageName = activeReference.GetLanguage();
 				auto activeVersionString = activeReference.GetVersion().ToString();
 				packagePath = packageStore +
 					Path(
 						std::format(
 							"./{}/{}/{}/{}/",
-							languageSafeName,
+							languageName,
 							activeReference.GetOwner(),
 							activeReference.GetName(),
 							activeVersionString));
@@ -340,11 +340,11 @@ namespace Soup::Core
 				{
 					// Build the global store location path
 					auto packageStore = _userDataPath + Path("./locks/");
-					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
+					auto& languageName = activeReference.GetLanguage();
 					packagePath = packageStore +
 						Path(std::format(
 							"./{}/{}/{}/{}/",
-							languageSafeName,
+							languageName,
 							activeReference.GetOwner(),
 							activeReference.GetName(),
 							activeReference.GetVersion().ToString()));
@@ -1265,19 +1265,6 @@ namespace Soup::Core
 					PackageChildInfo(activeReference, true, -1, graphId),
 					std::move(packageToolDependencies));
 			}
-		}
-
-		const std::string& GetLanguageSafeName(const std::string& language) const
-		{
-			// Get the active version
-			auto knownLanguageResult = _knownLanguageLookup.find(language);
-			if (knownLanguageResult == _knownLanguageLookup.end())
-			{
-				throw std::runtime_error(
-					std::format("Unknown language: {}", language));
-			}
-
-			return knownLanguageResult->second.LanguageSafeName;
 		}
 	};
 }

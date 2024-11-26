@@ -2,7 +2,7 @@
 
 namespace Soup::Core
 {
-	class SystemAccessTracker : public Monitor::IMonitorCallback
+	class SystemAccessTracker : public Monitor::ISystemAccessMonitor
 	{
 	private:
 		int _activeProcessCount;

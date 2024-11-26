@@ -102,12 +102,12 @@ int main(int argc, char** argv)
 			return -1;
 		}
 
-		auto scriptFile = Path(argv[1]);
+		auto scriptFile = Path::Parse(argv[1]);
 
 		std::optional<Path> bundlesFile;
 		if (argc > 2)
 		{
-			bundlesFile = Path(argv[2]);
+			bundlesFile = Path::Parse(argv[2]);
 		}
 
 		auto host = std::make_unique<Soup::Core::Generate::GenerateTestHost>(

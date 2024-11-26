@@ -2,7 +2,7 @@
 
 namespace Monitor::Windows
 {
-	class IDetourCallback
+	class IWindowsSystemMonitor
 	{
 	public:
 		virtual void OnInitialize() = 0;

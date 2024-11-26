@@ -4,10 +4,11 @@ echo "Linux Build PackageManager!"
 # Stop on first error
 set -e
 
+FLAVOR="$1"
 SCRIPTS_DIR=$(dirname "$0")
 SOURCE_DIR=$SCRIPTS_DIR/../../Source
 PACKAGE_MANAGER_DIR=$SOURCE_DIR/GenerateSharp/PackageManager
 
 # Build PackageManager
-echo dotnet publish $PACKAGE_MANAGER_DIR -c Release -f net8.0 -r linux-x64 --self-contained 
-eval dotnet publish $PACKAGE_MANAGER_DIR -c Release -f net8.0 -r linux-x64 --self-contained 
+echo dotnet publish $PACKAGE_MANAGER_DIR -c $FLAVOR -f net8.0 -r linux-x64 --self-contained 
+eval dotnet publish $PACKAGE_MANAGER_DIR -c $FLAVOR -f net8.0 -r linux-x64 --self-contained 

@@ -15,7 +15,7 @@ namespace Soup::Core::UnitTests
 			auto uut = OperationResults();
 
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(),
+				std::map<OperationId, OperationResult>(),
 				uut.GetResults(),
 				"Verify results match expected.");
 		}
@@ -36,7 +36,7 @@ namespace Soup::Core::UnitTests
 			});
 
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>({
+				std::map<OperationId, OperationResult>({
 					{
 						1,
 						OperationResult(
@@ -109,7 +109,7 @@ namespace Soup::Core::UnitTests
 					{ }));
 
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>({
+				std::map<OperationId, OperationResult>({
 					{
 						1,
 						OperationResult(

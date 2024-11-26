@@ -38,12 +38,12 @@ int main(int argc, char **argv)
 
 		auto file = std::fstream("Access.txt", std::fstream::out);
 
-		auto callback = std::make_shared<Monitor::DetourCallbackLogger>(file);
+		auto monitor = std::make_shared<Monitor::DetourCallbackLogger>(file);
 		auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
 			application,
 			argumentsString,
 			workingDirectory,
-			callback);
+			monitor);
 		process->Start();
 		process->WaitForExit();
 		auto result = process->GetExitCode();

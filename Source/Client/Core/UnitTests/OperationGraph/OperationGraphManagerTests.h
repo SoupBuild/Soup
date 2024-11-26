@@ -133,7 +133,7 @@ namespace Soup::Core::UnitTests
 				actual.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationInfo>({
+				std::map<OperationId, OperationInfo>({
 					{
 						5,
 						OperationInfo(

@@ -378,7 +378,7 @@ namespace Soup::Core
 			const OperationInfo& operationInfo,
 			OperationResult& operationResult)
 		{
-			auto callback = std::make_shared<SystemAccessTracker>();
+			auto monitor = std::make_shared<SystemAccessTracker>();
 
 			// Add the temp folder to the environment
 			auto environment = std::map<std::string, std::string>();
@@ -422,7 +422,7 @@ namespace Soup::Core
 					operationInfo.Command.Arguments,
 					operationInfo.Command.WorkingDirectory,
 					environment,
-					callback,
+					monitor,
 					enableAccessChecks,
 					std::move(allowedReadAccess),
 					std::move(allowedWriteAccess));
@@ -436,7 +436,7 @@ namespace Soup::Core
 			auto exitCode = process->GetExitCode();
 
 			// Check the result of the monitor
-			callback->VerifyResult();
+			monitor->VerifyResult();
 
 			if (!stdOut.empty())
 			{
@@ -458,18 +458,22 @@ namespace Soup::Core
 			{
 				// Save off the build graph for future builds
 				auto input = std::vector<Path>();
-				for (auto& value : callback->GetInput())
+				for (auto& value : monitor->GetInput())
 				{
 					auto path = Path::Parse(value);
-					// Log::Diag("ObservedInput: {}", path.ToString());
+					#ifdef TRACE_FILE_SYSTEM_STATE
+						Log::Diag("ObservedInput: {}", path.ToString());
+					#endif
 					input.push_back(std::move(path));
 				}
 
 				auto output = std::vector<Path>();
-				for (auto& value : callback->GetOutput())
+				for (auto& value : monitor->GetOutput())
 				{
 					auto path = Path::Parse(value);
-					// Log::Diag("ObservedOutput: {}", path.ToString());
+					#ifdef TRACE_FILE_SYSTEM_STATE
+						Log::Diag("ObservedOutput: {}", path.ToString());
+					#endif
 					output.push_back(std::move(path));
 				}
 

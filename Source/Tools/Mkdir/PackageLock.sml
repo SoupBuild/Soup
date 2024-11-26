@@ -3,7 +3,7 @@ Closures: {
 	Root: {
 		'C++': {
 			mkdir: { Version: '../Mkdir', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|Opal': { Version: 0.11.3, Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|Opal': { Version: 0.11.5, Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

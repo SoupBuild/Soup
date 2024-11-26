@@ -1,12 +1,12 @@
 ﻿#pragma once 
-#include "IDetourCallback.h"
+#include "IWindowsSystemMonitor.h"
 
 namespace Monitor::Windows
 {
-	class DetourCallbackLogger : public IDetourCallback
+	class WindowsSystemLoggerMonitor : public IWindowsSystemMonitor
 	{
 	public:
-		DetourCallbackLogger(std::ostream& stream) :
+		WindowsSystemLoggerMonitor(std::ostream& stream) :
 			m_stream(stream)
 		{
 		}

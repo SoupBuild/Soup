@@ -19,7 +19,7 @@ namespace Soup::Core::UnitTests
 				uut.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationInfo>(),
+				std::map<OperationId, OperationInfo>(),
 				uut.GetOperations(),
 				"Verify operations match expected.");
 		}
@@ -54,7 +54,7 @@ namespace Soup::Core::UnitTests
 				uut.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationInfo>({
+				std::map<OperationId, OperationInfo>({
 					{
 						1,
 						OperationInfo(
@@ -195,7 +195,7 @@ namespace Soup::Core::UnitTests
 					1));
 
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationInfo>({
+				std::map<OperationId, OperationInfo>({
 					{
 						1,
 						OperationInfo(

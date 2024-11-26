@@ -2,8 +2,8 @@ Version: 5
 Closures: {
 	Root: {
 		Wren: {
-			'mwasplund|Soup.Build.Utils': { Version: 0.7.0, Build: 'Build0', Tool: 'Tool0' }
 			'Samples.Cpp.BuildExtension.Extension': { Version: './', Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|Soup.Build.Utils': { Version: 0.7.0, Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

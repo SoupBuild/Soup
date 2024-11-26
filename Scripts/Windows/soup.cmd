@@ -12,20 +12,20 @@ SET ConfigHash=Oltq7cGwk0Rbgy1I-3mCMDDE5yM
 
 SET PKG_OWNER=mwasplund
 
-SET SOUP_VERSION=0.39.1
+SET SOUP_VERSION=0.40.0
 SET COPY_VERSION=1.1.0
 SET MKDIR_VERSION=1.1.0
 SET SOUP_WREN_VERSION=0.4.1
 
 REM - Use a copy of the final binary in case we are re-buiding itself
 robocopy %ScriptsDir%\Install\ %RunDir%\ /MIR /NJH /NJS /NDL > NUL
-robocopy %OutDir%\Cpp\Local\Soup\%SOUP_VERSION%\%ConfigHash%\bin\ %RunDir%\Soup\ /MIR /NJH /NJS /NDL > NUL
+robocopy %OutDir%\C++\Local\Soup\%SOUP_VERSION%\%ConfigHash%\bin\ %RunDir%\Soup\ /MIR /NJH /NJS /NDL > NUL
 
 robocopy %SourceDir%\Tools\Copy\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\copy\%COPY_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
-robocopy %OutDir%\Cpp\Local\copy\%COPY_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\copy\%COPY_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
+robocopy %OutDir%\C++\Local\copy\%COPY_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\copy\%COPY_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
 robocopy %SourceDir%\Tools\Mkdir\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\mkdir\%MKDIR_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
-robocopy %OutDir%\Cpp\Local\mkdir\%MKDIR_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\mkdir\%MKDIR_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
+robocopy %OutDir%\C++\Local\mkdir\%MKDIR_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\mkdir\%MKDIR_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
 robocopy %GlobalPackagesDir%\Wren\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy %GlobalOutDir%\Wren\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL

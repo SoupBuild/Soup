@@ -3,8 +3,10 @@
 // </copyright>
 
 import "soup" for Soup, SoupTask
+import "mwasplund|Soup.Build.Utils:./Path" for Path
 import "mwasplund|Soup.Build.Utils:./ListExtensions" for ListExtensions
 import "mwasplund|Soup.Build.Utils:./MapExtensions" for MapExtensions
+import "mwasplund|Soup.Build.Utils:./SharedOperations" for SharedOperations
 
 class CustomBuildTask is SoupTask {
 	/// <summary>
@@ -37,5 +39,35 @@ class CustomBuildTask is SoupTask {
 		ListExtensions.Append(
 			MapExtensions.EnsureList(buildTable, "PreprocessorDefinitions"),
 			preprocessorDefinitions)
+
+		var contextTable = Soup.globalState["Context"]
+		var packageRoot = Path.new(contextTable["PackageDirectory"])
+
+		CustomBuildTask.CreateCustomToolOperation(packageRoot)
+	}
+
+	/// <summary>
+	/// Create a build operation that will create a directory
+	/// </summary>
+	static CreateCustomToolOperation(workingDirectory) {
+		// Discover the dependency tool
+		var toolExecutable = SharedOperations.ResolveRuntimeDependencyRunExectable("Samples.SimpleBuildExtension.Tool")
+
+		var title = "Run Custom Tool"
+
+		var program = Path.new(toolExecutable)
+		var inputFiles = []
+		var outputFiles = []
+
+		// Build the arguments
+		var arguments = []
+
+		Soup.createOperation(
+			title,
+			program.toString,
+			arguments,
+			workingDirectory.toString,
+			ListExtensions.ConvertFromPathList(inputFiles),
+			ListExtensions.ConvertFromPathList(outputFiles))
 	}
 }

@@ -120,7 +120,7 @@ namespace Soup::Core::UnitTests
 				actual.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationInfo>(),
+				std::map<OperationId, OperationInfo>(),
 				actual.GetOperations(),
 				"Verify operations match expected.");
 		}
@@ -159,7 +159,7 @@ namespace Soup::Core::UnitTests
 				actual.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationInfo>({
+				std::map<OperationId, OperationInfo>({
 					{
 						5,
 						OperationInfo(
@@ -222,7 +222,7 @@ namespace Soup::Core::UnitTests
 				actual.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationInfo>({
+				std::map<OperationId, OperationInfo>({
 					{
 						5,
 						OperationInfo(
@@ -297,7 +297,7 @@ namespace Soup::Core::UnitTests
 
 			auto actual = OperationGraphReader::Deserialize(content, fileSystemState);
 
-			auto expected = std::unordered_map<OperationId, OperationInfo>(
+			auto expected = std::map<OperationId, OperationInfo>(
 			{
 				{
 					5,

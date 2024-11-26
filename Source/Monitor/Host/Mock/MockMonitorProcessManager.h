@@ -20,7 +20,7 @@ namespace Monitor
 		std::atomic<int> m_uniqueId;
 		std::vector<std::string> _requests;
 		std::map<std::string, std::string> _executeResults;
-		std::map<std::string, std::function<void(IMonitorCallback&)>> _executeCallbacks;
+		std::map<std::string, std::function<void(ISystemAccessMonitor&)>> _executeMonitors;
 
 	public:
 		/// <summary>
@@ -50,11 +50,11 @@ namespace Monitor
 		/// </summary>
 		void RegisterExecuteCallback(
 			std::string command,
-			std::function<void(IMonitorCallback&)> callback)
+			std::function<void(ISystemAccessMonitor&)> monitor)
 		{
-			_executeCallbacks.emplace(
+			_executeMonitors.emplace(
 				std::move(command),
-				std::move(callback));
+				std::move(monitor));
 		}
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace Monitor
 			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
-			std::shared_ptr<IMonitorCallback> callback,
+			std::shared_ptr<ISystemAccessMonitor> monitor,
 			bool enableAccessChecks,
 			std::vector<Path> allowedReadAccess,
 			std::vector<Path> allowedWriteAccess) override final
@@ -90,11 +90,11 @@ namespace Monitor
 
 			_requests.push_back(message.str());
 
-			// Check if there is a registered callback
-			auto findCallback = _executeCallbacks.find(message.str());
-			if (findCallback != _executeCallbacks.end())
+			// Check if there is a registered monitor
+			auto findMonitor = _executeMonitors.find(message.str());
+			if (findMonitor != _executeMonitors.end())
 			{
-				findCallback->second(*callback);
+				findMonitor->second(*monitor);
 			}
 
 			// Check if there is a registered output

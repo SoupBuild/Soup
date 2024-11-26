@@ -1,8 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-	</PropertyGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
-	</ItemGroup>
-</Project>

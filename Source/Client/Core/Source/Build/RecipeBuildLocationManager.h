@@ -65,8 +65,7 @@ namespace Soup::Core
 
 					// Add the language sub folder
 					auto language = recipe.GetLanguage().GetName();
-					auto languageSafeName = GetLanguageSafeName(language);
-					rootOutput = rootOutput + Path(std::format("./{}/", languageSafeName));
+					rootOutput = rootOutput + Path(std::format("./{}/", language));
 
 					if (name.HasOwner())
 					{
@@ -101,20 +100,6 @@ namespace Soup::Core
 			rootOutput = rootOutput + uniqueParametersFolder;
 
 			return rootOutput;
-		}
-
-	private:
-		const std::string& GetLanguageSafeName(const std::string& language) const
-		{
-			// Get the active version
-			auto builtInLanguageResult = _knownLanguageLookup.find(language);
-			if (builtInLanguageResult == _knownLanguageLookup.end())
-			{
-				throw std::runtime_error(
-					std::format("Unknown language: {}", language));
-			}
-
-			return builtInLanguageResult->second.LanguageSafeName;
 		}
 	};
 }

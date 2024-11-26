@@ -117,7 +117,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify operation Results matches expected
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>({
+				std::map<OperationId, OperationResult>({
 					{
 						5,
 						OperationResult(

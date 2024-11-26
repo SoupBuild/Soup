@@ -23,13 +23,8 @@ public class ClosureManager : IClosureManager
 {
 	private const int PackageLockVersion = 5;
 	private const string RootClosureName = "Root";
-	private const string BuiltInLanguageCSharp = "C#";
-	private const string BuiltInLanguageCpp = "C++";
 	private const string BuiltInLanguageWren = "Wren";
 	private const string BuiltInLanguagePackageWren = "Soup.Wren";
-	private const string BuiltInLanguageSafeNameCSharp = "CSharp";
-	private const string BuiltInLanguageSafeNameCpp = "Cpp";
-	private const string BuiltInLanguageSafeNameWren = "Wren";
 	private const string BuiltInOwner = "mwasplund";
 	private const string DependencyTypeBuild = "Build";
 	private const string DependencyTypeTool = "Tool";
@@ -139,10 +134,9 @@ public class ClosureManager : IClosureManager
 							}
 							else
 							{
-								var languageSafeName = GetLanguageSafeName(languageName);
 								var userFolder = projectName.Owner is not null ? new Path($"./{projectName.Owner}/") : new Path("./Local/");
 								var packageLanguageNameVersionPath =
-									new Path($"./{languageSafeName}/") +
+									new Path($"./{languageName}/") +
 									userFolder +
 									new Path($"./{projectName.Name}/{version}/");
 								var packageContentDirectory = packageStoreDirectory + packageLanguageNameVersionPath;
@@ -782,8 +776,7 @@ public class ClosureManager : IClosureManager
 	{
 		Log.HighPriority($"Install Package: {languageName} {ownerName} {packageName}@{packageVersion}");
 
-		var languageSafeName = GetLanguageSafeName(languageName);
-		var languageRootFolder = packageStore + new Path($"./{languageSafeName}/");
+		var languageRootFolder = packageStore + new Path($"./{languageName}/");
 		var packageRootFolder = languageRootFolder + new Path($"./{ownerName}/{packageName}/");
 		var packageVersionFolder = packageRootFolder + new Path($"./{packageVersion}/");
 
@@ -850,17 +843,6 @@ public class ClosureManager : IClosureManager
 			// Move the extracted contents into the version folder
 			LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
 		}
-	}
-
-	private static string GetLanguageSafeName(string language)
-	{
-		return language switch
-		{
-			BuiltInLanguageCSharp => BuiltInLanguageSafeNameCSharp,
-			BuiltInLanguageCpp => BuiltInLanguageSafeNameCpp,
-			BuiltInLanguageWren => BuiltInLanguageSafeNameWren,
-			_ => throw new InvalidOperationException($"Unknown language name: {language}"),
-		};
 	}
 
 	/// <summary>
