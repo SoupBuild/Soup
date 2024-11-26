@@ -404,6 +404,11 @@ namespace Monitor::Linux
 
 							break;
 						}
+						case SIGWINCH:
+						{
+							// Window size changed?
+							break;
+						}
 						case SIGSTOP:
 						{
 							// Trace clone

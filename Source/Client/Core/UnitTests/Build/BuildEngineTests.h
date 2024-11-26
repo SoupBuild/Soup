@@ -115,7 +115,7 @@ namespace Soup::Core::UnitTests
 
 			// Emulate generate phase
 			monitorProcessManager->RegisterExecuteCallback(
-				"CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
+				std::format("CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 				[&](Monitor::ISystemAccessMonitor& /*monitor*/)
 				{
 					auto myPackageOperationGraph = OperationGraph(
@@ -130,7 +130,7 @@ namespace Soup::Core::UnitTests
 				});
 
 			monitorProcessManager->RegisterExecuteCallback(
-				"CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/Soup.Generate.exe C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
+				std::format("CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/{0} C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 				[&](Monitor::ISystemAccessMonitor& /*monitor*/)
 				{
 					auto soupCppOperationGraph = OperationGraph(
@@ -196,7 +196,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Check for previous operation invocation",
 					"INFO: 2>Operation has no successful previous invocation",
 					"HIGH: 2>Generate: [Wren]mwasplund|Soup.Cpp",
-					"DIAG: 2>Execute: [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/Soup.Generate.exe C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/",
+					std::format("DIAG: 2>Execute: [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/{0} C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/", GetGenerateExeName()),
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/",
 					"DIAG: 2>C:/Users/Me/.soup/LocalUserConfig.sml",
@@ -233,7 +233,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Check for previous operation invocation",
 					"INFO: 1>Operation has no successful previous invocation",
 					"HIGH: 1>Generate: [C++]MyPackage",
-					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
+					std::format("DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/", GetGenerateExeName()),
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/",
 					"DIAG: 1>C:/Users/Me/.soup/LocalUserConfig.sml",
@@ -323,13 +323,13 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/Soup.Generate.exe C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
+					std::format("CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/{0} C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
-					"CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
+					std::format("CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 					"ProcessStart: 2",
 					"WaitForExit: 2",
 					"GetStandardOutput: 2",
@@ -641,7 +641,7 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			fileSystem->CreateMockFile(
-				Path("C:/testlocation/Soup.Generate.exe"),
+				Path(std::format("C:/testlocation/{0}", GetGenerateExeName())),
 				std::make_shared<MockFile>());
 
 			fileSystem->CreateMockDirectory(
@@ -1127,7 +1127,7 @@ namespace Soup::Core::UnitTests
 						"INFO: 2>Generate: [Wren]mwasplund|Soup.Cpp",
 						"DIAG: 2>Build evaluation end",
 					#else
-						"INFO: 2>Input Missing [C:/testlocation/generate]",
+						"INFO: 2>Input altered after last evaluate [C:/testlocation/generate]",
 						"DIAG: 2>Executable out of date",
 						"HIGH: 2>Generate: [Wren]mwasplund|Soup.Cpp",
 						"DIAG: 2>Execute: [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/generate C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/",
@@ -1167,7 +1167,7 @@ namespace Soup::Core::UnitTests
 						"INFO: 1>Generate: [C++]MyPackage",
 						"DIAG: 1>Build evaluation end",
 					#else
-						"INFO: 1>Input Missing [C:/testlocation/generate]",
+						"INFO: 1>Input altered after last evaluate [C:/testlocation/generate]",
 						"DIAG: 1>Executable out of date",
 						"HIGH: 1>Generate: [C++]MyPackage",
 						"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/generate C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
@@ -1229,10 +1229,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/GenerateInput.bvt",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Generate.bor",
-					#ifdef _WIN32
-						"TryGetLastWriteTime: C:/testlocation/Soup.Generate.exe",
-					#else
-						"TryGetLastWriteTime: C:/testlocation/generate",
+					std::format("TryGetLastWriteTime: C:/testlocation/{0}", GetGenerateExeName()),
+					#ifndef _WIN32
 						"OpenWriteBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Generate.bor",
 						"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Evaluate.bog",
 					#endif
@@ -1272,7 +1270,7 @@ namespace Soup::Core::UnitTests
 						"GetStandardOutput: 1",
 						"GetStandardError: 1",
 						"GetExitCode: 1",
-						"CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/generate C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
+						std::format("CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 						"ProcessStart: 2",
 						"WaitForExit: 2",
 						"GetStandardOutput: 2",
@@ -1282,6 +1280,16 @@ namespace Soup::Core::UnitTests
 				}),
 				monitorProcessManager->GetRequests(),
 				"Verify monitor process manager requests match expected.");
+		}
+
+	private:
+		std::string_view GetGenerateExeName()
+		{
+			#ifdef _WIN32
+				return "Soup.Generate.exe";
+			#else
+				return "generate";
+			#endif
 		}
 	};
 }
