@@ -115,7 +115,7 @@ namespace Soup::Core::UnitTests
 
 			// Emulate generate phase
 			monitorProcessManager->RegisterExecuteCallback(
-				std::format("CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
+				std::format("CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 0 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 				[&](Monitor::ISystemAccessMonitor& /*monitor*/)
 				{
 					auto myPackageOperationGraph = OperationGraph(
@@ -130,7 +130,7 @@ namespace Soup::Core::UnitTests
 				});
 
 			monitorProcessManager->RegisterExecuteCallback(
-				std::format("CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/{0} C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
+				std::format("CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/{0} C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 0 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 				[&](Monitor::ISystemAccessMonitor& /*monitor*/)
 				{
 					auto soupCppOperationGraph = OperationGraph(
@@ -323,13 +323,13 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					std::format("CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/{0} C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
+					std::format("CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/{0} C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 0 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
-					std::format("CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
+					std::format("CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 0 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
 					"ProcessStart: 2",
 					"WaitForExit: 2",
 					"GetStandardOutput: 2",

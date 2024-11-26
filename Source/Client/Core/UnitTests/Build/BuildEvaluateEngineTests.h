@@ -19,6 +19,7 @@ namespace Soup::Core::UnitTests
 			auto uut = BuildEvaluateEngine(
 				false,
 				false,
+				false,
 				fileSystemState);
 		}
 
@@ -40,6 +41,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -110,7 +112,7 @@ namespace Soup::Core::UnitTests
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			monitorProcessManager->RegisterExecuteCallback(
-				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::ISystemAccessMonitor& monitor)
 				{
 					monitor.TouchFileRead(Path("./InputFile2.in"), true, false);
@@ -119,6 +121,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -204,7 +207,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -238,7 +241,7 @@ namespace Soup::Core::UnitTests
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			monitorProcessManager->RegisterExecuteCallback(
-				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::ISystemAccessMonitor& monitor)
 				{
 					// Read and write the same file
@@ -248,6 +251,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -336,7 +340,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -372,7 +376,7 @@ namespace Soup::Core::UnitTests
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			monitorProcessManager->RegisterExecuteCallback(
-				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::ISystemAccessMonitor& monitor)
 				{
 					// Read and write the same file
@@ -382,6 +386,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -470,7 +475,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -516,6 +521,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -612,7 +618,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -663,6 +669,7 @@ namespace Soup::Core::UnitTests
 
 			// Create the build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -756,7 +763,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -809,6 +816,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -902,7 +910,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -955,6 +963,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -1049,7 +1058,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -1098,6 +1107,7 @@ namespace Soup::Core::UnitTests
 
 			// Create the initial build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -1203,7 +1213,7 @@ namespace Soup::Core::UnitTests
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			monitorProcessManager->RegisterExecuteCallback(
-				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::ISystemAccessMonitor& monitor)
 				{
 					monitor.TouchFileWrite(Path("./OutputFile.out"), false);
@@ -1211,6 +1221,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -1304,7 +1315,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -1340,7 +1351,7 @@ namespace Soup::Core::UnitTests
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			monitorProcessManager->RegisterExecuteCallback(
-				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::ISystemAccessMonitor& monitor)
 				{
 					monitor.TouchFileWrite(Path("./File.txt"), false);
@@ -1348,6 +1359,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -1441,7 +1453,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -1477,7 +1489,7 @@ namespace Soup::Core::UnitTests
 			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			monitorProcessManager->RegisterExecuteCallback(
-				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 				[](Monitor::ISystemAccessMonitor& monitor)
 				{
 					monitor.TouchFileRead(Path("./File.txt"), true, false);
@@ -1485,6 +1497,7 @@ namespace Soup::Core::UnitTests
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
+				false,
 				false,
 				false,
 				fileSystemState);
@@ -1579,7 +1592,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 0 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
