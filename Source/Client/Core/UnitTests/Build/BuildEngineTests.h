@@ -642,7 +642,9 @@ namespace Soup::Core::UnitTests
 
 			fileSystem->CreateMockFile(
 				Path(std::format("C:/testlocation/{0}", GetGenerateExeName())),
-				std::make_shared<MockFile>());
+				std::make_shared<MockFile>(
+					std::chrono::clock_cast<std::chrono::file_clock>(
+						std::chrono::sys_days{January/9/2024} + 11h + 3min + 4s)));
 
 			fileSystem->CreateMockDirectory(
 				Path("C:/WorkingDirectory/MyPackage/"),
@@ -1021,7 +1023,7 @@ namespace Soup::Core::UnitTests
 					OperationResult(
 						true,
 						std::chrono::clock_cast<std::chrono::file_clock>(
-							std::chrono::time_point<std::chrono::system_clock>()),
+							std::chrono::sys_days{January/9/2024} + 12h + 35min + 34s),
 						{},
 						{})
 				},
@@ -1039,7 +1041,7 @@ namespace Soup::Core::UnitTests
 					OperationResult(
 						true,
 						std::chrono::clock_cast<std::chrono::file_clock>(
-							std::chrono::time_point<std::chrono::system_clock>()),
+							std::chrono::sys_days{January/9/2024} + 12h + 13min + 23s),
 						{},
 						{})
 				},
@@ -1122,29 +1124,9 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Previous results found",
 					"DIAG: 2>Build evaluation start",
 					"DIAG: 2>Check for previous operation invocation",
-					#ifdef _WIN32
-						"INFO: 2>Up to date",
-						"INFO: 2>Generate: [Wren]mwasplund|Soup.Cpp",
-						"DIAG: 2>Build evaluation end",
-					#else
-						"INFO: 2>Input altered after last evaluate [C:/testlocation/generate]",
-						"DIAG: 2>Executable out of date",
-						"HIGH: 2>Generate: [Wren]mwasplund|Soup.Cpp",
-						"DIAG: 2>Execute: [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/generate C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/",
-						"DIAG: 2>Allowed Read Access:",
-						"DIAG: 2>C:/testlocation/",
-						"DIAG: 2>C:/Users/Me/.soup/LocalUserConfig.sml",
-						"DIAG: 2>C:/Windows/",
-						"DIAG: 2>C:/Program Files/dotnet/",
-						"DIAG: 2>C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/out/",
-						"DIAG: 2>C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/",
-						"DIAG: 2>C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/",
-						"DIAG: 2>Allowed Write Access:",
-						"DIAG: 2>C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/",
-						"DIAG: 2>Build evaluation end",
-						"INFO: 2>Loading new Evaluate Operation Graph",
-						"DIAG: 2>Map previous operation graph observed results",
-					#endif
+					"INFO: 2>Up to date",
+					"INFO: 2>Generate: [Wren]mwasplund|Soup.Cpp",
+					"DIAG: 2>Build evaluation end",
 					"DIAG: 2>Build evaluation start",
 					"DIAG: 2>Build evaluation end",
 					"INFO: 2>Done",
@@ -1162,29 +1144,9 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Previous results found",
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Check for previous operation invocation",
-					#ifdef _WIN32
-						"INFO: 1>Up to date",
-						"INFO: 1>Generate: [C++]MyPackage",
-						"DIAG: 1>Build evaluation end",
-					#else
-						"INFO: 1>Input altered after last evaluate [C:/testlocation/generate]",
-						"DIAG: 1>Executable out of date",
-						"HIGH: 1>Generate: [C++]MyPackage",
-						"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/generate C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-						"DIAG: 1>Allowed Read Access:",
-						"DIAG: 1>C:/testlocation/",
-						"DIAG: 1>C:/Users/Me/.soup/LocalUserConfig.sml",
-						"DIAG: 1>C:/Windows/",
-						"DIAG: 1>C:/Program Files/dotnet/",
-						"DIAG: 1>C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/",
-						"DIAG: 1>C:/WorkingDirectory/MyPackage/",
-						"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
-						"DIAG: 1>Allowed Write Access:",
-						"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
-						"DIAG: 1>Build evaluation end",
-						"INFO: 1>Loading new Evaluate Operation Graph",
-						"DIAG: 1>Map previous operation graph observed results",
-					#endif
+					"INFO: 1>Up to date",
+					"INFO: 1>Generate: [C++]MyPackage",
+					"DIAG: 1>Build evaluation end",
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Build evaluation end",
 					"INFO: 1>Done",
@@ -1194,12 +1156,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify expected system requests
 			Assert::AreEqual(
-				std::vector<std::string>({
-					#ifndef _WIN32
-						"GetCurrentTime",
-						"GetCurrentTime",
-					#endif
-				}),
+				std::vector<std::string>(),
 				system->GetRequests(),
 				"Verify system requests match expected.");
 
@@ -1230,10 +1187,6 @@ namespace Soup::Core::UnitTests
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/GenerateInput.bvt",
 					"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Generate.bor",
 					std::format("TryGetLastWriteTime: C:/testlocation/{0}", GetGenerateExeName()),
-					#ifndef _WIN32
-						"OpenWriteBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Generate.bor",
-						"TryOpenReadBinary: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/Evaluate.bog",
-					#endif
 					"Exists: C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/temp/",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
@@ -1243,10 +1196,6 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateInput.bvt",
 					"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor",
-					#ifndef _WIN32
-						"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor",
-						"TryOpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
-					#endif
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/",
 				}),
 				fileSystem->GetRequests(),
@@ -1262,22 +1211,7 @@ namespace Soup::Core::UnitTests
 				"Verify process manager requests match expected.");
 
 			Assert::AreEqual(
-				std::vector<std::string>({
-					#ifndef _WIN32
-						"CreateMonitorProcess: 1 [C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/] C:/testlocation/generate C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
-						"ProcessStart: 1",
-						"WaitForExit: 1",
-						"GetStandardOutput: 1",
-						"GetStandardError: 1",
-						"GetExitCode: 1",
-						std::format("CreateMonitorProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/{0} C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]", GetGenerateExeName()),
-						"ProcessStart: 2",
-						"WaitForExit: 2",
-						"GetStandardOutput: 2",
-						"GetStandardError: 2",
-						"GetExitCode: 2",
-					#endif
-				}),
+				std::vector<std::string>(),
 				monitorProcessManager->GetRequests(),
 				"Verify monitor process manager requests match expected.");
 		}

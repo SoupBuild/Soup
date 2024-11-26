@@ -79,7 +79,7 @@
       "name": "Debug Soup Core Test",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/Cpp/Local/Soup.Core/0.1.1/J_HqSstV55vlb-x6RWC_hLRFRDU/bin/Test/TestHarness.exe",
+      "program": "${workspaceFolder}/out/C++/Local/Soup.Core/0.1.1/J_HqSstV55vlb-x6RWC_hLRFRDU/bin/Test/TestHarness.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
