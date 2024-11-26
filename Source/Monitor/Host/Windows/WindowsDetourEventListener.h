@@ -21,7 +21,7 @@ namespace Monitor::Windows
 		/// <summary>
 		/// Initializes a new instance of the <see cref='EventListener'/> class.
 		/// </summary>
-		DetourEventListener(
+		WindowsDetourEventListener(
 			std::shared_ptr<IWindowsSystemMonitor> monitor) :
 			m_monitor(std::move(monitor))
 		{

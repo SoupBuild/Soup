@@ -35,7 +35,7 @@ namespace Monitor::Windows
 		std::vector<std::string> m_arguments;
 		Path m_workingDirectory;
 		std::map<std::string, std::string> m_environmentVariables;
-		EventListener m_eventListener;
+		WindowsDetourEventListener m_eventListener;
 
 		bool m_enableAccessChecks;
 		std::vector<Path> m_allowedReadAccess;

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "ISystemAccessMonitor.h"
+#include "IWindowsSystemMonitor.h"
 
 namespace Monitor::Windows
 {

@@ -11,7 +11,7 @@ namespace Monitor::Windows
 	public:
 		WindowsSystemMonitorFork(
 			std::shared_ptr<IWindowsSystemMonitor> monitor1,
-			std::shared_ptr<IDetourCallback> monitor2) :
+			std::shared_ptr<IWindowsSystemMonitor> monitor2) :
 			_monitor1(std::move(monitor1)),
 			_monitor2(std::move(monitor2))
 		{

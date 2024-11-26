@@ -111,8 +111,8 @@ using namespace Opal;
 
 #if defined(_WIN32)
 #include "Windows/WindowsMonitorProcessManager.h"
-#include "Windows/DetourCallbackLogger.h"
-#include "Windows/DetourForkCallback.h"
+#include "Windows/WindowsSystemLoggerMonitor.h"
+#include "Windows/WindowsSystemMonitorFork.h"
 #elif defined(__linux__)
 #include "Linux/LinuxMonitorProcessManager.h"
 #endif

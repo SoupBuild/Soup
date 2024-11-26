@@ -6,7 +6,7 @@ namespace Monitor::Windows
 	class WindowsSystemLoggerMonitor : public IWindowsSystemMonitor
 	{
 	public:
-		SystemLoggerMonitor(std::ostream& stream) :
+		WindowsSystemLoggerMonitor(std::ostream& stream) :
 			m_stream(stream)
 		{
 		}
