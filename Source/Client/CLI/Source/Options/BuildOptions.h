@@ -39,6 +39,12 @@ namespace Soup::Client
 		bool DisableMonitor;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to partial monitoring
+		/// </summary>
+		// [[Args::Option("partialMonitor", Default = false, HelpText = "Do not monitor usage for incremental builds.")]]
+		bool PartialMonitor;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to force a build
 		/// </summary>
 		// [[Args::Option("force", Default = false, HelpText = "Force a rebuild.")]]

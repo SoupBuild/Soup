@@ -167,6 +167,7 @@ namespace Soup::Core
 			auto evaluateEngine = BuildEvaluateEngine(
 				arguments.ForceRebuild,
 				arguments.DisableMonitor,
+				arguments.PartialMonitor,
 				fileSystemState);
 
 			// Initialize the build runner that will perform the generate and evaluate phase

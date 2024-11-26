@@ -55,6 +55,7 @@ namespace Soup::Client
 			arguments.SkipGenerate = _options.SkipGenerate;
 			arguments.SkipEvaluate = _options.SkipEvaluate;
 			arguments.DisableMonitor = _options.DisableMonitor;
+			arguments.PartialMonitor = _options.PartialMonitor;
 
 			// Platform specific defaults
 			#if defined(_WIN32)
