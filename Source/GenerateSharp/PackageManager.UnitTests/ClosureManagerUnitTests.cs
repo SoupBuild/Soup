@@ -1209,7 +1209,7 @@ public class ClosureManagerUnitTests
 				"""))));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml"),
+			new Path("C:/PackageStore/C++/User1/Package2/2.3.4/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package2'
@@ -1559,14 +1559,14 @@ public class ClosureManagerUnitTests
 				"HIGH: Install Package: C++ User1 Package2@2.3.4",
 				"HIGH: Downloading package",
 				"HIGH: Skip built in language version in build closure",
-				"DIAG: Create Directory: C:/LockStore/Cpp/User1/Package2/2.3.4/",
-				"INFO: Ensure Package Lock Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
-				"DIAG: Load Package Lock: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
+				"DIAG: Create Directory: C:/LockStore/C++/User1/Package2/2.3.4/",
+				"INFO: Ensure Package Lock Exists: C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
 				"INFO: Discovering full closure",
-				"DIAG: Load Recipe: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
+				"DIAG: Load Recipe: C:/PackageStore/C++/User1/Package2/2.3.4/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:C++ User1|Package2 -> C:/PackageStore/Cpp/User1/Package2/2.3.4/",
+				"DIAG: Root:C++ User1|Package2 -> C:/PackageStore/C++/User1/Package2/2.3.4/",
 				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> [Wren]mwasplund|Soup.Cpp@5.0.0",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
@@ -1614,19 +1614,19 @@ public class ClosureManagerUnitTests
 				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"OpenRead: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"OpenWriteTruncate: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
-				"Exists: C:/PackageStore/Cpp/User1/Package2/2.3.4/",
+				"Exists: C:/PackageStore/C++/User1/Package2/2.3.4/",
 				"OpenWriteTruncate: C:/Staging/Package2.zip",
 				"CreateDirectory: C:/Staging/C++_Package2_2.3.4/",
 				"DeleteFile: C:/Staging/Package2.zip",
-				"Exists: C:/PackageStore/Cpp/User1/Package2/",
-				"CreateDirectory: C:/PackageStore/Cpp/User1/Package2/",
-				"Rename: [C:/Staging/C++_Package2_2.3.4/] -> [C:/PackageStore/Cpp/User1/Package2/2.3.4/]",
-				"Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/",
-				"CreateDirectory: C:/LockStore/Cpp/User1/Package2/2.3.4/",
-				"Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
-				"Exists: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
-				"OpenRead: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
-				"OpenWriteTruncate: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
+				"Exists: C:/PackageStore/C++/User1/Package2/",
+				"CreateDirectory: C:/PackageStore/C++/User1/Package2/",
+				"Rename: [C:/Staging/C++_Package2_2.3.4/] -> [C:/PackageStore/C++/User1/Package2/2.3.4/]",
+				"Exists: C:/LockStore/C++/User1/Package2/2.3.4/",
+				"CreateDirectory: C:/LockStore/C++/User1/Package2/2.3.4/",
+				"Exists: C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml",
+				"Exists: C:/PackageStore/C++/User1/Package2/2.3.4/Recipe.sml",
+				"OpenRead: C:/PackageStore/C++/User1/Package2/2.3.4/Recipe.sml",
+				"OpenWriteTruncate: C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml",
 				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
 				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
 				"CreateDirectory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
@@ -1903,7 +1903,7 @@ public class ClosureManagerUnitTests
 
 		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml"));
+		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml"));
 		_ = package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerPackage2Lock = new System.IO.StreamReader(package2Lock.Content);
 		var package2LockContent = await readerPackage2Lock.ReadToEndAsync();
