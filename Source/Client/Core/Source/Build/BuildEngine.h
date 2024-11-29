@@ -25,19 +25,19 @@ namespace Soup::Core
 			{
 				{
 					"C",
-					KnownLanguage("mwasplund", "Soup.C")
+					KnownLanguage("Soup", "C")
 				},
 				{
 					"C++",
-					KnownLanguage("mwasplund", "Soup.Cpp")
+					KnownLanguage("Soup", "Cpp")
 				},
 				{
 					"C#",
-					KnownLanguage("mwasplund", "Soup.CSharp")
+					KnownLanguage("Soup", "CSharp")
 				},
 				{
 					"Wren",
-					KnownLanguage("mwasplund", "Soup.Wren")
+					KnownLanguage("Soup", "Wren")
 				},
 			});
 
@@ -67,6 +67,10 @@ namespace Soup::Core
 						{
 							PackageName("mwasplund", "Soup.Wren"),
 							SemanticVersion(0, 4, 1)
+						},
+						{
+							PackageName("Soup", "Wren"),
+							SemanticVersion(0, 4, 3)
 						},
 					}
 				},

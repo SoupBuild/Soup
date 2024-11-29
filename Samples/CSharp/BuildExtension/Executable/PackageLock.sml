@@ -8,7 +8,7 @@ Closures: {
 	Build0: {
 		Wren: {
 			'Samples.CSharp.BuildExtension.Extension': { Version: '../Extension/' }
-			'mwasplund|Soup.CSharp': { Version: 0.15.0 }
+			'Soup|CSharp': { Version: 0.15.1 }
 		}
 	}
 	Tool0: {

@@ -99,7 +99,7 @@ public static class MigrationManager
 
 		if (parser.PackageReferenceItems.Count > 0)
 		{
-			recipe.AddBuildDependency("mwasplund|Soup.CSharp.Nuget@0");
+			recipe.AddBuildDependency("Soup|CSharp.Nuget@0");
 		}
 
 		foreach (var reference in parser.ProjectReferenceItems)

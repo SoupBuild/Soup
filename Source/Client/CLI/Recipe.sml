@@ -20,6 +20,7 @@ Dependencies: {
 		'../../Tools/Copy/'
 		'../../Tools/Mkdir/'
 		'[Wren]mwasplund|Soup.Wren@0'
+		'[Wren]Soup|Wren@0'
 	]
 	Build: [
 		# TODO: 'Soup.Test.Cpp@0.4.0'
