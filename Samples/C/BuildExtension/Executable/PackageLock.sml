@@ -2,13 +2,13 @@ Version: 5
 Closures: {
 	Root: {
 		C: {
-			'Samples.C.SimpleBuildExtension.Executable': { Version: '../Executable', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.C.SimpleBuildExtension.Executable': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
 		Wren: {
 			'Samples.C.BuildExtension.Extension': { Version: '../Extension/' }
-			'mwasplund|Soup.C': { Version: 0.4.0 }
+			'Soup|C': { Version: 0.4.1 }
 		}
 	}
 	Tool0: {
