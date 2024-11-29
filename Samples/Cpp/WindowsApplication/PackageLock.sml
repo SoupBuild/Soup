@@ -2,12 +2,12 @@ Version: 5
 Closures: {
 	Root: {
 		'C++': {
-			'Samples.Cpp.WindowsApplication': { Version: '../WindowsApplication', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.Cpp.WindowsApplication': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
 		Wren: {
-			'mwasplund|Soup.Cpp': { Version: 0.13.2 }
+			'Soup|Cpp': { Version: 0.13.2 }
 		}
 	}
 	Tool0: {
