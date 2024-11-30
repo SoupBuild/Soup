@@ -236,7 +236,7 @@ namespace Soup::Core::Generate
 			const ValueTable& inputTable)
 		{
 			auto hackMacros = std::map<std::string, std::string>({
-				{ "/(TARGET_Soup.Wren)/", "/(TARGET_mwasplund|Soup.Wren)/" },
+				{ "/(TARGET_Soup.Wren)/", "/(TARGET_Soup|Wren)/" },
 				{ "/(TARGET_mkdir)/", "/(TARGET_mwasplund|mkdir)/" },
 				{ "/(TARGET_copy)/", "/(TARGET_mwasplund|copy)/" },
 			});

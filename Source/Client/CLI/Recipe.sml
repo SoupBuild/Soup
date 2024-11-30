@@ -19,7 +19,6 @@ Dependencies: {
 	Other: [
 		'../../Tools/Copy/'
 		'../../Tools/Mkdir/'
-		'[Wren]mwasplund|Soup.Wren@0'
 		'[Wren]Soup|Wren@0'
 	]
 	Build: [

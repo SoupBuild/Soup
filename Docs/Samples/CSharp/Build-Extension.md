@@ -15,7 +15,7 @@ Source: [
 
 Dependencies: {
   Runtime: [
-    'mwasplund|Soup.Build.Utils@0'
+    'Soup|Build.Utils@0'
   ]
 }
 ```
@@ -27,13 +27,13 @@ Version: 5
 Closures: {
   Root: {
     Wren: {
-      'mwasplund|Soup.Build.Utils': { Version: 0.7.0, Build: 'Build0', Tool: 'Tool0' }
+      'Soup|Build.Utils': { Version: 0.7.0, Build: 'Build0', Tool: 'Tool0' }
       'Samples.CSharp.BuildExtension.Extension': { Version: './', Build: 'Build0', Tool: 'Tool0' }
     }
   }
   Build0: {
     Wren: {
-      'mwasplund|Soup.Wren': { Version: 0.4.1 }
+      'Soup|Wren': { Version: 0.4.3 }
     }
   }
   Tool0: {
@@ -53,8 +53,8 @@ A Wren file defining a custom build Task that will run before the build definiti
 // </copyright>
 
 import "soup" for Soup, SoupTask
-import "mwasplund|Soup.Build.Utils:./ListExtensions" for ListExtensions
-import "mwasplund|Soup.Build.Utils:./MapExtensions" for MapExtensions
+import "Soup|Build.Utils:./ListExtensions" for ListExtensions
+import "Soup|Build.Utils:./MapExtensions" for MapExtensions
 
 class CustomBuildTask is SoupTask {
   /// <summary>
