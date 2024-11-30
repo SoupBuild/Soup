@@ -7,7 +7,7 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		<mwasplund|Soup.Build.Utils@0>
+		<Soup|Build.Utils@0>
 	]
 	Tool: [
 		'../Tool/'

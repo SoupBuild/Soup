@@ -82,7 +82,7 @@ namespace Soup::Core
 			// Load the script
 			std::ifstream scriptFile(_scriptFile.ToString());
 			if (!scriptFile.is_open())
-				throw std::runtime_error("Script does not exist");
+				throw std::runtime_error(std::format("Script does not exist {0}", _scriptFile.ToString()));
 
 			auto script = std::string(
 				std::istreambuf_iterator<char>(scriptFile),

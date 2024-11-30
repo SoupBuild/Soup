@@ -4,7 +4,7 @@ Version: 1.0.0
 TargetFramework: 'net8.0'
 Dependencies: {
 	Build: [
-		'mwasplund|Soup.CSharp.Nuget@0'
+		'Soup|CSharp.Nuget@0'
 	]
 	Runtime: [
 		'../Opal/'

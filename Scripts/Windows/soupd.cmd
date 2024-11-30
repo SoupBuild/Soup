@@ -12,12 +12,12 @@ SET ConfigHash=OZlIVjblazFuKXg-raWUNoGEnG4
 
 SET PKG_OWNER=mwasplund
 
-SET SOUP_VERSION=0.40.0
+SET SOUP_VERSION=0.41.0
 SET COPY_VERSION=1.1.0
 SET MKDIR_VERSION=1.1.0
-SET SOUP_WREN_VERSION=0.4.1
+SET SOUP_WREN_VERSION=0.4.3
 
-REM - Use a copy of the final binary in case we are re-buiding itself
+REM - Use a copy of the final binary in case we are re-building itself
 robocopy %ScriptsDir%\Install\ %RunDir%\ /MIR /NJH /NJS /NDL > NUL
 robocopy %OutDir%\C++\Local\Soup\%SOUP_VERSION%\%ConfigHash%\bin\ %RunDir%\Soup\ /MIR /NJH /NJS /NDL > NUL
 
@@ -27,8 +27,8 @@ robocopy %OutDir%\C++\Local\copy\%COPY_VERSION%\%ConfigHash%\ %RunDir%\Soup\Buil
 robocopy %SourceDir%\Tools\Mkdir\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\mkdir\%MKDIR_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy %OutDir%\C++\Local\mkdir\%MKDIR_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\mkdir\%MKDIR_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %GlobalPackagesDir%\Wren\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
-robocopy %GlobalOutDir%\Wren\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
+robocopy %GlobalPackagesDir%\Wren\Soup\Wren\%SOUP_WREN_VERSION%\ %RunDir%\Soup\BuiltIn\Soup\Wren\%SOUP_WREN_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
+robocopy %GlobalOutDir%\Wren\Soup\Wren\%SOUP_WREN_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\Soup\Wren\%SOUP_WREN_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
 robocopy %OutDir%\bin\Soup.Build.PackageManager\Debug\net8.0\win-x64\publish\ %RunDir%\Soup\PackageManager\ /MIR /NJH /NJS /NDL > NUL
 

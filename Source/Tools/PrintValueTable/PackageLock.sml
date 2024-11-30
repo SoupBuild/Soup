@@ -1,6 +1,9 @@
 Version: 5
 Closures: {
 	Root: {
+		C: {
+			'mwasplund|libseccomp': { Version: 2.5.8, Build: 'Build2', Tool: 'Tool0' }
+		}
 		'C++': {
 			'Monitor.Host': { Version: '../../Monitor/Host/', Build: 'Build0', Tool: 'Tool0' }
 			'Monitor.Shared': { Version: '../../Monitor/Shared/', Build: 'Build0', Tool: 'Tool0' }
@@ -16,13 +19,18 @@ Closures: {
 	}
 	Build0: {
 		Wren: {
-			'mwasplund|Soup.Cpp': { Version: 0.13.2 }
+			'Soup|Cpp': { Version: 0.13.2 }
 		}
 	}
 	Build1: {
 		Wren: {
-			'mwasplund|Soup.Cpp': { Version: 0.13.2 }
-			'mwasplund|Soup.Test.Cpp': { Version: 0.11.0 }
+			'Soup|Cpp': { Version: 0.13.2 }
+			'mwasplund|Soup.Test.Cpp': { Version: 0.12.0 }
+		}
+	}
+	Build2: {
+		Wren: {
+			'Soup|C': { Version: 0.4.1 }
 		}
 	}
 	Tool0: {

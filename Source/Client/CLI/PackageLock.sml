@@ -5,44 +5,44 @@ Closures: {
 			'mwasplund|libseccomp': { Version: 2.5.8, Build: 'Build3', Tool: 'Tool0' }
 		}
 		'C++': {
-copy: { Version: '../../Tools/Copy/', Build: 'Build0', Tool: 'Tool0' }
-			mkdir: { Version: '../../Tools/Mkdir/', Build: 'Build0', Tool: 'Tool0' }
 			'Monitor.Host': { Version: '../../Monitor/Host/', Build: 'Build0', Tool: 'Tool0' }
 			'Monitor.Shared': { Version: '../../Monitor/Shared/', Build: 'Build0', Tool: 'Tool0' }
+			Soup: { Version: './', Build: 'Build0', Tool: 'Tool0' }
+			'Soup.Core': { Version: '../Core/', Build: 'Build1', Tool: 'Tool0' }
+			'Soup.Generate': { Version: '../../Generate/', Build: 'Build0', Tool: 'Tool0' }
+			copy: { Version: '../../Tools/Copy/', Build: 'Build0', Tool: 'Tool0' }
+			mkdir: { Version: '../../Tools/Mkdir/', Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|CryptoPP': { Version: 1.2.4, Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Detours': { Version: 4.0.12, Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Opal': { Version: 0.11.5, Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|reflex': { Version: 1.0.5, Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Soup.Test.Assert': { Version: 0.4.2, Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|reflex': { Version: 1.0.5, Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|wren': { Version: 1.0.5, Build: 'Build0', Tool: 'Tool0' }
-			Soup: { Version: '../CLI', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.Core': { Version: '../Core/', Build: 'Build1', Tool: 'Tool0' }
-			'Soup.Generate': { Version: '../../Generate/', Build: 'Build0', Tool: 'Tool0' }
 		}
 		Wren: {
-			'mwasplund|Soup.Build.Utils': { Version: 0.7.0, Build: 'Build2', Tool: 'Tool0' }
-			'mwasplund|Soup.Wren': { Version: 0.4.1, Build: 'Build2', Tool: 'Tool0' }
+			'Soup|Build.Utils': { Version: 0.7.0, Build: 'Build2', Tool: 'Tool0' }
+			'Soup|Wren': { Version: 0.4.3, Build: 'Build2', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
 		Wren: {
-			'mwasplund|Soup.Cpp': { Version: 0.13.2 }
+			'Soup|Cpp': { Version: 0.13.2 }
 		}
 	}
 	Build1: {
 		Wren: {
-			'mwasplund|Soup.Cpp': { Version: 0.13.2 }
+			'Soup|Cpp': { Version: 0.13.2 }
 			'mwasplund|Soup.Test.Cpp': { Version: 0.12.0 }
 		}
 	}
 	Build2: {
 		Wren: {
-			'mwasplund|Soup.Wren': { Version: 0.4.1 }
+			'Soup|Wren': { Version: 0.4.3 }
 		}
 	}
 	Build3: {
 		Wren: {
-			'mwasplund|Soup.C': { Version: 0.4.1 }
+			'Soup|C': { Version: 0.4.1 }
 		}
 	}
 	Tool0: {

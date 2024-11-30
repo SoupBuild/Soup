@@ -31,6 +31,7 @@ namespace Monitor::Windows
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<ISystemAccessMonitor> monitor,
 			bool enableAccessChecks,
+			bool partialMonitor,
 			std::vector<Path> allowedReadAccess,
 			std::vector<Path> allowedWriteAccess) override final
 		{
@@ -41,6 +42,7 @@ namespace Monitor::Windows
 				environmentVariables,
 				std::move(monitor),
 				enableAccessChecks,
+				partialMonitor,
 				std::move(allowedReadAccess),
 				std::move(allowedWriteAccess));
 		}

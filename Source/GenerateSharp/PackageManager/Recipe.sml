@@ -12,7 +12,7 @@ Source: [
 
 Dependencies: {
 	Build: [
-		'mwasplund|Soup.CSharp.Nuget@0'
+		'Soup|CSharp.Nuget@0'
 	]
 	Runtime: [
 		'../PackageManager.Core/'

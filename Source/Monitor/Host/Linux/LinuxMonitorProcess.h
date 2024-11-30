@@ -21,6 +21,7 @@ namespace Monitor::Linux
 		std::vector<std::string> m_arguments;
 		Path m_workingDirectory;
 		LinuxTraceEventListener m_eventListener;
+		bool m_partialMonitor;
 
 		// Runtime
 		pid_t m_processId;
@@ -46,7 +47,8 @@ namespace Monitor::Linux
 			const Path& executable,
 			std::vector<std::string> arguments,
 			const Path& workingDirectory,
-			std::shared_ptr<ISystemAccessMonitor> monitor) :
+			std::shared_ptr<ISystemAccessMonitor> monitor,
+			bool partialMonitor) :
 			m_executable(executable),
 			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
@@ -57,6 +59,7 @@ namespace Monitor::Linux
 	#else
 			m_eventListener(std::make_shared<LinuxSystemAccessMonitor>(std::move(monitor))),
 	#endif
+			m_partialMonitor(partialMonitor),
 			m_processId(),
 			m_stdOutReadHandle(),
 			m_stdErrReadHandle(),
@@ -390,7 +393,11 @@ namespace Monitor::Linux
 									// Process start
 									break;
 								case PTRACE_EVENT_SECCOMP:
-									m_eventListener.ProcessSysCall(currentProcessId);
+									// Ignore all messages if partial monitor is enabled
+									if (!m_partialMonitor)
+									{
+										m_eventListener.ProcessSysCall(currentProcessId);
+									}
 									break;
 								case PTRACE_EVENT_FORK:
 								case PTRACE_EVENT_VFORK:

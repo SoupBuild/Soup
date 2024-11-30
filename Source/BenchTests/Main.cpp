@@ -270,7 +270,7 @@ int main()
 					}
 					Build0: {
 						Wren: {
-							'mwasplund|Soup.Cpp': { Version: 0.8.2 }
+							'Soup|Cpp': { Version: 0.8.2 }
 						}
 					}
 					Tool0: {}
@@ -284,12 +284,12 @@ int main()
 				Closures: {
 					Root: {
 						Wren: {
-							'mwasplund|Soup.Cpp': { Version: './', Build: 'Build0', Tool: 'Tool0' }
+							'Soup|Cpp': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 						}
 					}
 					Build0: {
 						Wren: {
-							'mwasplund|Soup.Wren': { Version: 0.4.1 }
+							'Soup|Wren': { Version: 0.4.3 }
 						}
 					}
 					Tool0: {}
@@ -328,7 +328,7 @@ int main()
 						ValueTable(
 						{
 							{
-								"mwasplund|Soup.Wren",
+								"Soup|Wren",
 								ValueTable(
 								{
 									{ "SoupTargetDirectory", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/out/.soup/") },
@@ -342,37 +342,37 @@ int main()
 				"EvaluateMacros",
 				ValueTable(
 				{
-					{ "/(PACKAGE_mwasplund|Soup.Cpp)/", std::string("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/") },
-					{ "/(TARGET_mwasplund|Soup.Cpp)/", std::string("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/") },
+					{ "/(PACKAGE_Soup|Cpp)/", std::string("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/") },
+					{ "/(TARGET_Soup|Cpp)/", std::string("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/") },
 				})
 			},
 			{
 				"EvaluateReadAccess",
 				ValueList(
 				{
-					std::string("/(PACKAGE_mwasplund|Soup.Cpp)/"),
-					std::string("/(TARGET_mwasplund|Soup.Cpp)/"),
+					std::string("/(PACKAGE_Soup|Cpp)/"),
+					std::string("/(TARGET_Soup|Cpp)/"),
 				})
 			},
 			{
 				"EvaluateWriteAccess",
 				ValueList(
 				{
-					std::string("/(TARGET_mwasplund|Soup.Cpp)/"),
+					std::string("/(TARGET_Soup|Cpp)/"),
 				})
 			},
 			{
 				"GenerateMacros",
 				ValueTable(
 				{
-					{ "/(BUILD_TARGET_mwasplund|Soup.Wren)/", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/out/") },
+					{ "/(BUILD_TARGET_Soup|Wren)/", std::string("C:/BuiltIn/Packages/mwasplund/Soup.Wren/0.4.1/out/") },
 				})
 			},
 			{
 				"GenerateSubGraphMacros",
 				ValueTable(
 				{
-					{ "/(TARGET_mwasplund|Soup.Wren)/", std::string("/(BUILD_TARGET_mwasplund|Soup.Wren)/") },
+					{ "/(TARGET_Soup|Wren)/", std::string("/(BUILD_TARGET_Soup|Wren)/") },
 				})
 			},
 			{
@@ -384,8 +384,8 @@ int main()
 						ValueTable(
 						{
 							{ "HostPlatform", std::string("TestPlatform") },
-							{ "PackageDirectory", std::string("/(PACKAGE_mwasplund|Soup.Cpp)/") },
-							{ "TargetDirectory", std::string("/(TARGET_mwasplund|Soup.Cpp)/") },
+							{ "PackageDirectory", std::string("/(PACKAGE_Soup|Cpp)/") },
+							{ "TargetDirectory", std::string("/(TARGET_Soup|Cpp)/") },
 						})
 					},
 					{
@@ -397,15 +397,15 @@ int main()
 								ValueTable(
 								{
 									{
-										"mwasplund|Soup.Wren",
+										"Soup|Wren",
 										ValueTable(
 										{
 											{
 												"Context",
 												ValueTable(
 												{
-													{ "Reference", std::string("[Wren]mwasplund|Soup.Wren@0.4.1") },
-													{ "TargetDirectory", std::string("/(TARGET_mwasplund|Soup.Wren)/") },
+													{ "Reference", std::string("[Wren]Soup|Wren@0.4.1") },
+													{ "TargetDirectory", std::string("/(TARGET_Soup|Wren)/") },
 												})
 											},
 										})
@@ -454,7 +454,7 @@ int main()
 						ValueTable(
 						{
 							{
-								"mwasplund|Soup.Cpp",
+								"Soup|Cpp",
 								ValueTable(
 								{
 									{ "SoupTargetDirectory", std::string("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/") },
@@ -491,14 +491,14 @@ int main()
 				"GenerateMacros",
 				ValueTable(
 				{
-					{ "/(BUILD_TARGET_mwasplund|Soup.Cpp)/", std::string("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/") },
+					{ "/(BUILD_TARGET_Soup|Cpp)/", std::string("C:/Users/Me/.soup/packages/Wren/mwasplund/Soup.Cpp/0.8.2/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/") },
 				})
 			},
 			{
 				"GenerateSubGraphMacros",
 				ValueTable(
 				{
-					{ "/(TARGET_mwasplund|Soup.Cpp)/", std::string("/(BUILD_TARGET_mwasplund|Soup.Cpp)/") },
+					{ "/(TARGET_Soup|Cpp)/", std::string("/(BUILD_TARGET_Soup|Cpp)/") },
 				})
 			},
 			{
@@ -523,15 +523,15 @@ int main()
 								ValueTable(
 								{
 									{
-										"mwasplund|Soup.Cpp",
+										"Soup|Cpp",
 										ValueTable(
 										{
 											{
 												"Context",
 												ValueTable(
 												{
-													{ "Reference", std::string("[Wren]mwasplund|Soup.Cpp@0.8.2") },
-													{ "TargetDirectory", std::string("/(TARGET_mwasplund|Soup.Cpp)/") },
+													{ "Reference", std::string("[Wren]Soup|Cpp@0.8.2") },
+													{ "TargetDirectory", std::string("/(TARGET_Soup|Cpp)/") },
 												})
 											},
 										})

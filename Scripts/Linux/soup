@@ -15,30 +15,34 @@ CONFIG_HASH=Oltq7cGwk0Rbgy1I-3mCMDDE5yM
 
 OWNER=mwasplund
 
-SOUP_VERSION="0.40.0"
+SOUP_VERSION="0.41.0"
 COPY_VERSION="1.1.0"
 MKDIR_VERSION="1.1.0"
-SOUP_WREN_VERSION="0.4.1"
+SOUP_WREN_OLD_VERSION="0.4.1"
+SOUP_WREN_VERSION="0.4.3"
 
 # Cleanup previous runs
 rm -rf $RUN_DIR
 mkdir -p $RUN_DIR
 
-cp -p $OUT_DIR/Cpp/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.exe $RUN_DIR/soup
-cp -p $OUT_DIR/Cpp/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.Generate.exe $RUN_DIR/generate
-cp -p $OUT_DIR/Cpp/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/*.so $RUN_DIR/
+cp -p $OUT_DIR/C++/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.exe $RUN_DIR/soup
+cp -p $OUT_DIR/C++/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.Generate.exe $RUN_DIR/generate
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION
 cp -p $SOURCE_DIR/Tools/Copy/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/Recipe.sml
-cp -p -R $OUT_DIR/Cpp/Local/copy/$COPY_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/out/
+cp -p -R $OUT_DIR/C++/Local/copy/$COPY_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/out/
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION
 cp -p $SOURCE_DIR/Tools/Mkdir/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/Recipe.sml
-cp -p -R $OUT_DIR/Cpp/Local/mkdir/$MKDIR_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/out/
+cp -p -R $OUT_DIR/C++/Local/mkdir/$MKDIR_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/out/
 
-mkdir -p $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION
-cp -p $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/Recipe.sml
-cp -p -R $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/out/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_VERSION/out/
+mkdir -p $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_OLD_VERSION
+cp -p $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_OLD_VERSION/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_OLD_VERSION/Recipe.sml
+cp -p -R $GLOBAL_PACKAGES_DIR/Wren/$OWNER/Soup.Wren/$SOUP_WREN_OLD_VERSION/out/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/Soup.Wren/$SOUP_WREN_OLD_VERSION/out/
+
+mkdir -p $RUN_DIR/BuiltIn/Soup/Wren/$SOUP_WREN_VERSION
+cp -p $GLOBAL_PACKAGES_DIR/Wren/Soup/Wren/$SOUP_WREN_VERSION/Recipe.sml $RUN_DIR/BuiltIn/Soup/Wren/$SOUP_WREN_VERSION/Recipe.sml
+cp -p -R $GLOBAL_PACKAGES_DIR/Wren/Soup/Wren/$SOUP_WREN_VERSION/out/$CONFIG_HASH/ $RUN_DIR/BuiltIn/Soup/Wren/$SOUP_WREN_VERSION/out/
 
 cp -p -R $ROOT_DIR/Source/out/bin/Soup.Build.PackageManager/Release/net8.0/linux-x64/publish/ $RUN_DIR/PackageManager
 

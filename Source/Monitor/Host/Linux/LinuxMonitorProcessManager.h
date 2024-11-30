@@ -34,6 +34,7 @@ namespace Monitor::Linux
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<ISystemAccessMonitor> monitor,
 			bool enableAccessChecks,
+			bool partialMonitor,
 			std::vector<Path> allowedReadAccess,
 			std::vector<Path> allowedWriteAccess) override final
 		{
@@ -41,7 +42,8 @@ namespace Monitor::Linux
 				executable,
 				std::move(arguments),
 				workingDirectory,
-				std::move(monitor));
+				std::move(monitor),
+				partialMonitor);
 		}
 	};
 }

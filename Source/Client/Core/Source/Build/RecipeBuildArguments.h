@@ -46,6 +46,11 @@ namespace Soup::Core
 		bool DisableMonitor;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to enable partial monitoring
+		/// </summary>
+		bool PartialMonitor;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to force a rebuild
 		/// </summary>
 		bool ForceRebuild;

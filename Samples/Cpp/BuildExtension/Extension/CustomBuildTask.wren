@@ -3,10 +3,10 @@
 // </copyright>
 
 import "soup" for Soup, SoupTask
-import "mwasplund|Soup.Build.Utils:./Path" for Path
-import "mwasplund|Soup.Build.Utils:./ListExtensions" for ListExtensions
-import "mwasplund|Soup.Build.Utils:./MapExtensions" for MapExtensions
-import "mwasplund|Soup.Build.Utils:./SharedOperations" for SharedOperations
+import "Soup|Build.Utils:./Path" for Path
+import "Soup|Build.Utils:./ListExtensions" for ListExtensions
+import "Soup|Build.Utils:./MapExtensions" for MapExtensions
+import "Soup|Build.Utils:./SharedOperations" for SharedOperations
 
 class CustomBuildTask is SoupTask {
 	/// <summary>

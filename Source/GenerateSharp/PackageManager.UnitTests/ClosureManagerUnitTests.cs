@@ -116,7 +116,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Generate final service closure",
 				"DIAG: Root:Wren MyPackage -> C:/Root/MyPackage/",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: MyPackage -> ./",
@@ -192,7 +192,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -515,7 +515,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Root:Wren MyPackage -> C:/Root/MyPackage/",
 				"DIAG: Root:Wren User1|Package1 -> [User1]Wren|Package1@1.2.3",
 				"DIAG: Root:Wren User1|Package2 -> [User1]Wren|Package2@3.2.1",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: MyPackage -> ./",
@@ -664,7 +664,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -885,7 +885,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Generate final service closure",
 				"DIAG: Root:C++ MyPackage -> C:/Root/MyPackage/",
-				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> [Wren]mwasplund|Soup.Cpp@5.0.0",
+				"DIAG: Build0:Wren Soup|Cpp -> [Wren]Soup|Cpp@5.0.0",
 				"DIAG: Build0:Wren User1|Package1 -> [Wren]User1|Package1@1.2.3",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
@@ -904,11 +904,11 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren mwasplund|Soup.Cpp -> C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Root:Wren Soup|Cpp -> C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
-				"INFO: Skip Package: mwasplund|Soup.Cpp -> ./",
+				"INFO: Skip Package: Soup|Cpp -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
@@ -923,7 +923,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"INFO: Generate final service closure",
 				"DIAG: Root:Wren User1|Package1 -> C:/PackageStore/Wren/User1/Package1/1.2.3/",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: User1|Package1 -> ./",
@@ -1104,7 +1104,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Cpp': { Version: 5.0.0 }
+						'Soup|Cpp': { Version: 5.0.0 }
 						'User1|Package1': { Version: 1.2.3 }
 					}
 				}
@@ -1131,7 +1131,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -1152,12 +1152,12 @@ public class ClosureManagerUnitTests
 			Closures: {
 				Root: {
 					Wren: {
-						'mwasplund|Soup.Cpp': { Version: './', Build: 'Build0', Tool: 'Tool0' }
+						'Soup|Cpp': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -1209,7 +1209,7 @@ public class ClosureManagerUnitTests
 				"""))));
 
 		mockFileSystem.CreateMockFile(
-			new Path("C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml"),
+			new Path("C:/PackageStore/C++/User1/Package2/2.3.4/Recipe.sml"),
 			new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 				"""
 				Name: 'Package2'
@@ -1507,7 +1507,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 				"INFO: Generate final service closure",
 				"DIAG: Root:C++ MyPackage -> C:/Root/MyPackage/",
-				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> [Wren]mwasplund|Soup.Cpp@5.0.0",
+				"DIAG: Build0:Wren Soup|Cpp -> [Wren]Soup|Cpp@5.0.0",
 				"DIAG: Build0:Wren User1|Package1 -> [Wren]User1|Package1@1.2.3",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
@@ -1526,11 +1526,11 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren mwasplund|Soup.Cpp -> C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Root:Wren Soup|Cpp -> C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
-				"INFO: Skip Package: mwasplund|Soup.Cpp -> ./",
+				"INFO: Skip Package: Soup|Cpp -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
@@ -1545,7 +1545,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"INFO: Generate final service closure",
 				"DIAG: Root:Wren User1|Package1 -> C:/PackageStore/Wren/User1/Package1/1.2.3/",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"DIAG: Tool0:C++ User1|Package2 -> [C++]User1|Package2@2.3.4",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
@@ -1559,15 +1559,15 @@ public class ClosureManagerUnitTests
 				"HIGH: Install Package: C++ User1 Package2@2.3.4",
 				"HIGH: Downloading package",
 				"HIGH: Skip built in language version in build closure",
-				"DIAG: Create Directory: C:/LockStore/Cpp/User1/Package2/2.3.4/",
-				"INFO: Ensure Package Lock Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
-				"DIAG: Load Package Lock: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
+				"DIAG: Create Directory: C:/LockStore/C++/User1/Package2/2.3.4/",
+				"INFO: Ensure Package Lock Exists: C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml",
+				"DIAG: Load Package Lock: C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml",
 				"INFO: Package Lock file does not exist.",
 				"INFO: Discovering full closure",
-				"DIAG: Load Recipe: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
+				"DIAG: Load Recipe: C:/PackageStore/C++/User1/Package2/2.3.4/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:C++ User1|Package2 -> C:/PackageStore/Cpp/User1/Package2/2.3.4/",
-				"DIAG: Build0:Wren mwasplund|Soup.Cpp -> [Wren]mwasplund|Soup.Cpp@5.0.0",
+				"DIAG: Root:C++ User1|Package2 -> C:/PackageStore/C++/User1/Package2/2.3.4/",
+				"DIAG: Build0:Wren Soup|Cpp -> [Wren]Soup|Cpp@5.0.0",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language C++",
 				"INFO: Skip Package: User1|Package2 -> ./",
@@ -1614,19 +1614,19 @@ public class ClosureManagerUnitTests
 				"Exists: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"OpenRead: C:/PackageStore/Wren/User1/Package1/1.2.3/Recipe.sml",
 				"OpenWriteTruncate: C:/LockStore/Wren/User1/Package1/1.2.3/PackageLock.sml",
-				"Exists: C:/PackageStore/Cpp/User1/Package2/2.3.4/",
+				"Exists: C:/PackageStore/C++/User1/Package2/2.3.4/",
 				"OpenWriteTruncate: C:/Staging/Package2.zip",
 				"CreateDirectory: C:/Staging/C++_Package2_2.3.4/",
 				"DeleteFile: C:/Staging/Package2.zip",
-				"Exists: C:/PackageStore/Cpp/User1/Package2/",
-				"CreateDirectory: C:/PackageStore/Cpp/User1/Package2/",
-				"Rename: [C:/Staging/C++_Package2_2.3.4/] -> [C:/PackageStore/Cpp/User1/Package2/2.3.4/]",
-				"Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/",
-				"CreateDirectory: C:/LockStore/Cpp/User1/Package2/2.3.4/",
-				"Exists: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
-				"Exists: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
-				"OpenRead: C:/PackageStore/Cpp/User1/Package2/2.3.4/Recipe.sml",
-				"OpenWriteTruncate: C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml",
+				"Exists: C:/PackageStore/C++/User1/Package2/",
+				"CreateDirectory: C:/PackageStore/C++/User1/Package2/",
+				"Rename: [C:/Staging/C++_Package2_2.3.4/] -> [C:/PackageStore/C++/User1/Package2/2.3.4/]",
+				"Exists: C:/LockStore/C++/User1/Package2/2.3.4/",
+				"CreateDirectory: C:/LockStore/C++/User1/Package2/2.3.4/",
+				"Exists: C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml",
+				"Exists: C:/PackageStore/C++/User1/Package2/2.3.4/Recipe.sml",
+				"OpenRead: C:/PackageStore/C++/User1/Package2/2.3.4/Recipe.sml",
+				"OpenWriteTruncate: C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml",
 				"Exists: C:/PackageStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
 				"Exists: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
 				"CreateDirectory: C:/LockStore/Wren/mwasplund/Soup.Cpp/5.0.0/",
@@ -1863,7 +1863,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Cpp': { Version: 5.0.0 }
+						'Soup|Cpp': { Version: 5.0.0 }
 						'User1|Package1': { Version: 1.2.3 }
 					}
 				}
@@ -1890,7 +1890,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -1903,7 +1903,7 @@ public class ClosureManagerUnitTests
 
 		Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Cpp/User1/Package2/2.3.4/PackageLock.sml"));
+		var package2Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/C++/User1/Package2/2.3.4/PackageLock.sml"));
 		_ = package2Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 		using var readerPackage2Lock = new System.IO.StreamReader(package2Lock.Content);
 		var package2LockContent = await readerPackage2Lock.ReadToEndAsync();
@@ -1918,7 +1918,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Cpp': { Version: 5.0.0 }
+						'Soup|Cpp': { Version: 5.0.0 }
 					}
 				}
 				Tool0: {
@@ -1939,12 +1939,12 @@ public class ClosureManagerUnitTests
 			Closures: {
 				Root: {
 					Wren: {
-						'mwasplund|Soup.Cpp': { Version: './', Build: 'Build0', Tool: 'Tool0' }
+						'Soup|Cpp': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 					}
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -2127,7 +2127,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 				"INFO: Generate final service closure",
 				"DIAG: Root:Wren MyPackage -> C:/Root/MyPackage/",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"DIAG: Build0:Wren Package1 -> C:/Root/Package1/",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
@@ -2146,7 +2146,7 @@ public class ClosureManagerUnitTests
 				"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 				"INFO: Generate final service closure",
 				"DIAG: Root:Wren Package1 -> C:/Root/Package1/",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
 				"INFO: Skip Package: Package1 -> ./",
@@ -2283,7 +2283,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 						Package1: { Version: '../Package1/' }
 					}
 				}
@@ -2310,7 +2310,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 					}
 				}
 				Tool0: {
@@ -2869,7 +2869,7 @@ public class ClosureManagerUnitTests
 				}
 				Build0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.5 }
+						'Soup|Wren': { Version: 4.5.5 }
 					}
 				}
 				Tool0: {
@@ -3010,11 +3010,11 @@ public class ClosureManagerUnitTests
 				"INFO: Discovering full closure",
 				"DIAG: Load Recipe: C:/PackageStore/Wren/mwasplund/Soup.Wren/4.5.5/Recipe.sml",
 				"INFO: Generate final service closure",
-				"DIAG: Root:Wren mwasplund|Soup.Wren -> C:/PackageStore/Wren/mwasplund/Soup.Wren/4.5.5/",
-				"DIAG: Build0:Wren mwasplund|Soup.Wren -> [Wren]mwasplund|Soup.Wren@4.5.6",
+				"DIAG: Root:Wren Soup|Wren -> C:/PackageStore/Wren/mwasplund/Soup.Wren/4.5.5/",
+				"DIAG: Build0:Wren Soup|Wren -> [Wren]Soup|Wren@4.5.6",
 				"INFO: Restore Packages for Closure Root",
 				"INFO: Restore Packages for Language Wren",
-				"INFO: Skip Package: mwasplund|Soup.Wren -> ./",
+				"INFO: Skip Package: Soup|Wren -> ./",
 				"INFO: Restore Packages for Closure Build0",
 				"INFO: Restore Packages for Language Wren",
 				"HIGH: Install Package: Wren mwasplund Soup.Wren@4.5.6",
@@ -3165,7 +3165,7 @@ public class ClosureManagerUnitTests
 				}
 				BuildSet0: {
 					Wren: {
-						'mwasplund|Soup.Wren': { Version: 4.5.6 }
+						'Soup|Wren': { Version: 4.5.6 }
 					}
 				}
 			}

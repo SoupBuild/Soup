@@ -38,6 +38,7 @@ namespace Monitor::Windows
 		WindowsDetourEventListener m_eventListener;
 
 		bool m_enableAccessChecks;
+		bool m_partialMonitor;
 		std::vector<Path> m_allowedReadAccess;
 		std::vector<Path> m_allowedWriteAccess;
 
@@ -78,6 +79,7 @@ namespace Monitor::Windows
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<ISystemAccessMonitor> monitor,
 			bool enableAccessChecks,
+			bool partialMonitor,
 			std::vector<Path> allowedReadAccess,
 			std::vector<Path> allowedWriteAccess) :
 			m_executable(executable),
@@ -92,6 +94,7 @@ namespace Monitor::Windows
 			m_eventListener(std::make_shared<WindowsSystemAccessMonitor>(std::move(monitor))),
 #endif
 			m_enableAccessChecks(enableAccessChecks),
+			m_partialMonitor(partialMonitor),
 			m_allowedReadAccess(std::move(allowedReadAccess)),
 			m_allowedWriteAccess(std::move(allowedWriteAccess)),
 			m_pipes(),
@@ -462,13 +465,13 @@ namespace Monitor::Windows
 					// and open connection.
 					// Check every 500 milliseconds if the process has terminated unexpectedly
 					bool waitForAll = false;
-					DWORD timoutMilliseconds = 500;
+					DWORD timeoutMilliseconds = 500;
 					DebugTrace("WorkerThread WaitForMultipleObjects");
 					auto waitResult = WaitForMultipleObjects(
 						static_cast<DWORD>(m_rawEventHandles.size()),
 						m_rawEventHandles.data(),
 						waitForAll,
-						timoutMilliseconds);
+						timeoutMilliseconds);
 					switch (waitResult)
 					{
 						case WAIT_TIMEOUT:
@@ -772,7 +775,12 @@ namespace Monitor::Windows
 		void LogMessage(Message& message)
 		{
 			DebugTrace("LogMessage");
-			m_eventListener.SafeLogMessage(message);
+
+			// Ignore all messages if partial monitor is enabled
+			if (!m_partialMonitor)
+			{
+				m_eventListener.SafeLogMessage(message);
+			}
 		}
 
 		void CleanupConnections()

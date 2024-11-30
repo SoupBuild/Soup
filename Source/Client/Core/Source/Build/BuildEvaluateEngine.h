@@ -126,6 +126,7 @@ namespace Soup::Core
 	private:
 		bool _forceRebuild;
 		bool _disableMonitor;
+		bool _partialMonitor;
 
 		// Shared Runtime State
 		FileSystemState& _fileSystemState;
@@ -138,9 +139,11 @@ namespace Soup::Core
 		BuildEvaluateEngine(
 			bool forceRebuild,
 			bool disableMonitor,
+			bool partialMonitor,
 			FileSystemState& fileSystemState) :
 			_forceRebuild(forceRebuild),
 			_disableMonitor(disableMonitor),
+			_partialMonitor(partialMonitor),
 			_fileSystemState(fileSystemState),
 			_stateChecker(fileSystemState)
 		{
@@ -424,6 +427,7 @@ namespace Soup::Core
 					environment,
 					monitor,
 					enableAccessChecks,
+					_partialMonitor,
 					std::move(allowedReadAccess),
 					std::move(allowedWriteAccess));
 			}

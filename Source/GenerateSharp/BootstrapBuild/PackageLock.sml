@@ -3,20 +3,20 @@ Closures: {
 	Root: {
 		'C#': {
 			Opal: { Version: '../Opal/', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.Build.Utilities': { Version: '../Utilities/', Build: 'Build1', Tool: 'Tool0' }
-			Swhere: { Version: '../Swhere', Build: 'Build0', Tool: 'Tool0' }
+			'Soup.Utilities': { Version: '../Utilities/', Build: 'Build1', Tool: 'Tool0' }
+			Swhere: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 			'Swhere.Core': { Version: '../Swhere.Core/', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
 		Wren: {
-			'mwasplund|Soup.CSharp': { Version: 0.15.0 }
+			'Soup|CSharp': { Version: 0.15.1 }
 		}
 	}
 	Build1: {
 		Wren: {
-			'mwasplund|Soup.CSharp': { Version: 0.15.0 }
-			'mwasplund|Soup.CSharp.Nuget': { Version: 0.5.0 }
+			'Soup|CSharp': { Version: 0.15.1 }
+			'Soup|CSharp.Nuget': { Version: 0.5.0 }
 		}
 	}
 	Tool0: {
