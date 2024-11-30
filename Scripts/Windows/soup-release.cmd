@@ -17,7 +17,7 @@ SET COPY_VERSION=1.1.0
 SET MKDIR_VERSION=1.1.0
 SET SOUP_WREN_VERSION=0.4.1
 
-REM - Use a copy of the final binary in case we are re-buiding itself
+REM - Use a copy of the final binary in case we are re-building itself
 robocopy %ScriptsDir%\Install\ %RunDir%\ /MIR /NJH /NJS /NDL > NUL
 robocopy %OutDir%\C++\Local\Soup\%SOUP_VERSION%\%ConfigHash%\bin\ %RunDir%\Soup\ /MIR /NJH /NJS /NDL > NUL
 
