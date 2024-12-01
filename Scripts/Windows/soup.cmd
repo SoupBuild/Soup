@@ -27,9 +27,6 @@ robocopy %OutDir%\C++\Local\copy\%COPY_VERSION%\%ConfigHash%\ %RunDir%\Soup\Buil
 robocopy %SourceDir%\Tools\Mkdir\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\mkdir\%MKDIR_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy %OutDir%\C++\Local\mkdir\%MKDIR_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\mkdir\%MKDIR_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %GlobalPackagesDir%\Wren\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
-robocopy %GlobalOutDir%\Wren\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\%PKG_OWNER%\Soup.Wren\%SOUP_WREN_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
-
 robocopy %GlobalPackagesDir%\Wren\Soup\Wren\%SOUP_WREN_VERSION%\ %RunDir%\Soup\BuiltIn\Soup\Wren\%SOUP_WREN_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy %GlobalOutDir%\Wren\Soup\Wren\%SOUP_WREN_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\Soup\Wren\%SOUP_WREN_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
