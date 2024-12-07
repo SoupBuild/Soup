@@ -23,20 +23,20 @@ public class PackageManager
 {
 	private static readonly Path StagingFolder = new Path("./.staging/");
 
-	private readonly Uri _apiEndpoint;
+	private readonly Uri apiEndpoint;
 
-	private readonly HttpClient _httpClient;
+	private readonly HttpClient httpClient;
 
-	private readonly IClosureManager _closureManager;
+	private readonly IClosureManager closureManager;
 
 	public PackageManager(
 		Uri apiEndpoint,
 		HttpClient httpClient,
 		IClosureManager closureManager)
 	{
-		_apiEndpoint = apiEndpoint;
-		_httpClient = httpClient;
-		_closureManager = closureManager;
+		this.apiEndpoint = apiEndpoint;
+		this.httpClient = httpClient;
+		this.closureManager = closureManager;
 	}
 
 	/// <summary>
@@ -56,7 +56,7 @@ public class PackageManager
 
 		try
 		{
-			await _closureManager.GenerateAndRestoreRecursiveLocksAsync(
+			await this.closureManager.GenerateAndRestoreRecursiveLocksAsync(
 				workingDirectory,
 				packageStore,
 				lockStore,
@@ -150,7 +150,7 @@ public class PackageManager
 
 		try
 		{
-			await _closureManager.GenerateAndRestoreRecursiveLocksAsync(
+			await this.closureManager.GenerateAndRestoreRecursiveLocksAsync(
 				workingDirectory,
 				packageStore,
 				lockStore,
@@ -209,9 +209,9 @@ public class PackageManager
 
 			// Publish the archive
 			Log.Info("Publish package");
-			var packageClient = new Api.Client.PackagesClient(_httpClient, accessToken)
+			var packageClient = new Api.Client.PackagesClient(this.httpClient, accessToken)
 			{
-				BaseUrl = _apiEndpoint,
+				BaseUrl = this.apiEndpoint,
 			};
 
 			// Check if the package exists
@@ -249,9 +249,9 @@ public class PackageManager
 					createPackageModel);
 			}
 
-			var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient, accessToken)
+			var packageVersionClient = new Api.Client.PackageVersionsClient(this.httpClient, accessToken)
 			{
-				BaseUrl = _apiEndpoint,
+				BaseUrl = this.apiEndpoint,
 			};
 
 			using (var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath))
@@ -306,9 +306,9 @@ public class PackageManager
 		string ownerName,
 		string packageName)
 	{
-		var client = new Api.Client.PackagesClient(_httpClient, null)
+		var client = new Api.Client.PackagesClient(this.httpClient, null)
 		{
-			BaseUrl = _apiEndpoint,
+			BaseUrl = this.apiEndpoint,
 		};
 
 		return await client.GetPackageAsync(languageName, ownerName, packageName);

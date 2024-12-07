@@ -18,14 +18,17 @@ public record FileId(uint Value)
 /// </summary>
 public class FileSystemState
 {
+	private readonly Dictionary<FileId, Path> files;
+	private readonly Dictionary<string, FileId> fileLookup;
+
 	/// <summary>
 	/// Initializes a new instance of the <see cref="FileSystemState"/> class.
 	/// </summary>
 	public FileSystemState()
 	{
 		MaxFileId = new FileId(0);
-		_files = [];
-		_fileLookup = [];
+		this.files = [];
+		this.fileLookup = [];
 	}
 
 	/// <summary>
@@ -36,20 +39,20 @@ public class FileSystemState
 		Dictionary<FileId, Path> files)
 	{
 		MaxFileId = maxFileId;
-		_files = files;
-		_fileLookup = [];
+		this.files = files;
+		this.fileLookup = [];
 
 		// Build up the reverse lookup for new files
-		foreach (var file in _files)
+		foreach (var file in this.files)
 		{
-			_fileLookup.Add(file.Value.ToString(), file.Key);
+			this.fileLookup.Add(file.Value.ToString(), file.Key);
 		}
 	}
 
 	/// <summary>
 	/// Get Files
 	/// </summary>
-	public IReadOnlyDictionary<FileId, Path> Files => _files;
+	public IReadOnlyDictionary<FileId, Path> Files => this.files;
 
 	/// <summary>
 	/// Get the max unique file id
@@ -91,8 +94,8 @@ public class FileSystemState
 			MaxFileId = new FileId(MaxFileId.Value + 1);
 			result = MaxFileId;
 
-			_files.Add(result, file);
-			_fileLookup.Add(file.ToString(), result);
+			this.files.Add(result, file);
+			this.fileLookup.Add(file.ToString(), result);
 		}
 
 		return result;
@@ -103,7 +106,7 @@ public class FileSystemState
 	/// </summary>
 	public bool TryFindFileId(Path file, out FileId fileId)
 	{
-		if (_fileLookup.TryGetValue(file.ToString(), out var value))
+		if (this.fileLookup.TryGetValue(file.ToString(), out var value))
 		{
 			fileId = value;
 			return true;
@@ -120,7 +123,7 @@ public class FileSystemState
 	/// </summary>
 	public Path GetFilePath(FileId fileId)
 	{
-		return _files[fileId];
+		return this.files[fileId];
 	}
 
 	/// <summary>
@@ -136,7 +139,4 @@ public class FileSystemState
 
 		return result;
 	}
-
-	private readonly Dictionary<FileId, Path> _files;
-	private readonly Dictionary<string, FileId> _fileLookup;
 }

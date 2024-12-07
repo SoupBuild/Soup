@@ -11,7 +11,7 @@ namespace Opal;
 /// </summary>
 public class TestTraceListener : TraceListener
 {
-	private readonly List<string> _messages;
+	private readonly List<string> messages;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='TestTraceListener'/> class.
@@ -19,13 +19,13 @@ public class TestTraceListener : TraceListener
 	public TestTraceListener()
 		: base(null, true, false)
 	{
-		_messages = [];
+		this.messages = [];
 	}
 
 	/// <summary>
 	/// Get the messages.
 	/// </summary>
-	public IReadOnlyList<string> Messages => _messages;
+	public IReadOnlyList<string> Messages => this.messages;
 
 	/// <summary>
 	/// Writes a message and newline terminator.
@@ -33,6 +33,6 @@ public class TestTraceListener : TraceListener
 	/// <param name="message">The message.</param>
 	protected override void WriteLine(string message)
 	{
-		_messages.Add(message);
+		this.messages.Add(message);
 	}
 }

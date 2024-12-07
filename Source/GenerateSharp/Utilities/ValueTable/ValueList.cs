@@ -12,45 +12,45 @@ namespace Soup.Build.Utilities;
 [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "Disagree")]
 public class ValueList : IEnumerable, IEnumerable<Value>
 {
-	private readonly List<Value> _impl;
+	private readonly List<Value> impl;
 
 	public ValueList()
 	{
-		_impl = [];
+		this.impl = [];
 	}
 
 	public ValueList(IEnumerable<Value> collection)
 	{
-		_impl = new List<Value>(collection);
+		this.impl = new List<Value>(collection);
 	}
 
-	public Value this[int index] => _impl[index];
+	public Value this[int index] => this.impl[index];
 
-	public int Count => _impl.Count;
+	public int Count => this.impl.Count;
 
 	public void Add(Value item)
 	{
-		_impl.Add(item);
+		this.impl.Add(item);
 	}
 
 	public void Clear()
 	{
-		_impl.Clear();
+		this.impl.Clear();
 	}
 
 	public ValueList Clone()
 	{
-		return new ValueList(_impl);
+		return new ValueList(this.impl);
 	}
 
 	public IEnumerator<Value> GetEnumerator()
 	{
-		return _impl.GetEnumerator();
+		return this.impl.GetEnumerator();
 	}
 
 	IEnumerator IEnumerable.GetEnumerator()
 	{
-		return _impl.GetEnumerator();
+		return this.impl.GetEnumerator();
 	}
 
 	public override string ToString()

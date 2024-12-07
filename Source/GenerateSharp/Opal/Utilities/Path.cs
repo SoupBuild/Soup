@@ -33,18 +33,18 @@ public class Path : IEquatable<Path>
 
 	private const string RelativeParentDirectory = "..";
 
-	private string _value;
-	private int _rootEndLocation;
-	private int _fileNameStartLocation;
+	private string value;
+	private int rootEndLocation;
+	private int fileNameStartLocation;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Path"/> class.
 	/// </summary>
 	public Path()
 	{
-		_value = "./";
-		_rootEndLocation = -1;
-		_fileNameStartLocation = 2;
+		this.value = "./";
+		this.rootEndLocation = -1;
+		this.fileNameStartLocation = 2;
 	}
 
 	/// <summary>
@@ -53,24 +53,24 @@ public class Path : IEquatable<Path>
 	/// <param name="value">The value.</param>
 	public Path(string value)
 	{
-		_value = value;
+		this.value = value;
 		LoadDirect();
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the path is empty.
 	/// </summary>
-	public bool IsEmpty => _value == "./";
+	public bool IsEmpty => this.value == "./";
 
 	/// <summary>
 	/// Gets a value indicating whether the path has a root.
 	/// </summary>
-	public bool HasRoot => _rootEndLocation >= 0;
+	public bool HasRoot => this.rootEndLocation >= 0;
 
 	/// <summary>
 	/// Gets a value indicating whether the path has a file name.
 	/// </summary>
-	public bool HasFileName => _fileNameStartLocation < _value.Length;
+	public bool HasFileName => this.fileNameStartLocation < this.value.Length;
 
 	/// <summary>
 	/// Gets the file name.
@@ -83,7 +83,7 @@ public class Path : IEquatable<Path>
 				throw new InvalidOperationException("No filename");
 
 			// Use the start location to return the end of the value that is the filename
-			return _value[_fileNameStartLocation..];
+			return this.value[this.fileNameStartLocation..];
 		}
 	}
 
@@ -140,9 +140,9 @@ public class Path : IEquatable<Path>
 	{
 		get
 		{
-			if (_rootEndLocation < 0)
+			if (this.rootEndLocation < 0)
 				throw new InvalidOperationException("Cannot access root on path that has none");
-			return _value[.._rootEndLocation];
+			return this.value[..this.rootEndLocation];
 		}
 	}
 
@@ -168,7 +168,7 @@ public class Path : IEquatable<Path>
 	/// </summary>
 	public int CompareTo(Path other)
 	{
-		return string.Compare(_value, other._value, StringComparison.Ordinal);
+		return string.Compare(this.value, other.value, StringComparison.Ordinal);
 	}
 
 	public IList<string> DecomposeDirectories()
@@ -221,7 +221,7 @@ public class Path : IEquatable<Path>
 		var result = new Path()
 		{
 			// Take the root from the left hand side
-			_rootEndLocation = _rootEndLocation
+			rootEndLocation = this.rootEndLocation
 		};
 
 		// If there is a filename then return the directory
@@ -229,8 +229,8 @@ public class Path : IEquatable<Path>
 		if (HasFileName)
 		{
 			// Pass along the path minus the filename
-			result._value = _value[.._fileNameStartLocation];
-			result._fileNameStartLocation = result._value.Length;
+			result.value = this.value[..this.fileNameStartLocation];
+			result.fileNameStartLocation = result.value.Length;
 		}
 		else
 		{
@@ -364,7 +364,7 @@ public class Path : IEquatable<Path>
 	{
 		if (other is null)
 			return false;
-		return _value == other._value;
+		return this.value == other.value;
 	}
 
 	public override bool Equals(object? obj)
@@ -374,7 +374,7 @@ public class Path : IEquatable<Path>
 
 	public override int GetHashCode()
 	{
-		return _value.GetHashCode(StringComparison.Ordinal);
+		return this.value.GetHashCode(StringComparison.Ordinal);
 	}
 
 	/// <summary>
@@ -382,13 +382,13 @@ public class Path : IEquatable<Path>
 	/// </summary>
 	public override string ToString()
 	{
-		return _value;
+		return this.value;
 	}
 
 	public string ToAlternateString()
 	{
 		// Replace all normal separators with the windows version
-		var result = _value.Replace(DirectorySeparator, AlternateDirectorySeparator);
+		var result = this.value.Replace(DirectorySeparator, AlternateDirectorySeparator);
 		return result;
 	}
 
@@ -489,26 +489,26 @@ public class Path : IEquatable<Path>
 	/// </summary>
 	private void LoadDirect()
 	{
-		var firstAlternateDirectory = _value.IndexOf(AlternateDirectorySeparator, 0);
+		var firstAlternateDirectory = this.value.IndexOf(AlternateDirectorySeparator, 0);
 		if (firstAlternateDirectory != -1)
 			throw new ArgumentException("Debug check for windows ridiculous directory separator");
 
-		var firstSeparator = _value.IndexOf(DirectorySeparator, 0);
+		var firstSeparator = this.value.IndexOf(DirectorySeparator, 0);
 		if (firstSeparator == -1)
 		{
 			throw new ArgumentException("A path must have a directory separator");
 		}
 
-		var root = _value[..firstSeparator];
+		var root = this.value[..firstSeparator];
 		if (IsRoot(root))
 		{
 			// Absolute path
-			_rootEndLocation = firstSeparator;
+			this.rootEndLocation = firstSeparator;
 		}
 		else if (root is RelativeDirectory or RelativeParentDirectory)
 		{
 			// Relative path
-			_rootEndLocation = -1;
+			this.rootEndLocation = -1;
 		}
 		else
 		{
@@ -516,14 +516,14 @@ public class Path : IEquatable<Path>
 		}
 
 		// Check if has file name
-		var lastSeparator = _value.LastIndexOf(DirectorySeparator);
-		if (lastSeparator != -1 && lastSeparator != _value.Length - 1)
+		var lastSeparator = this.value.LastIndexOf(DirectorySeparator);
+		if (lastSeparator != -1 && lastSeparator != this.value.Length - 1)
 		{
-			_fileNameStartLocation = lastSeparator + 1;
+			this.fileNameStartLocation = lastSeparator + 1;
 		}
 		else
 		{
-			_fileNameStartLocation = _value.Length;
+			this.fileNameStartLocation = this.value.Length;
 		}
 	}
 
@@ -659,22 +659,22 @@ public class Path : IEquatable<Path>
 		}
 
 		// Store the persistent state
-		_value = stringBuilder.ToString();
+		this.value = stringBuilder.ToString();
 
-		_rootEndLocation = root is not null ? root.Length : -1;
-		_fileNameStartLocation = fileName is not null ? _value.Length - fileName.Length : _value.Length;
+		this.rootEndLocation = root is not null ? root.Length : -1;
+		this.fileNameStartLocation = fileName is not null ? this.value.Length - fileName.Length : this.value.Length;
 
 	}
 
 	private string GetDirectories()
 	{
-		if (_rootEndLocation >= 0)
+		if (this.rootEndLocation >= 0)
 		{
-			return _value[_rootEndLocation.._fileNameStartLocation];
+			return this.value[this.rootEndLocation..this.fileNameStartLocation];
 		}
 		else
 		{
-			return _value[.._fileNameStartLocation];
+			return this.value[..this.fileNameStartLocation];
 		}
 	}
 }

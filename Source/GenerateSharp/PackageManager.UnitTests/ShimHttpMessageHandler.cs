@@ -14,16 +14,16 @@ namespace Soup.Build.PackageManager.UnitTests;
 
 public class ShimHttpMessageHandler : HttpMessageHandler
 {
-	private readonly IHttpMessageHandler _handler;
+	private readonly IHttpMessageHandler handler;
 
 	public ShimHttpMessageHandler(IHttpMessageHandler handler)
 	{
-		_handler = handler;
+		this.handler = handler;
 	}
 
 	public virtual HttpResponseMessage Send(HttpMethod method, Uri requestUri, string headers, string content)
 	{
-		return _handler.Send(method, requestUri, headers, content);
+		return this.handler.Send(method, requestUri, headers, content);
 	}
 
 	protected override async Task<HttpResponseMessage> SendAsync(
@@ -40,6 +40,6 @@ public class ShimHttpMessageHandler : HttpMessageHandler
 
 		var headers = string.Join(", ", request.Headers.Select(value => $"{{{value.Key}: [{string.Join(", ", value.Value)}]}}"));
 
-		return _handler.SendAsync(request.Method, request.RequestUri, headers, content);
+		return this.handler.SendAsync(request.Method, request.RequestUri, headers, content);
 	}
 }

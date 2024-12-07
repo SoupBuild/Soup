@@ -26,34 +26,34 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		public required List<TaskDetails> Children { get; init; }
 	}
 
-	private GraphNodeViewModel? _selectedNode;
-	private TaskDetailsViewModel? _selectedTask;
-	private uint _uniqueId;
-	private IList<GraphNodeViewModel>? _graph;
-	private readonly Dictionary<uint, TaskDetailsViewModel> _taskDetailsLookup = [];
+	private GraphNodeViewModel? selectedNode;
+	private TaskDetailsViewModel? selectedTask;
+	private uint uniqueId;
+	private IList<GraphNodeViewModel>? graph;
+	private readonly Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = [];
 
 	public IList<GraphNodeViewModel>? Graph
 	{
-		get => _graph;
-		private set => this.RaiseAndSetIfChanged(ref _graph, value);
+		get => this.graph;
+		private set => this.RaiseAndSetIfChanged(ref this.graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
 	{
-		get => _selectedNode;
+		get => this.selectedNode;
 		set
 		{
-			if (CheckRaiseAndSetIfChanged(ref _selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref this.selectedNode, value))
 			{
-				SelectedTask = _selectedNode is not null ? _taskDetailsLookup[_selectedNode.Id] : null;
+				SelectedTask = this.selectedNode is not null ? this.taskDetailsLookup[this.selectedNode.Id] : null;
 			}
 		}
 	}
 
 	public TaskDetailsViewModel? SelectedTask
 	{
-		get => _selectedTask;
-		set => this.RaiseAndSetIfChanged(ref _selectedTask, value);
+		get => this.selectedTask;
+		set => this.RaiseAndSetIfChanged(ref this.selectedTask, value);
 	}
 
 	public async Task LoadProjectAsync(Path? packageFolder, string? owner)
@@ -95,8 +95,8 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 	private List<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)
 	{
-		_taskDetailsLookup.Clear();
-		_uniqueId = 1;
+		this.taskDetailsLookup.Clear();
+		this.uniqueId = 1;
 
 		if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != ValueType.List)
 		{
@@ -145,7 +145,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 				{
 					Name = taskName,
 					TaskInfo = taskInfo,
-					Id = _uniqueId++,
+					Id = this.uniqueId++,
 					Children = [],
 				});
 		}
@@ -197,7 +197,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 			result.Add(node);
 
-			_taskDetailsLookup.Add(
+			this.taskDetailsLookup.Add(
 				task.Id,
 				new TaskDetailsViewModel(task.TaskInfo));
 		}

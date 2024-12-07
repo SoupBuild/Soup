@@ -17,34 +17,34 @@ namespace Soup.View.ViewModels;
 
 public class OperationGraphViewModel : ContentPaneViewModel
 {
-	private readonly FileSystemState _fileSystemState = new FileSystemState();
-	private GraphNodeViewModel? _selectedNode;
-	private OperationDetailsViewModel? _selectedOperation;
-	private IList<GraphNodeViewModel>? _graph;
-	private readonly Dictionary<uint, OperationDetailsViewModel> _operationDetailsLookup = [];
+	private readonly FileSystemState fileSystemState = new FileSystemState();
+	private GraphNodeViewModel? selectedNode;
+	private OperationDetailsViewModel? selectedOperation;
+	private IList<GraphNodeViewModel>? graph;
+	private readonly Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = [];
 
 	public IList<GraphNodeViewModel>? Graph
 	{
-		get => _graph;
-		private set => this.RaiseAndSetIfChanged(ref _graph, value);
+		get => this.graph;
+		private set => this.RaiseAndSetIfChanged(ref this.graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
 	{
-		get => _selectedNode;
+		get => this.selectedNode;
 		set
 		{
-			if (CheckRaiseAndSetIfChanged(ref _selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref this.selectedNode, value))
 			{
-				SelectedOperation = _selectedNode is not null ? _operationDetailsLookup[_selectedNode.Id] : null;
+				SelectedOperation = this.selectedNode is not null ? this.operationDetailsLookup[this.selectedNode.Id] : null;
 			}
 		}
 	}
 
 	public OperationDetailsViewModel? SelectedOperation
 	{
-		get => _selectedOperation;
-		set => this.RaiseAndSetIfChanged(ref _selectedOperation, value);
+		get => this.selectedOperation;
+		set => this.RaiseAndSetIfChanged(ref this.selectedOperation, value);
 	}
 
 	public async Task LoadProjectAsync(Path? packageFolder)
@@ -64,7 +64,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 					var soupTargetDirectory = targetPath + new Path("./.soup/");
 
 					var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
-					if (!OperationGraphManager.TryLoadState(evaluateGraphFile, _fileSystemState, out var evaluateGraph))
+					if (!OperationGraphManager.TryLoadState(evaluateGraphFile, this.fileSystemState, out var evaluateGraph))
 					{
 						NotifyError($"Failed to load Operation Graph: {evaluateGraphFile}");
 						return null;
@@ -73,7 +73,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 					// Check for the optional results
 					var evaluateResultsFile = soupTargetDirectory + BuildConstants.EvaluateResultsFileName;
 					OperationResults? operationResults = null;
-					if (OperationResultsManager.TryLoadState(evaluateResultsFile, _fileSystemState, out var loadOperationResults))
+					if (OperationResultsManager.TryLoadState(evaluateResultsFile, this.fileSystemState, out var loadOperationResults))
 					{
 						operationResults = loadOperationResults;
 					}
@@ -97,7 +97,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 		OperationGraph evaluateGraph,
 		OperationResults? operationResults)
 	{
-		_operationDetailsLookup.Clear();
+		this.operationDetailsLookup.Clear();
 
 		var graph = evaluateGraph.Operations
 			.Select(value => (value.Value, value.Value.Children.Select(value => evaluateGraph.Operations[value])));
@@ -141,9 +141,9 @@ public class OperationGraphViewModel : ContentPaneViewModel
 				}
 			}
 
-			_operationDetailsLookup.Add(
+			this.operationDetailsLookup.Add(
 				operation.Id.Value,
-				new OperationDetailsViewModel(_fileSystemState, operation, operationResult));
+				new OperationDetailsViewModel(this.fileSystemState, operation, operationResult));
 		}
 
 		return result;
