@@ -21,18 +21,18 @@ public class ValueTableItemViewModel : ViewModelBase
 	public ValueTableItemType Type { get; set; }
 	public ObservableCollection<ValueTableItemViewModel> Children { get; init; } = [];
 
-	private bool m_isExpanded;
+	private bool isExpanded;
 	public bool IsExpanded
 	{
-		get => m_isExpanded;
-		set => this.RaiseAndSetIfChanged(ref m_isExpanded, value);
+		get => this.isExpanded;
+		set => this.RaiseAndSetIfChanged(ref this.isExpanded, value);
 	}
 
-	private bool m_isSelected;
+	private bool isSelected;
 	public bool IsSelected
 	{
-		get => m_isSelected;
-		set => this.RaiseAndSetIfChanged(ref m_isSelected, value);
+		get => this.isSelected;
+		set => this.RaiseAndSetIfChanged(ref this.isSelected, value);
 	}
 
 	public ValueTableItemViewModel(string title)

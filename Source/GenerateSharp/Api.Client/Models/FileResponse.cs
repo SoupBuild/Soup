@@ -10,8 +10,8 @@ namespace Soup.Build.Api.Client;
 
 public sealed class FileResponse : IDisposable
 {
-	private readonly IDisposable? _client;
-	private readonly IDisposable _response;
+	private readonly IDisposable? client;
+	private readonly IDisposable response;
 
 	public int StatusCode { get; private set; }
 
@@ -31,14 +31,14 @@ public sealed class FileResponse : IDisposable
 		StatusCode = statusCode;
 		Headers = headers;
 		Stream = stream;
-		_client = client;
-		_response = response;
+		this.client = client;
+		this.response = response;
 	}
 
 	public void Dispose()
 	{
 		Stream.Dispose();
-		_response?.Dispose();
-		_client?.Dispose();
+		this.response?.Dispose();
+		this.client?.Dispose();
 	}
 }

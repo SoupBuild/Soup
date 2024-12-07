@@ -39,13 +39,13 @@ public class MockFile
 
 public class MockOutputFile : IOutputFile
 {
-	private readonly MockFile _file;
-	private bool _isDisposed;
+	private readonly MockFile file;
+	private bool isDisposed;
 
 	public MockOutputFile(MockFile file)
 	{
-		_isDisposed = false;
-		_file = file;
+		this.isDisposed = false;
+		this.file = file;
 	}
 
 	/// <summary>
@@ -53,7 +53,7 @@ public class MockOutputFile : IOutputFile
 	/// </summary>
 	public Stream GetOutStream()
 	{
-		return _file.Content;
+		return this.file.Content;
 	}
 
 	public void Dispose()
@@ -65,22 +65,22 @@ public class MockOutputFile : IOutputFile
 
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!_isDisposed)
+		if (!this.isDisposed)
 		{
-			_isDisposed = true;
+			this.isDisposed = true;
 		}
 	}
 }
 
 public class MockInputFile : IInputFile
 {
-	private readonly MockFile _file;
-	private bool _isDisposed;
+	private readonly MockFile file;
+	private bool isDisposed;
 
 	public MockInputFile(MockFile file)
 	{
-		_isDisposed = false;
-		_file = file;
+		this.isDisposed = false;
+		this.file = file;
 	}
 
 	/// <summary>
@@ -88,8 +88,8 @@ public class MockInputFile : IInputFile
 	/// </summary>
 	public Stream GetInStream()
 	{
-		_ = _file.Content.Seek(0, SeekOrigin.Begin);
-		return _file.Content;
+		_ = this.file.Content.Seek(0, SeekOrigin.Begin);
+		return this.file.Content;
 	}
 
 	public void Dispose()
@@ -101,9 +101,9 @@ public class MockInputFile : IInputFile
 
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!_isDisposed)
+		if (!this.isDisposed)
 		{
-			_isDisposed = true;
+			this.isDisposed = true;
 		}
 	}
 }

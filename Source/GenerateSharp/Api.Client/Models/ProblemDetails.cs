@@ -29,12 +29,12 @@ public class ProblemDetails
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 	public string? Instance { get; set; }
 
-	private IDictionary<string, object>? _additionalProperties;
+	private IDictionary<string, object>? additionalProperties;
 
 	[JsonExtensionData]
 	public IDictionary<string, object> AdditionalProperties
 	{
-		get => _additionalProperties ??= new Dictionary<string, object>();
-		init => _additionalProperties = value;
+		get => this.additionalProperties ??= new Dictionary<string, object>();
+		init => this.additionalProperties = value;
 	}
 }

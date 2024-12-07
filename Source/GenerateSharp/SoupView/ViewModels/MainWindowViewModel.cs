@@ -11,10 +11,10 @@ namespace Soup.View.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-	private Path? _recipeFile;
-	private readonly DependencyGraphViewModel _dependencyGraph;
-	private readonly TaskGraphViewModel _taskGraph;
-	private readonly OperationGraphViewModel _operationGraph;
+	private Path? recipeFile;
+	private readonly DependencyGraphViewModel dependencyGraph;
+	private readonly TaskGraphViewModel taskGraph;
+	private readonly OperationGraphViewModel operationGraph;
 
 	public IStorageProvider? StorageProvider { get; set; }
 
@@ -32,14 +32,14 @@ public class MainWindowViewModel : ViewModelBase
 
 	public Path? RecipeFile
 	{
-		get => _recipeFile;
+		get => this.recipeFile;
 		private set
 		{
-			if (CheckRaiseAndSetIfChanged(ref _recipeFile, value))
+			if (CheckRaiseAndSetIfChanged(ref this.recipeFile, value))
 			{
-				if (_recipeFile is not null)
+				if (this.recipeFile is not null)
 				{
-					_ = _dependencyGraph.LoadProjectAsync(_recipeFile);
+					_ = this.dependencyGraph.LoadProjectAsync(this.recipeFile);
 				}
 			}
 		}
@@ -47,10 +47,10 @@ public class MainWindowViewModel : ViewModelBase
 
 	public ViewModelBase Content
 	{
-		get => content;
+		get => this.content;
 		private set
 		{
-			if (CheckRaiseAndSetIfChanged(ref content, value))
+			if (CheckRaiseAndSetIfChanged(ref this.content, value))
 			{
 				this.RaisePropertyChanged(nameof(IsRootSelected));
 				this.RaisePropertyChanged(nameof(IsTasksSelected));
@@ -68,13 +68,13 @@ public class MainWindowViewModel : ViewModelBase
 		SelectTasksCommand = ReactiveCommand.Create(OnSelectTasks);
 		SelectOperationsCommand = ReactiveCommand.Create(OnSelectOperations);
 
-		_dependencyGraph = new DependencyGraphViewModel();
-		_taskGraph = new TaskGraphViewModel();
-		_operationGraph = new OperationGraphViewModel();
+		this.dependencyGraph = new DependencyGraphViewModel();
+		this.taskGraph = new TaskGraphViewModel();
+		this.operationGraph = new OperationGraphViewModel();
 
-		_dependencyGraph.PropertyChanged += DependencyGraph_PropertyChanged;
+		this.dependencyGraph.PropertyChanged += DependencyGraph_PropertyChanged;
 
-		content = _dependencyGraph;
+		this.content = this.dependencyGraph;
 
 		if (packagePath is not null)
 		{
@@ -84,22 +84,22 @@ public class MainWindowViewModel : ViewModelBase
 
 	private void DependencyGraph_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(_dependencyGraph.SelectedProject))
+		if (e.PropertyName == nameof(this.dependencyGraph.SelectedProject))
 		{
-			_ = _taskGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path, _dependencyGraph.SelectedProject?.Owner);
-			_ = _operationGraph.LoadProjectAsync(_dependencyGraph.SelectedProject?.Path);
+			_ = this.taskGraph.LoadProjectAsync(this.dependencyGraph.SelectedProject?.Path, this.dependencyGraph.SelectedProject?.Owner);
+			_ = this.operationGraph.LoadProjectAsync(this.dependencyGraph.SelectedProject?.Path);
 
 			this.RaisePropertyChanged(nameof(SelectedPackageName));
 		}
 	}
 
-	public string SelectedPackageName => _dependencyGraph.SelectedProject?.Name ?? "[Package]";
+	public string SelectedPackageName => this.dependencyGraph.SelectedProject?.Name ?? "[Package]";
 
-	public bool IsRootSelected => ReferenceEquals(content, _dependencyGraph);
+	public bool IsRootSelected => ReferenceEquals(this.content, this.dependencyGraph);
 
-	public bool IsTasksSelected => ReferenceEquals(content, _taskGraph);
+	public bool IsTasksSelected => ReferenceEquals(this.content, this.taskGraph);
 
-	public bool IsOperationsSelected => ReferenceEquals(content, _operationGraph);
+	public bool IsOperationsSelected => ReferenceEquals(this.content, this.operationGraph);
 
 	private async Task OnOpenAsync()
 	{
@@ -138,16 +138,16 @@ public class MainWindowViewModel : ViewModelBase
 
 	private void OnSelectRoot()
 	{
-		Content = _dependencyGraph;
+		Content = this.dependencyGraph;
 	}
 
 	private void OnSelectTasks()
 	{
-		Content = _taskGraph;
+		Content = this.taskGraph;
 	}
 
 	private void OnSelectOperations()
 	{
-		Content = _operationGraph;
+		Content = this.operationGraph;
 	}
 }

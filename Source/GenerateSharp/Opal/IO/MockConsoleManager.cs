@@ -12,21 +12,21 @@ namespace Opal.IO;
 /// </summary>
 public class MockConsoleManager : IConsoleManager
 {
-	private readonly List<string> _requests;
+	private readonly List<string> requests;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockConsoleManager'/> class.
 	/// </summary>
 	public MockConsoleManager()
 	{
-		_requests = [];
-		MockInputStream = new MockConsoleInput(_requests);
+		this.requests = [];
+		MockInputStream = new MockConsoleInput(this.requests);
 	}
 
 	/// <summary>
 	/// Get the requests.
 	/// </summary>
-	public IReadOnlyList<string> Requests => _requests;
+	public IReadOnlyList<string> Requests => this.requests;
 
 	/// <summary>
 	/// Get the mock input stream.
@@ -38,7 +38,7 @@ public class MockConsoleManager : IConsoleManager
 	/// </summary>
 	public IConsoleInput GetStandardInput()
 	{
-		_requests.Add("GetStandardInput");
+		this.requests.Add("GetStandardInput");
 
 		return MockInputStream;
 	}

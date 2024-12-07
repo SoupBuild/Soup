@@ -11,11 +11,11 @@ namespace Soup.Build.Discover.UnitTests;
 
 public class DictionaryOfListsComparer<T> : IEqualityComparer<IDictionary<string, IList<T>>>
 {
-	private readonly IEqualityComparer<T> _valueComparer;
+	private readonly IEqualityComparer<T> valueComparer;
 
 	public DictionaryOfListsComparer(IEqualityComparer<T>? valueComparer = null)
 	{
-		_valueComparer = valueComparer ?? EqualityComparer<T>.Default;
+		this.valueComparer = valueComparer ?? EqualityComparer<T>.Default;
 	}
 
 	public bool Equals(IDictionary<string, IList<T>>? x, IDictionary<string, IList<T>>? y)
@@ -34,7 +34,7 @@ public class DictionaryOfListsComparer<T> : IEqualityComparer<IDictionary<string
 			var xValue = pair.Value;
 			var yValue = y[pair.Key];
 
-			if (!xValue.SequenceEqual(yValue, _valueComparer))
+			if (!xValue.SequenceEqual(yValue, this.valueComparer))
 				return false;
 		}
 

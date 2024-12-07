@@ -12,7 +12,7 @@ namespace Opal;
 /// </summary>
 public abstract class TraceListener
 {
-	private readonly IEventFilter? _filter;
+	private readonly IEventFilter? filter;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='TraceListener'/> class.
@@ -34,7 +34,7 @@ public abstract class TraceListener
 		bool showEventType,
 		bool showEventId)
 	{
-		_filter = filter;
+		this.filter = filter;
 		ShowEventType = showEventType;
 		ShowEventId = showEventId;
 	}
@@ -44,7 +44,7 @@ public abstract class TraceListener
 	/// </summary>
 	public bool HasFilter()
 	{
-		return _filter != null;
+		return this.filter != null;
 	}
 
 	/// <summary>
@@ -68,7 +68,7 @@ public abstract class TraceListener
 		int id,
 		string message)
 	{
-		if (_filter != null && !_filter.ShouldTrace(eventType))
+		if (this.filter != null && !this.filter.ShouldTrace(eventType))
 		{
 			return;
 		}

@@ -14,24 +14,24 @@ namespace Opal.System;
 /// </summary>
 public class MockFileSystem : IFileSystem
 {
-	private readonly List<string> _requests;
-	private readonly Dictionary<Path, MockFile> _files;
-	private readonly Dictionary<Path, IReadOnlyList<DirectoryEntry>> _directoryChildren;
+	private readonly List<string> requests;
+	private readonly Dictionary<Path, MockFile> files;
+	private readonly Dictionary<Path, IReadOnlyList<DirectoryEntry>> directoryChildren;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockFileSystem'/> class.
 	/// </summary>
 	public MockFileSystem()
 	{
-		_requests = [];
-		_files = [];
-		_directoryChildren = [];
+		this.requests = [];
+		this.files = [];
+		this.directoryChildren = [];
 	}
 
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> Requests => _requests;
+	public IReadOnlyList<string> Requests => this.requests;
 
 	/// <summary>
 	/// Create a test file.
@@ -40,7 +40,7 @@ public class MockFileSystem : IFileSystem
 	/// <param name="file">The file.</param>
 	public void CreateMockFile(Path path, MockFile file)
 	{
-		_files.Add(path, file);
+		this.files.Add(path, file);
 	}
 
 	/// <summary>
@@ -49,7 +49,7 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public MockFile GetMockFile(Path path)
 	{
-		if (_files.TryGetValue(path, out var file))
+		if (this.files.TryGetValue(path, out var file))
 		{
 			return file;
 		}
@@ -61,7 +61,7 @@ public class MockFileSystem : IFileSystem
 
 	public void RegisterChildren(Path path, IReadOnlyList<DirectoryEntry> response)
 	{
-		_directoryChildren.Add(path, response);
+		this.directoryChildren.Add(path, response);
 	}
 
 	/// <summary>
@@ -69,7 +69,7 @@ public class MockFileSystem : IFileSystem
 	/// </summary>
 	public Path GetUserProfileDirectory()
 	{
-		_requests.Add("GetUserProfileDirectory");
+		this.requests.Add("GetUserProfileDirectory");
 
 		return new Path("C:/Users/Me/");
 	}
@@ -79,7 +79,7 @@ public class MockFileSystem : IFileSystem
 	/// </summary>
 	public Path GetCurrentDirectory()
 	{
-		_requests.Add("GetCurrentDirectory");
+		this.requests.Add("GetCurrentDirectory");
 
 		return new Path("C:/Current/");
 	}
@@ -90,9 +90,9 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public bool Exists(Path path)
 	{
-		_requests.Add($"Exists: {path}");
+		this.requests.Add($"Exists: {path}");
 
-		return _files.ContainsKey(path) || _directoryChildren.ContainsKey(path);
+		return this.files.ContainsKey(path) || this.directoryChildren.ContainsKey(path);
 	}
 
 	/// <summary>
@@ -101,9 +101,9 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public int GetLastWriteTime(Path path)
 	{
-		_requests.Add($"GetLastWriteTime: {path}");
+		this.requests.Add($"GetLastWriteTime: {path}");
 
-		if (_files.TryGetValue(path, out var file))
+		if (this.files.TryGetValue(path, out var file))
 		{
 			return file.LastWriteTime;
 		}
@@ -120,7 +120,7 @@ public class MockFileSystem : IFileSystem
 	/// <param name="value">The value.</param>
 	public void SetLastWriteTime(Path path, int value)
 	{
-		_requests.Add($"SetLastWriteTime: {path}");
+		this.requests.Add($"SetLastWriteTime: {path}");
 	}
 
 	/// <summary>
@@ -129,9 +129,9 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public IInputFile OpenRead(Path path)
 	{
-		_requests.Add($"OpenRead: {path}");
+		this.requests.Add($"OpenRead: {path}");
 
-		if (_files.TryGetValue(path, out var file))
+		if (this.files.TryGetValue(path, out var file))
 		{
 			return new MockInputFile(file);
 		}
@@ -150,14 +150,14 @@ public class MockFileSystem : IFileSystem
 	{
 		if (truncate)
 		{
-			_requests.Add($"OpenWriteTruncate: {path}");
+			this.requests.Add($"OpenWriteTruncate: {path}");
 		}
 		else
 		{
-			_requests.Add($"OpenWrite: {path}");
+			this.requests.Add($"OpenWrite: {path}");
 		}
 
-		if (_files.TryGetValue(path, out var file))
+		if (this.files.TryGetValue(path, out var file))
 		{
 			// Reset the existing content offset and return it.
 			var content = file.Content;
@@ -168,7 +168,7 @@ public class MockFileSystem : IFileSystem
 		{
 			// Create the file if it does not exist
 			var insert = new MockFile();
-			_files.Add(path, insert);
+			this.files.Add(path, insert);
 			return new MockOutputFile(insert);
 		}
 	}
@@ -180,7 +180,7 @@ public class MockFileSystem : IFileSystem
 	/// <param name="destination">The destination.</param>
 	public void Rename(Path source, Path destination)
 	{
-		_requests.Add($"Rename: [{source}] -> [{destination}]");
+		this.requests.Add($"Rename: [{source}] -> [{destination}]");
 
 		// Create a fake destination directory
 		RegisterChildren(destination, []);
@@ -193,7 +193,7 @@ public class MockFileSystem : IFileSystem
 	/// <param name="destination">The destination.</param>
 	public void CopyFile2(Path source, Path destination)
 	{
-		_requests.Add($"CopyFile: [{source}] -> [{destination}]");
+		this.requests.Add($"CopyFile: [{source}] -> [{destination}]");
 	}
 
 	/// <summary>
@@ -202,7 +202,7 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public void CreateDirectory2(Path path)
 	{
-		_requests.Add($"CreateDirectory: {path}");
+		this.requests.Add($"CreateDirectory: {path}");
 	}
 
 	/// <summary>
@@ -211,9 +211,9 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public IReadOnlyList<DirectoryEntry> GetChildren(Path path)
 	{
-		_requests.Add($"GetChildren: {path}");
+		this.requests.Add($"GetChildren: {path}");
 
-		if (_directoryChildren.TryGetValue(path, out var children))
+		if (this.directoryChildren.TryGetValue(path, out var children))
 		{
 			// Reset the existing content offset and return it.
 			var result = children.ToList();
@@ -232,9 +232,9 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public IReadOnlyList<DirectoryEntry> GetChildDirectories(Path path)
 	{
-		_requests.Add($"GetChildDirectories: {path}");
+		this.requests.Add($"GetChildDirectories: {path}");
 
-		if (_directoryChildren.TryGetValue(path, out var children))
+		if (this.directoryChildren.TryGetValue(path, out var children))
 		{
 			// Reset the existing content offset and return it.
 			var result = children
@@ -255,9 +255,9 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public IReadOnlyList<DirectoryEntry> GetChildFiles(Path path)
 	{
-		_requests.Add($"GetChildFiles: {path}");
+		this.requests.Add($"GetChildFiles: {path}");
 
-		if (_directoryChildren.TryGetValue(path, out var children))
+		if (this.directoryChildren.TryGetValue(path, out var children))
 		{
 			// Reset the existing content offset and return it.
 			var result = children
@@ -280,9 +280,9 @@ public class MockFileSystem : IFileSystem
 	public void DeleteDirectory(Path path, bool recursive)
 	{
 		if (recursive)
-			_requests.Add($"DeleteDirectoryRecursive: {path}");
+			this.requests.Add($"DeleteDirectoryRecursive: {path}");
 		else
-			_requests.Add($"DeleteDirectory: {path}");
+			this.requests.Add($"DeleteDirectory: {path}");
 	}
 
 	/// <summary>
@@ -291,6 +291,6 @@ public class MockFileSystem : IFileSystem
 	/// <param name="path">The path.</param>
 	public void DeleteFile(Path path)
 	{
-		_requests.Add($"DeleteFile: {path}");
+		this.requests.Add($"DeleteFile: {path}");
 	}
 }

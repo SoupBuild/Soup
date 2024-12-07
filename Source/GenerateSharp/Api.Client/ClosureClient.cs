@@ -19,13 +19,13 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class ClosureClient
 {
-	private readonly HttpClient _httpClient;
-	private readonly string? _bearerToken;
+	private readonly HttpClient httpClient;
+	private readonly string? bearerToken;
 
 	public ClosureClient(HttpClient httpClient, string? bearerToken)
 	{
-		_httpClient = httpClient;
-		_bearerToken = bearerToken;
+		this.httpClient = httpClient;
+		this.bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -53,7 +53,7 @@ public class ClosureClient
 		var urlBuilder_ = new StringBuilder();
 		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/closure/generate");
 
-		var client = _httpClient;
+		var client = this.httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		using var jsonContent = new MemoryStream();
@@ -120,9 +120,9 @@ public class ClosureClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(_bearerToken))
+		if (!string.IsNullOrEmpty(this.bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
 		}
 
 		return Task.FromResult(request);

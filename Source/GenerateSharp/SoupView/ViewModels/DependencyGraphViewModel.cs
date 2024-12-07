@@ -22,26 +22,26 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 
 	public IList<GraphNodeViewModel>? Graph
 	{
-		get => graph;
-		private set => this.RaiseAndSetIfChanged(ref graph, value);
+		get => this.graph;
+		private set => this.RaiseAndSetIfChanged(ref this.graph, value);
 	}
 
 	public GraphNodeViewModel? SelectedNode
 	{
-		get => selectedNode;
+		get => this.selectedNode;
 		set
 		{
-			if (CheckRaiseAndSetIfChanged(ref selectedNode, value))
+			if (CheckRaiseAndSetIfChanged(ref this.selectedNode, value))
 			{
-				SelectedProject = selectedNode is not null ? projectDetailsLookup[selectedNode.Id] : null;
+				SelectedProject = this.selectedNode is not null ? this.projectDetailsLookup[this.selectedNode.Id] : null;
 			}
 		}
 	}
 
 	public ProjectDetailsViewModel? SelectedProject
 	{
-		get => selectedProject;
-		set => this.RaiseAndSetIfChanged(ref selectedProject, value);
+		get => this.selectedProject;
+		set => this.RaiseAndSetIfChanged(ref this.selectedProject, value);
 	}
 
 	public DependencyGraphViewModel()
@@ -52,7 +52,7 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 	{
 		var activeGraph = await Task.Run(() =>
 		{
-			projectDetailsLookup.Clear();
+			this.projectDetailsLookup.Clear();
 
 			var workingDirectory = recipeFilePath.GetParent();
 			var packageProvider = SoupTools.LoadBuildGraph(workingDirectory);
@@ -70,7 +70,7 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 	private List<GraphNodeViewModel> BuildGraph(
 		PackageProvider packageProvider)
 	{
-		projectDetailsLookup.Clear();
+		this.projectDetailsLookup.Clear();
 
 		var currentGraphSet = GetCurrentGraphSet(packageProvider);
 
@@ -133,7 +133,7 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 
 			result.Add(node);
 
-			projectDetailsLookup.Add(
+			this.projectDetailsLookup.Add(
 				(uint)package.Id,
 				new ProjectDetailsViewModel(
 					package.Name,

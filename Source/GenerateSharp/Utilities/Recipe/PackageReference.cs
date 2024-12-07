@@ -15,9 +15,9 @@ namespace Soup.Build;
 /// </summary>
 public partial class PackageReference : IEquatable<PackageReference>
 {
-	private readonly PackageIdentifier? _packageIdentifier;
-	private readonly SemanticVersion? _version;
-	private readonly Path? _path;
+	private readonly PackageIdentifier? packageIdentifier;
+	private readonly SemanticVersion? version;
+	private readonly Path? path;
 
 	/// <summary>
 	/// Try parse a package reference from the provided string
@@ -67,9 +67,9 @@ public partial class PackageReference : IEquatable<PackageReference>
 	/// </summary>
 	public PackageReference()
 	{
-		_packageIdentifier = null;
-		_version = null;
-		_path = null;
+		this.packageIdentifier = null;
+		this.version = null;
+		this.path = null;
 	}
 
 	/// <summary>
@@ -77,9 +77,9 @@ public partial class PackageReference : IEquatable<PackageReference>
 	/// </summary>
 	public PackageReference(string? language, string? owner, string name, SemanticVersion? version)
 	{
-		_packageIdentifier = new PackageIdentifier(language, owner, name);
-		_version = version;
-		_path = null;
+		this.packageIdentifier = new PackageIdentifier(language, owner, name);
+		this.version = version;
+		this.path = null;
 	}
 
 	/// <summary>
@@ -87,15 +87,15 @@ public partial class PackageReference : IEquatable<PackageReference>
 	/// </summary>
 	public PackageReference(Path path)
 	{
-		_packageIdentifier = null;
-		_version = null;
-		_path = path;
+		this.packageIdentifier = null;
+		this.version = null;
+		this.path = path;
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the reference is local or not
 	/// </summary>
-	public bool IsLocal => _packageIdentifier is null;
+	public bool IsLocal => this.packageIdentifier is null;
 
 	/// <summary>
 	/// Gets or sets the Language.
@@ -104,9 +104,9 @@ public partial class PackageReference : IEquatable<PackageReference>
 	{
 		get
 		{
-			if (_packageIdentifier is null)
+			if (this.packageIdentifier is null)
 				throw new InvalidOperationException("Cannot get the language of a local reference.");
-			return _packageIdentifier.Language;
+			return this.packageIdentifier.Language;
 		}
 	}
 
@@ -117,9 +117,9 @@ public partial class PackageReference : IEquatable<PackageReference>
 	{
 		get
 		{
-			if (_packageIdentifier is null)
+			if (this.packageIdentifier is null)
 				throw new InvalidOperationException("Cannot get the owner of a local reference.");
-			return _packageIdentifier.Owner;
+			return this.packageIdentifier.Owner;
 		}
 	}
 
@@ -130,9 +130,9 @@ public partial class PackageReference : IEquatable<PackageReference>
 	{
 		get
 		{
-			if (_packageIdentifier is null)
+			if (this.packageIdentifier is null)
 				throw new InvalidOperationException("Cannot get the name of a local reference.");
-			return _packageIdentifier.Name;
+			return this.packageIdentifier.Name;
 		}
 	}
 
@@ -145,7 +145,7 @@ public partial class PackageReference : IEquatable<PackageReference>
 		{
 			if (IsLocal)
 				throw new InvalidOperationException("Cannot get the version of a local reference.");
-			return _version;
+			return this.version;
 		}
 	}
 
@@ -156,9 +156,9 @@ public partial class PackageReference : IEquatable<PackageReference>
 	{
 		get
 		{
-			if (_path is null)
+			if (this.path is null)
 				throw new InvalidOperationException("Cannot get the path of a non-local reference.");
-			return _path;
+			return this.path;
 		}
 	}
 
@@ -169,9 +169,9 @@ public partial class PackageReference : IEquatable<PackageReference>
 	{
 		if (other is null)
 			return false;
-		return _packageIdentifier == other._packageIdentifier &&
-			_version == other._version &&
-			_path == other._path;
+		return this.packageIdentifier == other.packageIdentifier &&
+			this.version == other.version &&
+			this.path == other.path;
 	}
 
 	public override bool Equals(object? obj)
@@ -181,9 +181,9 @@ public partial class PackageReference : IEquatable<PackageReference>
 
 	public override int GetHashCode()
 	{
-		var identifierHash = _packageIdentifier is null ? 0 : _packageIdentifier.GetHashCode() * 0x100000;
-		var versionHash = _version is null ? 0 : _version.GetHashCode() * 0x1000;
-		var pathHash = _path is null ? 0 : _path.GetHashCode();
+		var identifierHash = this.packageIdentifier is null ? 0 : this.packageIdentifier.GetHashCode() * 0x100000;
+		var versionHash = this.version is null ? 0 : this.version.GetHashCode() * 0x1000;
+		var pathHash = this.path is null ? 0 : this.path.GetHashCode();
 		return identifierHash + versionHash + pathHash;
 	}
 
@@ -203,20 +203,20 @@ public partial class PackageReference : IEquatable<PackageReference>
 	public override string ToString()
 	{
 		// If the reference is a path then just return that
-		if (_path is not null)
+		if (this.path is not null)
 		{
-			return _path.ToString();
+			return this.path.ToString();
 		}
 		else
 		{
 			// Build up the language/owner/name/version reference
-			if (_version is not null)
+			if (this.version is not null)
 			{
-				return $"{_packageIdentifier}@{_version}";
+				return $"{this.packageIdentifier}@{this.version}";
 			}
 			else
 			{
-				return $"{_packageIdentifier}";
+				return $"{this.packageIdentifier}";
 			}
 		}
 	}
