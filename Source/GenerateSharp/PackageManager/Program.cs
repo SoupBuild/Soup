@@ -42,7 +42,7 @@ public static class Program
 
 			using var httpClient = new HttpClient();
 			SemanticVersion minimumLanguageVersionCpp = new SemanticVersion(0, 12, 0);
-			SemanticVersion builtInLanguageVersionWren = new SemanticVersion(0, 4, 1);
+			SemanticVersion builtInLanguageVersionWren = new SemanticVersion(0, 4, 3);
 			var closureManager = new ClosureManager(
 				SoupApiEndpoint,
 				httpClient,

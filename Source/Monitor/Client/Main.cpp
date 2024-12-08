@@ -11,6 +11,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cctype>
 
 #ifdef _WIN32
 

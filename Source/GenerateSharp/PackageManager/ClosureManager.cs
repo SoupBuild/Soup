@@ -24,8 +24,8 @@ public class ClosureManager : IClosureManager
 	private const int PackageLockVersion = 5;
 	private const string RootClosureName = "Root";
 	private const string BuiltInLanguageWren = "Wren";
-	private const string BuiltInLanguagePackageWren = "Soup.Wren";
-	private const string BuiltInOwner = "mwasplund";
+	private const string BuiltInLanguagePackageWren = "Wren";
+	private const string BuiltInOwner = "Soup";
 	private const string DependencyTypeBuild = "Build";
 	private const string DependencyTypeTool = "Tool";
 

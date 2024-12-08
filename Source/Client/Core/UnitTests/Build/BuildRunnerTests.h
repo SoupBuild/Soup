@@ -1631,7 +1631,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							"C#": {
-								"User1|Soup.Cpp": { Version: "1.0.2" }
+								"User1|Cpp": { Version: "1.0.2" }
 								"User1|TestBuild": { Version: "1.3.0" }
 							}
 						}
