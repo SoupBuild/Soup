@@ -20,13 +20,13 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class PackagesClient
 {
-	private readonly HttpClient _httpClient;
-	private readonly string? _bearerToken;
+	private readonly HttpClient httpClient;
+	private readonly string? bearerToken;
 
 	public PackagesClient(HttpClient httpClient, string? bearerToken)
 	{
-		_httpClient = httpClient;
-		_bearerToken = bearerToken;
+		this.httpClient = httpClient;
+		this.bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -64,7 +64,7 @@ public class PackagesClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}");
 
-		var client = _httpClient;
+		var client = this.httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -81,7 +81,7 @@ public class PackagesClient
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
-			var objectResponse = await ReadObjectResponseAsync<PackageModel>(
+			var objectResponse = await ReadObjectResponseAsync(
 				response,
 				SourceGenerationContext.Default.PackageModel,
 				cancellationToken).ConfigureAwait(false);
@@ -133,7 +133,7 @@ public class PackagesClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}");
 
-		var client = _httpClient;
+		var client = this.httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		using var jsonContent = new MemoryStream();
@@ -158,7 +158,7 @@ public class PackagesClient
 		var status = (int)response.StatusCode;
 		if (status is 200 or 201)
 		{
-			var objectResponse = await ReadObjectResponseAsync<PackageModel>(
+			var objectResponse = await ReadObjectResponseAsync(
 				response,
 				SourceGenerationContext.Default.PackageModel,
 				cancellationToken).ConfigureAwait(false);
@@ -179,7 +179,7 @@ public class PackagesClient
 		try
 		{
 			using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-			var typedBody = await JsonSerializer.DeserializeAsync<T>(
+			var typedBody = await JsonSerializer.DeserializeAsync(
 				responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
 			if (typedBody is null)
 			{
@@ -202,9 +202,9 @@ public class PackagesClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(_bearerToken))
+		if (!string.IsNullOrEmpty(this.bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
 		}
 
 		return Task.FromResult(request);

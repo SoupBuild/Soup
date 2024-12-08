@@ -13,16 +13,16 @@ namespace Opal.System;
 /// </summary>
 public class MockLibraryManager : ILibraryManager
 {
-	private readonly Dictionary<Path, MockLibrary> _libraries;
-	private readonly List<string> _requests;
+	private readonly Dictionary<Path, MockLibrary> libraries;
+	private readonly List<string> requests;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockLibraryManager'/> class.
 	/// </summary>
 	public MockLibraryManager()
 	{
-		_libraries = [];
-		_requests = [];
+		this.libraries = [];
+		this.requests = [];
 	}
 
 	/// <summary>
@@ -32,7 +32,7 @@ public class MockLibraryManager : ILibraryManager
 	public MockLibrary RegisterLibrary(Path path)
 	{
 		var library = new MockLibrary();
-		_libraries.Add(path, library);
+		this.libraries.Add(path, library);
 
 		return library;
 	}
@@ -40,7 +40,7 @@ public class MockLibraryManager : ILibraryManager
 	/// <summary>
 	/// Get the load requests.
 	/// </summary>
-	public IReadOnlyList<string> Requests => _requests;
+	public IReadOnlyList<string> Requests => this.requests;
 
 	/// <summary>
 	/// Creates a Library for the provided executable path.
@@ -48,9 +48,9 @@ public class MockLibraryManager : ILibraryManager
 	/// <param name="library">The path.</param>
 	public ILibrary LoadDynamicLibrary(Path library)
 	{
-		_requests.Add($"LoadDynamicLibrary: {library}");
+		this.requests.Add($"LoadDynamicLibrary: {library}");
 
-		if (_libraries.TryGetValue(library, out var libraryValue))
+		if (this.libraries.TryGetValue(library, out var libraryValue))
 		{
 			return libraryValue;
 		}

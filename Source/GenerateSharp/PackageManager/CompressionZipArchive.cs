@@ -9,22 +9,22 @@ namespace Soup.Build.PackageManager;
 
 internal sealed class CompressionZipArchive : IZipArchive
 {
-	private readonly ZipArchive _archive;
+	private readonly ZipArchive archive;
 
 	public CompressionZipArchive(ZipArchive archive)
 	{
-		_archive = archive;
+		this.archive = archive;
 	}
 
 	public void CreateEntryFromFile(Path sourceFileName, string entryName)
 	{
-		_ = _archive.CreateEntryFromFile(
+		_ = this.archive.CreateEntryFromFile(
 			sourceFileName.ToString(),
 			entryName);
 	}
 
 	public void Dispose()
 	{
-		_archive.Dispose();
+		this.archive.Dispose();
 	}
 }

@@ -23,11 +23,11 @@ namespace Soup.Build.PackageManager;
 public class SystemBrowser : IBrowser
 {
 	public int Port { get; }
-	private readonly string? _path;
+	private readonly string? path;
 
 	public SystemBrowser(int? port = null, string? path = null)
 	{
-		_path = path;
+		this.path = path;
 
 		Port = port ?? GetRandomUnusedPort();
 	}
@@ -43,7 +43,7 @@ public class SystemBrowser : IBrowser
 
 	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
 	{
-		using var listener = new LoopbackHttpListener(Port, _path);
+		using var listener = new LoopbackHttpListener(Port, this.path);
 
 		OpenBrowser(options.StartUrl);
 
@@ -105,8 +105,8 @@ public class LoopbackHttpListener : IDisposable
 	private const int DefaultTimeout = 60 * 5; // 5 mins (in seconds)
 
 	[SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Disposed in async task")]
-	private readonly IWebHost _host;
-	private readonly TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
+	private readonly IWebHost host;
+	private readonly TaskCompletionSource<string> source = new TaskCompletionSource<string>();
 
 	public Uri Url { get; }
 
@@ -118,12 +118,12 @@ public class LoopbackHttpListener : IDisposable
 
 		Url = new Uri($"http://127.0.0.1:{port}/{path}");
 
-		_host = new WebHostBuilder()
+		this.host = new WebHostBuilder()
 			.UseKestrel()
 			.UseUrls(Url.ToString())
 			.Configure(Configure)
 			.Build();
-		_host.Start();
+		this.host.Start();
 	}
 
 	[SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "Special case")]
@@ -132,7 +132,7 @@ public class LoopbackHttpListener : IDisposable
 		_ = Task.Run(async () =>
 		{
 			await Task.Delay(500);
-			_host.Dispose();
+			this.host.Dispose();
 		});
 	}
 
@@ -184,7 +184,7 @@ public class LoopbackHttpListener : IDisposable
 			await ctx.Response.WriteAsync(responsePage);
 			await ctx.Response.Body.FlushAsync();
 
-			_ = _source.TrySetResult(value);
+			_ = this.source.TrySetResult(value);
 		}
 		catch (Exception ex)
 		{
@@ -211,9 +211,9 @@ public class LoopbackHttpListener : IDisposable
 		_ = Task.Run(async () =>
 		{
 			await Task.Delay(timeoutInSeconds * 1000);
-			_ = _source.TrySetCanceled();
+			_ = this.source.TrySetCanceled();
 		});
 
-		return _source.Task;
+		return this.source.Task;
 	}
 }

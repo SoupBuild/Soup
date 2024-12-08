@@ -11,9 +11,9 @@ namespace Opal.IO;
 /// </summary>
 public class MockConsoleInput : IConsoleInput
 {
-	private readonly IList<string> _parentRequests;
-	private string _readPasswordResponse;
-	private string _readLineResponse;
+	private readonly IList<string> parentRequests;
+	private string readPasswordResponse;
+	private string readLineResponse;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='MockConsoleInput'/> class.
@@ -21,9 +21,9 @@ public class MockConsoleInput : IConsoleInput
 	/// <param name="parentRequests">The parent requests.</param>
 	public MockConsoleInput(IList<string> parentRequests)
 	{
-		_parentRequests = parentRequests;
-		_readPasswordResponse = string.Empty;
-		_readLineResponse = string.Empty;
+		this.parentRequests = parentRequests;
+		this.readPasswordResponse = string.Empty;
+		this.readLineResponse = string.Empty;
 	}
 
 	/// <summary>
@@ -32,7 +32,7 @@ public class MockConsoleInput : IConsoleInput
 	/// <param name="response">The response.</param>
 	public void SetReadPasswordResponse(string response)
 	{
-		_readPasswordResponse = response;
+		this.readPasswordResponse = response;
 	}
 
 	/// <summary>
@@ -41,7 +41,7 @@ public class MockConsoleInput : IConsoleInput
 	/// <param name="response">The response.</param>
 	public void SetReadLineResponse(string response)
 	{
-		_readLineResponse = response;
+		this.readLineResponse = response;
 	}
 
 	/// <summary>
@@ -49,9 +49,9 @@ public class MockConsoleInput : IConsoleInput
 	/// </summary>
 	public virtual string ReadLine()
 	{
-		_parentRequests.Add($"ReadLine: {_readLineResponse}");
+		this.parentRequests.Add($"ReadLine: {this.readLineResponse}");
 
-		return _readLineResponse;
+		return this.readLineResponse;
 	}
 
 	/// <summary>
@@ -59,8 +59,8 @@ public class MockConsoleInput : IConsoleInput
 	/// </summary>
 	public virtual string ReadPassword()
 	{
-		_parentRequests.Add($"ReadPassword: {_readPasswordResponse}");
+		this.parentRequests.Add($"ReadPassword: {this.readPasswordResponse}");
 
-		return _readPasswordResponse;
+		return this.readPasswordResponse;
 	}
 }

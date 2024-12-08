@@ -29,20 +29,20 @@ public class ClosureManager : IClosureManager
 	private const string DependencyTypeBuild = "Build";
 	private const string DependencyTypeTool = "Tool";
 
-	private readonly Uri _apiEndpoint;
+	private readonly Uri apiEndpoint;
 
-	private readonly HttpClient _httpClient;
+	private readonly HttpClient httpClient;
 
-	private readonly SemanticVersion _builtInLanguageVersionWren;
+	private readonly SemanticVersion builtInLanguageVersionWren;
 
 	public ClosureManager(
 		Uri apiEndpoint,
 		HttpClient httpClient,
 		SemanticVersion builtInLanguageVersionWren)
 	{
-		_apiEndpoint = apiEndpoint;
-		_httpClient = httpClient;
-		_builtInLanguageVersionWren = builtInLanguageVersionWren;
+		this.apiEndpoint = apiEndpoint;
+		this.httpClient = httpClient;
+		this.builtInLanguageVersionWren = builtInLanguageVersionWren;
 	}
 
 	/// <summary>
@@ -128,7 +128,7 @@ public class ClosureManager : IClosureManager
 						{
 							// Check if the package version already exists
 							if (projectName.HasOwner && projectName.Owner == BuiltInOwner &&
-								projectName.Name == BuiltInLanguagePackageWren && version == _builtInLanguageVersionWren)
+								projectName.Name == BuiltInLanguagePackageWren && version == this.builtInLanguageVersionWren)
 							{
 								Log.HighPriority("Skip built in language version in build closure");
 							}
@@ -246,9 +246,9 @@ public class ClosureManager : IClosureManager
 		IList<Api.Client.PackagePublicReferenceModel> publicPackages)
 	{
 		// Publish the archive
-		var packageClient = new Api.Client.ClosureClient(_httpClient, null)
+		var packageClient = new Api.Client.ClosureClient(this.httpClient, null)
 		{
-			BaseUrl = _apiEndpoint,
+			BaseUrl = this.apiEndpoint,
 		};
 
 		// Pull out the root package
@@ -265,9 +265,9 @@ public class ClosureManager : IClosureManager
 				Name = BuiltInLanguagePackageWren,
 				Version = new Api.Client.SemanticVersionExactModel()
 				{
-					Major = _builtInLanguageVersionWren.Major,
-					Minor = _builtInLanguageVersionWren.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
-					Patch = _builtInLanguageVersionWren.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+					Major = this.builtInLanguageVersionWren.Major,
+					Minor = this.builtInLanguageVersionWren.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+					Patch = this.builtInLanguageVersionWren.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
 				},
 			}
 		};
@@ -782,7 +782,7 @@ public class ClosureManager : IClosureManager
 
 		// Check if the package version already exists
 		if (!isRuntime &&
-			packageName == BuiltInLanguagePackageWren && packageVersion == _builtInLanguageVersionWren)
+			packageName == BuiltInLanguagePackageWren && packageVersion == this.builtInLanguageVersionWren)
 		{
 			Log.HighPriority("Skip built in language version in build closure");
 		}
@@ -796,9 +796,9 @@ public class ClosureManager : IClosureManager
 			Log.HighPriority("Downloading package");
 			var archivePath = stagingDirectory + new Path($"./{packageName}.zip");
 
-			var client = new Api.Client.PackageVersionsClient(_httpClient, null)
+			var client = new Api.Client.PackageVersionsClient(this.httpClient, null)
 			{
-				BaseUrl = _apiEndpoint,
+				BaseUrl = this.apiEndpoint,
 			};
 
 			try

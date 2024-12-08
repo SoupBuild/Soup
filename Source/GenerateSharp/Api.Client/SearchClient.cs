@@ -18,13 +18,13 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class SearchClient
 {
-	private readonly HttpClient _httpClient;
-	private readonly string _bearerToken;
+	private readonly HttpClient httpClient;
+	private readonly string bearerToken;
 
 	public SearchClient(HttpClient httpClient, string bearerToken)
 	{
-		_httpClient = httpClient;
-		_bearerToken = bearerToken;
+		this.httpClient = httpClient;
+		this.bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -84,7 +84,7 @@ public class SearchClient
 
 		urlBuilder.Length--;
 
-		var client = _httpClient;
+		var client = this.httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -101,7 +101,7 @@ public class SearchClient
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
-			var objectResponse = await ReadObjectResponseAsync<SearchPackagesModel>(
+			var objectResponse = await ReadObjectResponseAsync(
 				response,
 				SourceGenerationContext.Default.SearchPackagesModel, cancellationToken).ConfigureAwait(false);
 			return objectResponse;
@@ -122,7 +122,7 @@ public class SearchClient
 		{
 			using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-			var typedBody = await JsonSerializer.DeserializeAsync<T>(
+			var typedBody = await JsonSerializer.DeserializeAsync(
 				responseStream, jsonTypeInfo, cancellationToken).ConfigureAwait(false);
 			if (typedBody is null)
 			{
@@ -145,9 +145,9 @@ public class SearchClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(_bearerToken))
+		if (!string.IsNullOrEmpty(this.bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
 		}
 
 		return Task.FromResult(request);

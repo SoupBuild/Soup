@@ -14,7 +14,7 @@ namespace Soup.Build.Utilities;
 /// </summary>
 public class OperationResults
 {
-	private readonly Dictionary<OperationId, OperationResult> _results;
+	private readonly Dictionary<OperationId, OperationResult> results;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="OperationResults"/> class.
@@ -22,7 +22,7 @@ public class OperationResults
 	public OperationResults()
 	{
 		ReferencedFiles = [];
-		_results = [];
+		this.results = [];
 	}
 
 	/// <summary>
@@ -33,7 +33,7 @@ public class OperationResults
 		Dictionary<OperationId, OperationResult> results)
 	{
 		ReferencedFiles = referencedFiles;
-		_results = results;
+		this.results = results;
 	}
 
 	/// <summary>
@@ -44,7 +44,7 @@ public class OperationResults
 	/// <summary>
 	/// Get Results
 	/// </summary>
-	public IDictionary<OperationId, OperationResult> Results => _results;
+	public IDictionary<OperationId, OperationResult> Results => this.results;
 
 	/// <summary>
 	/// Find an operation result
@@ -53,7 +53,7 @@ public class OperationResults
 		OperationId operationId,
 		[MaybeNullWhen(false)] out OperationResult result)
 	{
-		if (_results.TryGetValue(operationId, out var operationResult))
+		if (this.results.TryGetValue(operationId, out var operationResult))
 		{
 			result = operationResult;
 			return true;

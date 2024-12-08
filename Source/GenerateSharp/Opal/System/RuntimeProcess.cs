@@ -14,27 +14,27 @@ namespace Opal.System;
 public class RuntimeProcess : IProcess
 {
 	// Input
-	private readonly Path _executable;
-	private readonly string _arguments;
-	private readonly Path _workingDirectory;
+	private readonly Path executable;
+	private readonly string arguments;
+	private readonly Path workingDirectory;
 
 	// Runtime
-	private Process? _process;
+	private Process? process;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref='RuntimeProcess'/> class.
 	/// </summary>
 	/// <param name="executable">The executable.</param>
-	/// <param name="arguments">The arguemnts.</param>
+	/// <param name="arguments">The arguments.</param>
 	/// <param name="workingDirectory">The workingDirectory.</param>
 	public RuntimeProcess(
 		Path executable,
 		string arguments,
 		Path workingDirectory)
 	{
-		_executable = executable;
-		_arguments = arguments;
-		_workingDirectory = workingDirectory;
+		this.executable = executable;
+		this.arguments = arguments;
+		this.workingDirectory = workingDirectory;
 	}
 
 	/// <summary>
@@ -44,15 +44,15 @@ public class RuntimeProcess : IProcess
 	{
 		var processInfo = new ProcessStartInfo()
 		{
-			FileName = _executable.ToString(),
-			Arguments = _arguments,
-			WorkingDirectory = _workingDirectory.ToString(),
+			FileName = this.executable.ToString(),
+			Arguments = this.arguments,
+			WorkingDirectory = this.workingDirectory.ToString(),
 			RedirectStandardOutput = true,
 			RedirectStandardError = true,
 		};
 
-		_process = Process.Start(processInfo);
-		if (_process is null)
+		this.process = Process.Start(processInfo);
+		if (this.process is null)
 			throw new InvalidOperationException("Failed to start process");
 	}
 
@@ -61,9 +61,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public Task WaitForExitAsync()
 	{
-		if (_process is null)
+		if (this.process is null)
 			throw new InvalidOperationException("Cannot wait on process that is not running");
-		return _process.WaitForExitAsync();
+		return this.process.WaitForExitAsync();
 	}
 
 	/// <summary>
@@ -71,9 +71,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public int GetExitCode()
 	{
-		if (_process is null)
+		if (this.process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return _process.ExitCode;
+		return this.process.ExitCode;
 	}
 
 	/// <summary>
@@ -81,9 +81,9 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public string GetStandardOutput()
 	{
-		if (_process is null)
+		if (this.process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return _process.StandardOutput.ReadToEnd();
+		return this.process.StandardOutput.ReadToEnd();
 	}
 
 	/// <summary>
@@ -91,8 +91,8 @@ public class RuntimeProcess : IProcess
 	/// </summary>
 	public string GetStandardError()
 	{
-		if (_process is null)
+		if (this.process is null)
 			throw new InvalidOperationException("Cannot access process that does not exist");
-		return _process.StandardError.ReadToEnd();
+		return this.process.StandardError.ReadToEnd();
 	}
 }

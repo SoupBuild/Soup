@@ -22,13 +22,13 @@ namespace Soup.Build.Api.Client;
 /// </summary>
 public class PackageVersionsClient
 {
-	private readonly HttpClient _httpClient;
-	private readonly string? _bearerToken;
+	private readonly HttpClient httpClient;
+	private readonly string? bearerToken;
 
 	public PackageVersionsClient(HttpClient httpClient, string? bearerToken)
 	{
-		_httpClient = httpClient;
-		_bearerToken = bearerToken;
+		this.httpClient = httpClient;
+		this.bearerToken = bearerToken;
 	}
 
 	public Uri BaseUrl { get; init; } = new Uri("https://api.soupbuild.com");
@@ -73,7 +73,7 @@ public class PackageVersionsClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
-		var client = _httpClient;
+		var client = this.httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -154,11 +154,10 @@ public class PackageVersionsClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}");
 
-		var client = _httpClient;
+		var client = this.httpClient;
 
 		using var request = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		using var content = new StreamContent(file.Data);
-
 
 		content.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
 		request.Content = content;
@@ -219,7 +218,7 @@ public class PackageVersionsClient
 			.Append(BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}/versions/{Uri.EscapeDataString(packageVersion)}/download");
 
-		var client = _httpClient;
+		var client = this.httpClient;
 
 		using var requestMessage = await CreateHttpRequestMessageAsync().ConfigureAwait(false);
 		requestMessage.Method = new HttpMethod("GET");
@@ -289,9 +288,9 @@ public class PackageVersionsClient
 	protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync()
 	{
 		var request = new HttpRequestMessage();
-		if (!string.IsNullOrEmpty(_bearerToken))
+		if (!string.IsNullOrEmpty(this.bearerToken))
 		{
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.bearerToken);
 		}
 
 		return Task.FromResult(request);

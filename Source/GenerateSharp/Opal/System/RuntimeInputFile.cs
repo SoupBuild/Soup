@@ -12,13 +12,13 @@ namespace Opal.System;
 /// </summary>
 internal sealed class RuntimeInputFile : IInputFile
 {
-	private readonly FileStream _stream;
-	private bool _isDisposed;
+	private readonly FileStream stream;
+	private bool isDisposed;
 
 	public RuntimeInputFile(FileStream stream)
 	{
-		_isDisposed = false;
-		_stream = stream;
+		this.isDisposed = false;
+		this.stream = stream;
 	}
 
 	/// <summary>
@@ -26,7 +26,7 @@ internal sealed class RuntimeInputFile : IInputFile
 	/// </summary>
 	public Stream GetInStream()
 	{
-		return _stream;
+		return this.stream;
 	}
 
 	public void Dispose()
@@ -38,14 +38,14 @@ internal sealed class RuntimeInputFile : IInputFile
 
 	private void Dispose(bool disposing)
 	{
-		if (!_isDisposed)
+		if (!this.isDisposed)
 		{
 			if (disposing)
 			{
-				_stream.Dispose();
+				this.stream.Dispose();
 			}
 
-			_isDisposed = true;
+			this.isDisposed = true;
 		}
 	}
 }

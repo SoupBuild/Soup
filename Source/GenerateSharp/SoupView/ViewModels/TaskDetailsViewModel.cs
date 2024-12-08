@@ -13,14 +13,14 @@ namespace Soup.View.ViewModels;
 
 public class TaskDetailsViewModel : ViewModelBase
 {
-	private readonly ObservableCollection<ValueTableItemViewModel> _properties = [];
+	private readonly ObservableCollection<ValueTableItemViewModel> properties = [];
 
 	public TaskDetailsViewModel(ValueTable taskInfo)
 	{
-		_properties.Clear();
-		BuildValueTable(taskInfo, _properties);
+		this.properties.Clear();
+		BuildValueTable(taskInfo, this.properties);
 
-		Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(_properties)
+		Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(this.properties)
 		{
 			Columns =
 				{

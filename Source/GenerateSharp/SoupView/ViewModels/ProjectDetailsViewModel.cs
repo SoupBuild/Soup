@@ -17,16 +17,16 @@ public class ProjectDetailsViewModel : ViewModelBase
 	{
 		Name = name;
 
-		properties.Clear();
+		this.properties.Clear();
 
-		properties.Add(new PropertyValueViewModel("Name", name));
-		properties.Add(new PropertyValueViewModel("Path", path.ToString()));
-		properties.Add(new PropertyValueViewModel("Owner", owner?.ToString()));
+		this.properties.Add(new PropertyValueViewModel("Name", name));
+		this.properties.Add(new PropertyValueViewModel("Path", path.ToString()));
+		this.properties.Add(new PropertyValueViewModel("Owner", owner?.ToString()));
 
 		Path = path;
 		Owner = owner;
 
-		Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(properties)
+		Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(this.properties)
 		{
 			Columns =
 				{
