@@ -102,9 +102,9 @@ namespace Monitor
 				return true;
 
 			auto normalizedFileName = NormalizePath(fileName);
-			for (const auto& allowedDiractory : m_allowedWriteDirectories)
+			for (const auto& allowedDirectory : m_allowedWriteDirectories)
 			{
-				if (IsUnderDirectory(normalizedFileName, allowedDiractory))
+				if (IsUnderDirectory(normalizedFileName, allowedDirectory))
 					return true;
 			}
 
@@ -136,12 +136,16 @@ namespace Monitor
 				path = m_workingDirectory + path;
 			}
 
-			return path.ToString();
+			auto result = path.ToString();
+
+			// Ignore case
+			std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c){ return (char)std::toupper(c); });
+
+			return result;
 		}
 
 		static bool IsUnderDirectory(const std::string& fileName, const std::string& directory)
 		{
-			// Check if the fileName starts with the directory
 			return fileName.find(directory) == 0;
 		}
 
