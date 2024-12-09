@@ -1,5 +1,5 @@
 Name: 'Soup.Api.Client'
-Language: (C#@0)
+Language: 'C#|0'
 Version: 1.0.0
 Source: [
 	'Models/FileParameter.cs'

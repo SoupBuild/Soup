@@ -1,6 +1,6 @@
 Name: 'Soup'
 Version: 0.41.1
-Language: (C++@0)
+Language: 'C++|0'
 Type: 'Executable'
 Source: [
 	'Source/Main.cpp'

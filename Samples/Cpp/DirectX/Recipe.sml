@@ -1,5 +1,5 @@
 Name: 'Samples.Cpp.DirectX'
-Language: (C++@0)
+Language: 'C++|0'
 Type: 'Windows'
 Version: 1.0.0
 Partitions: [
