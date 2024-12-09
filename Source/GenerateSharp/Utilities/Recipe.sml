@@ -1,5 +1,5 @@
 Name: 'Soup.Utilities'
-Language: (C#@0)
+Language: 'C#|0'
 Version: 1.0.0
 TargetFramework: 'net8.0'
 Dependencies: {
