@@ -5,20 +5,18 @@
 
   <!-- Common Project Directories -->
   <PropertyGroup>
-    <SourceDirectory>$(MSBuildThisFileDirectory.TrimEnd('\'))</SourceDirectory>
-    <GenerateSharpDirectory>$(RootDirectory)\GenerateSharp</GenerateSharpDirectory>
-    <ViewDirectory>$(RootDirectory)\GenerateSharp</ViewDirectory>
+    <SourceDirectory>$([System.IO.Path]::GetDirectoryName($(MSBuildThisFileDirectory)))</SourceDirectory>
     <RootDirectory>$([System.IO.Path]::GetDirectoryName($(SourceDirectory)))</RootDirectory>
-    <OutDirectory>$(RootDirectory)\out</OutDirectory>
-    <ObjectRoot>$(OutDirectory)\obj</ObjectRoot>
-    <BinaryRoot>$(OutDirectory)\bin</BinaryRoot>
-    <TempRoot>$(OutDirectory)\temp</TempRoot>
+    <OutDirectory>$(RootDirectory)/out/msbuild</OutDirectory>
+    <ObjectRoot>$(OutDirectory)/obj</ObjectRoot>
+    <BinaryRoot>$(OutDirectory)/bin</BinaryRoot>
+    <TempRoot>$(OutDirectory)/temp</TempRoot>
   </PropertyGroup>
 
   <!-- Setup a shared output directory -->
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjectRoot)\$(MSBuildProjectName)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinaryRoot)\$(MSBuildProjectName)</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ObjectRoot)/$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinaryRoot)/$(MSBuildProjectName)</BaseOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -33,7 +33,7 @@ public static class DotNetSDKUtilities
 				newline = "\r\n";
 				break;
 			case OSPlatform.Linux:
-				dotnetInstallPath = new Path("./usr/lib/dotnet/");
+				dotnetInstallPath = new Path("/usr/lib/dotnet/");
 				newline = "\n";
 				break;
 			default:
