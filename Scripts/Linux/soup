@@ -6,6 +6,7 @@ set -e
 SCRIPTS_DIR=$(dirname "$0")
 ROOT_DIR=$SCRIPTS_DIR/../..
 OUT_DIR=$ROOT_DIR/out
+MSBUILD_DIR=$OUT_DIR/msbuild
 RUN_DIR=$OUT_DIR/run
 SOURCE_DIR=$ROOT_DIR/Source
 GLOBAL_PACKAGES_DIR=~/.soup/packages
@@ -39,10 +40,10 @@ mkdir -p $RUN_DIR/BuiltIn/Soup/Wren/$SOUP_WREN_VERSION
 cp -p $GLOBAL_PACKAGES_DIR/Wren/Soup/Wren/$SOUP_WREN_VERSION/Recipe.sml $RUN_DIR/BuiltIn/Soup/Wren/$SOUP_WREN_VERSION/Recipe.sml
 cp -p -R $GLOBAL_PACKAGES_DIR/Wren/Soup/Wren/$SOUP_WREN_VERSION/out/$CONFIG_HASH/ $RUN_DIR/BuiltIn/Soup/Wren/$SOUP_WREN_VERSION/out/
 
-cp -p -R $ROOT_DIR/Source/out/bin/Soup.Build.PackageManager/Release/net8.0/linux-x64/publish/ $RUN_DIR/PackageManager
+cp -p -R $MSBUILD_DIR/bin/Soup.Build.PackageManager/Release/net8.0/linux-x64/publish/ $RUN_DIR/PackageManager
 
-cp -p -R $ROOT_DIR/Source/out/bin/SoupView/Release/net8.0/linux-x64/publish/ $RUN_DIR/View
+cp -p -R $MSBUILD_DIR/bin/SoupView/Release/net8.0/linux-x64/publish/ $RUN_DIR/View
 
-cp -p -R $ROOT_DIR/Source/out/bin/Swhere/Release/net8.0/linux-x64/publish/Swhere $RUN_DIR/swhere
+cp -p -R $MSBUILD_DIR/bin/Swhere/Release/net8.0/linux-x64/publish/Swhere $RUN_DIR/swhere
 
 eval $RUN_DIR/soup "$@"

@@ -235,15 +235,6 @@ namespace Monitor::Linux
 
 		SysCallStatus GetSysCallArgs(pid_t pid)
 		{
-			// auto test1 = std::array<long, 6>({
-			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * RDI, NULL),
-			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * RSI, NULL),
-			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * RDX, NULL),
-			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * R10, NULL),
-			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * R8, NULL),
-			// 	ptrace(PTRACE_PEEKUSER, pid, 8 * R9, NULL),
-			// });
-
 			user_regs_struct regs;
 			iovec io;
 			io.iov_base = &regs;

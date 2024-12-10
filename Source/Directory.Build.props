@@ -5,11 +5,9 @@
 
   <!-- Common Project Directories -->
   <PropertyGroup>
-    <SourceDirectory>$(MSBuildThisFileDirectory.TrimEnd('\'))</SourceDirectory>
-    <GenerateSharpDirectory>$(RootDirectory)\GenerateSharp</GenerateSharpDirectory>
-    <ViewDirectory>$(RootDirectory)\GenerateSharp</ViewDirectory>
+    <SourceDirectory>$([System.IO.Path]::GetDirectoryName($(MSBuildThisFileDirectory.TrimEnd('\'))))</SourceDirectory>
     <RootDirectory>$([System.IO.Path]::GetDirectoryName($(SourceDirectory)))</RootDirectory>
-    <OutDirectory>$(RootDirectory)\out</OutDirectory>
+    <OutDirectory>$(RootDirectory)\out\msbuild\</OutDirectory>
     <ObjectRoot>$(OutDirectory)\obj</ObjectRoot>
     <BinaryRoot>$(OutDirectory)\bin</BinaryRoot>
     <TempRoot>$(OutDirectory)\temp</TempRoot>
