@@ -70,11 +70,11 @@ namespace Soup::Core
 
 				if (exists)
 				{
-					_input.insert(value);
+					_input.insert(std::move(value));
 				}
 				else
 				{
-					_inputMissing.insert(value);
+					_inputMissing.insert(std::move(value));
 				}
 			}
 		}
@@ -94,7 +94,7 @@ namespace Soup::Core
 				Log::Diag("TouchFileWrite {}", value);
 				#endif
 
-				_output.insert(value);
+				_output.insert(std::move(value));
 			}
 		}
 

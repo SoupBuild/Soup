@@ -12,7 +12,7 @@ namespace Monitor::Linux
 		long Command;
 		long Return;
 		long Error;
-		std::array<long, 6> Arugments;
+		std::array<long, 6> Arguments;
 	};
 
 	typedef union {
@@ -48,10 +48,8 @@ namespace Monitor::Linux
 
 		void ProcessSysCall(pid_t pid)
 		{
-			WaitForSyscallExit(pid);
-			
 			auto registers = GetSysCallArgs(pid);
-			auto args = registers.Arugments;
+			auto args = registers.Arguments;
 			auto result = registers.Return;
 			switch (registers.Command)
 			{
@@ -198,41 +196,6 @@ namespace Monitor::Linux
 		}
 
 	private:
-		void WaitForSyscallExit(const pid_t pid)
-		{
-			bool entered = false;
-			int  status  = 0;
-
-			while (true)
-			{
-				ptrace(PTRACE_SYSCALL, pid, 0, 0);
-				waitpid(pid, &status, 0);
-
-				if (WIFSTOPPED(status))
-				{
-					auto signal = WSTOPSIG(status);
-					if (signal == SIGTRAP)
-					{
-						// Linux 4.8+ only needs a single step to get return
-						return;
-
-						// TODO: 4.7-
-						if (entered)
-						{
-							// If we had already entered before, then current SIGTRAP signal means exiting
-							return;
-						}
-
-						entered = true;
-					}
-					else if (WIFEXITED(status) || WIFSIGNALED(status) || WCOREDUMP(status))
-					{
-						throw std::runtime_error("The child has unexpectedly exited.");
-					}
-				}
-			}
-		}
-
 		SysCallStatus GetSysCallArgs(pid_t pid)
 		{
 			user_regs_struct regs;
@@ -266,101 +229,37 @@ namespace Monitor::Linux
 			};
 		}
 
-		bool ReadBoolValue(Message& message, uint32_t& offset)
-		{
-			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
-			offset += sizeof(uint32_t);
-			if (offset > message.ContentSize)
-				throw std::runtime_error("ReadBoolValue past end of content");
-			return result > 0;
-		}
-
-		int32_t ReadInt32Value(Message& message, uint32_t& offset)
-		{
-			auto result = *reinterpret_cast<int32_t*>(message.Content + offset);
-			offset += sizeof(int32_t);
-			if (offset > message.ContentSize)
-				throw std::runtime_error("ReadInt32Value past end of content");
-			return result;
-		}
-
-		uint32_t ReadUInt32Value(Message& message, uint32_t& offset)
-		{
-			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
-			offset += sizeof(uint32_t);
-			if (offset > message.ContentSize)
-				throw std::runtime_error("ReadUInt32Value past end of content");
-			return result;
-		}
-
-		uint64_t ReadUInt64Value(Message& message, uint32_t& offset)
-		{
-			auto result = *reinterpret_cast<uint64_t*>(message.Content + offset);
-			offset += sizeof(uint64_t);
-			if (offset > message.ContentSize)
-				throw std::runtime_error("ReadUInt64Value past end of content");
-			return result;
-		}
-
-		std::string ReadStringValue(pid_t pid, long addr, size_t length)
-		{
-			auto result = std::string(length, '\0');
-			char *laddr = result.data();
-			int i, j;
-			union u
-			{
-				long val;
-				char chars[sizeof(long)];
-			} data;
-
-			i = 0;
-			j = length / sizeof(long);
-
-			while (i < j)
-			{
-				data.val = ptrace(PTRACE_PEEKDATA, pid, addr + i * 8, NULL);
-				memcpy(laddr, data.chars, sizeof(long));
-				++i;
-				laddr += sizeof(long);
-			}
-
-			j = length % sizeof(long);
-			if (j != 0)
-			{
-				data.val = ptrace(PTRACE_PEEKDATA,
-								pid, addr + i * 8,
-								NULL);
-				memcpy(laddr, data.chars, j);
-			}
-
-			return result;
-		}
-
 		std::string ReadNullTerminatedStringValue(pid_t pid, long addr)
 		{
-			auto result = std::string(4096, '\0');
+			auto result = std::string(1024, '\0');
 
 			char *laddr = result.data();
 
-			unsigned long len = 4096;
+			unsigned long len = 1024;
 			unsigned int nread = 0;
 			unsigned int residue = addr & (sizeof(long) - 1);
 			void *const orig_addr = laddr;
 
-			while (len) {
-				addr &= -sizeof(long);		/* aligned address */
+			// aligned address
+			addr &= -sizeof(long);
 
+			while (len)
+			{
 				errno = 0;
 				dissected_long_t u = {
 					.val = ptrace(PTRACE_PEEKDATA, pid, addr, 0)
 				};
 
-				switch (errno) {
+				switch (errno)
+				{
 					case 0:
 						break;
-					case ESRCH: case EINVAL:
+					case ESRCH:
+					case EINVAL:
 						throw std::runtime_error("Could be seen if the process is gone");
-					case EFAULT: case EIO: case EPERM:
+					case EFAULT:
+					case EIO:
+					case EPERM:
 						throw std::runtime_error("address space is inaccessible");
 					default:
 						throw std::runtime_error("all the rest is strange and should be reported");
@@ -384,15 +283,6 @@ namespace Monitor::Linux
 				len -= m;
 			}
 
-			return result;
-		}
-
-		std::wstring_view ReadWStringValue(Message& message, uint32_t& offset)
-		{
-			auto result = std::wstring_view(reinterpret_cast<wchar_t*>(message.Content + offset));
-			offset += 2 * (static_cast<uint32_t>(result.size()) + 1);
-			if (offset > message.ContentSize)
-				throw std::runtime_error("ReadWStringValue past end of content");
 			return result;
 		}
 	};

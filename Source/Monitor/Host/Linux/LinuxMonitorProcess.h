@@ -340,38 +340,102 @@ namespace Monitor::Linux
 		/// The main entry point for the worker thread that will monitor incoming messages from all
 		/// client connections.
 		/// </summary>
+
+		struct ProcessTraceState
+		{
+			pid_t ProcessId;
+			bool IsRunning;
+			bool InSystemCall;
+		};
+
+		ProcessTraceState& InitializeProcess(
+			std::vector<ProcessTraceState>& activeProcesses,
+			pid_t processId)
+		{
+			activeProcesses.push_back({
+				processId,
+				true,
+				false,
+			});
+
+			return activeProcesses.at(activeProcesses.size() - 1);
+		}
+
+		ProcessTraceState& FindProcess(
+			std::vector<ProcessTraceState>& activeProcesses,
+			pid_t processId)
+		{
+			auto result = std::find_if(
+				activeProcesses.begin(),
+				activeProcesses.end(),
+				[processId](const ProcessTraceState& value) { return value.ProcessId == processId; });
+
+			if (result == activeProcesses.end())
+			{
+				throw std::runtime_error("Missing process trace state");
+			}
+			else
+			{
+				return *result;
+			}
+		}
+
 		void WorkerThread()
 		{
 			Log::Diag("WorkerThread Start");
-			int status;
+
+			auto activeProcesses = std::vector<ProcessTraceState>();
+			InitializeProcess(activeProcesses, m_processId);
 
 			// Wait for the first notification from the child
+			int status;
 			auto currentProcessId = waitpid(m_processId, &status, 0);
+			DebugTrace("WaitPID:", currentProcessId);
 			if (currentProcessId == -1)
 				throw std::runtime_error("Wait failed");
 
+			auto& rootProcess = FindProcess(activeProcesses, currentProcessId);
+
 			// Enable SecComp filtering
 			unsigned int ptraceOptions =
+				// Make it easier to track our SIGTRAP events
+				PTRACE_O_TRACESYSGOOD |
+				// Trace Secure Compute
 				PTRACE_O_TRACESECCOMP |
+				// Auto attach to children
 				PTRACE_O_TRACECLONE |
 				PTRACE_O_TRACEFORK |
-				PTRACE_O_TRACEVFORK;
+				PTRACE_O_TRACEVFORK |
+				// Prevent children from running beyond our lifetime
+				PTRACE_O_EXITKILL |
+				// Monitor execve
+				PTRACE_O_TRACEEXEC |
+				// Monitor child exit
+				PTRACE_O_TRACEEXIT;
 
 			ptrace(PTRACE_SETOPTIONS, m_processId, 0, ptraceOptions);
 			ptrace(PTRACE_CONT, m_processId, NULL, NULL);
 
 			while (true)
 			{
-				currentProcessId = wait(&status);
+				currentProcessId = waitpid(-1, &status, __WALL);
+				int wait_errno = errno;
+
+				DebugTrace("Wait:", currentProcessId);
+				DebugTrace("Status:", status);
+
 				if (currentProcessId == -1)
 					throw std::runtime_error("Wait failed");
 
 				if (WIFEXITED(status))
 				{
 					int exitCode = WEXITSTATUS(status);
+					auto& currentProcess = FindProcess(activeProcesses, currentProcessId);
+					currentProcess.IsRunning = false;
 					if (currentProcessId == m_processId)
 					{
 						m_exitCode = exitCode;
+						DebugTrace("Main exit:", m_exitCode);
 						return;
 					}
 					else
@@ -382,31 +446,91 @@ namespace Monitor::Linux
 				else if (WIFSTOPPED(status))
 				{
 					auto signal = WSTOPSIG(status);
+					DebugTrace("Signal: ", signal);
 					switch (signal)
 					{
+						case (SIGTRAP | 0x80):
+						{
+							DebugTrace("TRACESYSGOOD");
+
+							// Complete system call
+							auto& currentProcess = FindProcess(activeProcesses, currentProcessId);
+							if (currentProcess.InSystemCall)
+							{
+								// Process the completed system call
+								m_eventListener.ProcessSysCall(currentProcessId);
+								currentProcess.InSystemCall = false;
+							}
+							else
+							{
+								throw std::runtime_error("Expected to be in a system call");
+							}
+
+							break;
+						}
 						case SIGTRAP:
 						{
 							auto event = (unsigned int)status >> 16;
+							DebugTrace("Event:", event);
 							switch (event)
 							{
-								case 0:
-									// Process start
-									break;
 								case PTRACE_EVENT_SECCOMP:
-									// Ignore all messages if partial monitor is enabled
-									if (!m_partialMonitor)
 									{
-										m_eventListener.ProcessSysCall(currentProcessId);
+										DebugTrace("PTRACE_EVENT_SECCOMP");
+										auto& currentProcess = FindProcess(activeProcesses, currentProcessId);
+
+										// Ignore all messages if partial monitor is enabled
+										if (!m_partialMonitor)
+										{
+											if (!currentProcess.InSystemCall)
+											{
+												// Signal the system call to continue so we can monitor the return result
+												ptrace(PTRACE_SYSCALL, currentProcessId, 0, 0);
+												currentProcess.InSystemCall = true;
+											} 
+											else
+											{
+												DebugTrace("WARNING: Process was already in a system call");
+
+												// Signal the system call to continue so we can monitor the return result
+												ptrace(PTRACE_SYSCALL, currentProcessId, 0, 0);
+												currentProcess.InSystemCall = true;
+											}
+										}
 									}
+
 									break;
 								case PTRACE_EVENT_FORK:
+									{
+										DebugTrace("PTRACE_EVENT_FORK");
+									}
+
+									break;
 								case PTRACE_EVENT_VFORK:
+									{
+										DebugTrace("PTRACE_EVENT_VFORK");
+									}
+									
+									break;
 								case PTRACE_EVENT_CLONE:
-									// Entering child process
+									{
+										DebugTrace("PTRACE_EVENT_CLONE");
+										auto& currentProcess = FindProcess(activeProcesses, currentProcessId);
+									}
+									
+									break;
+								case PTRACE_EVENT_EXIT:
+									{
+										DebugTrace("PTRACE_EVENT_EXIT");
+										auto& currentProcess = FindProcess(activeProcesses, currentProcessId);
+										currentProcess.IsRunning = false;
+									}
+
 									break;
 								default:
-									std::cout << "UNKNOWN PTRACE EVENT: " << event << " STATUS: " << status << " PID: " << currentProcessId << std::endl;
-									break;
+									{
+										throw std::runtime_error("UNKNOWN PTRACE EVENT");
+									}
 							}
 
 							break;
@@ -414,28 +538,31 @@ namespace Monitor::Linux
 						case SIGWINCH:
 						{
 							// Window size changed?
+							DebugTrace("SIGWINCH");
 							break;
 						}
 						case SIGSTOP:
 						{
 							// Trace clone
+							DebugTrace("TraceClone");
+							InitializeProcess(activeProcesses, currentProcessId);
 							break;
 						}
 						case SIGCLD:
 						{
 							// Child signaled
+							DebugTrace("Child Signaled");
 							break;
 						}
 						default:
 						{
-							std::cout << "UNKNOWN SIGNAL: " << signal << " STATUS: " << status << " PID: " << currentProcessId << std::endl;
-							break;
+							throw std::runtime_error("UNKNOWN SIGNAL");
 						}
 					}
 				}
 				else
 				{
-					std::cout << "UNKNOWN STATUS: " << status << " PID: " << currentProcessId << std::endl;
+					throw std::runtime_error("UNKNOWN STATUS");
 				}
 
 				ptrace(PTRACE_CONT, currentProcessId, NULL, NULL);
