@@ -1,3 +1,5 @@
+#include <compare>
+
 export module Sample.DirectX;
 
 import :DXSample;
