@@ -186,11 +186,9 @@ namespace Monitor::Linux
 					m_monitor->OnVFork(result);
 					break;
 				}
-
-				// Uknown
 				default:
 				{
-					throw std::runtime_error("Unknown system call type");
+					throw std::runtime_error(std::format("Unknown system call type {0}", registers.Command));
 				}
 			}
 		}
