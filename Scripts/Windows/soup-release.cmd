@@ -3,6 +3,7 @@ SETLOCAL
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\..
 SET OutDir=%RootDir%\out
+SET MSBuildDir=%OutDir%\msbuild
 SET RunDir=%OutDir%\run
 SET SourceDir=%RootDir%\Source
 SET GlobalPackagesDir=%UserProfile%\.soup\packages
@@ -30,10 +31,10 @@ robocopy %OutDir%\C++\Local\mkdir\%MKDIR_VERSION%\%ConfigHash%\ %RunDir%\Soup\Bu
 robocopy %GlobalPackagesDir%\Wren\Soup\Wren\%SOUP_WREN_VERSION%\ %RunDir%\Soup\BuiltIn\Soup\Wren\%SOUP_WREN_VERSION%\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy %GlobalOutDir%\Wren\Soup\Wren\%SOUP_WREN_VERSION%\%ConfigHash%\ %RunDir%\Soup\BuiltIn\Soup\Wren\%SOUP_WREN_VERSION%\out\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\bin\Soup.Build.PackageManager\Release\net8.0\win-x64\publish\ %RunDir%\Soup\PackageManager\ *.dll *.exe /MIR /NJH /NJS /NDL > NUL
+robocopy %MSBuildDir%\bin\Soup.Build.PackageManager\Release\net8.0\win-x64\publish\ %RunDir%\Soup\PackageManager\ *.dll *.exe /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\bin\SoupView\Release\net8.0\win-x64\publish\ %RunDir%\Soup\View\ *.dll *.exe /MIR /NJH /NJS /NDL > NUL
+robocopy %MSBuildDir%\bin\SoupView\Release\net8.0\win-x64\publish\ %RunDir%\Soup\View\ *.dll *.exe /MIR /NJH /NJS /NDL > NUL
 
-robocopy %OutDir%\bin\Swhere\Release\net8.0\win-x64\publish\ %RunDir%\ swhere.exe /NJH /NJS /NDL > NUL
+robocopy %MSBuildDir%\bin\Swhere\Release\net8.0\win-x64\publish\ %RunDir%\ swhere.exe /NJH /NJS /NDL > NUL
 
 %RunDir%\Soup.cmd %*
