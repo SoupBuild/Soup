@@ -28,6 +28,8 @@ jobs:
     # Build Soup
     - name: Soup Where
       run: swhere
+    - name: Print Local Config
+      run: type C:/Users/runneradmin/.soup/LocalUseConfig.sml
     - name: Soup Restore Client
       run: soup restore ./Soup/Source/Client/CLI/
     - name: Soup Build Client
