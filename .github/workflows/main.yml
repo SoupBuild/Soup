@@ -72,6 +72,8 @@ jobs:
       run: soup restore ./Soup/Source/Tools/PrintValueTable/
     - name: Soup Build PrintValueTable
       run: soup build ./Soup/Source/Tools/PrintValueTable/ -flavor ${{matrix.config}}
+    - name: Soup Build Migrate
+      run: soup build ./Soup/Source/GenerateSharp/Migrate/ -flavor ${{matrix.config}}
 
     # Build Samples
     - name: Soup Restore C BuildExtension
