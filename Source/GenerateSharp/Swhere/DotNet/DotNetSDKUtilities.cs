@@ -24,20 +24,12 @@ public static class DotNetSDKUtilities
 	{
 		var dotnetExecutablePath = await WhereIsUtilities.FindExecutableAsync(platform, "dotnet");
 		Log.HighPriority($"Using DotNet: {dotnetExecutablePath}");
-		Path dotnetInstallPath;
-		string newline;
-		switch (platform)
+		Path dotnetInstallPath = dotnetExecutablePath.GetParent();
+		string newline = platform switch
 		{
-			case OSPlatform.Windows:
-				dotnetInstallPath = new Path("C:/Program Files/dotnet/");
-				newline = "\r\n";
-				break;
-			case OSPlatform.Linux:
-				dotnetInstallPath = new Path("/usr/lib/dotnet/");
-				newline = "\n";
-				break;
-			default:
-				throw new InvalidOperationException("Unsupported operating system");
+			OSPlatform.Windows => "\r\n",
+			OSPlatform.Linux => "\n",
+			_ => throw new InvalidOperationException("Unsupported operating system"),
 		};
 
 		// Grant access to the install folder
