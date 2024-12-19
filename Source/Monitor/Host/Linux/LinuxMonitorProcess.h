@@ -445,7 +445,7 @@ namespace Monitor::Linux
 					}
 					else
 					{
-						DebugTrace("Child exit: ", currentProcessId);
+						DebugTrace("Child exit:", currentProcessId);
 					}
 				}
 				else if (WIFSTOPPED(status))
@@ -477,6 +477,7 @@ namespace Monitor::Linux
 						{
 							auto event = (unsigned int)status >> 16;
 							DebugTrace("Event:", event);
+
 							switch (event)
 							{
 								case PTRACE_EVENT_SECCOMP:
@@ -504,13 +505,31 @@ namespace Monitor::Linux
 								case PTRACE_EVENT_FORK:
 								{
 									DebugTrace("PTRACE_EVENT_FORK");
+									auto& currentProcess = FindProcess(activeProcesses, currentProcessId);
+									if (currentProcess.InSystemCall)
+									{
+										currentProcess.InSystemCall = false;
+									}
+									else
+									{
+										throw std::runtime_error("Clone expected to be in a system call");
+									}
 
 									break;
 								}
 								case PTRACE_EVENT_VFORK:
 								{
 									DebugTrace("PTRACE_EVENT_VFORK");
-									
+									auto& currentProcess = FindProcess(activeProcesses, currentProcessId);
+									if (currentProcess.InSystemCall)
+									{
+										currentProcess.InSystemCall = false;
+									}
+									else
+									{
+										throw std::runtime_error("Clone expected to be in a system call");
+									}
+
 									break;
 								}
 								case PTRACE_EVENT_CLONE:
@@ -552,19 +571,27 @@ namespace Monitor::Linux
 						case SIGSTOP:
 						{
 							// Trace clone
-							DebugTrace("TraceClone");
+							DebugTrace("SIGSTOP");
 							InitializeProcess(activeProcesses, currentProcessId);
+							break;
+						}
+						case SIGCHLD:
+						{
+							// Child exit
+							DebugTrace("SIGCHLD");
 							break;
 						}
 						default:
 						{
-							DebugTrace("Unknown Signal");
+							Log::Warning("WARNING: Unknown Signal");
+							break;
 						}
 					}
 				}
 				else
 				{
-					DebugTrace("WARNING: Unknown Status");
+					Log::Warning("WARNING: Unknown Status");
+					break;
 				}
 
 				if (!exited)
