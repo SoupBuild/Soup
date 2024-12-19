@@ -30,7 +30,7 @@ jobs:
       run: swhere
     - name: Print Local Config
       if: matrix.os == 'windows-2022'
-      run: type %userprofile%/.soup/LocalUseConfig.sml
+      run: type $HOME/.soup/LocalUseConfig.sml
     - name: Soup Restore Client
       run: soup restore ./Soup/Source/Client/CLI/
     - name: Soup Build Client
