@@ -120,7 +120,7 @@ public static class NugetSDKUtilities
 				{
 					if (nuspecDocument is null)
 					{
-						Log.Warning($"Cannot parse depedencies not in groupd yet: {nuspecFile}");
+						Log.Warning($"Cannot parse dependencies not in grouped yet: {nuspecFile}");
 						return (null, null);
 					}
 				}

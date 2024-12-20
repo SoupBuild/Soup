@@ -45,6 +45,94 @@ public static class SwhereManager
 
 	private static async Task DiscoverSharedPlatformAsync(OSPlatform platform, LocalUserConfig userConfig)
 	{
+		await DiscoverDotNetAsync(platform, userConfig);
+		DiscoverNuget(userConfig);
+	}
+
+	private static async Task DiscoverWindowsPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
+	{
+		var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
+		var msvcSDK = userConfig.EnsureSDK("MSVC");
+		msvcSDK.SourceDirectories =
+		[
+			msvcInstallPath,
+		];
+		msvcSDK.SetProperties(
+			new Dictionary<string, string>()
+			{
+				{ "Version", msvcVersion },
+				{ "VCToolsRoot", msvcInstallPath.ToString() },
+			});
+
+		var (windowsSDKVersion, windowsSDKInstallPath) = WindowsSDKUtilities.FindWindows10Kit();
+		var windowsSDK = userConfig.EnsureSDK("Windows");
+		windowsSDK.SourceDirectories =
+		[
+			windowsSDKInstallPath,
+		];
+		windowsSDK.SetProperties(
+			new Dictionary<string, string>()
+			{
+				{ "Version", windowsSDKVersion },
+				{ "RootPath", windowsSDKInstallPath.ToString() },
+			});
+
+		var netFXToolsPath = WindowsSDKUtilities.FindNetFXTools();
+		var netFXToolsSDK = userConfig.EnsureSDK("NetFXTools");
+		netFXToolsSDK.SourceDirectories =
+		[
+			netFXToolsPath,
+		];
+		netFXToolsSDK.SetProperties(
+			new Dictionary<string, string>()
+			{
+				{ "ToolsRoot", netFXToolsPath.ToString() },
+			});
+	}
+
+	private static async Task DiscoverLinuxPlatformAsync(OSPlatform platform, LocalUserConfig userConfig)
+	{
+		await DiscoverGCCAsync(platform, userConfig);
+		await DiscoverClangAsync(platform, userConfig);
+	}
+
+	private static async Task DiscoverGCCAsync(OSPlatform platform, LocalUserConfig userConfig)
+	{
+		// Find the GCC SDKs
+		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "gcc");
+		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "g++");
+
+		var gccSDK = userConfig.EnsureSDK("GCC");
+		gccSDK.SourceDirectories = [];
+		gccSDK.SetProperties(
+			new Dictionary<string, string>()
+			{
+				{ "CCompiler", cCompilerPath.ToString() },
+				{ "CppCompiler", cppCompilerPath.ToString() },
+			});
+	}
+
+	private static async Task DiscoverClangAsync(OSPlatform platform, LocalUserConfig userConfig)
+	{
+		// Find the GCC SDKs
+		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "clang");
+		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "clang++");
+		var archiverPath = await WhereIsUtilities.FindExecutableAsync(platform, "ar");
+
+		var clangSDK = userConfig.EnsureSDK("Clang");
+		clangSDK.SourceDirectories = [];
+		clangSDK.SetProperties(
+			new Dictionary<string, string>()
+			{
+				{ "CCompiler", cCompilerPath.ToString() },
+				{ "CppCompiler", cppCompilerPath.ToString() },
+				{ "Archiver", archiverPath.ToString() },
+			});
+	}
+
+
+	private static async Task DiscoverDotNetAsync(OSPlatform platform, LocalUserConfig userConfig)
+	{
 		var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories) =
 			await DotNetSDKUtilities.FindDotNetAsync(platform);
 		var dotnetSDK = userConfig.EnsureSDK("DotNet");
@@ -52,7 +140,8 @@ public static class SwhereManager
 		dotnetSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-				{ "DotNetExecutable", dotNetExecutable.ToString() },
+				{ "DotNetExecutable", dotNetExecutable.ToString()
+},
 			});
 
 		var sdksTable = dotnetSDK.Properties.EnsureTableWithSyntax("SDKs", 3);
@@ -103,54 +192,16 @@ public static class SwhereManager
 		}
 	}
 
-	private static async Task DiscoverWindowsPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
+	private static void DiscoverNuget(LocalUserConfig userConfig)
 	{
-		var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
-		var msvcSDK = userConfig.EnsureSDK("MSVC");
-		msvcSDK.SourceDirectories =
-		[
-			msvcInstallPath,
-		];
-		msvcSDK.SetProperties(
-			new Dictionary<string, string>()
-			{
-				{ "Version", msvcVersion },
-				{ "VCToolsRoot", msvcInstallPath.ToString() },
-			});
-
-		var (windowsSDKVersion, windowsSDKInstallPath) = WindowsSDKUtilities.FindWindows10Kit();
-		var windowsSDK = userConfig.EnsureSDK("Windows");
-		windowsSDK.SourceDirectories =
-		[
-			windowsSDKInstallPath,
-		];
-		windowsSDK.SetProperties(
-			new Dictionary<string, string>()
-			{
-				{ "Version", windowsSDKVersion },
-				{ "RootPath", windowsSDKInstallPath.ToString() },
-			});
-
-		var netFXToolsPath = WindowsSDKUtilities.FindNetFXTools();
-		var netFXToolsSDK = userConfig.EnsureSDK("NetFXTools");
-		netFXToolsSDK.SourceDirectories =
-		[
-			netFXToolsPath,
-		];
-		netFXToolsSDK.SetProperties(
-			new Dictionary<string, string>()
-			{
-				{ "ToolsRoot", netFXToolsPath.ToString() },
-			});
-
 		var (hasNuget, nugetPackagesPath, nugetPackages) = NugetSDKUtilities.FindNugetPackages();
 		if (hasNuget)
 		{
 			var nugetSDK = userConfig.EnsureSDK("Nuget");
 			nugetSDK.SourceDirectories =
-				[
-					nugetPackagesPath,
-				];
+			[
+				nugetPackagesPath,
+			];
 
 			nugetSDK.SetProperties(
 				new Dictionary<string, string>()
@@ -197,45 +248,5 @@ public static class SwhereManager
 				}
 			}
 		}
-	}
-
-	private static async Task DiscoverLinuxPlatformAsync(OSPlatform platform, LocalUserConfig userConfig)
-	{
-		await DiscoverGCCAsync(platform, userConfig);
-		await DiscoverClangAsync(platform, userConfig);
-	}
-
-	private static async Task DiscoverGCCAsync(OSPlatform platform, LocalUserConfig userConfig)
-	{
-		// Find the GCC SDKs
-		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "gcc");
-		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "g++");
-
-		var gccSDK = userConfig.EnsureSDK("GCC");
-		gccSDK.SourceDirectories = [];
-		gccSDK.SetProperties(
-			new Dictionary<string, string>()
-			{
-				{ "CCompiler", cCompilerPath.ToString() },
-				{ "CppCompiler", cppCompilerPath.ToString() },
-			});
-	}
-
-	private static async Task DiscoverClangAsync(OSPlatform platform, LocalUserConfig userConfig)
-	{
-		// Find the GCC SDKs
-		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "clang");
-		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "clang++");
-		var archiverPath = await WhereIsUtilities.FindExecutableAsync(platform, "ar");
-
-		var clangSDK = userConfig.EnsureSDK("Clang");
-		clangSDK.SourceDirectories = [];
-		clangSDK.SetProperties(
-			new Dictionary<string, string>()
-			{
-				{ "CCompiler", cCompilerPath.ToString() },
-				{ "CppCompiler", cppCompilerPath.ToString() },
-				{ "Archiver", archiverPath.ToString() },
-			});
 	}
 }
