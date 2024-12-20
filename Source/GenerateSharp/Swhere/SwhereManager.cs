@@ -51,6 +51,8 @@ public static class SwhereManager
 
 	private static async Task DiscoverWindowsPlatformAsync(bool includePrerelease, LocalUserConfig userConfig)
 	{
+		Log.HighPriority("Discover Windows Platform");
+
 		var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
 		var msvcSDK = userConfig.EnsureSDK("MSVC");
 		msvcSDK.SourceDirectories =
@@ -98,6 +100,8 @@ public static class SwhereManager
 
 	private static async Task DiscoverGCCAsync(OSPlatform platform, LocalUserConfig userConfig)
 	{
+		Log.HighPriority("Discover GCC");
+
 		// Find the GCC SDKs
 		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "gcc");
 		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "g++");
@@ -114,7 +118,9 @@ public static class SwhereManager
 
 	private static async Task DiscoverClangAsync(OSPlatform platform, LocalUserConfig userConfig)
 	{
-		// Find the GCC SDKs
+		Log.HighPriority("Discover Clang");
+
+		// Find the Clang SDKs
 		var cCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "clang");
 		var cppCompilerPath = await WhereIsUtilities.FindExecutableAsync(platform, "clang++");
 		var archiverPath = await WhereIsUtilities.FindExecutableAsync(platform, "ar");
@@ -133,6 +139,8 @@ public static class SwhereManager
 
 	private static async Task DiscoverDotNetAsync(OSPlatform platform, LocalUserConfig userConfig)
 	{
+		Log.HighPriority("Discover DotNet");
+
 		var (dotNetExecutable, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories) =
 			await DotNetSDKUtilities.FindDotNetAsync(platform);
 		var dotnetSDK = userConfig.EnsureSDK("DotNet");
@@ -140,8 +148,7 @@ public static class SwhereManager
 		dotnetSDK.SetProperties(
 			new Dictionary<string, string>()
 			{
-				{ "DotNetExecutable", dotNetExecutable.ToString()
-},
+				{ "DotNetExecutable", dotNetExecutable.ToString() },
 			});
 
 		var sdksTable = dotnetSDK.Properties.EnsureTableWithSyntax("SDKs", 3);
@@ -194,6 +201,8 @@ public static class SwhereManager
 
 	private static void DiscoverNuget(LocalUserConfig userConfig)
 	{
+		Log.HighPriority("Discover Nuget");
+
 		var (hasNuget, nugetPackagesPath, nugetPackages) = NugetSDKUtilities.FindNugetPackages();
 		if (hasNuget)
 		{
