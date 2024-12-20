@@ -7,7 +7,7 @@ SET SourceDir=%RootDir%\Source
 SET SWhereDir=%SourceDir%\GenerateSharp\SoupView
 
 REM - Cleanup old publish to work around bug in publish
-rmdir /S /Q %RootDir%\out\bin\SoupView\%Flavor%\net8.0\win-x64\publish\
+rmdir /S /Q %RootDir%\out\bin\SoupView\%Flavor%\net9.0\win-x64\publish\
 
 REM - Publish SWhere tool
 echo dotnet publish %SWhereDir% -c %Flavor% -f net9.0 -r win-x64 --self-contained true

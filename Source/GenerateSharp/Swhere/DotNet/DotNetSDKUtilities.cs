@@ -40,7 +40,7 @@ public static class DotNetSDKUtilities
 
 		var dotnetSDKs = await FindDotNetSDKVersionsAsync(dotnetExecutablePath, newline);
 		var dotnetRuntimes = await FindDotNetRuntimeVersionsAsync(dotnetExecutablePath, newline);
-		var dotnetTargetingPacks = FindDotNetTargetingPacksVersions(dotnetInstallPath);
+		var dotnetTargetingPacks = FindDotNetTargetingPacksVersions(dotnetRuntimes);
 
 		return (dotnetExecutablePath, dotnetSDKs, dotnetRuntimes, dotnetTargetingPacks, sourceDirectories);
 	}
@@ -116,49 +116,47 @@ public static class DotNetSDKUtilities
 	}
 
 	private static Dictionary<string, IList<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>> FindDotNetTargetingPacksVersions(
-		Path dotnetInstallPath)
+		IDictionary<string, IList<(string Version, Path InstallDirectory)>> dotnetRuntimes)
 	{
-		var knownPacks = new List<string>()
-		{
-			"Microsoft.NETCore.App.Ref",
-		};
-
 		var result = new Dictionary<string, IList<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>>();
-		foreach (var packageName in knownPacks)
+		foreach (var (runtime, versions) in dotnetRuntimes)
 		{
-			var packageVersions = FindDotNetTargetingPackVersions(dotnetInstallPath, packageName);
-			result.Add(packageName, packageVersions);
+			var packName = $"{runtime}.Ref";
+			var packageVersions = FindDotNetTargetingPackVersions(packName, versions);
+			if (packageVersions.Count > 0)
+			{
+				result.Add(packName, packageVersions);
+			}
 		}
 
 		return result;
 	}
 
 	private static List<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)> FindDotNetTargetingPackVersions(
-		Path dotnetInstallPath,
-		string packageName)
+		string packName,
+		IList<(string Version, Path InstallDirectory)> runtimeVersions)
 	{
-		var dotnetPacksPath = dotnetInstallPath + new Path($"./packs/{packageName}/");
-
-		// Check the default tools version
-		Log.HighPriority("FindDotNetPackVersions: " + dotnetPacksPath.ToString());
 		var versions = new List<(string Version, Path InstallDirectory, FrameworkFileList? FrameworkList)>();
-		if (LifetimeManager.Get<IFileSystem>().Exists(dotnetPacksPath))
+		foreach (var (version, installDirectory) in runtimeVersions)
 		{
-			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetPacksPath))
+			var rootDirectory = installDirectory.GetParent().GetParent();
+			var packPath = rootDirectory + new Path($"./packs/{packName}/{version}/");
+
+			// Check the default tools version
+			Log.HighPriority("FindDotNetPack: " + packPath.ToString());
+			if (LifetimeManager.Get<IFileSystem>().Exists(packPath))
 			{
-				var folderName = child.Path.DecomposeDirectories().Last();
-				var frameworkList = LoadFrameworkList(child.Path);
-				versions.Add((folderName, child.Path, frameworkList));
+				var frameworkList = LoadFrameworkList(packPath);
+				versions.Add((version, packPath, frameworkList));
 			}
-		}
-		else
-		{
-			Log.Warning("Directory does not exist");
+			else
+			{
+				Log.Warning("Directory does not exist");
+			}
 		}
 
 		return versions;
 	}
-
 
 	private static FrameworkFileList? LoadFrameworkList(
 		Path dotnetPackPath)
