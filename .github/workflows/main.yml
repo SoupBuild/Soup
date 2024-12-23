@@ -30,7 +30,7 @@ jobs:
       run: swhere
     - name: Print Local Config
       if: matrix.os == 'windows-2022'
-      run: type $HOME/.soup/LocalUseConfig.sml
+      run: ls $HOME/.soup/
     - name: Print Local Config
       if: matrix.os != 'windows-2022'
       run: cat $HOME/.soup/LocalUseConfig.sml
