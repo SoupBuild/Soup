@@ -83,12 +83,12 @@ namespace Monitor::Linux
 
 			// Create a pipe to send stdout to parent
 			int stdOutPipe[2];
-			if (pipe(stdOutPipe) < 0)
+			if (pipe2(stdOutPipe, O_NONBLOCK) < 0)
 				throw std::runtime_error("Failed to create stdOutPipe");
 
 			// Create a pipe to send stderr to parent
 			int stdErrPipe[2];
-			if (pipe(stdErrPipe) < 0)
+			if (pipe2(stdErrPipe, O_NONBLOCK) < 0)
 				throw std::runtime_error("Failed to create stdErrPipe");
 
 			// Create a child process
@@ -137,43 +137,12 @@ namespace Monitor::Linux
 
 			m_processRunning = false;
 
-			// Read all and write to stdout
-			// TODO: May want to switch over to a background thread with peak to read in order
-			int dwRead;
-			const int BufferSize = 256;
-			char buffer[BufferSize + 1];
-
-			// Read on output
-			while (true)
-			{
-				dwRead = read(m_stdOutReadHandle, buffer, BufferSize);
-				if(dwRead < 0)
-					break;
-				if (dwRead == 0)
-					break;
-
-				m_stdOut << std::string_view(buffer, dwRead);
-			}
-
+			ReadAvailableStdOut();
 			m_stdOut << std::flush;
-
 			close(m_stdOutReadHandle);
 
-			// Read all errors
-			while (true)
-			{
-				dwRead = read(m_stdErrReadHandle, buffer, BufferSize);
-				if(dwRead < 0)
-					break;
-				if (dwRead == 0)
-					break;
-
-				// Make the string null terminated
-				m_stdErr << std::string_view(buffer, dwRead);
-			}
-
+			ReadAvailableStdErr();
 			m_stdErr << std::flush;
-
 			close(m_stdErrReadHandle);
 
 			m_isFinished = true;
@@ -215,6 +184,47 @@ namespace Monitor::Linux
 		}
 
 	private:
+		void ReadAvailableStdOut()
+		{
+			// Read all and write to stdout
+			int dwRead;
+			const int BufferSize = 256;
+			char buffer[BufferSize + 1];
+
+			// Read on output
+			while (true)
+			{
+				dwRead = read(m_stdOutReadHandle, buffer, BufferSize);
+				if(dwRead < 0)
+					break;
+				if (dwRead == 0)
+					break;
+
+				m_stdOut << std::string_view(buffer, dwRead);
+			}
+		}
+
+		void ReadAvailableStdErr()
+		{
+			// Read all and write to stdout
+			int dwRead;
+			const int BufferSize = 256;
+			char buffer[BufferSize + 1];
+
+			// Read all errors
+			while (true)
+			{
+				dwRead = read(m_stdErrReadHandle, buffer, BufferSize);
+				if(dwRead < 0)
+					break;
+				if (dwRead == 0)
+					break;
+
+				// Make the string null terminated
+				m_stdErr << std::string_view(buffer, dwRead);
+			}
+		}
+
 		void SetupChildProcess(int stdOutPipe[2], int stdErrPipe[2])
 		{
 			try
@@ -418,8 +428,11 @@ namespace Monitor::Linux
 			if (ptrace(PTRACE_CONT, m_processId, NULL, NULL) < 0)
 				throw std::runtime_error(std::format("ptrace PTRACE_CONT failed {0}", errno));
 
+			int eventCount = 0;
 			while (true)
 			{
+				eventCount++;
+				DebugTrace("Waiting...");
 				currentProcessId = waitpid(-1, &status, __WALL);
 				int wait_errno = errno;
 
@@ -427,7 +440,7 @@ namespace Monitor::Linux
 				DebugTrace("Status:", status);
 
 				if (currentProcessId == -1)
-					throw std::runtime_error("Wait failed");
+					throw std::runtime_error(std::format("Wait failed {0}", wait_errno));
 
 				bool continueSysCall = false;
 				bool exited = WIFEXITED(status);
@@ -598,13 +611,25 @@ namespace Monitor::Linux
 				{
 					if (continueSysCall)
 					{
+						DebugTrace("PTRACE_SYSCALL");
 						if (ptrace(PTRACE_SYSCALL, currentProcessId, 0, 0) < 0)
 							throw std::runtime_error(std::format("ptrace PTRACE_SYSCALL failed {0}", errno));
 					}
 					else
 					{
+						DebugTrace("PTRACE_CONT");
 						if (ptrace(PTRACE_CONT, currentProcessId, 0, 0) < 0)
 							throw std::runtime_error(std::format("ptrace PTRACE_CONT failed {0}", errno));
+					}
+
+					if (eventCount > 100)
+					{
+						// Read std out so the child does not fill the buffer
+						// TODO: Move to background thread so we do not block the child
+						ReadAvailableStdOut();
+						ReadAvailableStdErr();
+
+						eventCount = 0;
 					}
 				}
 			}
