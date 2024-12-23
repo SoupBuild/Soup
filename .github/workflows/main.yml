@@ -31,6 +31,9 @@ jobs:
     - name: Soup Where
       run: swhere
     - name: Print Local Config
+      if: matrix.os != 'windows-2022'
+      run: which dotnet
+    - name: Print Local Config
       if: matrix.os == 'windows-2022'
       run: type $HOME/.soup/LocalUserConfig.sml
     - name: Print Local Config
