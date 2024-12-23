@@ -28,6 +28,12 @@ jobs:
     # Build Soup
     - name: Soup Where
       run: swhere
+    - name: Print Local Config
+      if: matrix.os == 'windows-2022'
+      run: type $HOME/.soup/LocalUseConfig.sml
+    - name: Print Local Config
+      if: matrix.os != 'windows-2022'
+      run: cat $HOME/.soup/LocalUseConfig.sml
     - name: Soup Restore Client
       run: soup restore ./Soup/Source/Client/CLI/
     - name: Soup Build Client
@@ -89,7 +95,7 @@ jobs:
     - name: Soup Build C StaticLibrary
       run: soup build ./Soup/Samples/C/StaticLibrary/Application/ -flavor ${{matrix.config}}
     - name: Soup Build C WindowsApplication
-      if: matrix.os != 'ubuntu-24.04'
+      if: matrix.os == 'windows-2022'
       run: soup build ./Soup/Samples/C/WindowsApplication/ -flavor ${{matrix.config}}
 
     - name: Soup Restore Cpp BuildExtension
@@ -99,7 +105,7 @@ jobs:
     - name: Soup Build Cpp ConsoleApplication
       run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DirectX
-      if: matrix.os != 'ubuntu-24.04'
+      if: matrix.os == 'windows-2022'
       run: soup build ./Soup/Samples/Cpp/DirectX/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DynamicLibrary
       run: soup build ./Soup/Samples/Cpp/DynamicLibrary/Application/ -flavor ${{matrix.config}}
@@ -112,7 +118,7 @@ jobs:
     - name: Soup Build Cpp StaticLibrary
       run: soup build ./Soup/Samples/Cpp/StaticLibrary/Application/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp WindowsApplication
-      if: matrix.os != 'ubuntu-24.04'
+      if: matrix.os == 'windows-2022'
       run: soup build ./Soup/Samples/Cpp/WindowsApplication/ -flavor ${{matrix.config}}
 
     - name: Soup Restore CSharp BuildExtension
