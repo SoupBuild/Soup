@@ -26,6 +26,8 @@ jobs:
         version: latest
 
     # Build Soup
+    - name: Dotnet
+      run: dotnet --info
     - name: Soup Where
       run: swhere
     - name: Print Local Config
