@@ -71,7 +71,7 @@ public class MockProcessManager : IProcessManager
 	/// <param name="arguments">The arguments.</param>
 	/// <param name="workingDirectory">The working directory.</param>
 	public IProcess CreateProcess(
-		Path executable,
+		string executable,
 		string arguments,
 		Path workingDirectory)
 	{

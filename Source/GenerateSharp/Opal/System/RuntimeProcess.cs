@@ -14,7 +14,7 @@ namespace Opal.System;
 public class RuntimeProcess : IProcess
 {
 	// Input
-	private readonly Path executable;
+	private readonly string executable;
 	private readonly string arguments;
 	private readonly Path workingDirectory;
 
@@ -28,7 +28,7 @@ public class RuntimeProcess : IProcess
 	/// <param name="arguments">The arguments.</param>
 	/// <param name="workingDirectory">The workingDirectory.</param>
 	public RuntimeProcess(
-		Path executable,
+		string executable,
 		string arguments,
 		Path workingDirectory)
 	{
@@ -44,7 +44,7 @@ public class RuntimeProcess : IProcess
 	{
 		var processInfo = new ProcessStartInfo()
 		{
-			FileName = this.executable.ToString(),
+			FileName = this.executable,
 			Arguments = this.arguments,
 			WorkingDirectory = this.workingDirectory.ToString(),
 			RedirectStandardOutput = true,
