@@ -45,7 +45,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 		{
 			if (CheckRaiseAndSetIfChanged(ref this.selectedNode, value))
 			{
-				SelectedTask = this.selectedNode is not null ? this.taskDetailsLookup[this.selectedNode.Id] : null;
+				this.SelectedTask = this.selectedNode is not null ? this.taskDetailsLookup[this.selectedNode.Id] : null;
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 
 	public async Task LoadProjectAsync(Path? packageFolder, string? owner)
 	{
-		Graph = null;
+		this.Graph = null;
 
 		var activeGraph = await Task.Run(async () =>
 		{
@@ -90,7 +90,7 @@ public class TaskGraphViewModel : ContentPaneViewModel
 			return null;
 		});
 
-		Graph = activeGraph;
+		this.Graph = activeGraph;
 	}
 
 	private List<GraphNodeViewModel>? BuildGraph(ValueTable generateInfoTable)

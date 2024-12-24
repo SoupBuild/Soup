@@ -20,9 +20,9 @@ public class FileParameter
 
 	public FileParameter(Stream data, string? fileName, string? contentType)
 	{
-		Data = data;
-		FileName = fileName;
-		ContentType = contentType;
+		this.Data = data;
+		this.FileName = fileName;
+		this.ContentType = contentType;
 	}
 
 	public Stream Data { get; private set; }

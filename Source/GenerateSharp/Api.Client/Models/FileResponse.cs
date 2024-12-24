@@ -19,7 +19,7 @@ public sealed class FileResponse : IDisposable
 
 	public Stream Stream { get; private set; }
 
-	public bool IsPartial => StatusCode == 206;
+	public bool IsPartial => this.StatusCode == 206;
 
 	public FileResponse(
 		int statusCode,
@@ -28,16 +28,16 @@ public sealed class FileResponse : IDisposable
 		IDisposable? client,
 		IDisposable response)
 	{
-		StatusCode = statusCode;
-		Headers = headers;
-		Stream = stream;
+		this.StatusCode = statusCode;
+		this.Headers = headers;
+		this.Stream = stream;
 		this.client = client;
 		this.response = response;
 	}
 
 	public void Dispose()
 	{
-		Stream.Dispose();
+		this.Stream.Dispose();
 		this.response?.Dispose();
 		this.client?.Dispose();
 	}

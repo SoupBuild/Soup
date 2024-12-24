@@ -30,9 +30,9 @@ public class SelectedButton : Button
 
 	protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
 	{
-		if (change.Property.Name == nameof(IsSelected) && change.NewValue is bool boolValue)
+		if (change.Property.Name == nameof(this.IsSelected) && change.NewValue is bool boolValue)
 		{
-			PseudoClasses.Set(":selected", boolValue);
+			this.PseudoClasses.Set(":selected", boolValue);
 		}
 
 		base.OnPropertyChanged(change);

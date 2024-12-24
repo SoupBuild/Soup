@@ -68,10 +68,10 @@ public sealed class GraphViewer : TemplatedControl
 	{
 		switch (e.Property.Name)
 		{
-			case nameof(Graph):
+			case nameof(this.Graph):
 				((GraphViewer?)sender)?.LayoutGraph();
 				break;
-			case nameof(SelectedNode):
+			case nameof(this.SelectedNode):
 				// Deselect the previous item
 				if (e.OldValue is GraphNodeViewModel oldNode &&
 					this.itemLookup.TryGetValue(oldNode.Id, out var oldItem))
@@ -114,16 +114,16 @@ public sealed class GraphViewer : TemplatedControl
 
 		this.root.Children.Clear();
 
-		if (Graph is null)
+		if (this.Graph is null)
 			return;
 
 		var minPosition = new GraphShape.Point(
-			Graph.Min(node => node.Position.X),
-			Graph.Min(node => node.Position.Y));
+			this.Graph.Min(node => node.Position.X),
+			this.Graph.Min(node => node.Position.Y));
 
 		var maxPosition = new GraphShape.Point(
-			Graph.Max(node => node.Position.X),
-			Graph.Max(node => node.Position.Y));
+			this.Graph.Max(node => node.Position.X),
+			this.Graph.Max(node => node.Position.Y));
 
 		var size = new GraphShape.Size(
 			maxPosition.X - minPosition.X + NodeWidth + InternalPadding + InternalPadding,
@@ -132,7 +132,7 @@ public sealed class GraphViewer : TemplatedControl
 		var nodeState = new Dictionary<uint, (GraphViewerItem Item, Point InConnect, Point OutConnect)>();
 		this.itemLookup.Clear();
 
-		foreach (var node in Graph)
+		foreach (var node in this.Graph)
 		{
 			var nodeItem = new GraphViewerItem()
 			{
@@ -162,7 +162,7 @@ public sealed class GraphViewer : TemplatedControl
 		}
 
 		// Connect all the known nodes
-		foreach (var node in Graph)
+		foreach (var node in this.Graph)
 		{
 			var startNode = nodeState[node.Id];
 			foreach (var child in node.ChildNodes)
@@ -178,7 +178,7 @@ public sealed class GraphViewer : TemplatedControl
 		this.root.Height = size.Height;
 
 		// Ensure the current selected item is notified
-		if (SelectedNode is not null && this.itemLookup.TryGetValue(SelectedNode.Id, out var selectedItem))
+		if (this.SelectedNode is not null && this.itemLookup.TryGetValue(this.SelectedNode.Id, out var selectedItem))
 		{
 			selectedItem.IsSelected = true;
 		}
@@ -196,7 +196,7 @@ public sealed class GraphViewer : TemplatedControl
 		if (sender is not null)
 		{
 			var node = (GraphViewerItem)sender;
-			SelectedNode = (GraphNodeViewModel?)node.DataContext;
+			this.SelectedNode = (GraphNodeViewModel?)node.DataContext;
 		}
 	}
 

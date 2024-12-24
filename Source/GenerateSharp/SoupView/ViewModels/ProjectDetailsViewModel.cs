@@ -15,7 +15,7 @@ public class ProjectDetailsViewModel : ViewModelBase
 
 	public ProjectDetailsViewModel(string name, Path path, string? owner)
 	{
-		Name = name;
+		this.Name = name;
 
 		this.properties.Clear();
 
@@ -23,10 +23,10 @@ public class ProjectDetailsViewModel : ViewModelBase
 		this.properties.Add(new PropertyValueViewModel("Path", path.ToString()));
 		this.properties.Add(new PropertyValueViewModel("Owner", owner?.ToString()));
 
-		Path = path;
-		Owner = owner;
+		this.Path = path;
+		this.Owner = owner;
 
-		Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(this.properties)
+		this.Properties = new FlatTreeDataGridSource<PropertyValueViewModel>(this.properties)
 		{
 			Columns =
 				{

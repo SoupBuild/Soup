@@ -51,7 +51,7 @@ public class ClosureClient
 		GenerateClosureRequestModel request, CancellationToken cancellationToken)
 	{
 		var urlBuilder_ = new StringBuilder();
-		_ = urlBuilder_.Append(BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/closure/generate");
+		_ = urlBuilder_.Append(this.BaseUrl.OriginalString.TrimEnd('/')).Append("/v1/closure/generate");
 
 		var client = this.httpClient;
 
