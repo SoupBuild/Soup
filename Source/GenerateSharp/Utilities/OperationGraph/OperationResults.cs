@@ -21,7 +21,7 @@ public class OperationResults
 	/// </summary>
 	public OperationResults()
 	{
-		ReferencedFiles = [];
+		this.ReferencedFiles = [];
 		this.results = [];
 	}
 
@@ -32,7 +32,7 @@ public class OperationResults
 		IList<(FileId FileId, Path Path)> referencedFiles,
 		Dictionary<OperationId, OperationResult> results)
 	{
-		ReferencedFiles = referencedFiles;
+		this.ReferencedFiles = referencedFiles;
 		this.results = results;
 	}
 

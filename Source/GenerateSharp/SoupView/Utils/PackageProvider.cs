@@ -49,13 +49,13 @@ public class PackageProvider
 
 	public PackageGraph GetRootPackageGraph()
 	{
-		return GetPackageGraph(RootPackageGraphId);
+		return GetPackageGraph(this.RootPackageGraphId);
 	}
 
 	public PackageGraph GetPackageGraph(PackageGraphId packageGraphId)
 	{
 		// The PackageGraph must already be loaded
-		if (PackageGraphLookup.TryGetValue(packageGraphId, out var result))
+		if (this.PackageGraphLookup.TryGetValue(packageGraphId, out var result))
 		{
 			return result;
 		}
@@ -68,7 +68,7 @@ public class PackageProvider
 	public PackageInfo GetPackageInfo(PackageId packageId)
 	{
 		// The PackageInfo must already be loaded
-		if (PackageLookup.TryGetValue(packageId, out var result))
+		if (this.PackageLookup.TryGetValue(packageId, out var result))
 		{
 			return result;
 		}

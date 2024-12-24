@@ -143,7 +143,7 @@ public partial class PackageReference : IEquatable<PackageReference>
 	{
 		get
 		{
-			if (IsLocal)
+			if (this.IsLocal)
 				throw new InvalidOperationException("Cannot get the version of a local reference.");
 			return this.version;
 		}

@@ -16,77 +16,77 @@ public class Value
 
 	private Value(ValueType type, object? rawValue)
 	{
-		Type = type;
-		RawValue = rawValue;
+		this.Type = type;
+		this.RawValue = rawValue;
 	}
 
 	public Value(bool value)
 	{
-		Type = ValueType.Boolean;
-		RawValue = value;
+		this.Type = ValueType.Boolean;
+		this.RawValue = value;
 	}
 
 	public Value(long value)
 	{
-		Type = ValueType.Integer;
-		RawValue = value;
+		this.Type = ValueType.Integer;
+		this.RawValue = value;
 	}
 
 	public Value(double value)
 	{
-		Type = ValueType.Float;
-		RawValue = value;
+		this.Type = ValueType.Float;
+		this.RawValue = value;
 	}
 
 	public Value(string value)
 	{
-		Type = ValueType.String;
-		RawValue = value;
+		this.Type = ValueType.String;
+		this.RawValue = value;
 	}
 
 	public Value(ValueTable value)
 	{
-		Type = ValueType.Table;
-		RawValue = value;
+		this.Type = ValueType.Table;
+		this.RawValue = value;
 	}
 
 	public Value(ValueList value)
 	{
-		Type = ValueType.List;
-		RawValue = value;
+		this.Type = ValueType.List;
+		this.RawValue = value;
 	}
 
 	public Value(SemanticVersion value)
 	{
-		Type = ValueType.Version;
-		RawValue = value;
+		this.Type = ValueType.Version;
+		this.RawValue = value;
 	}
 
 	public Value(LanguageReference value)
 	{
-		Type = ValueType.LanguageReference;
-		RawValue = value;
+		this.Type = ValueType.LanguageReference;
+		this.RawValue = value;
 	}
 
 	public Value(PackageReference value)
 	{
-		Type = ValueType.PackageReference;
-		RawValue = value;
+		this.Type = ValueType.PackageReference;
+		this.RawValue = value;
 	}
 
 	public Value Clone()
 	{
-		return new Value(Type, RawValue);
+		return new Value(this.Type, this.RawValue);
 	}
 
 	public bool IsTable()
 	{
-		return Type == ValueType.Table;
+		return this.Type == ValueType.Table;
 	}
 
 	public ValueTable AsTable()
 	{
-		if (IsTable() && RawValue is ValueTable result)
+		if (IsTable() && this.RawValue is ValueTable result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: Table");
@@ -94,12 +94,12 @@ public class Value
 
 	public bool IsList()
 	{
-		return Type == ValueType.List;
+		return this.Type == ValueType.List;
 	}
 
 	public ValueList AsList()
 	{
-		if (IsList() && RawValue is ValueList result)
+		if (IsList() && this.RawValue is ValueList result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: List");
@@ -107,12 +107,12 @@ public class Value
 
 	public bool IsString()
 	{
-		return Type == ValueType.String;
+		return this.Type == ValueType.String;
 	}
 
 	public string AsString()
 	{
-		if (IsString() && RawValue is string result)
+		if (IsString() && this.RawValue is string result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: String");
@@ -120,12 +120,12 @@ public class Value
 
 	public bool IsInteger()
 	{
-		return Type == ValueType.Integer;
+		return this.Type == ValueType.Integer;
 	}
 
 	public long AsInteger()
 	{
-		if (IsInteger() && RawValue is long result)
+		if (IsInteger() && this.RawValue is long result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: Integer");
@@ -133,12 +133,12 @@ public class Value
 
 	public bool IsFloat()
 	{
-		return Type == ValueType.Float;
+		return this.Type == ValueType.Float;
 	}
 
 	public double AsFloat()
 	{
-		if (IsFloat() && RawValue is double result)
+		if (IsFloat() && this.RawValue is double result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: Float");
@@ -146,12 +146,12 @@ public class Value
 
 	public bool IsBoolean()
 	{
-		return Type == ValueType.Boolean;
+		return this.Type == ValueType.Boolean;
 	}
 
 	public bool AsBoolean()
 	{
-		if (IsBoolean() && RawValue is bool result)
+		if (IsBoolean() && this.RawValue is bool result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: Boolean");
@@ -159,12 +159,12 @@ public class Value
 
 	public bool IsVersion()
 	{
-		return Type == ValueType.Version;
+		return this.Type == ValueType.Version;
 	}
 
 	public SemanticVersion AsVersion()
 	{
-		if (IsVersion() && RawValue is SemanticVersion result)
+		if (IsVersion() && this.RawValue is SemanticVersion result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: Version");
@@ -172,12 +172,12 @@ public class Value
 
 	public bool IsLanguageReference()
 	{
-		return Type == ValueType.LanguageReference;
+		return this.Type == ValueType.LanguageReference;
 	}
 
 	public LanguageReference AsLanguageReference()
 	{
-		if (IsLanguageReference() && RawValue is LanguageReference result)
+		if (IsLanguageReference() && this.RawValue is LanguageReference result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: LanguageReference");
@@ -185,12 +185,12 @@ public class Value
 
 	public bool IsPackageReference()
 	{
-		return Type == ValueType.PackageReference;
+		return this.Type == ValueType.PackageReference;
 	}
 
 	public PackageReference AsPackageReference()
 	{
-		if (IsPackageReference() && RawValue is PackageReference result)
+		if (IsPackageReference() && this.RawValue is PackageReference result)
 			return result;
 		else
 			throw new InvalidOperationException("Attempt to get value as incorrect type: PackageReference");
@@ -198,7 +198,7 @@ public class Value
 
 	public override string ToString()
 	{
-		return Type switch
+		return this.Type switch
 		{
 			ValueType.Table => AsTable().ToString() ?? string.Empty,
 			ValueType.List => AsList().ToString() ?? string.Empty,

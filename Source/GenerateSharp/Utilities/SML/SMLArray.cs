@@ -18,20 +18,20 @@ public class SMLArray : IEquatable<SMLArray>
 
 	public SMLArray()
 	{
-		OpenBracket = SMLToken.Empty;
-		LeadingNewlines = [];
-		Values = [];
-		TrailingNewlines = [];
-		CloseBracket = SMLToken.Empty;
+		this.OpenBracket = SMLToken.Empty;
+		this.LeadingNewlines = [];
+		this.Values = [];
+		this.TrailingNewlines = [];
+		this.CloseBracket = SMLToken.Empty;
 	}
 
 	public SMLArray(IList<SMLArrayValue> values)
 	{
-		OpenBracket = SMLToken.Empty;
-		LeadingNewlines = [];
-		Values = values;
-		TrailingNewlines = [];
-		CloseBracket = SMLToken.Empty;
+		this.OpenBracket = SMLToken.Empty;
+		this.LeadingNewlines = [];
+		this.Values = values;
+		this.TrailingNewlines = [];
+		this.CloseBracket = SMLToken.Empty;
 	}
 
 	public SMLArray(
@@ -39,11 +39,11 @@ public class SMLArray : IEquatable<SMLArray>
 		IList<SMLArrayValue> values,
 		SMLToken closeBracket)
 	{
-		OpenBracket = openBracket;
-		LeadingNewlines = [];
-		Values = values;
-		TrailingNewlines = [];
-		CloseBracket = closeBracket;
+		this.OpenBracket = openBracket;
+		this.LeadingNewlines = [];
+		this.Values = values;
+		this.TrailingNewlines = [];
+		this.CloseBracket = closeBracket;
 	}
 
 	public SMLArray(
@@ -53,11 +53,11 @@ public class SMLArray : IEquatable<SMLArray>
 		IList<SMLToken> trailingNewlines,
 		SMLToken closeBracket)
 	{
-		OpenBracket = openBracket;
-		LeadingNewlines = leadingNewlines;
-		Values = values;
-		TrailingNewlines = trailingNewlines;
-		CloseBracket = closeBracket;
+		this.OpenBracket = openBracket;
+		this.LeadingNewlines = leadingNewlines;
+		this.Values = values;
+		this.TrailingNewlines = trailingNewlines;
+		this.CloseBracket = closeBracket;
 	}
 
 	public override bool Equals(object? obj)
@@ -75,12 +75,12 @@ public class SMLArray : IEquatable<SMLArray>
 			return true;
 
 		// Return true if the fields match.
-		return Enumerable.SequenceEqual(Values, other.Values);
+		return Enumerable.SequenceEqual(this.Values, other.Values);
 	}
 
 	public override int GetHashCode()
 	{
-		return Values.GetHashCode();
+		return this.Values.GetHashCode();
 	}
 
 	public static bool operator ==(SMLArray? lhs, SMLArray? rhs)

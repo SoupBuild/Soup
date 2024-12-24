@@ -10,8 +10,8 @@ public class PropertyValueViewModel
 {
 	public PropertyValueViewModel(string name, string? value)
 	{
-		Name = name;
-		Value = value;
+		this.Name = name;
+		this.Value = value;
 	}
 
 	public string Name { get; set; }

@@ -53,7 +53,7 @@ public class CSProjParser
 		switch (attribute.Name)
 		{
 			case "Sdk":
-				Sdk = attribute.Value;
+				this.Sdk = attribute.Value;
 				return true;
 			default:
 				return false;
@@ -80,28 +80,28 @@ public class CSProjParser
 		switch (node.Name)
 		{
 			case "OutputType":
-				OutputType = node.InnerText;
+				this.OutputType = node.InnerText;
 				return true;
 			case "TargetFramework":
-				TargetFramework = node.InnerText;
+				this.TargetFramework = node.InnerText;
 				return true;
 			case "PublishSingleFile":
-				PublishSingleFile = bool.Parse(node.InnerText);
+				this.PublishSingleFile = bool.Parse(node.InnerText);
 				return true;
 			case "SelfContained":
-				SelfContained = bool.Parse(node.InnerText);
+				this.SelfContained = bool.Parse(node.InnerText);
 				return true;
 			case "PublishReadyToRun":
-				PublishReadyToRun = bool.Parse(node.InnerText);
+				this.PublishReadyToRun = bool.Parse(node.InnerText);
 				return true;
 			case "PublishTrimmed":
-				PublishTrimmed = bool.Parse(node.InnerText);
+				this.PublishTrimmed = bool.Parse(node.InnerText);
 				return true;
 			case "Platforms":
-				Platforms = node.InnerText;
+				this.Platforms = node.InnerText;
 				return true;
 			case "NoWarn":
-				NoWarn = node.InnerText;
+				this.NoWarn = node.InnerText;
 				return true;
 			default:
 				return false;
@@ -115,17 +115,17 @@ public class CSProjParser
 			case "ProjectReference":
 				var projectReference = new ProjectReferenceItem();
 				DeserializeNode(node, null, (node) => HandleProjectReferenceAttribute(node, projectReference));
-				ProjectReferenceItems.Add(projectReference);
+				this.ProjectReferenceItems.Add(projectReference);
 				return true;
 			case "PackageReference":
 				var packageReference = new PackageReferenceItem();
 				DeserializeNode(node, null, (node) => HandlePackageReferenceAttribute(node, packageReference));
-				PackageReferenceItems.Add(packageReference);
+				this.PackageReferenceItems.Add(packageReference);
 				return true;
 			case "Compile":
 				var compile = new CompileItem();
 				DeserializeNode(node, null, (node) => HandleCompileAttribute(node, compile));
-				CompileItems.Add(compile);
+				this.CompileItems.Add(compile);
 				return true;
 			default:
 				return false;

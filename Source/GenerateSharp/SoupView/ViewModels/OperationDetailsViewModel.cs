@@ -69,7 +69,7 @@ public class OperationDetailsViewModel : ViewModelBase
 			});
 		}
 
-		Properties = new HierarchicalTreeDataGridSource<PropertyValueViewModel>(this.properties)
+		this.Properties = new HierarchicalTreeDataGridSource<PropertyValueViewModel>(this.properties)
 		{
 			Columns =
 			{

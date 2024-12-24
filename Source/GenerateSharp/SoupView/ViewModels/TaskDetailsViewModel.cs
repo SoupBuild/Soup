@@ -20,7 +20,7 @@ public class TaskDetailsViewModel : ViewModelBase
 		this.properties.Clear();
 		BuildValueTable(taskInfo, this.properties);
 
-		Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(this.properties)
+		this.Properties = new HierarchicalTreeDataGridSource<ValueTableItemViewModel>(this.properties)
 		{
 			Columns =
 				{

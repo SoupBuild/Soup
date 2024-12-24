@@ -29,7 +29,7 @@ public class SystemBrowser : IBrowser
 	{
 		this.path = path;
 
-		Port = port ?? GetRandomUnusedPort();
+		this.Port = port ?? GetRandomUnusedPort();
 	}
 
 	private static int GetRandomUnusedPort()
@@ -43,7 +43,7 @@ public class SystemBrowser : IBrowser
 
 	public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
 	{
-		using var listener = new LoopbackHttpListener(Port, this.path);
+		using var listener = new LoopbackHttpListener(this.Port, this.path);
 
 		OpenBrowser(options.StartUrl);
 
@@ -116,11 +116,11 @@ public class LoopbackHttpListener : IDisposable
 		if (path.StartsWith('/'))
 			path = path[1..];
 
-		Url = new Uri($"http://127.0.0.1:{port}/{path}");
+		this.Url = new Uri($"http://127.0.0.1:{port}/{path}");
 
 		this.host = new WebHostBuilder()
 			.UseKestrel()
-			.UseUrls(Url.ToString())
+			.UseUrls(this.Url.ToString())
 			.Configure(Configure)
 			.Build();
 		this.host.Start();

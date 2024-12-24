@@ -26,7 +26,7 @@ public class FileSystemState
 	/// </summary>
 	public FileSystemState()
 	{
-		MaxFileId = new FileId(0);
+		this.MaxFileId = new FileId(0);
 		this.files = [];
 		this.fileLookup = [];
 	}
@@ -38,7 +38,7 @@ public class FileSystemState
 		FileId maxFileId,
 		Dictionary<FileId, Path> files)
 	{
-		MaxFileId = maxFileId;
+		this.MaxFileId = maxFileId;
 		this.files = files;
 		this.fileLookup = [];
 
@@ -91,8 +91,8 @@ public class FileSystemState
 		if (!TryFindFileId(file, out var result))
 		{
 			// Insert the new file
-			MaxFileId = new FileId(MaxFileId.Value + 1);
-			result = MaxFileId;
+			this.MaxFileId = new FileId(this.MaxFileId.Value + 1);
+			result = this.MaxFileId;
 
 			this.files.Add(result, file);
 			this.fileLookup.Add(file.ToString(), result);

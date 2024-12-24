@@ -21,8 +21,8 @@ public class OperationGraph
 	/// </summary>
 	public OperationGraph()
 	{
-		ReferencedFiles = [];
-		RootOperationIds = [];
+		this.ReferencedFiles = [];
+		this.RootOperationIds = [];
 		this.operations = [];
 		this.operationLookup = [];
 	}
@@ -35,8 +35,8 @@ public class OperationGraph
 		IList<OperationId> rootOperations,
 		IList<OperationInfo> operations)
 	{
-		ReferencedFiles = referencedFiles;
-		RootOperationIds = rootOperations;
+		this.ReferencedFiles = referencedFiles;
+		this.RootOperationIds = rootOperations;
 		this.operations = [];
 		this.operationLookup = [];
 

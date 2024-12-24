@@ -52,21 +52,21 @@ public class MainWindowViewModel : ViewModelBase
 		{
 			if (CheckRaiseAndSetIfChanged(ref this.content, value))
 			{
-				this.RaisePropertyChanged(nameof(IsRootSelected));
-				this.RaisePropertyChanged(nameof(IsTasksSelected));
-				this.RaisePropertyChanged(nameof(IsOperationsSelected));
+				this.RaisePropertyChanged(nameof(this.IsRootSelected));
+				this.RaisePropertyChanged(nameof(this.IsTasksSelected));
+				this.RaisePropertyChanged(nameof(this.IsOperationsSelected));
 			}
 		}
 	}
 
 	public MainWindowViewModel(string? packagePath)
 	{
-		OpenCommand = ReactiveCommand.Create(OnOpenAsync);
-		ExitCommand = ReactiveCommand.Create(OnExit);
+		this.OpenCommand = ReactiveCommand.Create(OnOpenAsync);
+		this.ExitCommand = ReactiveCommand.Create(OnExit);
 
-		SelectRootCommand = ReactiveCommand.Create(OnSelectRoot);
-		SelectTasksCommand = ReactiveCommand.Create(OnSelectTasks);
-		SelectOperationsCommand = ReactiveCommand.Create(OnSelectOperations);
+		this.SelectRootCommand = ReactiveCommand.Create(OnSelectRoot);
+		this.SelectTasksCommand = ReactiveCommand.Create(OnSelectTasks);
+		this.SelectOperationsCommand = ReactiveCommand.Create(OnSelectOperations);
 
 		this.dependencyGraph = new DependencyGraphViewModel();
 		this.taskGraph = new TaskGraphViewModel();
@@ -78,7 +78,7 @@ public class MainWindowViewModel : ViewModelBase
 
 		if (packagePath is not null)
 		{
-			RecipeFile = Path.Parse(packagePath);
+			this.RecipeFile = Path.Parse(packagePath);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class MainWindowViewModel : ViewModelBase
 			_ = this.taskGraph.LoadProjectAsync(this.dependencyGraph.SelectedProject?.Path, this.dependencyGraph.SelectedProject?.Owner);
 			_ = this.operationGraph.LoadProjectAsync(this.dependencyGraph.SelectedProject?.Path);
 
-			this.RaisePropertyChanged(nameof(SelectedPackageName));
+			this.RaisePropertyChanged(nameof(this.SelectedPackageName));
 		}
 	}
 
@@ -103,10 +103,10 @@ public class MainWindowViewModel : ViewModelBase
 
 	private async Task OnOpenAsync()
 	{
-		if (StorageProvider is null)
+		if (this.StorageProvider is null)
 			throw new InvalidOperationException("Missing storage provider");
 
-		var filePickerResult = await StorageProvider.OpenFilePickerAsync(
+		var filePickerResult = await this.StorageProvider.OpenFilePickerAsync(
 			new FilePickerOpenOptions()
 			{
 				AllowMultiple = false,
@@ -124,7 +124,7 @@ public class MainWindowViewModel : ViewModelBase
 
 		if (file != null)
 		{
-			RecipeFile = new Path(file.Path.AbsolutePath);
+			this.RecipeFile = new Path(file.Path.AbsolutePath);
 		}
 	}
 
@@ -138,16 +138,16 @@ public class MainWindowViewModel : ViewModelBase
 
 	private void OnSelectRoot()
 	{
-		Content = this.dependencyGraph;
+		this.Content = this.dependencyGraph;
 	}
 
 	private void OnSelectTasks()
 	{
-		Content = this.taskGraph;
+		this.Content = this.taskGraph;
 	}
 
 	private void OnSelectOperations()
 	{
-		Content = this.operationGraph;
+		this.Content = this.operationGraph;
 	}
 }

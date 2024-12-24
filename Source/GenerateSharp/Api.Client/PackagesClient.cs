@@ -61,7 +61,7 @@ public class PackagesClient
 	{
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
-			.Append(BaseUrl.OriginalString.TrimEnd('/'))
+			.Append(this.BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}");
 
 		var client = this.httpClient;
@@ -130,7 +130,7 @@ public class PackagesClient
 	{
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
-			.Append(BaseUrl.OriginalString.TrimEnd('/'))
+			.Append(this.BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/packages/{Uri.EscapeDataString(languageName)}/{Uri.EscapeDataString(ownerName)}/{Uri.EscapeDataString(packageName)}");
 
 		var client = this.httpClient;

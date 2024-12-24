@@ -59,7 +59,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	/// </summary>
 	public PackageIdentifier()
 	{
-		Language = null;
+		this.Language = null;
 		this.name = new PackageName(null, string.Empty);
 	}
 
@@ -68,14 +68,14 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	/// </summary>
 	public PackageIdentifier(string? language, string? owner, string name)
 	{
-		Language = language;
+		this.Language = language;
 		this.name = new PackageName(owner, name);
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the identifier has a language
 	/// </summary>
-	public bool HasLanguage => Language is not null;
+	public bool HasLanguage => this.Language is not null;
 
 	/// <summary>
 	/// Gets or sets the Language.
@@ -104,7 +104,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	{
 		if (other is null)
 			return false;
-		return Language == other.Language &&
+		return this.Language == other.Language &&
 			this.name == other.name;
 	}
 
@@ -115,7 +115,7 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 
 	public override int GetHashCode()
 	{
-		var languageHash = Language is null ? 0 : Language.GetHashCode(StringComparison.Ordinal) * 0x1000;
+		var languageHash = this.Language is null ? 0 : this.Language.GetHashCode(StringComparison.Ordinal) * 0x1000;
 		var nameHash = this.name.GetHashCode();
 		return languageHash + nameHash;
 	}
@@ -136,9 +136,9 @@ public partial class PackageIdentifier : IEquatable<PackageIdentifier>
 	public override string ToString()
 	{
 		// Build up the language/owner/name reference
-		if (Language is not null)
+		if (this.Language is not null)
 		{
-			return $"[{Language}]{this.name}";
+			return $"[{this.Language}]{this.name}";
 		}
 		else
 		{

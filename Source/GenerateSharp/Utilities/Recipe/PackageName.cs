@@ -56,14 +56,14 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 	/// </summary>
 	public PackageName(string? owner, string name)
 	{
-		Owner = owner;
-		Name = name;
+		this.Owner = owner;
+		this.Name = name;
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the name has an owner or not
 	/// </summary>
-	public bool HasOwner => Owner is not null;
+	public bool HasOwner => this.Owner is not null;
 
 	/// <summary>
 	/// Gets or sets the Owner.
@@ -82,8 +82,8 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 	{
 		if (other is null)
 			return false;
-		return Owner == other.Owner &&
-			Name == other.Name;
+		return this.Owner == other.Owner &&
+			this.Name == other.Name;
 	}
 
 	public override bool Equals(object? obj)
@@ -93,8 +93,8 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 
 	public override int GetHashCode()
 	{
-		var ownerHash = Owner is null ? 0 : Owner.GetHashCode(StringComparison.Ordinal) * 0x1000;
-		var nameHash = Name.GetHashCode(StringComparison.Ordinal);
+		var ownerHash = this.Owner is null ? 0 : this.Owner.GetHashCode(StringComparison.Ordinal) * 0x1000;
+		var nameHash = this.Name.GetHashCode(StringComparison.Ordinal);
 		return ownerHash + nameHash;
 	}
 
@@ -118,13 +118,13 @@ public partial class PackageName : IEquatable<PackageName>, IComparable<PackageN
 	/// </summary>
 	public override string ToString()
 	{
-		if (Owner is not null)
+		if (this.Owner is not null)
 		{
-			return $"{Owner}|{Name}";
+			return $"{this.Owner}|{this.Name}";
 		}
 		else
 		{
-			return $"{Name}";
+			return $"{this.Name}";
 		}
 	}
 

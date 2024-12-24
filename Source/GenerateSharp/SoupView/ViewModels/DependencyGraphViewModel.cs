@@ -33,7 +33,7 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 		{
 			if (CheckRaiseAndSetIfChanged(ref this.selectedNode, value))
 			{
-				SelectedProject = this.selectedNode is not null ? this.projectDetailsLookup[this.selectedNode.Id] : null;
+				this.SelectedProject = this.selectedNode is not null ? this.projectDetailsLookup[this.selectedNode.Id] : null;
 			}
 		}
 	}
@@ -63,8 +63,8 @@ public class DependencyGraphViewModel : ContentPaneViewModel
 
 		var rootNode = activeGraph.FirstOrDefault();
 
-		Graph = activeGraph;
-		SelectedNode = rootNode;
+		this.Graph = activeGraph;
+		this.SelectedNode = rootNode;
 	}
 
 	private List<GraphNodeViewModel> BuildGraph(

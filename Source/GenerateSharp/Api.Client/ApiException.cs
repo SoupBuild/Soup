@@ -23,8 +23,8 @@ public class ApiException : Exception
 		Exception? innerException)
 		: base($"{message} - StatusCode {statusCode}", innerException)
 	{
-		StatusCode = statusCode;
-		Headers = headers;
+		this.StatusCode = statusCode;
+		this.Headers = headers;
 	}
 }
 
@@ -41,6 +41,6 @@ public class ApiException<TResult> : ApiException
 		Exception? innerException)
 		: base(message, statusCode, headers, innerException)
 	{
-		Result = result;
+		this.Result = result;
 	}
 }

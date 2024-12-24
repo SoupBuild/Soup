@@ -20,11 +20,11 @@ public class SMLLanguageName : IEquatable<SMLLanguageName>
 		SMLToken closeParenthesis,
 		string value)
 	{
-		OpenParenthesis = openParenthesis;
-		LanguageName = languageName;
-		CloseParenthesis = closeParenthesis;
+		this.OpenParenthesis = openParenthesis;
+		this.LanguageName = languageName;
+		this.CloseParenthesis = closeParenthesis;
 
-		Value = value;
+		this.Value = value;
 	}
 
 	public override bool Equals(object? obj)
@@ -42,12 +42,12 @@ public class SMLLanguageName : IEquatable<SMLLanguageName>
 			return true;
 
 		// Return true if the fields match.
-		return Value == other.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode(StringComparison.InvariantCulture);
+		return this.Value.GetHashCode(StringComparison.InvariantCulture);
 	}
 
 	public static bool operator ==(SMLLanguageName? lhs, SMLLanguageName? rhs)
