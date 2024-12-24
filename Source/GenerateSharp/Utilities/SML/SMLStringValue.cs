@@ -18,18 +18,18 @@ public class SMLStringValue : IEquatable<SMLStringValue>
 
 	public SMLStringValue()
 	{
-		Value = string.Empty;
-		OpenQuote = SMLToken.Empty;
-		Content = SMLToken.Empty;
-		CloseQuote = SMLToken.Empty;
+		this.Value = string.Empty;
+		this.OpenQuote = SMLToken.Empty;
+		this.Content = SMLToken.Empty;
+		this.CloseQuote = SMLToken.Empty;
 	}
 
 	public SMLStringValue(string content)
 	{
-		Value = content;
-		OpenQuote = SMLToken.Empty;
-		Content = new SMLToken(content);
-		CloseQuote = SMLToken.Empty;
+		this.Value = content;
+		this.OpenQuote = SMLToken.Empty;
+		this.Content = new SMLToken(content);
+		this.CloseQuote = SMLToken.Empty;
 	}
 
 	public SMLStringValue(
@@ -38,10 +38,10 @@ public class SMLStringValue : IEquatable<SMLStringValue>
 		SMLToken content,
 		SMLToken closeQuote)
 	{
-		Value = value;
-		OpenQuote = openQuote;
-		Content = content;
-		CloseQuote = closeQuote;
+		this.Value = value;
+		this.OpenQuote = openQuote;
+		this.Content = content;
+		this.CloseQuote = closeQuote;
 	}
 
 	public override bool Equals(object? obj)
@@ -59,12 +59,12 @@ public class SMLStringValue : IEquatable<SMLStringValue>
 			return true;
 
 		// Return true if the fields match.
-		return Value == other.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode(StringComparison.InvariantCulture);
+		return this.Value.GetHashCode(StringComparison.InvariantCulture);
 	}
 
 	public static bool operator ==(SMLStringValue? lhs, SMLStringValue? rhs)

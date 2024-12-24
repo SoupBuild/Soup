@@ -16,7 +16,7 @@ public partial class TaskGraphView : UserControl
 	{
 		base.OnAttachedToVisualTree(e);
 
-		var dataContext = (ContentPaneViewModel?)DataContext;
+		var dataContext = (ContentPaneViewModel?)this.DataContext;
 		if (dataContext is not null)
 		{
 			dataContext.NotificationManager = new WindowNotificationManager(TopLevel.GetTopLevel(this)!);

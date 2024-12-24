@@ -52,7 +52,7 @@ public class LanguagesClient
 	{
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
-			.Append(BaseUrl.OriginalString.TrimEnd('/'))
+			.Append(this.BaseUrl.OriginalString.TrimEnd('/'))
 			.Append(CultureInfo.InvariantCulture, $"/v1/languages/{Uri.EscapeDataString(languageName)}");
 
 		var client = this.httpClient;
@@ -70,7 +70,7 @@ public class LanguagesClient
 		var status = (int)response.StatusCode;
 		if (status == 200)
 		{
-			var objectResponse = await ReadObjectResponseAsync<LanguageModel>(
+			var objectResponse = await ReadObjectResponseAsync(
 				response,
 				SourceGenerationContext.Default.LanguageModel,
 				cancellationToken).ConfigureAwait(false);

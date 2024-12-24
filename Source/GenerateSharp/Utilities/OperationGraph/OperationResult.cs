@@ -19,10 +19,10 @@ public class OperationResult : IEquatable<OperationResult>
 		IList<FileId> observedInput,
 		IList<FileId> observedOutput)
 	{
-		WasSuccessfulRun = wasSuccessfulRun;
-		EvaluateTime = evaluateTime;
-		ObservedInput = observedInput;
-		ObservedOutput = observedOutput;
+		this.WasSuccessfulRun = wasSuccessfulRun;
+		this.EvaluateTime = evaluateTime;
+		this.ObservedInput = observedInput;
+		this.ObservedOutput = observedOutput;
 	}
 
 	public bool Equals(OperationResult? other)
@@ -30,10 +30,10 @@ public class OperationResult : IEquatable<OperationResult>
 		if (other is null)
 			return false;
 
-		var result = WasSuccessfulRun == other.WasSuccessfulRun &&
-			EvaluateTime == other.EvaluateTime &&
-			Enumerable.SequenceEqual(ObservedInput, other.ObservedInput) &&
-			Enumerable.SequenceEqual(ObservedOutput, other.ObservedOutput);
+		var result = this.WasSuccessfulRun == other.WasSuccessfulRun &&
+			this.EvaluateTime == other.EvaluateTime &&
+			Enumerable.SequenceEqual(this.ObservedInput, other.ObservedInput) &&
+			Enumerable.SequenceEqual(this.ObservedOutput, other.ObservedOutput);
 
 		return result;
 	}
@@ -45,7 +45,7 @@ public class OperationResult : IEquatable<OperationResult>
 
 	public override int GetHashCode()
 	{
-		return (WasSuccessfulRun.GetHashCode() * 0x100000) + (EvaluateTime.GetHashCode() * 0x1000);
+		return (this.WasSuccessfulRun.GetHashCode() * 0x100000) + (this.EvaluateTime.GetHashCode() * 0x1000);
 	}
 
 	public static bool operator ==(OperationResult? lhs, OperationResult? rhs)

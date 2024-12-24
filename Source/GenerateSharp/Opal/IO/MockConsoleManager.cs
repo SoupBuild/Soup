@@ -20,7 +20,7 @@ public class MockConsoleManager : IConsoleManager
 	public MockConsoleManager()
 	{
 		this.requests = [];
-		MockInputStream = new MockConsoleInput(this.requests);
+		this.MockInputStream = new MockConsoleInput(this.requests);
 	}
 
 	/// <summary>
@@ -40,6 +40,6 @@ public class MockConsoleManager : IConsoleManager
 	{
 		this.requests.Add("GetStandardInput");
 
-		return MockInputStream;
+		return this.MockInputStream;
 	}
 }

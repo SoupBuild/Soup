@@ -56,7 +56,7 @@ public class SearchClient
 	{
 		var urlBuilder = new StringBuilder();
 		_ = urlBuilder
-			.Append(BaseUrl.OriginalString.TrimEnd('/'))
+			.Append(this.BaseUrl.OriginalString.TrimEnd('/'))
 			.Append("/v1/search/packages?");
 		if (q is not null)
 		{

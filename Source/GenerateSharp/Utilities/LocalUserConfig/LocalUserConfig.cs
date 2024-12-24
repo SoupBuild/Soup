@@ -19,7 +19,7 @@ public class LocalUserConfig
 	/// </summary>
 	public LocalUserConfig()
 	{
-		Document = new SMLDocument();
+		this.Document = new SMLDocument();
 	}
 
 	/// <summary>
@@ -27,7 +27,7 @@ public class LocalUserConfig
 	/// </summary>
 	public LocalUserConfig(SMLDocument table)
 	{
-		Document = table;
+		this.Document = table;
 	}
 
 	/// <summary>
@@ -35,12 +35,12 @@ public class LocalUserConfig
 	/// </summary>
 	public bool HasSDKs()
 	{
-		return Document.Values.ContainsKey(Property_SDKs);
+		return this.Document.Values.ContainsKey(Property_SDKs);
 	}
 
 	public IList<SDKConfig> GetSDKs()
 	{
-		if (Document.Values.TryGetValue(Property_SDKs, out var sdksValue))
+		if (this.Document.Values.TryGetValue(Property_SDKs, out var sdksValue))
 		{
 			var values = sdksValue.Value.AsArray();
 			var result = new List<SDKConfig>();
@@ -61,7 +61,7 @@ public class LocalUserConfig
 	{
 		// Check the existing entries
 		SMLArray? values;
-		if (Document.Values.TryGetValue(Property_SDKs, out var sdksValue))
+		if (this.Document.Values.TryGetValue(Property_SDKs, out var sdksValue))
 		{
 			values = sdksValue.Value.AsArray();
 			foreach (var value in values.Values)
@@ -73,7 +73,7 @@ public class LocalUserConfig
 		}
 		else
 		{
-			values = Document.AddArrayWithSyntax(Property_SDKs);
+			values = this.Document.AddArrayWithSyntax(Property_SDKs);
 		}
 
 		// No matching SDK as a table array entry

@@ -36,7 +36,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 		{
 			if (CheckRaiseAndSetIfChanged(ref this.selectedNode, value))
 			{
-				SelectedOperation = this.selectedNode is not null ? this.operationDetailsLookup[this.selectedNode.Id] : null;
+				this.SelectedOperation = this.selectedNode is not null ? this.operationDetailsLookup[this.selectedNode.Id] : null;
 			}
 		}
 	}
@@ -49,7 +49,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 
 	public async Task LoadProjectAsync(Path? packageFolder)
 	{
-		Graph = null;
+		this.Graph = null;
 
 		var activeGraph = await Task.Run(async () =>
 		{
@@ -90,7 +90,7 @@ public class OperationGraphViewModel : ContentPaneViewModel
 			return null;
 		});
 
-		Graph = activeGraph;
+		this.Graph = activeGraph;
 	}
 
 	private List<GraphNodeViewModel> BuildGraph(

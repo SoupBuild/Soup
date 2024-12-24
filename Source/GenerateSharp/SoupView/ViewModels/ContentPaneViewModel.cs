@@ -15,7 +15,7 @@ public class ContentPaneViewModel : ViewModelBase
 	{
 		Dispatcher.UIThread.Post(() =>
 		{
-			NotificationManager?.Show(
+			this.NotificationManager?.Show(
 				new Notification(
 					"Error",
 					message,

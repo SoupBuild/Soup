@@ -21,11 +21,11 @@ public class SMLTableValue : IEquatable<SMLTableValue>
 		SMLToken colon,
 		SMLValue value)
 	{
-		Key = key;
-		KeyContent = keyContent;
-		Colon = colon;
-		Value = value;
-		Delimiter = [];
+		this.Key = key;
+		this.KeyContent = keyContent;
+		this.Colon = colon;
+		this.Value = value;
+		this.Delimiter = [];
 	}
 
 	public SMLTableValue(
@@ -35,11 +35,11 @@ public class SMLTableValue : IEquatable<SMLTableValue>
 		SMLValue value,
 		IList<SMLToken> delimiter)
 	{
-		Key = key;
-		KeyContent = keyContent;
-		Colon = colon;
-		Value = value;
-		Delimiter = delimiter;
+		this.Key = key;
+		this.KeyContent = keyContent;
+		this.Colon = colon;
+		this.Value = value;
+		this.Delimiter = delimiter;
 	}
 
 	public override bool Equals(object? obj)
@@ -57,13 +57,13 @@ public class SMLTableValue : IEquatable<SMLTableValue>
 			return true;
 
 		// Return true if the fields match.
-		return KeyContent == other.KeyContent &&
-			Value == other.Value;
+		return this.KeyContent == other.KeyContent &&
+			this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode();
+		return this.Value.GetHashCode();
 	}
 
 	public static bool operator ==(SMLTableValue? lhs, SMLTableValue? rhs)

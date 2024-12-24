@@ -14,26 +14,26 @@ public class MockFile
 
 	public MockFile(MemoryStream content, int lastWriteTime)
 	{
-		Content = content;
-		LastWriteTime = lastWriteTime;
+		this.Content = content;
+		this.LastWriteTime = lastWriteTime;
 	}
 
 	public MockFile(MemoryStream content)
 	{
-		Content = content;
-		LastWriteTime = 0;
+		this.Content = content;
+		this.LastWriteTime = 0;
 	}
 
 	public MockFile(int lastWriteTime)
 	{
-		Content = new MemoryStream();
-		LastWriteTime = lastWriteTime;
+		this.Content = new MemoryStream();
+		this.LastWriteTime = lastWriteTime;
 	}
 
 	public MockFile()
 	{
-		Content = new MemoryStream();
-		LastWriteTime = 0;
+		this.Content = new MemoryStream();
+		this.LastWriteTime = 0;
 	}
 }
 

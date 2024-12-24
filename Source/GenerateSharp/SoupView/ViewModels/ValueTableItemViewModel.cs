@@ -37,6 +37,6 @@ public class ValueTableItemViewModel : ViewModelBase
 
 	public ValueTableItemViewModel(string title)
 	{
-		Title = title;
+		this.Title = title;
 	}
 }

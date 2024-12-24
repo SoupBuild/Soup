@@ -23,7 +23,7 @@ public class SDKConfig
 	/// </summary>
 	public SDKConfig(SMLTable table)
 	{
-		Table = table;
+		this.Table = table;
 	}
 
 	/// <summary>
@@ -31,14 +31,14 @@ public class SDKConfig
 	/// </summary>
 	public bool HasName()
 	{
-		return Table.Values.ContainsKey(Property_Name);
+		return this.Table.Values.ContainsKey(Property_Name);
 	}
 
 	public string Name
 	{
 		get
 		{
-			if (Table.Values.TryGetValue(Property_Name, out var nameValue))
+			if (this.Table.Values.TryGetValue(Property_Name, out var nameValue))
 			{
 				return nameValue.Value.AsString().Value;
 			}
@@ -47,7 +47,7 @@ public class SDKConfig
 				throw new InvalidOperationException("No Name.");
 			}
 		}
-		set => Table.AddItemWithSyntax(Property_Name, value, 2);
+		set => this.Table.AddItemWithSyntax(Property_Name, value, 2);
 	}
 
 	/// <summary>
@@ -55,7 +55,7 @@ public class SDKConfig
 	/// </summary>
 	public bool HasSourceDirectories()
 	{
-		return Table.Values.ContainsKey(Property_SourceDirectories);
+		return this.Table.Values.ContainsKey(Property_SourceDirectories);
 	}
 
 	[SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Setter ensures format")]
@@ -63,7 +63,7 @@ public class SDKConfig
 	{
 		get
 		{
-			if (Table.Values.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
+			if (this.Table.Values.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
 			{
 				var values = sourceDirectoriesValue.Value.AsArray();
 				var result = new List<Path>();
@@ -82,13 +82,13 @@ public class SDKConfig
 		set
 		{
 			SMLArray? values;
-			if (Table.Values.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
+			if (this.Table.Values.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
 			{
 				values = sourceDirectoriesValue.Value.AsArray();
 			}
 			else
 			{
-				values = Table.AddArrayWithSyntax(Property_SourceDirectories, 2);
+				values = this.Table.AddArrayWithSyntax(Property_SourceDirectories, 2);
 			}
 
 			// Add the new syntax to the parent table syntax
@@ -106,14 +106,14 @@ public class SDKConfig
 	/// </summary>
 	public bool HasProperties()
 	{
-		return Table.Values.ContainsKey(Property_Properties);
+		return this.Table.Values.ContainsKey(Property_Properties);
 	}
 
 	public SMLTable Properties
 	{
 		get
 		{
-			if (Table.Values.TryGetValue(Property_Properties, out var propertiesValue))
+			if (this.Table.Values.TryGetValue(Property_Properties, out var propertiesValue))
 			{
 				return propertiesValue.Value.AsTable();
 			}
@@ -127,13 +127,13 @@ public class SDKConfig
 	public void SetProperties(IDictionary<string, string> value)
 	{
 		SMLTable? values;
-		if (Table.Values.TryGetValue(Property_Properties, out var propertiesValues))
+		if (this.Table.Values.TryGetValue(Property_Properties, out var propertiesValues))
 		{
 			values = propertiesValues.Value.AsTable();
 		}
 		else
 		{
-			values = Table.AddTableWithSyntax(Property_Properties, 2);
+			values = this.Table.AddTableWithSyntax(Property_Properties, 2);
 		}
 
 		// Add the new syntax to the parent table syntax

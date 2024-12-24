@@ -22,16 +22,16 @@ public class SMLPackageReferenceValue : IEquatable<SMLPackageReferenceValue>
 	public SMLPackageReferenceValue(
 		PackageReference value)
 	{
-		LessThan = SMLToken.Empty;
-		LanguageName = null;
-		UserName = SMLToken.Empty;
-		UserPipe = SMLToken.Empty;
-		PackageName = SMLToken.Empty;
-		AtSign = SMLToken.Empty;
-		VersionReference = SMLToken.Empty;
-		GreaterThan = SMLToken.Empty;
+		this.LessThan = SMLToken.Empty;
+		this.LanguageName = null;
+		this.UserName = SMLToken.Empty;
+		this.UserPipe = SMLToken.Empty;
+		this.PackageName = SMLToken.Empty;
+		this.AtSign = SMLToken.Empty;
+		this.VersionReference = SMLToken.Empty;
+		this.GreaterThan = SMLToken.Empty;
 
-		Value = value;
+		this.Value = value;
 	}
 
 	public SMLPackageReferenceValue(
@@ -45,16 +45,16 @@ public class SMLPackageReferenceValue : IEquatable<SMLPackageReferenceValue>
 		SMLToken greaterThan,
 		PackageReference value)
 	{
-		LessThan = lessThan;
-		LanguageName = languageName;
-		UserName = userName;
-		UserPipe = userPipe;
-		PackageName = packageName;
-		AtSign = atSign;
-		VersionReference = versionReference;
-		GreaterThan = greaterThan;
+		this.LessThan = lessThan;
+		this.LanguageName = languageName;
+		this.UserName = userName;
+		this.UserPipe = userPipe;
+		this.PackageName = packageName;
+		this.AtSign = atSign;
+		this.VersionReference = versionReference;
+		this.GreaterThan = greaterThan;
 
-		Value = value;
+		this.Value = value;
 	}
 
 	public override bool Equals(object? obj)
@@ -72,12 +72,12 @@ public class SMLPackageReferenceValue : IEquatable<SMLPackageReferenceValue>
 			return true;
 
 		// Return true if the fields match.
-		return Value == other.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode();
+		return this.Value.GetHashCode();
 	}
 
 	public static bool operator ==(SMLPackageReferenceValue? lhs, SMLPackageReferenceValue? rhs)

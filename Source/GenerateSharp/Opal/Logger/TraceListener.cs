@@ -35,8 +35,8 @@ public abstract class TraceListener
 		bool showEventId)
 	{
 		this.filter = filter;
-		ShowEventType = showEventType;
-		ShowEventId = showEventId;
+		this.ShowEventType = showEventType;
+		this.ShowEventId = showEventId;
 	}
 
 	/// <summary>
@@ -125,7 +125,7 @@ public abstract class TraceListener
 		TraceEvents eventType,
 		int id)
 	{
-		if (ShowEventType)
+		if (this.ShowEventType)
 		{
 			switch (eventType)
 			{
@@ -157,7 +157,7 @@ public abstract class TraceListener
 			_ = builder.Append(": ");
 		}
 
-		if (ShowEventId)
+		if (this.ShowEventId)
 		{
 			_ = builder.Append(CultureInfo.InvariantCulture, $"{id}>");
 		}
