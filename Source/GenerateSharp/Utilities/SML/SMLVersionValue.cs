@@ -16,16 +16,16 @@ public class SMLVersionValue : IEquatable<SMLVersionValue>
 	public SMLVersionValue(
 		SemanticVersion value)
 	{
-		Value = value;
-		Content = new SMLToken($"{value}");
+		this.Value = value;
+		this.Content = new SMLToken($"{value}");
 	}
 
 	public SMLVersionValue(
 		SemanticVersion value,
 		SMLToken content)
 	{
-		Value = value;
-		Content = content;
+		this.Value = value;
+		this.Content = content;
 	}
 
 	public override bool Equals(object? obj)
@@ -43,12 +43,12 @@ public class SMLVersionValue : IEquatable<SMLVersionValue>
 			return true;
 
 		// Return true if the fields match.
-		return Value == other.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode();
+		return this.Value.GetHashCode();
 	}
 
 	public static bool operator ==(SMLVersionValue? lhs, SMLVersionValue? rhs)

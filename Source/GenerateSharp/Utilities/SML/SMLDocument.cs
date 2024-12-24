@@ -18,17 +18,17 @@ public class SMLDocument : IEquatable<SMLDocument>
 
 	public SMLDocument()
 	{
-		LeadingNewlines = [];
-		Values = [];
-		TrailingNewlines = [];
+		this.LeadingNewlines = [];
+		this.Values = [];
+		this.TrailingNewlines = [];
 	}
 
 	public SMLDocument(
 		Dictionary<string, SMLTableValue> values)
 	{
-		LeadingNewlines = [];
-		Values = values;
-		TrailingNewlines = [];
+		this.LeadingNewlines = [];
+		this.Values = values;
+		this.TrailingNewlines = [];
 	}
 
 	public SMLDocument(
@@ -36,9 +36,9 @@ public class SMLDocument : IEquatable<SMLDocument>
 		Dictionary<string, SMLTableValue> values,
 		IList<SMLToken> trailingNewlines)
 	{
-		LeadingNewlines = leadingNewlines;
-		Values = values;
-		TrailingNewlines = trailingNewlines;
+		this.LeadingNewlines = leadingNewlines;
+		this.Values = values;
+		this.TrailingNewlines = trailingNewlines;
 	}
 
 	public override bool Equals(object? obj)
@@ -56,12 +56,12 @@ public class SMLDocument : IEquatable<SMLDocument>
 			return true;
 
 		// Return true if the fields match.
-		return Enumerable.SequenceEqual(Values, other.Values);
+		return Enumerable.SequenceEqual(this.Values, other.Values);
 	}
 
 	public override int GetHashCode()
 	{
-		return Values.GetHashCode();
+		return this.Values.GetHashCode();
 	}
 
 	public static bool operator ==(SMLDocument? lhs, SMLDocument? rhs)

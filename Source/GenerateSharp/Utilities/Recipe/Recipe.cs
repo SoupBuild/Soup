@@ -30,9 +30,9 @@ public class Recipe
 	/// </summary>
 	public Recipe()
 	{
-		Document = new SMLDocument();
-		Name = string.Empty;
-		Language = new LanguageReference();
+		this.Document = new SMLDocument();
+		this.Name = string.Empty;
+		this.Language = new LanguageReference();
 	}
 
 	/// <summary>
@@ -42,9 +42,9 @@ public class Recipe
 		string name,
 		LanguageReference language)
 	{
-		Document = new SMLDocument();
-		Name = name;
-		Language = language;
+		this.Document = new SMLDocument();
+		this.Name = name;
+		this.Language = language;
 	}
 
 	/// <summary>
@@ -52,75 +52,75 @@ public class Recipe
 	/// </summary>
 	public Recipe(SMLDocument document)
 	{
-		Document = document;
+		this.Document = document;
 
-		if (!HasValue(Document, Property_Name))
+		if (!HasValue(this.Document, Property_Name))
 			throw new ArgumentException("Missing required property Name");
-		if (!HasValue(Document, Property_Language))
+		if (!HasValue(this.Document, Property_Language))
 			throw new ArgumentException("Missing required property Language");
 	}
 
 	/// <summary>
 	/// Gets or sets the package name
 	/// </summary>
-	public SMLValue NameValue => GetValue(Document, Property_Name);
+	public SMLValue NameValue => GetValue(this.Document, Property_Name);
 
 	public string Name
 	{
-		get => NameValue.AsString().Value;
-		set => Document.EnsureValueWithSyntax(Property_Name, value);
+		get => this.NameValue.AsString().Value;
+		set => this.Document.EnsureValueWithSyntax(Property_Name, value);
 	}
 
 	/// <summary>
 	/// Gets or sets the package language
 	/// </summary>
-	public SMLValue LanguageValue => GetValue(Document, Property_Language);
+	public SMLValue LanguageValue => GetValue(this.Document, Property_Language);
 
 	[SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Check specific types")]
 	public LanguageReference Language
 	{
-		get => LanguageValue.Type switch
+		get => this.LanguageValue.Type switch
 		{
-			SMLValueType.String => LanguageReference.Parse(LanguageValue.AsString().Value),
-			SMLValueType.LanguageReference => LanguageValue.AsLanguageReference().Value,
+			SMLValueType.String => LanguageReference.Parse(this.LanguageValue.AsString().Value),
+			SMLValueType.LanguageReference => this.LanguageValue.AsLanguageReference().Value,
 			_ => throw new InvalidOperationException("Language must be string or LanguageReference"),
 		};
-		set => Document.EnsureValueWithSyntax(Property_Language, value);
+		set => this.Document.EnsureValueWithSyntax(Property_Language, value);
 	}
 
 	/// <summary>
 	/// Gets or sets the package version
 	/// </summary>
-	public bool HasVersion => HasValue(Document, Property_Version);
-	public SMLValue VersionValue => GetValue(Document, Property_Version);
+	public bool HasVersion => HasValue(this.Document, Property_Version);
+	public SMLValue VersionValue => GetValue(this.Document, Property_Version);
 
 	[SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Check specific types")]
 	public SemanticVersion Version
 	{
-		get => VersionValue.Type switch
+		get => this.VersionValue.Type switch
 		{
-			SMLValueType.String => SemanticVersion.Parse(VersionValue.AsString().Value),
-			SMLValueType.Version => VersionValue.AsVersion().Value,
+			SMLValueType.String => SemanticVersion.Parse(this.VersionValue.AsString().Value),
+			SMLValueType.Version => this.VersionValue.AsVersion().Value,
 			_ => throw new InvalidOperationException("Version must be string or Version"),
 		};
-		set => Document.EnsureValueWithSyntax(Property_Version, value);
+		set => this.Document.EnsureValueWithSyntax(Property_Version, value);
 	}
 
 	/// <summary>
 	/// Gets or sets the package type
 	/// </summary>
-	public bool HasType => HasValue(Document, Property_Type);
+	public bool HasType => HasValue(this.Document, Property_Type);
 
 	public string Type
 	{
 		get
 		{
-			if (!HasType)
+			if (!this.HasType)
 				throw new InvalidOperationException("No type.");
 
-			return GetValue(Document, Property_Type).AsString().Value;
+			return GetValue(this.Document, Property_Type).AsString().Value;
 		}
-		set => Document.EnsureValueWithSyntax(Property_Type, value);
+		set => this.Document.EnsureValueWithSyntax(Property_Type, value);
 	}
 
 	/// <summary>
@@ -189,13 +189,13 @@ public class Recipe
 
 	public void AddSource(string value)
 	{
-		var sourceList = Document.EnsureArrayWithSyntax(Property_Source);
+		var sourceList = this.Document.EnsureArrayWithSyntax(Property_Source);
 		sourceList.AddItemWithSyntax(value, 1);
 	}
 
 	public void AddNamedDependency(string type, string value)
 	{
-		var dependencies = Document.EnsureTableWithSyntax(Property_Dependencies);
+		var dependencies = this.Document.EnsureTableWithSyntax(Property_Dependencies);
 		var runtimeDependencies = dependencies.EnsureArrayWithSyntax(type);
 
 		runtimeDependencies.AddItemWithSyntax(value, 2);
@@ -242,7 +242,7 @@ public class Recipe
 	/// </summary>
 	private bool HasDependencies()
 	{
-		return HasValue(Document, Property_Dependencies);
+		return HasValue(this.Document, Property_Dependencies);
 	}
 
 	private SMLTable GetDependencies()
@@ -250,7 +250,7 @@ public class Recipe
 		if (!HasDependencies())
 			throw new InvalidOperationException("No dependencies.");
 
-		var values = GetValue(Document, Property_Dependencies).AsTable();
+		var values = GetValue(this.Document, Property_Dependencies).AsTable();
 		return values;
 	}
 

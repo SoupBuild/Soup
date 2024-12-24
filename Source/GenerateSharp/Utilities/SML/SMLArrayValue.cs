@@ -14,16 +14,16 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 
 	public SMLArrayValue(SMLValue value)
 	{
-		Value = value;
-		Delimiter = [];
+		this.Value = value;
+		this.Delimiter = [];
 	}
 
 	public SMLArrayValue(
 		SMLValue value,
 		IList<SMLToken> delimiter)
 	{
-		Value = value;
-		Delimiter = delimiter;
+		this.Value = value;
+		this.Delimiter = delimiter;
 	}
 
 	public override bool Equals(object? obj)
@@ -41,12 +41,12 @@ public class SMLArrayValue : IEquatable<SMLArrayValue>
 			return true;
 
 		// Return true if the fields match.
-		return Value == other.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode();
+		return this.Value.GetHashCode();
 	}
 
 	public static bool operator ==(SMLArrayValue? lhs, SMLArrayValue? rhs)

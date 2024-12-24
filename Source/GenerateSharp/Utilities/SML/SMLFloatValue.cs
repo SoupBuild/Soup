@@ -15,22 +15,22 @@ public class SMLFloatValue : IEquatable<SMLFloatValue>
 
 	public SMLFloatValue()
 	{
-		Value = 0;
-		Content = SMLToken.Empty;
+		this.Value = 0;
+		this.Content = SMLToken.Empty;
 	}
 
 	public SMLFloatValue(double value)
 	{
-		Value = value;
-		Content = new SMLToken(value.ToString(CultureInfo.InvariantCulture));
+		this.Value = value;
+		this.Content = new SMLToken(value.ToString(CultureInfo.InvariantCulture));
 	}
 
 	public SMLFloatValue(
 		double value,
 		SMLToken content)
 	{
-		Value = value;
-		Content = content;
+		this.Value = value;
+		this.Content = content;
 	}
 
 	public override bool Equals(object? obj)
@@ -48,12 +48,12 @@ public class SMLFloatValue : IEquatable<SMLFloatValue>
 			return true;
 
 		// Return true if the fields match.
-		return Value == other.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode();
+		return this.Value.GetHashCode();
 	}
 
 	public static bool operator ==(SMLFloatValue? lhs, SMLFloatValue? rhs)

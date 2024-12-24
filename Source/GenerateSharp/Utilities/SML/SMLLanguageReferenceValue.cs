@@ -19,13 +19,13 @@ public class SMLLanguageReferenceValue : IEquatable<SMLLanguageReferenceValue>
 	public SMLLanguageReferenceValue(
 		LanguageReference value)
 	{
-		OpenParenthesis = SMLToken.Empty;
-		LanguageName = SMLToken.Empty;
-		AtSign = SMLToken.Empty;
-		VersionReference = SMLToken.Empty;
-		CloseParenthesis = SMLToken.Empty;
+		this.OpenParenthesis = SMLToken.Empty;
+		this.LanguageName = SMLToken.Empty;
+		this.AtSign = SMLToken.Empty;
+		this.VersionReference = SMLToken.Empty;
+		this.CloseParenthesis = SMLToken.Empty;
 
-		Value = value;
+		this.Value = value;
 	}
 
 	public SMLLanguageReferenceValue(
@@ -36,13 +36,13 @@ public class SMLLanguageReferenceValue : IEquatable<SMLLanguageReferenceValue>
 		SMLToken closeParenthesis,
 		LanguageReference value)
 	{
-		OpenParenthesis = openParenthesis;
-		LanguageName = languageName;
-		AtSign = atSign;
-		VersionReference = versionReference;
-		CloseParenthesis = closeParenthesis;
+		this.OpenParenthesis = openParenthesis;
+		this.LanguageName = languageName;
+		this.AtSign = atSign;
+		this.VersionReference = versionReference;
+		this.CloseParenthesis = closeParenthesis;
 
-		Value = value;
+		this.Value = value;
 	}
 
 	public override bool Equals(object? obj)
@@ -60,12 +60,12 @@ public class SMLLanguageReferenceValue : IEquatable<SMLLanguageReferenceValue>
 			return true;
 
 		// Return true if the fields match.
-		return Value == other.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode();
+		return this.Value.GetHashCode();
 	}
 
 	public static bool operator ==(SMLLanguageReferenceValue? lhs, SMLLanguageReferenceValue? rhs)

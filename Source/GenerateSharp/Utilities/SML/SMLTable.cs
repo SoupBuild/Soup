@@ -18,21 +18,21 @@ public class SMLTable : IEquatable<SMLTable>
 
 	public SMLTable()
 	{
-		OpenBrace = SMLToken.Empty;
-		LeadingNewlines = [];
-		Values = [];
-		TrailingNewlines = [];
-		CloseBrace = SMLToken.Empty;
+		this.OpenBrace = SMLToken.Empty;
+		this.LeadingNewlines = [];
+		this.Values = [];
+		this.TrailingNewlines = [];
+		this.CloseBrace = SMLToken.Empty;
 	}
 
 	public SMLTable(
 		Dictionary<string, SMLTableValue> values)
 	{
-		OpenBrace = SMLToken.Empty;
-		LeadingNewlines = [];
-		Values = values;
-		TrailingNewlines = [];
-		CloseBrace = SMLToken.Empty;
+		this.OpenBrace = SMLToken.Empty;
+		this.LeadingNewlines = [];
+		this.Values = values;
+		this.TrailingNewlines = [];
+		this.CloseBrace = SMLToken.Empty;
 	}
 
 	public SMLTable(
@@ -40,11 +40,11 @@ public class SMLTable : IEquatable<SMLTable>
 		Dictionary<string, SMLTableValue> values,
 		SMLToken closeBrace)
 	{
-		OpenBrace = openBrace;
-		LeadingNewlines = [];
-		Values = values;
-		TrailingNewlines = [];
-		CloseBrace = closeBrace;
+		this.OpenBrace = openBrace;
+		this.LeadingNewlines = [];
+		this.Values = values;
+		this.TrailingNewlines = [];
+		this.CloseBrace = closeBrace;
 	}
 
 	public SMLTable(
@@ -54,11 +54,11 @@ public class SMLTable : IEquatable<SMLTable>
 		IList<SMLToken> trailingNewlines,
 		SMLToken closeBrace)
 	{
-		OpenBrace = openBrace;
-		LeadingNewlines = leadingNewlines;
-		Values = values;
-		TrailingNewlines = trailingNewlines;
-		CloseBrace = closeBrace;
+		this.OpenBrace = openBrace;
+		this.LeadingNewlines = leadingNewlines;
+		this.Values = values;
+		this.TrailingNewlines = trailingNewlines;
+		this.CloseBrace = closeBrace;
 	}
 
 	public override bool Equals(object? obj)
@@ -76,12 +76,12 @@ public class SMLTable : IEquatable<SMLTable>
 			return true;
 
 		// Return true if the fields match.
-		return Enumerable.SequenceEqual(Values, other.Values);
+		return Enumerable.SequenceEqual(this.Values, other.Values);
 	}
 
 	public override int GetHashCode()
 	{
-		return Values.GetHashCode();
+		return this.Values.GetHashCode();
 	}
 
 	public static bool operator ==(SMLTable? lhs, SMLTable? rhs)

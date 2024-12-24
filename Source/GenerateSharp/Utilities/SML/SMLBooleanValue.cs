@@ -14,22 +14,22 @@ public class SMLBooleanValue : IEquatable<SMLBooleanValue>
 
 	public SMLBooleanValue()
 	{
-		Value = false;
-		Content = SMLToken.Empty;
+		this.Value = false;
+		this.Content = SMLToken.Empty;
 	}
 
 	public SMLBooleanValue(bool value)
 	{
-		Value = value;
-		Content = new SMLToken(value.ToString());
+		this.Value = value;
+		this.Content = new SMLToken(value.ToString());
 	}
 
 	public SMLBooleanValue(
 		bool value,
 		SMLToken content)
 	{
-		Value = value;
-		Content = content;
+		this.Value = value;
+		this.Content = content;
 	}
 
 	public override bool Equals(object? obj)
@@ -47,12 +47,12 @@ public class SMLBooleanValue : IEquatable<SMLBooleanValue>
 			return true;
 
 		// Return true if the fields match.
-		return Value == other.Value;
+		return this.Value == other.Value;
 	}
 
 	public override int GetHashCode()
 	{
-		return Value.GetHashCode();
+		return this.Value.GetHashCode();
 	}
 
 	public static bool operator ==(SMLBooleanValue? lhs, SMLBooleanValue? rhs)

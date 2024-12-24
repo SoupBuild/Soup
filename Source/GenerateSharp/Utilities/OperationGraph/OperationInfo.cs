@@ -29,9 +29,9 @@ public class CommandInfo : IEquatable<CommandInfo>
 		Path executable,
 		IReadOnlyList<string> arguments)
 	{
-		WorkingDirectory = workingDirectory;
-		Executable = executable;
-		Arguments = arguments;
+		this.WorkingDirectory = workingDirectory;
+		this.Executable = executable;
+		this.Arguments = arguments;
 	}
 
 	/// <summary>
@@ -41,9 +41,9 @@ public class CommandInfo : IEquatable<CommandInfo>
 	{
 		if (other is null)
 			return false;
-		return WorkingDirectory == other.WorkingDirectory &&
-			Executable == other.Executable &&
-			Arguments == other.Arguments;
+		return this.WorkingDirectory == other.WorkingDirectory &&
+			this.Executable == other.Executable &&
+			this.Arguments == other.Arguments;
 	}
 
 	public override bool Equals(object? obj)
@@ -53,7 +53,7 @@ public class CommandInfo : IEquatable<CommandInfo>
 
 	public override int GetHashCode()
 	{
-		return (WorkingDirectory.GetHashCode() * 0x100000) + (Executable.GetHashCode() * 0x1000) + Arguments.GetHashCode();
+		return (this.WorkingDirectory.GetHashCode() * 0x100000) + (this.Executable.GetHashCode() * 0x1000) + this.Arguments.GetHashCode();
 	}
 
 	public static bool operator ==(CommandInfo lhs, CommandInfo other)
@@ -130,15 +130,15 @@ public class OperationInfo : IEquatable<OperationInfo>
 		IList<OperationId> children,
 		uint dependencyCount)
 	{
-		Id = id;
-		Title = title;
-		Command = command;
-		DeclaredInput = declaredInput;
-		DeclaredOutput = declaredOutput;
-		ReadAccess = readAccess;
-		WriteAccess = writeAccess;
-		Children = children;
-		DependencyCount = dependencyCount;
+		this.Id = id;
+		this.Title = title;
+		this.Command = command;
+		this.DeclaredInput = declaredInput;
+		this.DeclaredOutput = declaredOutput;
+		this.ReadAccess = readAccess;
+		this.WriteAccess = writeAccess;
+		this.Children = children;
+		this.DependencyCount = dependencyCount;
 	}
 
 	public bool Equals(OperationInfo? other)
@@ -146,15 +146,15 @@ public class OperationInfo : IEquatable<OperationInfo>
 		if (other is null)
 			return false;
 
-		var result = Id == other.Id &&
-			Title == other.Title &&
-			Command == other.Command &&
-			Enumerable.SequenceEqual(DeclaredInput, other.DeclaredInput) &&
-			Enumerable.SequenceEqual(DeclaredOutput, other.DeclaredOutput) &&
-			Enumerable.SequenceEqual(ReadAccess, other.ReadAccess) &&
-			Enumerable.SequenceEqual(WriteAccess, other.WriteAccess) &&
-			Enumerable.SequenceEqual(Children, other.Children) &&
-			DependencyCount == other.DependencyCount;
+		var result = this.Id == other.Id &&
+			this.Title == other.Title &&
+			this.Command == other.Command &&
+			Enumerable.SequenceEqual(this.DeclaredInput, other.DeclaredInput) &&
+			Enumerable.SequenceEqual(this.DeclaredOutput, other.DeclaredOutput) &&
+			Enumerable.SequenceEqual(this.ReadAccess, other.ReadAccess) &&
+			Enumerable.SequenceEqual(this.WriteAccess, other.WriteAccess) &&
+			Enumerable.SequenceEqual(this.Children, other.Children) &&
+			this.DependencyCount == other.DependencyCount;
 
 		return result;
 	}
@@ -166,7 +166,7 @@ public class OperationInfo : IEquatable<OperationInfo>
 
 	public override int GetHashCode()
 	{
-		return (Id.GetHashCode() * 0x100000) + (Title.GetHashCode(StringComparison.InvariantCulture) * 0x1000) + Command.GetHashCode();
+		return (this.Id.GetHashCode() * 0x100000) + (this.Title.GetHashCode(StringComparison.InvariantCulture) * 0x1000) + this.Command.GetHashCode();
 	}
 
 	public static bool operator ==(OperationInfo lhs, OperationInfo other)

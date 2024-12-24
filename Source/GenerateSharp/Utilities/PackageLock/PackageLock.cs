@@ -2,8 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
 using Opal;
+using System;
 
 namespace Soup.Build.Utilities;
 
@@ -22,7 +22,7 @@ public class PackageLock
 	/// </summary>
 	public PackageLock()
 	{
-		Document = new SMLDocument();
+		this.Document = new SMLDocument();
 	}
 
 	/// <summary>
@@ -30,7 +30,7 @@ public class PackageLock
 	/// </summary>
 	public PackageLock(SMLDocument table)
 	{
-		Document = table;
+		this.Document = table;
 	}
 
 	/// <summary>
@@ -38,7 +38,7 @@ public class PackageLock
 	/// </summary>
 	public bool HasVersion()
 	{
-		return HasValue(Document, Property_Version);
+		return HasValue(this.Document, Property_Version);
 	}
 
 	public long GetVersion()
@@ -46,13 +46,13 @@ public class PackageLock
 		if (!HasVersion())
 			throw new InvalidOperationException("No version.");
 
-		var value = GetValue(Document, Property_Version).AsInteger();
+		var value = GetValue(this.Document, Property_Version).AsInteger();
 		return value.Value;
 	}
 
 	public void SetVersion(long value)
 	{
-		Document.AddItemWithSyntax(Property_Version, value);
+		this.Document.AddItemWithSyntax(Property_Version, value);
 	}
 
 	/// <summary>
@@ -60,7 +60,7 @@ public class PackageLock
 	/// </summary>
 	public bool HasClosures()
 	{
-		return HasValue(Document, Property_Closures);
+		return HasValue(this.Document, Property_Closures);
 	}
 
 	public SMLTable GetClosures()
@@ -68,13 +68,13 @@ public class PackageLock
 		if (!HasClosures())
 			throw new InvalidOperationException("No closures.");
 
-		var values = GetValue(Document, Property_Closures).AsTable();
+		var values = GetValue(this.Document, Property_Closures).AsTable();
 		return values;
 	}
 
 	public void EnsureClosure(string closure)
 	{
-		var closures = EnsureHasTable(Document, Property_Closures);
+		var closures = EnsureHasTable(this.Document, Property_Closures);
 		_ = EnsureHasTable(closures, closure, 1);
 	}
 
@@ -87,7 +87,7 @@ public class PackageLock
 		string? buildClosure,
 		string? toolClosure)
 	{
-		var closures = EnsureHasTable(Document, Property_Closures);
+		var closures = EnsureHasTable(this.Document, Property_Closures);
 		var closureTable = EnsureHasTable(closures, closure, 1);
 		var projectLanguageTable = EnsureHasTable(closureTable, language, 2);
 

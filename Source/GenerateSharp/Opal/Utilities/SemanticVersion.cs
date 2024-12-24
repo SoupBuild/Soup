@@ -38,9 +38,9 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 	/// <param name="patch">The patch version.</param>
 	public SemanticVersion(int major, int? minor, int? patch)
 	{
-		Major = major;
-		Minor = minor;
-		Patch = patch;
+		this.Major = major;
+		this.Minor = minor;
+		this.Patch = patch;
 	}
 
 	/// <summary>
@@ -168,9 +168,9 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 	{
 		if (other is null)
 			return false;
-		return Major == other.Major &&
-			Minor == other.Minor &&
-			Patch == other.Patch;
+		return this.Major == other.Major &&
+			this.Minor == other.Minor &&
+			this.Patch == other.Patch;
 	}
 
 	public override bool Equals(object? obj)
@@ -180,9 +180,9 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 
 	public override int GetHashCode()
 	{
-		var value = Major * 0x100000;
-		value += Minor * 0x1000 ?? 0;
-		value += Patch ?? 0;
+		var value = this.Major * 0x100000;
+		value += this.Minor * 0x1000 ?? 0;
+		value += this.Patch ?? 0;
 		return value;
 	}
 
@@ -222,17 +222,17 @@ public class SemanticVersion : IEquatable<SemanticVersion>
 	/// </summary>
 	public override string ToString()
 	{
-		if (Minor is null)
+		if (this.Minor is null)
 		{
-			return $"{Major}";
+			return $"{this.Major}";
 		}
-		else if (Patch is null)
+		else if (this.Patch is null)
 		{
-			return $"{Major}.{Minor}";
+			return $"{this.Major}.{this.Minor}";
 		}
 		else
 		{
-			return $"{Major}.{Minor}.{Patch}";
+			return $"{this.Major}.{this.Minor}.{this.Patch}";
 		}
 	}
 }

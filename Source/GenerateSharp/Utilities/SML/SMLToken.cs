@@ -18,16 +18,16 @@ public class SMLToken : IEquatable<SMLToken>
 
 	public SMLToken(string text)
 	{
-		LeadingTrivia = [];
-		Text = text;
-		TrailingTrivia = [];
+		this.LeadingTrivia = [];
+		this.Text = text;
+		this.TrailingTrivia = [];
 	}
 
 	public SMLToken(IList<string> leadingTrivia, string text, IList<string> trailingTrivia)
 	{
-		LeadingTrivia = leadingTrivia;
-		Text = text;
-		TrailingTrivia = trailingTrivia;
+		this.LeadingTrivia = leadingTrivia;
+		this.Text = text;
+		this.TrailingTrivia = trailingTrivia;
 	}
 
 	public override bool Equals(object? obj)
@@ -45,15 +45,15 @@ public class SMLToken : IEquatable<SMLToken>
 			return true;
 
 		// Return true if the fields match.
-		return Text == other.Text &&
-			Enumerable.SequenceEqual(LeadingTrivia, other.LeadingTrivia) &&
-			Enumerable.SequenceEqual(TrailingTrivia, other.TrailingTrivia);
+		return this.Text == other.Text &&
+			Enumerable.SequenceEqual(this.LeadingTrivia, other.LeadingTrivia) &&
+			Enumerable.SequenceEqual(this.TrailingTrivia, other.TrailingTrivia);
 	}
 
 	// Only use the text to allow for mapping to same bins
 	public override int GetHashCode()
 	{
-		return Text.GetHashCode(StringComparison.Ordinal);
+		return this.Text.GetHashCode(StringComparison.Ordinal);
 	}
 
 	public static bool operator ==(SMLToken? lhs, SMLToken? rhs)

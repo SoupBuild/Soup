@@ -58,8 +58,8 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	/// </summary>
 	public LanguageReference()
 	{
-		Name = string.Empty;
-		Version = new SemanticVersion();
+		this.Name = string.Empty;
+		this.Version = new SemanticVersion();
 	}
 
 	/// <summary>
@@ -67,8 +67,8 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	/// </summary>
 	public LanguageReference(string name, SemanticVersion version)
 	{
-		Name = name;
-		Version = version;
+		this.Name = name;
+		this.Version = version;
 	}
 
 	/// <summary>
@@ -88,8 +88,8 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	{
 		if (other is null)
 			return false;
-		return Name == other.Name &&
-			Version == other.Version;
+		return this.Name == other.Name &&
+			this.Version == other.Version;
 	}
 
 	public override bool Equals(object? obj)
@@ -99,8 +99,8 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 
 	public override int GetHashCode()
 	{
-		var nameHash = string.IsNullOrEmpty(Name) ? 0 : Name.GetHashCode(StringComparison.Ordinal) * 0x1000;
-		var versionHash = Version is null ? 0 : Version.GetHashCode();
+		var nameHash = string.IsNullOrEmpty(this.Name) ? 0 : this.Name.GetHashCode(StringComparison.Ordinal) * 0x1000;
+		var versionHash = this.Version is null ? 0 : this.Version.GetHashCode();
 		return nameHash + versionHash;
 	}
 
@@ -122,7 +122,7 @@ public partial class LanguageReference : IEquatable<LanguageReference>
 	public override string ToString()
 	{
 		// Build up the name/version reference
-		return $"{Name}|{Version}";
+		return $"{this.Name}|{this.Version}";
 	}
 
 	[GeneratedRegex(@"^(?<Name>[A-Za-z][\w#+.]*)(?:\|(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$")]
