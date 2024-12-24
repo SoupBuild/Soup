@@ -68,7 +68,7 @@ public static class DotNetSDKUtilities
 			var version = sdkValue[..splitIndex];
 			var installationValue = sdkValue.Substring(splitIndex + 2, sdkValue.Length - splitIndex - 3);
 			var installationPath = Path.Parse(installationValue);
-			var installationVersionPath = new Path($"./{version}/");
+			var installationVersionPath = installationPath + new Path($"./{version}/");
 
 			// Ensure we have read access to the sdk
 			SourceSetUtilities.Add(sourceDirectories, installationPath);
