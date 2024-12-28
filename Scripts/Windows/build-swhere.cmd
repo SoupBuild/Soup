@@ -7,6 +7,6 @@ SET SourceDir=%RootDir%\Source
 SET SWhereDir=%SourceDir%\GenerateSharp\Swhere
 
 REM - Build SWhere tool
-echo dotnet publish %SWhereDir% -c %Flavor% -f net8.0 -r win-x64 --self-contained
-call dotnet publish %SWhereDir% -c %Flavor% -f net8.0 -r win-x64 --self-contained
+echo dotnet publish %SWhereDir% -c %Flavor% -f net9.0 -r win-x64 --self-contained
+call dotnet publish %SWhereDir% -c %Flavor% -f net9.0 -r win-x64 --self-contained
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%

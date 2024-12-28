@@ -67,7 +67,7 @@ public static class VSWhereUtilities
 		}
 
 		var process = LifetimeManager.Get<IProcessManager>().CreateProcess(
-			executablePath,
+			executablePath.ToString(),
 			arguments,
 			workingDirectory);
 		process.Start();

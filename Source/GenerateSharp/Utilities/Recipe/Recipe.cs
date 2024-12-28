@@ -44,7 +44,7 @@ public class Recipe
 	{
 		this.Document = new SMLDocument();
 		this.Name = name;
-		this.Language = language;
+		this.Document.EnsureValueWithSyntax(Property_Language, language.ToString()); // Force old way until we decide for sure this is better
 	}
 
 	/// <summary>

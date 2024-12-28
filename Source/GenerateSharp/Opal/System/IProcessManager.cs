@@ -22,7 +22,7 @@ public interface IProcessManager
 	/// <param name="arguments">The arguments.</param>
 	/// <param name="workingDirectory">The working directory.</param>
 	public abstract IProcess CreateProcess(
-		Path executable,
+		string executable,
 		string arguments,
 		Path workingDirectory);
 }

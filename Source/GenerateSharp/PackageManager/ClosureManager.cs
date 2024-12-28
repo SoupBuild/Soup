@@ -165,7 +165,7 @@ public class ClosureManager : IClosureManager
 						{
 							// Process the local dependency and place the lock in the root
 							var referencePath = new Path(projectVersionValue.Value.AsString().Value);
-							var dependencyPath = workingDirectory + referencePath;
+							var dependencyPath = referencePath.HasRoot ? referencePath : workingDirectory + referencePath;
 							var dependencyLockPath =
 								dependencyPath +
 								BuildConstants.PackageLockFileName;

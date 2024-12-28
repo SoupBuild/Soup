@@ -19,11 +19,15 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 9.0.x
     - name: Setup Soup Build
       uses: soupbuild/setup-soup@v1
       with:
         version: latest
+
+    # Restore Nuget
+    - name: DotNet Restore
+      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
 
     # Build Soup
     - name: Soup Where
@@ -52,14 +56,9 @@ jobs:
       run: soup build ./Soup/Source/Client/Tools/ -flavor ${{matrix.config}}
 
     # Build DotNet
-    - name: DotNet Restore
-      if: matrix.os != 'ubuntu-22.04'
-      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Build
-      if: matrix.os != 'ubuntu-22.04'
       run: dotnet build -c ${{matrix.config}} --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Test
-      if: matrix.os != 'ubuntu-22.04'
       run: dotnet test -c ${{matrix.config}} --no-build --verbosity normal ./Soup/Source/GenerateSharp/GenerateSharp.sln
 
     # Build Tools
@@ -75,6 +74,10 @@ jobs:
       run: soup restore ./Soup/Source/Tools/PrintValueTable/
     - name: Soup Build PrintValueTable
       run: soup build ./Soup/Source/Tools/PrintValueTable/ -flavor ${{matrix.config}}
+    - name: Soup Restore Migrate
+      run: soup restore ./Soup/Source/GenerateSharp/Migrate/
+    - name: Soup Build Migrate
+      run: soup build ./Soup/Source/GenerateSharp/Migrate/ -flavor ${{matrix.config}}
 
     # Build Samples
     - name: Soup Restore C BuildExtension
@@ -88,7 +91,7 @@ jobs:
     - name: Soup Build C StaticLibrary
       run: soup build ./Soup/Samples/C/StaticLibrary/Application/ -flavor ${{matrix.config}}
     - name: Soup Build C WindowsApplication
-      if: matrix.os != 'ubuntu-24.04'
+      if: matrix.os == 'windows-2022'
       run: soup build ./Soup/Samples/C/WindowsApplication/ -flavor ${{matrix.config}}
 
     - name: Soup Restore Cpp BuildExtension
@@ -98,7 +101,7 @@ jobs:
     - name: Soup Build Cpp ConsoleApplication
       run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DirectX
-      if: matrix.os != 'ubuntu-24.04'
+      if: matrix.os == 'windows-2022'
       run: soup build ./Soup/Samples/Cpp/DirectX/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DynamicLibrary
       run: soup build ./Soup/Samples/Cpp/DynamicLibrary/Application/ -flavor ${{matrix.config}}
@@ -111,7 +114,7 @@ jobs:
     - name: Soup Build Cpp StaticLibrary
       run: soup build ./Soup/Samples/Cpp/StaticLibrary/Application/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp WindowsApplication
-      if: matrix.os != 'ubuntu-24.04'
+      if: matrix.os == 'windows-2022'
       run: soup build ./Soup/Samples/Cpp/WindowsApplication/ -flavor ${{matrix.config}}
 
     - name: Soup Restore CSharp BuildExtension

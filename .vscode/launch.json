@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "",
-      "program": "${workspaceFolder}/Source/out/msbuild/bin/Swhere/Debug/net8.0/Swhere.dll",
+      "program": "${workspaceFolder}/out/msbuild/bin/Swhere/Debug/net9.0/linux-x64/Swhere.dll",
       "args": [],
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,

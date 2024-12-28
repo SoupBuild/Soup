@@ -13,7 +13,7 @@ namespace Soup.Build.Discover;
 
 public static class ExecutableUtilities
 {
-	public static async Task<string> RunExecutableAsync(Path executable, IList<string> arguments)
+	public static async Task<string> RunExecutableAsync(string executable, IList<string> arguments)
 	{
 		var workingDirectory = new Path("./");
 

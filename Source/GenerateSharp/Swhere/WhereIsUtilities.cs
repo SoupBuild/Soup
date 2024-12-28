@@ -15,24 +15,24 @@ public static class WhereIsUtilities
 {
 	public static async Task<Path> FindExecutableAsync(OSPlatform platform, string name)
 	{
-		Path executablePath;
+		string executable;
 		string separator;
 		int skipCount;
 		int newLineLength;
 		switch (platform)
 		{
 			case OSPlatform.Windows:
-				executablePath = new Path("C:/Windows/System32/where.exe");
+				executable = "C:/Windows/System32/where.exe";
 				separator = "\r\n";
 				skipCount = 0;
 				newLineLength = 2;
 				break;
 			case OSPlatform.Linux:
-				executablePath = new Path("/usr/bin/whereis");
+				executable = "which";
 				separator = " ";
 
-				// Whereis sets the name as the first entry
-				skipCount = 1;
+				// which sets the name as the first entry
+				skipCount = 0;
 				newLineLength = 1;
 				break;
 			default:
@@ -44,7 +44,7 @@ public static class WhereIsUtilities
 			name,
 		};
 
-		var stdOut = await ExecutableUtilities.RunExecutableAsync(executablePath, arguments);
+		var stdOut = await ExecutableUtilities.RunExecutableAsync(executable, arguments);
 
 		// The first line is the path
 		var values = stdOut[..^newLineLength]

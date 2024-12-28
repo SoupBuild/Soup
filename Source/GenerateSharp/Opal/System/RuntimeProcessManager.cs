@@ -30,7 +30,7 @@ public class RuntimeProcessManager : IProcessManager
 	/// Creates a process for the provided executable path
 	/// </summary>
 	public IProcess CreateProcess(
-		Path executable,
+		string executable,
 		string arguments,
 		Path workingDirectory)
 	{
