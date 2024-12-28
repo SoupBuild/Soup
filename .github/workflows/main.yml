@@ -25,6 +25,10 @@ jobs:
       with:
         version: latest
 
+    # Restore Nuget
+    - name: DotNet Restore
+      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
+
     # Build Soup
     - name: Dotnet
       run: dotnet --info
@@ -63,8 +67,6 @@ jobs:
       run: soup build ./Soup/Source/Client/Tools/ -flavor ${{matrix.config}}
 
     # Build DotNet
-    - name: DotNet Restore
-      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Build
       run: dotnet build -c ${{matrix.config}} --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Test
