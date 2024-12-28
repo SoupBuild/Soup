@@ -30,8 +30,6 @@ jobs:
       run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
 
     # Build Soup
-    - name: Dotnet
-      run: dotnet --info
     - name: Soup Where
       run: swhere
     - name: Soup Restore Client
