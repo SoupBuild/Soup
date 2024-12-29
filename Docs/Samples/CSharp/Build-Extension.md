@@ -122,7 +122,7 @@ Closures: {
   Build0: {
     Wren: {
       'Samples.CSharp.BuildExtension.Extension': { Version: '../Extension/' }
-      'Soup|CSharp': { Version: 0.15.1 }
+      'Soup|CSharp': { Version: 0.15.2 }
     }
   }
   Tool0: {

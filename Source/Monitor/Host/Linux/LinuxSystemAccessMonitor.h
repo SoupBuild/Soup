@@ -62,45 +62,66 @@ namespace Monitor::Linux
 
 		void OnOpen(std::string_view path, int32_t oflag, int32_t result) override final
 		{
-			bool isWrite = (oflag & O_WRONLY) != 0 || (oflag & O_RDWR) != 0;
+			bool isWriteOnly = (oflag & O_WRONLY) != 0;
+			bool isReadWrite = (oflag & O_RDWR) != 0;
+			bool isReadOnly = (oflag & O_RDONLY) != 0;
 			bool wasBlocked = false;
-			if (isWrite)
+			bool exists = result != -1;
+
+			// TODO: Warn about RW
+
+			// Treat a RW that does not exist as a read only for now
+			if (isWriteOnly || (isReadWrite && exists))
 			{
 				TouchFileWrite(path, wasBlocked);
 			}
-			else
+			
+			if (isReadWrite || isReadOnly)
 			{
-				bool exists = result != -1;
 				TouchFileRead(path, exists, wasBlocked);
 			}
 		}
 
 		void OnOpenAt(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) override final
 		{
-			bool isWrite = (flags & O_WRONLY) != 0 || (flags & O_RDWR) != 0;
+			bool isWriteOnly = (flags & O_WRONLY) != 0;
+			bool isReadWrite = (flags & O_RDWR) != 0;
+			bool isReadOnly = (flags & O_RDONLY) != 0;
 			bool wasBlocked = false;
-			if (isWrite)
+			bool exists = result != -1;
+
+			// TODO: Warn about RW
+
+			// Treat a RW that does not exist as a read only for now
+			if (isWriteOnly || (isReadWrite && exists))
 			{
 				TouchFileWrite(pathname, wasBlocked);
 			}
-			else
+			
+			if (isReadWrite || isReadOnly)
 			{
-				bool exists = result != -1;
 				TouchFileRead(pathname, exists, wasBlocked);
 			}
 		}
 		
 		void OnOpenAt2(int32_t dirfd, std::string_view pathname, int32_t flags, int32_t result) override final
 		{
-			bool isWrite = (flags & O_WRONLY) != 0 || (flags & O_RDWR) != 0;
+			bool isWriteOnly = (flags & O_WRONLY) != 0;
+			bool isReadWrite = (flags & O_RDWR) != 0;
+			bool isReadOnly = (flags & O_RDONLY) != 0;
 			bool wasBlocked = false;
-			if (isWrite)
+			bool exists = result != -1;
+
+			// TODO: Warn about RW
+
+			// Treat a RW that does not exist as a read only for now
+			if (isWriteOnly || (isReadWrite && exists))
 			{
 				TouchFileWrite(pathname, wasBlocked);
 			}
-			else
+			
+			if (isReadWrite || isReadOnly)
 			{
-				bool exists = result != -1;
 				TouchFileRead(pathname, exists, wasBlocked);
 			}
 		}
