@@ -12,6 +12,6 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Swhere\Swhere.csproj" />
+		<ProjectReference Include="..\swhere\Swhere.csproj" />
 	</ItemGroup>
 </Project>

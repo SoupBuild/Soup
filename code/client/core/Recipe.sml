@@ -31,7 +31,7 @@ Dependencies: {
 }
 Tests: {
 	Source: [
-		'tests/gen/main.cpp'
+		'tests/gen/Main.cpp'
 	]
 	IncludePaths: [
 		'tests/'

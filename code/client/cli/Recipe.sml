@@ -3,7 +3,7 @@ Version: 0.41.2
 Language: 'C++|0'
 Type: 'Executable'
 Source: [
-	'source/main.cpp'
+	'source/Main.cpp'
 ]
 IncludePaths: [
 	'source/commands/'
@@ -30,7 +30,7 @@ Dependencies: {
 }
 Tests: {
 	Source: [
-		'tests/gen/main.cpp'
+		'tests/gen/Main.cpp'
 	]
 	IncludePaths: [
 		'tests/'

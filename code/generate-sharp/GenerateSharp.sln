@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Api.Client", "ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swhere", "swhere\Swhere.csproj", "{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.PackageManager.UnitTests", "PackageManager.UnitTests\Soup.Build.PackageManager.UnitTests.csproj", "{3ED8855B-F84C-4650-BC6C-23B6B5D49FAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.PackageManager.UnitTests", "package-manager.unittests\Soup.Build.PackageManager.UnitTests.csproj", "{3ED8855B-F84C-4650-BC6C-23B6B5D49FAA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Utilities.UnitTests", "utilities.unittests\Soup.Utilities.UnitTests.csproj", "{7368F08B-A15F-4D70-A836-CC3C9E2921E1}"
 EndProject

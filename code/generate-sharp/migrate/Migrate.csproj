@@ -8,6 +8,6 @@
 		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
+		<ProjectReference Include="..\utilities\Soup.Utilities.csproj" />
 	</ItemGroup>
 </Project>
