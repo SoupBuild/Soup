@@ -3,22 +3,22 @@ Version: 0.41.2
 Language: 'C++|0'
 Type: 'Executable'
 Source: [
-	'Source/Main.cpp'
+	'source/main.cpp'
 ]
 IncludePaths: [
-	'Source/Commands/'
-	'Source/Options/'
+	'source/commands/'
+	'source/options/'
 ]
 Dependencies: {
 	# Ensure the core build extensions are runtime dependencies
 	Runtime: [
-		'../Core/'
-		'../../Generate/'
-		'../../Monitor/Host/'
+		'../core/'
+		'../../generate/'
+		'../../monitor/host/'
 	]
 	Other: [
-		'../../Tools/Copy/'
-		'../../Tools/Mkdir/'
+		'../../tools/copy/'
+		'../../tools/mkdir/'
 		'[Wren]Soup|Wren@0'
 	]
 	Build: [
@@ -30,9 +30,9 @@ Dependencies: {
 }
 Tests: {
 	Source: [
-		'UnitTests/gen/Main.cpp'
+		'tests/gen/main.cpp'
 	]
 	IncludePaths: [
-		'UnitTests/'
+		'tests/'
 	]
 }
