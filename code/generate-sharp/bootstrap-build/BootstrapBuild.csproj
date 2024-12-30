@@ -4,7 +4,7 @@
 		<TargetFramework>net9.0</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Opal\Opal.csproj" />
-		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
+		<ProjectReference Include="..\opal\Opal.csproj" />
+		<ProjectReference Include="..\utilities\Soup.Utilities.csproj" />
 	</ItemGroup>
 </Project>

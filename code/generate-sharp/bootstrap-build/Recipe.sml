@@ -4,8 +4,8 @@ Version: 1.0.0
 Type: 'Executable'
 Dependencies: {
 	Runtime: [
-		'../Swhere.Core/'
-		'../Utilities/'
-		'../Opal/'
+		'../swhere.core/'
+		'../utilities/'
+		'../opal/'
 	]
 }

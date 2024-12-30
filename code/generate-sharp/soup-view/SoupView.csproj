@@ -12,16 +12,16 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Remove="Assets\Soup.ico" />
-		<AvaloniaResource Include="Assets\Soup.ico" />
+		<None Remove="assets/Soup.ico" />
+		<AvaloniaResource Include="assets/Soup.ico" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(Configuration)'=='Debug' And '$(OS)'=='Windows_NT'">
-		<None Include="..\..\..\out\C++\Local\SoupTools\1.0.0\OZlIVjblazFuKXg-raWUNoGEnG4\bin\SoupTools.dll" Link="SoupTools.dll">
+		<None Include="../../../out/C++/Local/SoupTools/1.0.0/OZlIVjblazFuKXg-raWUNoGEnG4/bin/SoupTools.dll" Link="SoupTools.dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	<ItemGroup Condition="'$(Configuration)'=='Release' And '$(OS)'=='Windows_NT'">
-		<None Include="..\..\..\out\C++\Local\SoupTools\1.0.0\Oltq7cGwk0Rbgy1I-3mCMDDE5yM\bin\SoupTools.dll" Link="SoupTools.dll">
+		<None Include="../../../out/C++/Local/SoupTools/1.0.0/Oltq7cGwk0Rbgy1I-3mCMDDE5yM/bin/SoupTools.dll" Link="SoupTools.dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
@@ -38,7 +38,7 @@
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Opal\Opal.csproj" />
-		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
+		<ProjectReference Include="../opal/Opal.csproj" />
+		<ProjectReference Include="../utilities/Soup.Utilities.csproj" />
 	</ItemGroup>
 </Project>

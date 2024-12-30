@@ -13,8 +13,8 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		'../Api.Client/'
-		'../Utilities/'
-		'../Opal/'
+		'../api.client/'
+		'../utilities/'
+		'../opal/'
 	]
 }

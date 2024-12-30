@@ -8,8 +8,8 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		'../Swhere.Core/'
-		'../Utilities/'
-		'../Opal/'
+		'../swhere.core/'
+		'../utilities/'
+		'../opal/'
 	]
 }

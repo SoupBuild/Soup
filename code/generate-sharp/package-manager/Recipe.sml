@@ -15,9 +15,9 @@ Dependencies: {
 		'Soup|CSharp.Nuget@0'
 	]
 	Runtime: [
-		'../PackageManager.Core/'
-		'../Utilities/'
-		'../Opal/'
+		'../package-manager.core/'
+		'../utilities/'
+		'../opal/'
 	]
 }
 

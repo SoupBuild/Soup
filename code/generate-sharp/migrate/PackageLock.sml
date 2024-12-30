@@ -3,8 +3,8 @@ Closures: {
 	Root: {
 		'C#': {
 			Migrate: { Version: './', Build: 'Build0', Tool: 'Tool0' }
-			Opal: { Version: '../Opal/', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.Utilities': { Version: '../Utilities/', Build: 'Build1', Tool: 'Tool0' }
+			Opal: { Version: '../opal/', Build: 'Build0', Tool: 'Tool0' }
+			'Soup.Utilities': { Version: '../utilities/', Build: 'Build1', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

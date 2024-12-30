@@ -3,25 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Utilities", "Utilities\Soup.Utilities.csproj", "{274AD7F0-D11F-4B6B-8BFC-51DEBFE40DF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Utilities", "utilities\Soup.Utilities.csproj", "{274AD7F0-D11F-4B6B-8BFC-51DEBFE40DF8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Opal", "Opal\Opal.csproj", "{D01AC47E-1A6A-4EDE-97F5-2D05D1BC7120}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Opal", "opal\Opal.csproj", "{D01AC47E-1A6A-4EDE-97F5-2D05D1BC7120}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Opal.UnitTests", "Opal.UnitTests\Opal.UnitTests.csproj", "{0DD0DB83-90BE-4FDC-B470-6A25C11C1DE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Opal.UnitTests", "opal.unittests\Opal.UnitTests.csproj", "{0DD0DB83-90BE-4FDC-B470-6A25C11C1DE9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.PackageManager", "PackageManager\Soup.Build.PackageManager.csproj", "{770620D6-444F-4FE9-80F7-08217CCBFD59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.PackageManager", "package-manager\Soup.Build.PackageManager.csproj", "{770620D6-444F-4FE9-80F7-08217CCBFD59}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Api.Client", "Api.Client\Soup.Build.Api.Client.csproj", "{7B533719-1983-4851-B9A8-788F032BD2AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Api.Client", "api.client\Soup.Build.Api.Client.csproj", "{7B533719-1983-4851-B9A8-788F032BD2AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swhere", "Swhere\Swhere.csproj", "{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swhere", "swhere\Swhere.csproj", "{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.PackageManager.UnitTests", "PackageManager.UnitTests\Soup.Build.PackageManager.UnitTests.csproj", "{3ED8855B-F84C-4650-BC6C-23B6B5D49FAA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Utilities.UnitTests", "Utilities.UnitTests\Soup.Utilities.UnitTests.csproj", "{7368F08B-A15F-4D70-A836-CC3C9E2921E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Utilities.UnitTests", "utilities.unittests\Soup.Utilities.UnitTests.csproj", "{7368F08B-A15F-4D70-A836-CC3C9E2921E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swhere.UnitTests", "Swhere.Core.UnitTests\Swhere.UnitTests.csproj", "{402DEECF-6F0F-4BFD-ADA1-E7B82B8548DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swhere.UnitTests", "swhere.core.unittests\Swhere.UnitTests.csproj", "{402DEECF-6F0F-4BFD-ADA1-E7B82B8548DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoupView", "SoupView\SoupView.csproj", "{1A3B24E3-DFE0-4183-B89A-85DA368150F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoupView", "soup-view\SoupView.csproj", "{1A3B24E3-DFE0-4183-B89A-85DA368150F3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F1932229-5FBE-4FBE-9C8C-6D6F2E35E9ED}"
 	ProjectSection(SolutionItems) = preProject

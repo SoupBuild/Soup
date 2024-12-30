@@ -7,7 +7,7 @@ Dependencies: {
 		'Soup|CSharp.Nuget@0'
 	]
 	Runtime: [
-		'../Opal/'
+		'../opal/'
 	]
 }
 Nuget: {

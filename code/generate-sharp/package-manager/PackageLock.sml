@@ -2,11 +2,11 @@ Version: 5
 Closures: {
 	Root: {
 		'C#': {
-			Opal: { Version: '../Opal/', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.Api.Client': { Version: '../Api.Client/', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.Build.Utilities': { Version: '../Utilities/', Build: 'Build0', Tool: 'Tool0' }
+			Opal: { Version: '../opal/', Build: 'Build0', Tool: 'Tool0' }
+			'Soup.Api.Client': { Version: '../api.client/', Build: 'Build0', Tool: 'Tool0' }
+			'Soup.Build.Utilities': { Version: '../utilities/', Build: 'Build0', Tool: 'Tool0' }
 			'Soup.PackageManager': { Version: './', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.PackageManager.Core': { Version: '../PackageManager.Core/', Build: 'Build0', Tool: 'Tool0' }
+			'Soup.PackageManager.Core': { Version: '../package-manager.core/', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {
