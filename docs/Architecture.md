@@ -32,7 +32,7 @@ Along with the list of explicit Build dependencies that inject build extensions,
 The final stage of the build is to evaluate the build Operations that were generated from the build Tasks. These commands contain the executable and arguments to pass in, as well as the input and output files that will be used to perform incremental builds. During execution of each Operation the Engine will monitor the actual file system access to build a complete set of input and output files to be used for a guaranteed incremental build. The initial implementation will use a very simple time-stamp based incremental build that can be extended to use hashing of file contents in the future.
 
 ## Detailed Flow
-![Flow Diagram for Soup Build](Architecture/assets/Soup-Flow.svg)
+![Flow Diagram for Soup Build](architecture/assets/soup-flow.svg)
 
 The build Engine is responsible for recursively building all dependencies, facilitating the registration and execution of build Tasks, and evaluating all requirement build Operations. All build logic will be contained in Tasks and all build execution will be performed in Operations. Having this extra layer of separation between the build generate and the build evaluate allows for build Extensions to get fast incremental build support for "free" and will allow for future performance improvements without introducing breaking changes into the Extension Framework itself. This means **Soup** can support super fast builds for any possible unique build step or even be extended to support any language by only writing a new default build Extension layer.
 
