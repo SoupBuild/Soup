@@ -6,7 +6,7 @@
 #include "BuildRunner.h"
 #include "BuildEvaluateEngine.h"
 #include "BuildLoadEngine.h"
-#include "LocalUserConfig/LocalUserConfigExtensions.h"
+#include "local-user-config/LocalUserConfigExtensions.h"
 
 namespace Soup::Core
 {

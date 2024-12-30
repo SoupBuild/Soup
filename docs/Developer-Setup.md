@@ -33,7 +33,7 @@ git clone --recursive https://github.com/SoupBuild/Soup.git
 
 ### Build the Client
 ```
-cd Source/Client/CLI
+cd code/client/cli
 soup restore
 soup build
 ```

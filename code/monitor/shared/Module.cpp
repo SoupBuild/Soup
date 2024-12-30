@@ -53,7 +53,7 @@ export void ThrowIfFailed(int32_t result, std::string_view message)
 
 #elif defined(__linux__)
 
-#include "Linux/DetourEventType.h"
+#include "linux/DetourEventType.h"
 
 #endif
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "ValueTable/ValueTableManagerTests.h"
+#include "value-table/ValueTableManagerTests.h"
 
 TestState RunValueTableManagerTests() 
  {

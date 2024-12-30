@@ -12,12 +12,12 @@
 #include "RecipeBuildArguments.h"
 #include "RecipeBuildLocationManager.h"
 #include "FileSystemState.h"
-#include "LocalUserConfig/LocalUserConfig.h"
-#include "OperationGraph/OperationGraphManager.h"
-#include "OperationGraph/OperationResultsManager.h"
-#include "Utils/HandledException.h"
-#include "ValueTable/ValueTableManager.h"
-#include "Recipe/RecipeBuildStateConverter.h"
+#include "local-user-config/LocalUserConfig.h"
+#include "operation-graph/OperationGraphManager.h"
+#include "operation-graph/OperationResultsManager.h"
+#include "utilities/HandledException.h"
+#include "value-table/ValueTableManager.h"
+#include "recipe/RecipeBuildStateConverter.h"
 
 namespace Soup::Core
 {

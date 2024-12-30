@@ -1,4 +1,4 @@
-Name: 'Samples.Cpp.ParseJsonFile'
+Name: 'samples-cpp-parse-json'
 Language: 'C++|0'
 Version: 1.0.0
 Type: 'Executable'

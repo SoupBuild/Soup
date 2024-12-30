@@ -4,6 +4,6 @@ Version: 1.0.0
 Type: 'Executable'
 Dependencies: {
 	Runtime: [
-		'../Client/Core/'
+		'../client/core/'
 	]
 }

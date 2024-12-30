@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "Recipe/RecipeValue.h"
+#include "recipe/RecipeValue.h"
 #include "SDKConfig.h"
 
 namespace Soup::Core

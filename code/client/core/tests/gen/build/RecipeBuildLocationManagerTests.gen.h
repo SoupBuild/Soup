@@ -1,5 +1,5 @@
 #pragma once
-#include "Build/RecipeBuildLocationManagerTests.h"
+#include "build/RecipeBuildLocationManagerTests.h"
 
 TestState RunRecipeBuildLocationManagerTests() 
  {

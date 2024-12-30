@@ -3,8 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "Recipe/Recipe.h"
-#include "ValueTable/ValueTableWriter.h"
+#include "recipe/Recipe.h"
+#include "value-table/ValueTableWriter.h"
 #include "PackageProvider.h"
 #include "RecipeBuildCacheState.h"
 #include "KnownLanguage.h"

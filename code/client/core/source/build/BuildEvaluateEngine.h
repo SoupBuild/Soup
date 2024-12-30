@@ -7,7 +7,7 @@
 #include "BuildFailedException.h"
 #include "BuildHistoryChecker.h"
 #include "FileSystemState.h"
-#include "OperationGraph/OperationGraph.h"
+#include "operation-graph/OperationGraph.h"
 #include "SystemAccessTracker.h"
 
 namespace Soup::Core

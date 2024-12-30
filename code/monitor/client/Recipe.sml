@@ -14,7 +14,7 @@ Source: [
 Dependencies: {
 	Runtime: [
 		'mwasplund|Detours@4'
-		'../Shared/'
+		'../shared/'
 		'mwasplund|Opal@0'
 	]
 }

@@ -4,7 +4,7 @@
 
 #pragma once
 #include "Recipe.h"
-#include "SML/SML.h"
+#include "sml/SML.h"
 
 namespace Soup::Core
 {

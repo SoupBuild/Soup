@@ -3,8 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "Recipe/RecipeExtensions.h"
-#include "Recipe/RootRecipeExtensions.h"
+#include "recipe/RecipeExtensions.h"
+#include "recipe/RootRecipeExtensions.h"
 
 namespace Soup::Core
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "Build/PackageProviderTests.h"
+#include "build/PackageProviderTests.h"
 
 TestState RunPackageProviderTests() 
 {

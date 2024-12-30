@@ -103,10 +103,10 @@ using namespace Opal;
 
 #define CLIENT_CORE_IMPLEMENTATION
 
-#include "Utils/SequenceMap.h"
-#include "Build/RecipeBuildLocationManager.h"
-#include "Build/BuildEngine.h"
-#include "LocalUserConfig/LocalUserConfigExtensions.h"
-#include "Package/PackageManager.h"
-#include "Wren/WrenHost.h"
-#include "Wren/WrenValueTable.h"
+#include "utilities/SequenceMap.h"
+#include "build/RecipeBuildLocationManager.h"
+#include "build/BuildEngine.h"
+#include "local-user-config/LocalUserConfigExtensions.h"
+#include "package/PackageManager.h"
+#include "wren/WrenHost.h"
+#include "wren/WrenValueTable.h"

@@ -4,7 +4,7 @@
 
 #pragma once
 #include "PackageLock.h"
-#include "Recipe/RecipeSML.h"
+#include "recipe/RecipeSML.h"
 
 namespace Soup::Core
 {

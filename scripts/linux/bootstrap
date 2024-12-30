@@ -20,7 +20,7 @@ BOOTSTRAP='dotnet run --project $SOURCE_DIR/GenerateSharp/BootstrapBuild/'
 # sudo apt install clang
 # sudo apt install dotnet-sdk-8.0
 
-eval $SOUP restore $SOURCE_DIR/Client/CLI/
+eval $SOUP restore $SOURCE_DIR/client/cli/
 
 eval $GENERATE $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Build.Utils/0.7.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/
 eval $BOOTSTRAP $SOUP_PACKAGES_DIR/Wren/mwasplund/Soup.Build.Utils/0.7.0/out/tsWW3RZ_9Jb7Xbk2kTzx3n6uQUM/.soup/

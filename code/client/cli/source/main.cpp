@@ -45,14 +45,14 @@ using namespace Opal;
 #include <spawn.h>
 #include <sys/wait.h>
 
-#include "Utilities/Path.h"
-#include "Utilities/SemanticVersion.h"
-#include "IO/SystemConsoleManager.h"
-#include "Logger/Log.h"
-#include "Logger/ConsoleTraceListener.h"
-#include "System/LinuxProcessManager.h"
-#include "System/STLFileSystem.h"
-#include "System/STLSystem.h"
+#include "utilities/Path.h"
+#include "utilities/SemanticVersion.h"
+#include "io/SystemConsoleManager.h"
+#include "logger/Log.h"
+#include "logger/ConsoleTraceListener.h"
+#include "system/LinuxProcessManager.h"
+#include "system/STLFileSystem.h"
+#include "system/STLSystem.h"
 
 using namespace Opal;
 
@@ -60,15 +60,15 @@ using namespace Opal;
 #include "Interface.h"
 
 // import Monitor.Host
-#include "Linux/LinuxMonitorProcessManager.h"
+#include "linux/LinuxMonitorProcessManager.h"
 
 // import Soup.Core
 #include <cstring>
 #include <regex>
 #include <set>
 #include <variant>
-#include "Build/BuildEngine.h"
-#include "Package/PackageManager.h"
+#include "build/BuildEngine.h"
+#include "package/PackageManager.h"
 
 #endif
 

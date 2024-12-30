@@ -3,9 +3,9 @@
 // </copyright>
 
 #pragma once
-#include "Recipe/RecipeValue.h"
-#include "Recipe/PackageReference.h"
-#include "Recipe/PackageName.h"
+#include "recipe/RecipeValue.h"
+#include "recipe/PackageReference.h"
+#include "recipe/PackageName.h"
 
 #ifdef SOUP_BUILD
 export

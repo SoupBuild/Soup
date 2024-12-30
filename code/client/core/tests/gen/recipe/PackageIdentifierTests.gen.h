@@ -1,5 +1,5 @@
 #pragma once
-#include "Recipe/PackageIdentifierTests.h"
+#include "recipe/PackageIdentifierTests.h"
 
 TestState RunPackageIdentifierTests() 
  {

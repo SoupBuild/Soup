@@ -29,11 +29,11 @@ cp -p $OUT_DIR/C++/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.exe $RUN_DIR/s
 cp -p $OUT_DIR/C++/Local/Soup/$SOUP_VERSION/$CONFIG_HASH/bin/Soup.Generate.exe $RUN_DIR/generate
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION
-cp -p $CODE_DIR/tools/Copy/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/Recipe.sml
+cp -p $CODE_DIR/tools/copy/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/Recipe.sml
 cp -p -R $OUT_DIR/C++/Local/copy/$COPY_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/copy/$COPY_VERSION/out/
 
 mkdir -p $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION
-cp -p $CODE_DIR/tools/Mkdir/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/Recipe.sml
+cp -p $CODE_DIR/tools/mkdir/Recipe.sml $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/Recipe.sml
 cp -p -R $OUT_DIR/C++/Local/mkdir/$MKDIR_VERSION/$CONFIG_HASH/ $RUN_DIR/BuiltIn/$OWNER/mkdir/$MKDIR_VERSION/out/
 
 mkdir -p $RUN_DIR/BuiltIn/Soup/Wren/$SOUP_WREN_VERSION

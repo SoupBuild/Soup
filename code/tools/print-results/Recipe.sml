@@ -5,6 +5,6 @@ Type: 'Executable'
 Dependencies: {
 	Runtime: [
 		'mwasplund|Opal@0'
-		'../../Client/Core/'
+		'../../client/core/'
 	]
 }

@@ -12,6 +12,6 @@ Dependencies: {
 		'mwasplund|Detours@4'
 		'[C]mwasplund|libseccomp@2.5'
 		'mwasplund|Opal@0'
-		'../Shared/'
+		'../shared/'
 	]
 }

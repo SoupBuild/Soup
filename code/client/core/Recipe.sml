@@ -6,13 +6,13 @@ Defines: [
 	# 'TRACE_FILE_SYSTEM_STATE'
 ]
 IncludePaths: [
-	'Source/'
+	'source/'
 ]
-Interface: 'Source/Module.cpp'
+Interface: 'source/Module.cpp'
 Source: [
-	'Source/Recipe/LanguageReferenceParser.cpp'
-	'Source/SML/SMLParser.cpp'
-	'Source/ValueTable/Value.cpp'
+	'source/recipe/LanguageReferenceParser.cpp'
+	'source/sml/SMLParser.cpp'
+	'source/value-table/Value.cpp'
 ]
 Dependencies: {
 	Build: [
@@ -21,7 +21,7 @@ Dependencies: {
 	Runtime: [
 		'mwasplund|Opal@0'
 		'mwasplund|reflex@1'
-		'../../Monitor/Host/'
+		'../../monitor/host/'
 		'mwasplund|wren@1'
 		'mwasplund|CryptoPP@1'
 	]
@@ -31,9 +31,9 @@ Dependencies: {
 }
 Tests: {
 	Source: [
-		'UnitTests/gen/Main.cpp'
+		'tests/gen/main.cpp'
 	]
 	IncludePaths: [
-		'UnitTests/'
+		'tests/'
 	]
 }

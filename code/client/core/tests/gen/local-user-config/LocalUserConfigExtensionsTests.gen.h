@@ -1,5 +1,5 @@
 #pragma once
-#include "LocalUserConfig/LocalUserConfigExtensionsTests.h"
+#include "local-user-config/LocalUserConfigExtensionsTests.h"
 
 TestState RunLocalUserConfigExtensionsTests() 
  {

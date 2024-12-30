@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "ValueTable/Value.h"
+#include "value-table/Value.h"
 
 namespace Soup::Core
 {

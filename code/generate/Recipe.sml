@@ -7,7 +7,7 @@ Source: [
 ]
 Dependencies: {
 	Runtime: [
-		'../Client/Core/'
+		'../client/core/'
 		'mwasplund|wren@1'
 		'mwasplund|Opal@0'
 	]

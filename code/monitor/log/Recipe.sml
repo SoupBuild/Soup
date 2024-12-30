@@ -11,6 +11,6 @@ Dependencies: {
 	Runtime: [
 		'mwasplund|Detours@4'
 		'mwasplund|Opal@0'
-		'../Shared/'
+		'../shared/'
 	]
 }

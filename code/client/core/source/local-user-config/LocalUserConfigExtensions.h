@@ -4,7 +4,7 @@
 
 #pragma once
 #include "LocalUserConfig.h"
-#include "Recipe/RecipeSML.h"
+#include "recipe/RecipeSML.h"
 
 namespace Soup::Core
 {

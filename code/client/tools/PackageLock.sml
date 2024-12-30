@@ -5,9 +5,9 @@ Closures: {
 			'mwasplund|libseccomp': { Version: 2.5.8, Build: 'Build2', Tool: 'Tool0' }
 		}
 		'C++': {
-			'Monitor.Host': { Version: '../../Monitor/Host/', Build: 'Build0', Tool: 'Tool0' }
-			'Monitor.Shared': { Version: '../../Monitor/Shared/', Build: 'Build0', Tool: 'Tool0' }
-			'Soup.Core': { Version: '../Core/', Build: 'Build1', Tool: 'Tool0' }
+			'Monitor.Host': { Version: '../../monitor/host/', Build: 'Build0', Tool: 'Tool0' }
+			'Monitor.Shared': { Version: '../../monitor/shared/', Build: 'Build0', Tool: 'Tool0' }
+			'Soup.Core': { Version: '../core/', Build: 'Build1', Tool: 'Tool0' }
 			SoupTools: { Version: './', Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|CryptoPP': { Version: 1.2.4, Build: 'Build0', Tool: 'Tool0' }
 			'mwasplund|Detours': { Version: 4.0.12, Build: 'Build0', Tool: 'Tool0' }

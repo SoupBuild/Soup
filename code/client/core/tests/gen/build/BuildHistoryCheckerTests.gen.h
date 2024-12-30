@@ -1,5 +1,5 @@
 #pragma once
-#include "Build/BuildHistoryCheckerTests.h"
+#include "build/BuildHistoryCheckerTests.h"
 
 TestState RunBuildHistoryCheckerTests() 
 {

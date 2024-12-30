@@ -1,5 +1,5 @@
 #pragma once
-#include "Build/BuildEvaluateEngineTests.h"
+#include "build/BuildEvaluateEngineTests.h"
 
 TestState RunBuildEvaluateEngineTests() 
  {

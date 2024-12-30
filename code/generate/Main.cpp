@@ -71,15 +71,15 @@ using namespace Opal;
 #include <cstring>
 #include <regex>
 #include <variant>
-#include "Wren/WrenHost.h"
-#include "Wren/WrenValueTable.h"
-#include "Build/BuildConstants.h"
-#include "Build/FileSystemState.h"
-#include "Build/MacroManager.h"
-#include "OperationGraph/OperationGraphManager.h"
-#include "Recipe/RecipeBuildStateConverter.h"
-#include "Recipe/RecipeExtensions.h"
-#include "ValueTable/ValueTableManager.h"
+#include "wren/WrenHost.h"
+#include "wren/WrenValueTable.h"
+#include "build/BuildConstants.h"
+#include "build/FileSystemState.h"
+#include "build/MacroManager.h"
+#include "operation-graph/OperationGraphManager.h"
+#include "recipe/RecipeBuildStateConverter.h"
+#include "recipe/RecipeExtensions.h"
+#include "value-table/ValueTableManager.h"
 
 #endif
 

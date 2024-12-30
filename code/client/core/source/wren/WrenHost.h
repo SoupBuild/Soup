@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "SML/SML.h"
+#include "sml/SML.h"
 #include "WrenHelpers.h"
 
 #ifdef SOUP_BUILD

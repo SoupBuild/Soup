@@ -3,11 +3,11 @@
 // </copyright>
 
 #pragma once
-#include "PackageLock/PackageLockExtensions.h"
+#include "package-lock/PackageLockExtensions.h"
 #include "RecipeBuildArguments.h"
-#include "Recipe/PackageIdentifier.h"
-#include "Recipe/RecipeCache.h"
-#include "Utils/HandledException.h"
+#include "recipe/PackageIdentifier.h"
+#include "recipe/RecipeCache.h"
+#include "utilities/HandledException.h"
 #include "BuildConstants.h"
 #include "KnownLanguage.h"
 

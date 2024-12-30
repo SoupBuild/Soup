@@ -90,15 +90,15 @@ import Opal;
 #include <spawn.h>
 #include <sys/wait.h>
 
-#include "Utilities/Path.h"
-#include "Utilities/SemanticVersion.h"
-#include "IO/SystemConsoleManager.h"
-#include "Logger/Log.h"
-#include "Logger/ConsoleTraceListener.h"
-#include "System/MockProcess.h"
-#include "System/LinuxProcessManager.h"
-#include "System/STLFileSystem.h"
-#include "System/STLSystem.h"
+#include "utilities/Path.h"
+#include "utilities/SemanticVersion.h"
+#include "io/SystemConsoleManager.h"
+#include "logger/Log.h"
+#include "logger/ConsoleTraceListener.h"
+#include "system/MockProcess.h"
+#include "system/LinuxProcessManager.h"
+#include "system/STLFileSystem.h"
+#include "system/STLSystem.h"
 
 #endif
 
@@ -106,7 +106,7 @@ using namespace Opal;
 
 #define MONITOR_IMPLEMENTATION
 
-#include "Mock/MockMonitorProcessManager.h"
+#include "mock/MockMonitorProcessManager.h"
 #include "ScopedMonitorProcessManagerRegister.h"
 
 #if defined(_WIN32)
@@ -114,5 +114,5 @@ using namespace Opal;
 #include "Windows/WindowsSystemLoggerMonitor.h"
 #include "Windows/WindowsSystemMonitorFork.h"
 #elif defined(__linux__)
-#include "Linux/LinuxMonitorProcessManager.h"
+#include "linux/LinuxMonitorProcessManager.h"
 #endif

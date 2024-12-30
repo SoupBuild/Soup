@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "Build/FileSystemState.h"
+#include "build/FileSystemState.h"
 #include "CommandInfo.h"
 
 using namespace std::chrono_literals;
