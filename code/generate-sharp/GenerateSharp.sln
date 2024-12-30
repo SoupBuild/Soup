@@ -28,9 +28,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BootstrapBuild", "BootstrapBuild\BootstrapBuild.csproj", "{09A05351-1253-41EB-8646-17D7FB7F0DF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BootstrapBuild", "bootstrap-build\BootstrapBuild.csproj", "{09A05351-1253-41EB-8646-17D7FB7F0DF2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrate", "Migrate\Migrate.csproj", "{B597D766-7C98-45F1-BD02-E15193724484}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrate", "migrate\Migrate.csproj", "{B597D766-7C98-45F1-BD02-E15193724484}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
