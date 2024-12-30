@@ -6,8 +6,8 @@ set -e
 
 FLAVOR="$1"
 SCRIPTS_DIR=$(dirname "$0")
-SOURCE_DIR=$SCRIPTS_DIR/../../Source
-PACKAGE_MANAGER_DIR=$SOURCE_DIR/GenerateSharp/PackageManager
+CODE_DIR=$SCRIPTS_DIR/../../code
+PACKAGE_MANAGER_DIR=$CODE_DIR/generate-sharp/package-manager
 
 # Build PackageManager
 echo dotnet publish $PACKAGE_MANAGER_DIR -c $FLAVOR -f net9.0 -r linux-x64 --self-contained 

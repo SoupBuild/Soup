@@ -6,8 +6,8 @@ set -e
 
 FLAVOR="$1"
 SCRIPTS_DIR=$(dirname "$0")
-SOURCE_DIR=$SCRIPTS_DIR/../../Source
-SWHERE_DIR=$SOURCE_DIR/GenerateSharp/Swhere
+CODE_DIR=$SCRIPTS_DIR/../../code
+SWHERE_DIR=$CODE_DIR/generate-sharp/swhere
 
 # Build SWhere tool
 echo dotnet publish $SWHERE_DIR -c $FLAVOR -r linux-x64 --self-contained

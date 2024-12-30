@@ -5,8 +5,8 @@ echo "Linux Build SoupView!"
 set -e
 
 SCRIPTS_DIR=$(dirname "$0")
-SOURCE_DIR=$SCRIPTS_DIR/../../Source
-TOOLS_DIR=$SOURCE_DIR/Client/Tools
+CODE_DIR=$SCRIPTS_DIR/../../code
+TOOLS_DIR=$CODE_DIR/client/tools
 
 # Build tools
 echo soup build $TOOLS_DIR -flavor Release
