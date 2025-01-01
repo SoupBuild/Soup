@@ -13,12 +13,16 @@ namespace Soup.Build.Discover;
 [SupportedOSPlatform("windows")]
 internal static class WindowsSDKUtilities
 {
-	private static string WindowsKitsRegistryKey => @"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0";
+	private static string WindowsSDKRegistryKey => @"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0";
 
-	public static (string Version, Path InstallPath)? FindWindows10Kit()
+	private static string WindowsNetFxSDKRegistryKey => @"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.8\WinSDK-NetFx40Tools";
+
+	private static string InstallationFolderValue => "InstallationFolder";
+
+	public static (string Version, Path InstallPath)? TryFindWindows10Kit()
 	{
 		var installFolder = (string?)LifetimeManager.Get<ISystem>().GetRegistryValue(
-			WindowsKitsRegistryKey, "InstallationFolder", null);
+			WindowsSDKRegistryKey, InstallationFolderValue, null);
 
 		if (installFolder is null)
 			return null;
@@ -29,9 +33,15 @@ internal static class WindowsSDKUtilities
 		return (windowsSDKVersion, windowsSDKInstallPath);
 	}
 
-	public static Path FindNetFXTools()
+	public static Path? TryFindNetFXTools()
 	{
-		return new Path("C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/");
+		var installFolder = (string?)LifetimeManager.Get<ISystem>().GetRegistryValue(
+			WindowsNetFxSDKRegistryKey, InstallationFolderValue, null);
+
+		if (installFolder is null)
+			return null;
+		else
+			return Path.Parse(installFolder);
 	}
 
 	private static string FindNewestWindows10KitVersion(Path windowsSDKInstallPath)

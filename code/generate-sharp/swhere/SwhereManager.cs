@@ -70,7 +70,7 @@ public static class SwhereManager
 				{ "VCToolsRoot", msvcInstallPath.ToString() },
 			});
 
-		var windowsSDK = WindowsSDKUtilities.FindWindows10Kit();
+		var windowsSDK = WindowsSDKUtilities.TryFindWindows10Kit();
 
 		if (windowsSDK is not null)
 		{
@@ -88,20 +88,27 @@ public static class SwhereManager
 		}
 		else
 		{
-			Log.HighPriority("No Windows SDKs installed");
+			Log.Warning("No Windows SDKs installed");
 		}
 
-		var netFXToolsPath = WindowsSDKUtilities.FindNetFXTools();
-		var netFXToolsSDK = userConfig.EnsureSDK("NetFXTools");
-		netFXToolsSDK.SourceDirectories =
-		[
-			netFXToolsPath,
-		];
-		netFXToolsSDK.SetProperties(
-			new Dictionary<string, string>()
-			{
-				{ "ToolsRoot", netFXToolsPath.ToString() },
-			});
+		var netFXToolsPath = WindowsSDKUtilities.TryFindNetFXTools();
+		if (netFXToolsPath is not null)
+		{
+			var netFXToolsSDK = userConfig.EnsureSDK("NetFXTools");
+			netFXToolsSDK.SourceDirectories =
+			[
+				netFXToolsPath,
+			];
+			netFXToolsSDK.SetProperties(
+				new Dictionary<string, string>()
+				{
+					{ "ToolsRoot", netFXToolsPath.ToString() },
+				});
+		}
+		else
+		{
+			Log.Warning("No NetFx SDK installed");
+		}
 	}
 
 	private static async Task DiscoverLinuxPlatformAsync(OSPlatform platform, LocalUserConfig userConfig)

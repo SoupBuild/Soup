@@ -22,8 +22,8 @@ public static class Program
 				TraceEvents.Warning |
 				TraceEvents.Error;
 			Log.RegisterListener(new ConsoleTraceListener(new EventTypeFilter(traceFlags), false, false));
+			LifetimeManager.RegisterSingleton<ISystem, RuntimeSystem>();
 			LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
-
 			LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();
 
 			bool includePrerelease = false;
