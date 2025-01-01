@@ -3,6 +3,6 @@ These samples are a small set of all the cool things you can do with the Soup Bu
 
 ## [C Samples](Samples/C.md)
 
-## [C++ Samples](Samples/Cpp.md)
+## [C++ Samples](Samples/C++.md)
 
-## [C# Samples](Samples/CSharp.md)
+## [C# Samples](Samples/C#.md)
