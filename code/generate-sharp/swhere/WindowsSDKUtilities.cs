@@ -5,15 +5,25 @@
 using Opal;
 using Opal.System;
 using System.Linq;
+using System.Runtime.Versioning;
 using Path = Opal.Path;
 
 namespace Soup.Build.Discover;
 
+[SupportedOSPlatform("windows")]
 internal static class WindowsSDKUtilities
 {
-	public static (string Version, Path Path) FindWindows10Kit()
+	private static string WindowsKitsRegistryKey => @"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0";
+
+	public static (string Version, Path InstallPath)? FindWindows10Kit()
 	{
-		var windowsSDKInstallPath = new Path("C:/Program Files (x86)/Windows Kits/10/");
+		var installFolder = (string?)LifetimeManager.Get<ISystem>().GetRegistryValue(
+			WindowsKitsRegistryKey, "InstallationFolder", null);
+
+		if (installFolder is null)
+			return null;
+
+		var windowsSDKInstallPath = Path.Parse(installFolder);
 		var windowsSDKVersion = FindNewestWindows10KitVersion(windowsSDKInstallPath);
 
 		return (windowsSDKVersion, windowsSDKInstallPath);
