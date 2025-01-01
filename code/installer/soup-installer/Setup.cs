@@ -8,6 +8,7 @@ class Script
 		var soupVersion = new Version(0, 41, 2);
 
 		var soupOutFolder = "../../../out";
+		var soupReleaseFolder = $"{soupOutFolder}/release";
 		var soupRunFolder = $"{soupOutFolder}/run";
 		var project = new Project(
 			"Soup Build",
@@ -26,7 +27,7 @@ class Script
 		project.BackgroundImage = @"Images\DialogBackground.bmp";
 		project.BannerImage = @"Images\DialogBanner.bmp";
 		project.LicenceFile = @"License.rtf";
-		project.OutDir = soupOutFolder;
+		project.OutDir = soupReleaseFolder;
 		project.OutFileName = $"soup-build-{soupVersion}-windows-x64";
 
 		// Prevent two installations at the same time
