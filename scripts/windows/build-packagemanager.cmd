@@ -3,8 +3,8 @@ SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\..
-SET SourceDir=%RootDir%\Source
-SET PackageManagerDir=%SourceDir%\GenerateSharp\PackageManager
+SET CodeDir=%RootDir%\code
+SET PackageManagerDir=%CodeDir%\generate-sharp\package-manager
 
 REM - Build PackageManager
 echo dotnet publish %PackageManagerDir% -c %Flavor% -f net9.0 -r win-x64 --self-contained

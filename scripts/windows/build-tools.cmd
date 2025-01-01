@@ -3,8 +3,8 @@ SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\..
-SET SourceDir=%RootDir%\Source
-SET ToolsDir=%SourceDir%\Client\Tools
+SET CodeDir=%RootDir%\code
+SET ToolsDir=%CodeDir%\client\tools
 
 REM - Build Tools
 echo soup build %ToolsDir% -flavor %Flavor%

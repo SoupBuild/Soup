@@ -3,10 +3,10 @@ SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\..
-SET SourceDir=%RootDir%\Source
+SET CodeDir=%RootDir%\code
 SET OutputDir=%RootDir%\out
-SET ClientCLIDir=%SourceDir%\Client\CLI
-SET MonitorClientDir=%SourceDir%\Monitor\Client
+SET ClientCLIDir=%CodeDir%\client\cli
+SET MonitorClientDir=%CodeDir%\monitor\client
 
 REM - Build each version of the monitor client dll
 echo soup build %MonitorClientDir% -architecture x64 -flavor %Flavor%

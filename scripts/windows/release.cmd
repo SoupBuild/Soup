@@ -4,8 +4,8 @@ SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\..
 SET OutDir=%RootDir%\out
 SET RunDir=%OutDir%\run
-SET SourceDir=%RootDir%\Source
-SET InstallerDir=%SourceDir%\Installer\SoupInstaller
+SET CodeDir=%RootDir%\code
+SET InstallerDir=%CodeDir%\installer\soup-installer
 
 SET SOUP_VERSION=0.41.2
 
