@@ -112,7 +112,7 @@ jobs:
     - name: Soup Build Cpp ParseJson
       run: soup build ./soup/samples/c++/parse-json/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp StaticLibrary
-      run: soup build ./soup/samples/c++/static-library/Application/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c++/static-library/application/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp WindowsApplication
       if: matrix.os == 'windows-2022'
       run: soup build ./soup/samples/c++/windows-application/ -flavor ${{matrix.config}}
