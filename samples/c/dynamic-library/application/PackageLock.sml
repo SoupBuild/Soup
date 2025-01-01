@@ -3,7 +3,7 @@ Closures: {
 	Root: {
 		C: {
 			'Samples.C.DynamicLibrary.Application': { Version: './', Build: 'Build0', Tool: 'Tool0' }
-			'Samples.C.DynamicLibrary.Library': { Version: '../Library/', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.C.DynamicLibrary.Library': { Version: '../library/', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

@@ -3,7 +3,7 @@ Closures: {
 	Root: {
 		'C++': {
 			'Samples.Cpp.DynamicLibrary.Application': { Version: './', Build: 'Build0', Tool: 'Tool0' }
-			'Samples.Cpp.DynamicLibrary.Library': { Version: '../Library/', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.Cpp.DynamicLibrary.Library': { Version: '../library/', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

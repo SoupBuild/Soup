@@ -3,7 +3,7 @@ Closures: {
 	Root: {
 		'C#': {
 			'Samples.CSharp.Library.ConsoleApplication': { Version: './', Build: 'Build0', Tool: 'Tool0' }
-			'Samples.CSharp.Library.Library': { Version: '../Library/', Build: 'Build0', Tool: 'Tool0' }
+			'Samples.CSharp.Library.Library': { Version: '../library/', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

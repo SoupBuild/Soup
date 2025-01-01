@@ -4,6 +4,6 @@ Type: 'Executable'
 Version: 1.0.0
 Dependencies: {
 	Runtime: [
-		'../Library/'
+		'../library/'
 	]
 }

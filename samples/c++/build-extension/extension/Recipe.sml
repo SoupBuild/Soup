@@ -10,6 +10,6 @@ Dependencies: {
 		'Soup|Build.Utils@0'
 	]
 	Tool: [
-		'../Tool/'
+		'../tool/'
 	]
 }
