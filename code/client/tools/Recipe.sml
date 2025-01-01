@@ -4,7 +4,7 @@ Version: 1.0.0
 Type: 'DynamicLibrary'
 Dependencies: {
 	Runtime: [
-		'../Core/'
+		'../core/'
 		'mwasplund|json11@1'
 	]
 }
