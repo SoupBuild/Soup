@@ -5,6 +5,6 @@ Type: 'Executable'
 TargetFramework: 'net9.0'
 Dependencies: {
 	Runtime: [
-		'../Utilities/'
+		'../utilities/'
 	]
 }
