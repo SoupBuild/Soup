@@ -1,9 +1,5 @@
 # Visual Studio
 .vs/
-packages/
-bin/
-obj/
-*.user
 
 # VSCode
 .vscode/settings.json

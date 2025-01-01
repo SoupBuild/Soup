@@ -14,114 +14,114 @@ jobs:
     # Setup Environment
     - uses: actions/checkout@v2
       with:
-        path: "Soup"
+        path: "soup"
         submodules: true
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 9.0.x
     - name: Setup Soup Build
-      uses: soupbuild/setup-soup@v1
+      uses: soup-build/setup-soup@v1
       with:
         version: latest
 
     # Restore Nuget
     - name: DotNet Restore
-      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
+      run: dotnet restore ./soup/code/generate-sharp/GenerateSharp.sln
 
     # Build Soup
     - name: Soup Where
       run: swhere
     - name: Soup Restore Client
-      run: soup restore ./Soup/Source/Client/CLI/
+      run: soup restore ./soup/code/client/cli/
     - name: Soup Build Client
-      run: soup build ./Soup/Source/Client/CLI/ -flavor ${{matrix.config}}
+      run: soup build ./soup/code/client/cli/ -flavor ${{matrix.config}}
     - name: Soup Run Version
-      run: soup run ./Soup/Source/Client/CLI/ -flavor ${{matrix.config}} -args version
+      run: soup run ./soup/code/client/cli/ -flavor ${{matrix.config}} -args version
     - name: Soup Restore GenerateTest
-      run: soup restore ./Soup/Source/GenerateTest/
+      run: soup restore ./soup/code/generate-test/
     - name: Soup Build GenerateTest
-      run: soup build ./Soup/Source/GenerateTest/ -flavor ${{matrix.config}}
+      run: soup build ./soup/code/generate-test/ -flavor ${{matrix.config}}
     # - name: Soup Restore SWhere
-    #   run: soup restore ./Soup/Source/GenerateSharp/Swhere/
+    #   run: soup restore ./soup/code/generate-sharp/swhere/
     # - name: Soup Build SWhere
-    #   run: soup build ./Soup/Source/GenerateSharp/Swhere/ -flavor ${{matrix.config}}
+    #   run: soup build ./soup/code/generate-sharp/swhere/ -flavor ${{matrix.config}}
     # - name: Soup Restore PackageManager
-    #   run: soup restore ./Soup/Source/GenerateSharp/PackageManager/
+    #   run: soup restore ./soup/code/GenerateSharp/package-manager/
     # - name: Soup Build PackageManager
-    #   run: soup build ./Soup/Source/GenerateSharp/PackageManager/ -flavor ${{matrix.config}}
+    #   run: soup build ./soup/code/generate-sharp/package-manager/ -flavor ${{matrix.config}}
     - name: Soup Restore Tools
-      run: soup restore ./Soup/Source/Client/Tools/
+      run: soup restore ./soup/code/client/tools/
     - name: Soup Build Tools
-      run: soup build ./Soup/Source/Client/Tools/ -flavor ${{matrix.config}}
+      run: soup build ./soup/code/client/tools/ -flavor ${{matrix.config}}
 
     # Build DotNet
     - name: DotNet Build
-      run: dotnet build -c ${{matrix.config}} --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
+      run: dotnet build -c ${{matrix.config}} --no-restore ./soup/code/generate-sharp/GenerateSharp.sln
     - name: DotNet Test
-      run: dotnet test -c ${{matrix.config}} --no-build --verbosity normal ./Soup/Source/GenerateSharp/GenerateSharp.sln
+      run: dotnet test -c ${{matrix.config}} --no-build --verbosity normal ./soup/code/generate-sharp/GenerateSharp.sln
 
     # Build Tools
     - name: Soup Restore PrintGraph
-      run: soup restore ./Soup/Source/Tools/PrintGraph/
+      run: soup restore ./soup/code/tools/print-graph/
     - name: Soup Build PrintGraph
-      run: soup build ./Soup/Source/Tools/PrintGraph/ -flavor ${{matrix.config}}
+      run: soup build ./soup/code/tools/print-graph/ -flavor ${{matrix.config}}
     - name: Soup Restore PrintResults
-      run: soup restore ./Soup/Source/Tools/PrintResults/
+      run: soup restore ./soup/code/tools/print-results/
     - name: Soup Build PrintResults
-      run: soup build ./Soup/Source/Tools/PrintResults/ -flavor ${{matrix.config}}
+      run: soup build ./soup/code/tools/print-results/ -flavor ${{matrix.config}}
     - name: Soup Restore PrintValueTable
-      run: soup restore ./Soup/Source/Tools/PrintValueTable/
+      run: soup restore ./soup/code/tools/print-valuetable/
     - name: Soup Build PrintValueTable
-      run: soup build ./Soup/Source/Tools/PrintValueTable/ -flavor ${{matrix.config}}
+      run: soup build ./soup/code/tools/print-valuetable/ -flavor ${{matrix.config}}
     - name: Soup Restore Migrate
-      run: soup restore ./Soup/Source/GenerateSharp/Migrate/
+      run: soup restore ./soup/code/generate-sharp/migrate/
     - name: Soup Build Migrate
-      run: soup build ./Soup/Source/GenerateSharp/Migrate/ -flavor ${{matrix.config}}
+      run: soup build ./soup/code/generate-sharp/migrate/ -flavor ${{matrix.config}}
 
     # Build Samples
     - name: Soup Restore C BuildExtension
-      run: soup restore ./Soup/Samples/C/BuildExtension/Executable/
+      run: soup restore ./soup/samples/c/build-extension/executable/
     - name: Soup Build C BuildExtension
-      run: soup build ./Soup/Samples/C/BuildExtension/Executable/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c/build-extension/executable/ -flavor ${{matrix.config}}
     - name: Soup Build C ConsoleApplication
-      run: soup build ./Soup/Samples/C/ConsoleApplication/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c/console-application/ -flavor ${{matrix.config}}
     - name: Soup Build C DynamicLibrary
-      run: soup build ./Soup/Samples/C/DynamicLibrary/Application/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c/dynamic-library/application/ -flavor ${{matrix.config}}
     - name: Soup Build C StaticLibrary
-      run: soup build ./Soup/Samples/C/StaticLibrary/Application/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c/static-library/application/ -flavor ${{matrix.config}}
     - name: Soup Build C WindowsApplication
       if: matrix.os == 'windows-2022'
-      run: soup build ./Soup/Samples/C/WindowsApplication/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c/windows-application/ -flavor ${{matrix.config}}
 
     - name: Soup Restore Cpp BuildExtension
-      run: soup restore ./Soup/Samples/C++/BuildExtension/Executable/
+      run: soup restore ./soup/samples/c++/build-extension/executable/
     - name: Soup Build Cpp BuildExtension
-      run: soup build ./Soup/Samples/C++/BuildExtension/Executable/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c++/build-extension/executable/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp ConsoleApplication
-      run: soup build ./Soup/Samples/C++/ConsoleApplication/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c++/console-application/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DirectX
       if: matrix.os == 'windows-2022'
-      run: soup build ./Soup/Samples/C++/DirectX/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c++/directx/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DynamicLibrary
-      run: soup build ./Soup/Samples/C++/DynamicLibrary/Application/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c++/dynamic-library/application/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp ModuleInterface
-      run: soup build ./Soup/Samples/C++/ModuleInterface/ -flavor ${{matrix.config}}
-    - name: Soup Restore Cpp ParseJsonFile
-      run: soup restore ./Soup/Samples/C++/ParseJsonFile/
-    - name: Soup Build Cpp ParseJsonFile
-      run: soup build ./Soup/Samples/C++/ParseJsonFile/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c++/module-interface/ -flavor ${{matrix.config}}
+    - name: Soup Restore Cpp ParseJson
+      run: soup restore ./soup/samples/c++/parse-json/
+    - name: Soup Build Cpp ParseJson
+      run: soup build ./soup/samples/c++/parse-json/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp StaticLibrary
-      run: soup build ./Soup/Samples/C++/StaticLibrary/Application/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c++/static-library/application/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp WindowsApplication
       if: matrix.os == 'windows-2022'
-      run: soup build ./Soup/Samples/C++/WindowsApplication/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c++/windows-application/ -flavor ${{matrix.config}}
 
     - name: Soup Restore CSharp BuildExtension
-      run: soup restore ./Soup/Samples/C#/BuildExtension/Executable/
+      run: soup restore ./soup/samples/c#/build-extension/executable/
     - name: Soup Build CSharp BuildExtension
-      run: soup build ./Soup/Samples/C#/BuildExtension/Executable/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c#/build-extension/executable/ -flavor ${{matrix.config}}
     - name: Soup Build CSharp ConsoleApplication
-      run: soup build ./Soup/Samples/C#/ConsoleApplication/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c#/console-application/ -flavor ${{matrix.config}}
     - name: Soup Build CSharp Library
-      run: soup build ./Soup/Samples/C#/Library/Application/ -flavor ${{matrix.config}}
+      run: soup build ./soup/samples/c#/library/application/ -flavor ${{matrix.config}}

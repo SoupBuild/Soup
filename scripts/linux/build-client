@@ -1,0 +1,17 @@
+#!/bin/bash
+echo "Linux Build Client: $1"
+
+# Stop on first error
+set -e
+
+FLAVOR="$1"
+SCRIPTS_DIR=$(dirname "$0")
+
+ROOT_DIR=$SCRIPTS_DIR/../..
+CODE_DIR=$ROOT_DIR/code
+OUTPUT_DIR=$ROOT_DIR/out
+CLIENT_CLI_DIR=$CODE_DIR/client/cli
+
+# Build the client
+echo soup build $CLIENT_CLI_DIR -flavor $FLAVOR
+eval soup build $CLIENT_CLI_DIR -flavor $FLAVOR

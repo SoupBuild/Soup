@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Migrate": {
-      "commandName": "Project",
-      "commandLineArgs": "../../../../../../../Source/GenerateSharp/Migrate/Migrate.csproj"
-    }
-  }
-}
