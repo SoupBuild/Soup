@@ -9,9 +9,9 @@ Create a PR with this change.
 ```
 ./scripts/windows/build.cmd Release
 ./scripts/windows/soup-release.cmd version
-./scripts/windows/SignRuntime.cmd
+./scripts/windows/sign-runtime.cmd
 ./scripts/windows/release.cmd
-./scripts/windows/SignInstaller.cmd
+./scripts/windows/sign-installer.cmd
 ```
 
 ## Build Linux Release
