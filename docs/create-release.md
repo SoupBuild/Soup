@@ -14,6 +14,23 @@ Create a PR with this change.
 ./scripts/windows/sign-installer.cmd
 ```
 
+### Update WinGet
+* Fork [winget-pkgs](https://github.com/microsoft/winget-pkgs)
+* Install WinGet Create
+
+    ```winget install wingetcreate```
+* Create an update to the manifest
+    
+    ```wingetcreate update SoupBuild.Soup --urls https://github.com/soup-build/soup/releases/download/v[VERSION]/soup-build-[VERSION]-windows-x64.msi -v [VERSION]```
+* Validate manifest
+
+    ```
+    winget validate --manifest .\manifests\s\SoupBuild\Soup\[VERSION]\
+    winget install --manifest .\manifests\s\SoupBuild\Soup\[VERSION]\
+    ```
+
+* Create a PR into the main repository
+
 ## Build Linux Release
 ```
 ./scripts/linux/build
