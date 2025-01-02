@@ -9,13 +9,13 @@ Create a PR with this change.
 ```
 ./scripts/windows/build.cmd Release
 ./scripts/windows/soup-release.cmd version
-./scripts/windows/SignRuntime.cmd
+./scripts/windows/sign-runtime.cmd
 ./scripts/windows/release.cmd
-./scripts/windows/SignInstaller.cmd
+./scripts/windows/sign-installer.cmd
 ```
 
 ## Build Linux Release
-```
+```cmd
 ./scripts/linux/build
 ./scripts/linux/soup version
 ./scripts/linux/release
@@ -30,3 +30,23 @@ Upload artifacts:
 * soup-build-[version]-linux-[architecture].tar.gz
 * soup-build-[version]-windows-[architecture].zip
 * soup-build-[version]-windows-[architecture].msi
+
+## Update WinGet
+* Fork [winget-pkgs](https://github.com/microsoft/winget-pkgs)
+* Install WinGet Create
+
+    ```cmd
+    winget install wingetcreate
+    ```
+* Create an update to the manifest
+    
+    ```cmd
+    wingetcreate update SoupBuild.Soup --urls https://github.com/soup-build/soup/releases/download/v[version]/soup-build-[version]-windows-x64.msi -v [version]
+    ```
+* Validate manifest
+
+    ```cmd
+    winget validate --manifest .\manifests\s\SoupBuild\Soup\[version]\
+    winget install --manifest .\manifests\s\SoupBuild\Soup\[version]\
+    ```
+* Create a PR into the main repository
