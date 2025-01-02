@@ -1,7 +1,7 @@
 # C++ Module Dynamic Library
 This is a console application that has a single dynamic library dependency.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ModuleDynamicLibrary)
+[Source](https://github.com/soup-build/soup/tree/main/Samples/Cpp/ModuleDynamicLibrary)
 
 ## Library/Recipe.sml
 The Recipe file that defines the static library "Samples.Cpp.ModuleDynamicLibrary.Library".

@@ -1,7 +1,7 @@
 # C++ DirectX
 This is a desktop application that demonstrates creating a complex graphics windows application.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/DirectX)
+[Source](https://github.com/soup-build/soup/tree/main/Samples/Cpp/DirectX)
 
 ## Recipe.sml
 The Recipe file that defines the directX sample application. Note the special module partition hierarchy that explicitly sets the references for partition units. The application also copies over the shader files that will be compiled at runtime.

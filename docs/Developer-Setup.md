@@ -8,7 +8,7 @@
   * [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) with "Desktop development with c++" workload.
   * OR
   * [Build Tools For Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with "c++ build tools" workload.
-* [Latest Release](https://github.com/SoupBuild/Soup/releases)
+* [Latest Release](https://github.com/soup-build/soup/releases)
 
 ### Linux
 * Verified on Ubuntu 22.04.1 LTS WSL
@@ -20,13 +20,13 @@
   ```
   sudo apt install dotnet-sdk-6.0
   ```
-* [Latest Release](https://github.com/SoupBuild/Soup/releases)
+* [Latest Release](https://github.com/soup-build/soup/releases)
 
 ## Setup
 Clone the repository and all submodules recursively.
 
 ```
-git clone --recursive https://github.com/SoupBuild/Soup.git
+git clone --recursive https://github.com/soup-build/soup.git
 ```
 
 ## Build

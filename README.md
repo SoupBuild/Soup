@@ -22,7 +22,7 @@ The entire system is programming language agnostic and allows for easy integrati
 * [Simple Minimal Language (SML)](./Docs/SML.md) - The documentation for the Declarative language used by Soup Recipes.
 
 ## Release Status
-Soup is currently in an `Beta` stage. This means that anyone is welcome to play around with the source code or the releases on GitHub, however there may be breaking changes in the internal structures and definitions as work is completed. It is therefor recommended not to be used in any production capacity. The design is stabilizing over time and [Version 1](https://github.com/SoupBuild/Soup/milestone/2) will be released when we believe there will be no more breaking changes or security concerns that would block a first release.
+Soup is currently in an `Beta` stage. This means that anyone is welcome to play around with the source code or the releases on GitHub, however there may be breaking changes in the internal structures and definitions as work is completed. It is therefor recommended not to be used in any production capacity. The design is stabilizing over time and [Version 1](https://github.com/soup-build/soup/milestone/2) will be released when we believe there will be no more breaking changes or security concerns that would block a first release.
 
 ## Contributing
 Soup is currently in active prototyping and testing. If you are interested in contributing to the project feel free to submit a PR or download the latest release and file an issue with suggestions or bugs. :smile:.

@@ -1,7 +1,7 @@
 # C++ Module Interface
 A console application that uses a single module interface file used inside the same projects.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ModuleInterface)
+[Source](https://github.com/soup-build/soup/tree/main/Samples/Cpp/ModuleInterface)
 
 ## Recipe.sml
 The Recipe file that sets the name, type, version, the public interface module and the single source file.

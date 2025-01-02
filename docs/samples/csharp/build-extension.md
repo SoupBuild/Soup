@@ -1,7 +1,7 @@
 # C# Build Extension
 This is a console application that has a custom build extension that alters the build state. The custom build Tasks will run before and after the core Build Task and will simply print a nice hello message.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/CSharp/BuildExtension)
+[Source](https://github.com/soup-build/soup/tree/main/Samples/CSharp/BuildExtension)
 
 ## Extension/Recipe.sml
 The Recipe file that defines the build extension dynamic library "Samples.CSharp.BuildExtension.Extension" that will register new build tasks.

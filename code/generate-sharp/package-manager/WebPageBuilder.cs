@@ -43,7 +43,7 @@ public static class WebPageBuilder
 			<div class="container">
 				&copy; 2020-2024 - Soup Build
 				<ul class="nav">
-					<li class="nav-item"><a class="nav-link ps-0" href="https://github.com/SoupBuild/Soup" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+					<li class="nav-item"><a class="nav-link ps-0" href="https://github.com/soup-build/soup" target="_blank" rel="noopener noreferrer">GitHub</a></li>
 				</ul>
 			</div>
 		</footer>

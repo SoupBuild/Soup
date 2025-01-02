@@ -1,7 +1,7 @@
 # C++ Header Library
 This is a console application that has a single header library dependency.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/HeaderLibrary)
+[Source](https://github.com/soup-build/soup/tree/main/Samples/Cpp/HeaderLibrary)
 
 ## Library/Recipe.sml
 The Recipe file that defines the header library "Samples.Cpp.HeaderLibrary.Library".
