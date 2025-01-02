@@ -1,6 +1,6 @@
 # Local User Config
 
-The Local User config allows for a set of properties to be set for an individual user. Currently the only state that is used from this file is the list of SDKs. The [SWhere](../Tools/SWhere.md) can be used to automatically fill in this file with the VSWhere tooling.
+The Local User config allows for a set of properties to be set for an individual user. Currently the only state that is used from this file is the list of SDKs. The [SWhere](../tools/swhere.md) can be used to automatically fill in this file with the VSWhere tooling.
 
 ## "SDK"
 A special table that allows for registering external SDKs. These allow for passing in Properties and a list of directories that should be allowed read access.

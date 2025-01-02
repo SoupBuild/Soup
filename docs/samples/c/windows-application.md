@@ -1,7 +1,7 @@
 # C Windows Application
 This is a windows application that demonstrates creating a GUI windows application.
 
-[Source](https://github.com/soup-build/soup/tree/main/Samples/C/WindowsApplication)
+[Source](https://github.com/soup-build/soup/tree/main/samples/c/windows-application)
 
 ## Library/Recipe.sml
 The Recipe file that defines the sample application.

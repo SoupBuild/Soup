@@ -1,7 +1,7 @@
 #  C Console Application
 This is the smallest amount of code to get a console application building using Soup.
 
-[Source](https://github.com/soup-build/soup/tree/main/Samples/C/ConsoleApplication)
+[Source](https://github.com/soup-build/soup/tree/main/samples/c/console-application)
 
 ## Recipe.sml
 The Recipe file that sets the name, type, version and the single source file.

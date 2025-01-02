@@ -7,7 +7,7 @@ A **Package Reference** is a special format string that can either be a director
 > Note2: While absolute paths are allowed, they are strongly discouraged as they do not lend themselves to sharing code with others.
 
 ```
-"../../OtherPackage/"
+"../../other-package/"
 ```
 
 ```
