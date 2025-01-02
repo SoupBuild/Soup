@@ -69,4 +69,4 @@ soup run
 ![Demo Video Executing Run Command](assets/getting-started-run.gif)
 
 ## Enjoy!
-Check out the other [Samples](./Samples.md).
+Check out the other [Samples](samples.md).

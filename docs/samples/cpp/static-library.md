@@ -1,7 +1,7 @@
 # Static Library Reference
 This is a console application that has a single static library dependency.
 
-[Source](https://github.com/soup-build/soup/tree/main/Samples/Cpp/StaticLibrary)
+[Source](https://github.com/soup-build/soup/tree/main/samples/cpp/static-library)
 
 ## Library/Recipe.sml
 The Recipe file that defines the static library "Samples.Cpp.StaticLibrary.Library".

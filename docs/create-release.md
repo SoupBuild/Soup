@@ -7,18 +7,18 @@ Create a PR with this change.
 
 ## Build Windows Release
 ```
-./Scripts/Windows/build.cmd Release
-./Scripts/Windows/soup-release.cmd version
-./Scripts/Windows/SignRuntime.cmd
-./Scripts/Windows/release.cmd
-./Scripts/Windows/SignInstaller.cmd
+./scripts/windows/build.cmd Release
+./scripts/windows/soup-release.cmd version
+./scripts/windows/SignRuntime.cmd
+./scripts/windows/release.cmd
+./scripts/windows/SignInstaller.cmd
 ```
 
 ## Build Linux Release
 ```
-./Scripts/Linux/build
-./Scripts/Linux/soup version
-./Scripts/Linux/release
+./scripts/linux/build
+./scripts/linux/soup version
+./scripts/linux/release
 ```
 
 ## Create a GitHub Release

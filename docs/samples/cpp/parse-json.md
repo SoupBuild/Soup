@@ -1,12 +1,12 @@
 #  Parse Json File
 A console application that reads in a json file using the an external module and prints a single known property value.
 
-[Source](https://github.com/soup-build/soup/tree/main/Samples/Cpp/ParseJsonFile)
+[Source](https://github.com/soup-build/soup/tree/main/samples/cpp/parse-json)
 
 ## Recipe.sml
 The Recipe file that sets the standard name, type, version, as well as the single external dependency of the [json11](https://github.com/dropbox/json11) project.
 ```sml
-Name: 'Samples.Cpp.ParseJsonFile'
+Name: 'Samples.Cpp.ParseJson'
 Language: (C++@0)
 Version: 1.0.0
 Type: 'Executable'

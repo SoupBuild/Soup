@@ -1,7 +1,7 @@
 # C++ Build Extension
 This is a console application that has a custom build extension that alters the build state. The custom build Tasks will run before and after the core Build Task and will simply print a nice hello message.
 
-[Source](https://github.com/soup-build/soup/tree/main/samples/c++/build-extension)
+[Source](https://github.com/soup-build/soup/tree/main/samples/cpp/build-extension)
 
 ## Extension/Recipe.sml
 The Recipe file that defines the build extension dynamic library "Samples.Cpp.BuildExtension.Extension" that will register new build tasks.

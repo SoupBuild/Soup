@@ -1,7 +1,7 @@
 # C# Console Application
 This is a console application with the minimal amount of code to get up and running in C#.
 
-[Source](https://github.com/soup-build/soup/tree/main/Samples/CSharp/ConsoleApplication)
+[Source](https://github.com/soup-build/soup/tree/main/samples/csharp/console-application)
 
 ## Recipe.sml
 The Recipe file that defines the static library "Samples.CSharp.ConsoleApplication".
